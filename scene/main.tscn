@@ -1,0 +1,329 @@
+[gd_scene load_steps=7 format=3 uid="uid://b3x4ydn1pkenx"]
+
+[ext_resource type="Script" path="res://scene/room_manager.gd" id="1_manager"]
+[ext_resource type="Script" path="res://scene/run_manager.gd" id="3_run"]
+[ext_resource type="Script" path="res://scene/run_debug_hud.gd" id="4_hud"]
+[ext_resource type="Script" path="res://scene/mode_select.gd" id="5_mode"]
+[ext_resource type="Script" path="res://scene/coop_debug_panel.gd" id="6_debug"]
+[ext_resource type="Script" path="res://scene/attribute_choice_ui.gd" id="7_choice"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_manager")
+
+[node name="RoomContainer" type="Node2D" parent="."]
+
+[node name="RunManager" type="Node" parent="."]
+script = ExtResource("3_run")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+zoom = Vector2(1, 1)
+position_smoothing_enabled = false
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 720
+
+[node name="ModeSelect" type="CanvasLayer" parent="."]
+layer = 90
+script = ExtResource("5_mode")
+
+[node name="AttributeChoiceUI" type="CanvasLayer" parent="."]
+layer = 85
+script = ExtResource("7_choice")
+
+[node name="Overlay" type="ColorRect" parent="ModeSelect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.02, 0.05, 1)
+
+[node name="Center" type="CenterContainer" parent="ModeSelect/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/MainPage"]
+layout_mode = 2
+text = "CYBERFIELD"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 52
+
+[node name="Play" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "JOGAR"
+
+[node name="PlayersPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/PlayersPage"]
+layout_mode = 2
+text = "QUANTIDADE DE JOGADORES"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+
+[node name="Solo" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "1 JOGADOR"
+
+[node name="Coop" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "2 JOGADORES"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
+custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="DifficultyPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+layout_mode = 2
+text = "SELECIONE A DIFICULDADE"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+
+[node name="Normal" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "NORMAL"
+
+[node name="Hard" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "DIFÍCIL"
+
+[node name="Pro" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "PRO"
+
+[node name="InfernoPro" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "INFERNO DO PRO"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
+custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="ConfirmPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+layout_mode = 2
+text = "CONFIRMAR RUN"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+
+[node name="Selection" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+layout_mode = 2
+text = "MODO: 1 JOGADOR\nDIFICULDADE: NORMAL"
+horizontal_alignment = 1
+
+[node name="Controller" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+custom_minimum_size = Vector2(440, 36)
+layout_mode = 2
+text = "PLAYER 1: TECLADO E MOUSE"
+horizontal_alignment = 1
+
+[node name="Start" type="Button" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "INICIAR RUN"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+custom_minimum_size = Vector2(360, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="TransitionLayer" type="CanvasLayer" parent="."]
+layer = 100
+
+[node name="FadeRect" type="ColorRect" parent="TransitionLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="RunDebugHUD" type="CanvasLayer" parent="."]
+layer = 50
+script = ExtResource("4_hud")
+
+[node name="Panel" type="PanelContainer" parent="RunDebugHUD"]
+offset_left = 18.0
+offset_top = 18.0
+offset_right = 285.0
+offset_bottom = 300.0
+
+[node name="Margin" type="MarginContainer" parent="RunDebugHUD/Panel"]
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="RunDebugHUD/Panel/Margin"]
+
+[node name="Status" type="Label" parent="RunDebugHUD/Panel/Margin/VBox"]
+text = "Run"
+
+[node name="Restart" type="Button" parent="RunDebugHUD/Panel/Margin/VBox"]
+text = "Reiniciar run"
+
+[node name="BackToMenu" type="Button" parent="RunDebugHUD/Panel/Margin/VBox"]
+text = "Voltar ao menu"
+
+[node name="RoomTitle" type="Label" parent="RunDebugHUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 58.0
+grow_horizontal = 2
+text = "SALA"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+[node name="RevivePanel" type="VBoxContainer" parent="RunDebugHUD"]
+visible = false
+anchors_preset = 12
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 420.0
+offset_top = -105.0
+offset_right = -420.0
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="RunDebugHUD/RevivePanel"]
+text = "SEGURE [E] PARA REANIMAR"
+horizontal_alignment = 1
+
+[node name="Progress" type="ProgressBar" parent="RunDebugHUD/RevivePanel"]
+custom_minimum_size = Vector2(0, 22)
+show_percentage = false
+
+[node name="EndOverlay" type="ColorRect" parent="RunDebugHUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.82)
+
+[node name="Center" type="CenterContainer" parent="RunDebugHUD/EndOverlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="RunDebugHUD/EndOverlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="RunDebugHUD/EndOverlay/Center/VBox"]
+layout_mode = 2
+text = "RUN PERDIDA"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 52
+
+[node name="Restart" type="Button" parent="RunDebugHUD/EndOverlay/Center/VBox"]
+custom_minimum_size = Vector2(240, 52)
+layout_mode = 2
+text = "REINICIAR RUN"
+
+[node name="BackToMode" type="Button" parent="RunDebugHUD/EndOverlay/Center/VBox"]
+custom_minimum_size = Vector2(240, 52)
+layout_mode = 2
+text = "SELEÇÃO DE MODO"
+
+[node name="PlayersStatus" type="Label" parent="RunDebugHUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -280.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = 120.0
+grow_horizontal = 0
+text = "P1 HP"
+horizontal_alignment = 2
+
+[node name="WaitingLabel" type="Label" parent="RunDebugHUD"]
+visible = false
+anchors_preset = 12
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -160.0
+offset_bottom = -120.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "AGUARDANDO OUTRO JOGADOR"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 24
+
+[node name="CoopDebugPanel" type="CanvasLayer" parent="."]
+layer = 80
+script = ExtResource("6_debug")
+
+[node name="Panel" type="PanelContainer" parent="CoopDebugPanel"]
+visible = false
+offset_left = 18.0
+offset_top = 220.0
+offset_right = 250.0
+offset_bottom = 520.0
+
+[node name="Margin" type="MarginContainer" parent="CoopDebugPanel/Panel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="CoopDebugPanel/Panel/Margin"]
+
+[node name="Title" type="Label" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "CO-OP DEBUG [F3]"
+
+[node name="DamageP1" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "Dano no P1"
+
+[node name="DamageP2" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "Dano no P2"
+
+[node name="DownP1" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "Downed P1"
+
+[node name="DownP2" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "Downed P2"
+
+[node name="TeleportP2" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "P2 perto do P1"
+
+[node name="PauseEnemies" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
+text = "Pausar inimigos"

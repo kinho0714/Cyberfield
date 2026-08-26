@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://scene/interactables/room_exit.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scene/interactables/attribute_chest.tscn" id="2"]
+
+[sub_resource type="RectangleShape2D" id="floor"]
+size = Vector2(1280, 40)
+
+[node name="CyberfieldReward01" type="Node2D"]
+
+[node name="Background" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
+color = Color(0.035, 0.075, 0.045, 1)
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(36, 28)
+text = "SALA DE RECOMPENSA // PROVISÓRIA"
+theme_override_font_sizes/font_size = 24
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(640, 700)
+
+[node name="Visual" type="Polygon2D" parent="Floor"]
+polygon = PackedVector2Array(-640, -20, 640, -20, 640, 20, -640, 20)
+color = Color(0.12, 0.38, 0.2, 1)
+
+[node name="Collision" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("floor")
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="start" type="Marker2D" parent="Gameplay" groups=["room_entry"]]
+position = Vector2(100, 665)
+
+[node name="ChallengeElite" type="Marker2D" parent="Gameplay" groups=["challenge_elite_spawn"]]
+position = Vector2(300, 665)
+
+[node name="ChallengeBasic01" type="Marker2D" parent="Gameplay" groups=["challenge_basic_spawn"]]
+position = Vector2(430, 665)
+
+[node name="ChallengeBasic02" type="Marker2D" parent="Gameplay" groups=["challenge_basic_spawn"]]
+position = Vector2(540, 665)
+
+[node name="ChallengeBasic03" type="Marker2D" parent="Gameplay" groups=["challenge_basic_spawn"]]
+position = Vector2(740, 665)
+
+[node name="ChallengeBasic04" type="Marker2D" parent="Gameplay" groups=["challenge_basic_spawn"]]
+position = Vector2(860, 665)
+
+[node name="ChallengeBasic05" type="Marker2D" parent="Gameplay" groups=["challenge_basic_spawn"]]
+position = Vector2(990, 665)
+
+[node name="AttributeChallengeChest" parent="Gameplay" instance=ExtResource("2")]
+position = Vector2(640, 650)
+chest_id = &"reward_attribute_chest"
+
+[node name="Exit" parent="Gameplay" instance=ExtResource("1")]
+position = Vector2(1180, 638)
+target_room_path = "res://scene/levels/cyberfield_combat_02.tscn"
+target_entry_id = &"start"

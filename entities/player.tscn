@@ -1,0 +1,185 @@
+[gd_scene format=3 uid="uid://bss2g0pvw85dv"]
+
+[ext_resource type="Script" uid="uid://dn6fslysar036" path="res://entities/player.gd" id="1_b0kkn"]
+[ext_resource type="Texture2D" uid="uid://b1nk8lilhaud7" path="res://sprites/1 - Penguin/Idle (16 x 16).png" id="1_merdl"]
+[ext_resource type="Texture2D" uid="uid://bsaop6aqb25fo" path="res://sprites/1 - Penguin/Ducking (16 x 16).png" id="2_qly61"]
+[ext_resource type="Texture2D" uid="uid://d1j1t51vsqi8p" path="res://sprites/1 - Penguin/Jump (16 x 16).png" id="3_rfe5m"]
+[ext_resource type="Texture2D" uid="uid://dyimv4ktw8mtv" path="res://sprites/1 - Penguin/Waddling (16 x 16).png" id="4_qly61"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h0jfm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q0i8f"]
+atlas = ExtResource("2_qly61")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b0kkn"]
+atlas = ExtResource("1_merdl")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e4p34"]
+atlas = ExtResource("1_merdl")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rfe5m"]
+atlas = ExtResource("1_merdl")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qly61"]
+atlas = ExtResource("1_merdl")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qsoyl"]
+atlas = ExtResource("1_merdl")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6nm46"]
+atlas = ExtResource("3_rfe5m")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_i623q"]
+atlas = ExtResource("4_qly61")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ef06p"]
+atlas = ExtResource("4_qly61")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tjdhl"]
+atlas = ExtResource("4_qly61")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x08pd"]
+atlas = ExtResource("4_qly61")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dchgp"]
+atlas = ExtResource("4_qly61")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kdgjc"]
+atlas = ExtResource("4_qly61")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ryepx"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q0i8f")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b0kkn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e4p34")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rfe5m")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qly61")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qsoyl")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6nm46")
+}],
+"loop": 1,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_i623q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ef06p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tjdhl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x08pd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dchgp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kdgjc")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ryepx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground_slam"]
+size = Vector2(64, 24)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 32.0
+
+[node name="Player" type="CharacterBody2D" unique_id=1042804438 groups=["player"]]
+script = ExtResource("1_b0kkn")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=707000895]
+shape = SubResource("CapsuleShape2D_h0jfm")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=283126899]
+position = Vector2(0, 5)
+scale = Vector2(1.4, 1.4)
+sprite_frames = SubResource("SpriteFrames_ryepx")
+animation = &"idle"
+autoplay = "idle"
+frame_progress = 0.95861214
+
+[node name="AttackShapeCast" type="ShapeCast2D" parent="." unique_id=1171437220]
+shape = SubResource("RectangleShape2D_ryepx")
+target_position = Vector2(30, 0)
+
+[node name="GroundSlamShapeCast" type="ShapeCast2D" parent="." unique_id=862451129]
+position = Vector2(0, 8)
+shape = SubResource("RectangleShape2D_ground_slam")
+target_position = Vector2(0, 8)
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=572832764]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1820328493]
+shape = SubResource("CircleShape2D_interaction")
+
+[node name="HealthLabel" type="Label" parent="." unique_id=1304896012]
+offset_left = -24.0
+offset_top = -34.0
+offset_right = 25.0
+offset_bottom = -11.0
+text = "HP: 20"
+
+[node name="DownedLabel" type="Label" parent="." unique_id=1397118722]
+visible = false
+offset_left = -35.0
+offset_top = -58.0
+offset_right = 35.0
+offset_bottom = -36.0
+text = "CAÍDO"
+horizontal_alignment = 1
+
+[node name="ReviveBar" type="ProgressBar" parent="." unique_id=1074446231]
+visible = false
+offset_left = -38.0
+offset_top = -76.0
+offset_right = 38.0
+offset_bottom = -66.0
+show_percentage = false
