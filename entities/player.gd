@@ -16,7 +16,6 @@ signal revive_progress_changed(progress: float)
 @export_range(0.1, 1.0, 0.01) var post_dash_attack_window := 0.30
 @export_range(0.05, 0.5, 0.01) var dash_invulnerability_duration := 0.12
 @export_range(0.1, 2.0, 0.05) var heal_duration := 0.6
-@export_range(1, 20, 1) var heal_amount := 5
 @export_range(1, 10, 1) var max_heal_doses := 4
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
@@ -33,7 +32,6 @@ const DASH_SPEED = 600.0
 const DASH_DURATION = 0.15
 const GROUND_SLAM_SPEED = 900.0
 const GROUND_SLAM_DOUBLE_TAP_WINDOW = 0.3
-const GROUND_SLAM_DAMAGE = 2
 
 const MAX_JUMPS = 2
 
@@ -43,20 +41,30 @@ const WALL_CLIMB_DURATION = 2.0
 
 const ATTACK_HIT_DELAY = 0.1
 const ATTACK_DURATION = 0.2
-const ATTACK_DAMAGE = 1
 const MAX_COMBO_ATTACKS = 5
 const COMBO_WINDOW = 0.35
 
 const KNOCKBACK_FORCE = 300.0
 const KNOCKBACK_UP = -120.0
 const KNOCKBACK_DURATION = 0.18
-const MAX_HEALTH = 20
 const FINISHER_KNOCKBACK_MULTIPLIER := 1.5
 
 var is_attacking = false
 var is_ground_slamming = false
-var health = 20
-var max_health := MAX_HEALTH
+var base_max_hp := CombatStats.PLAYER_BASE_MAX_HP
+var base_melee_damage := CombatStats.PLAYER_BASE_MELEE_DAMAGE
+var health := CombatStats.PLAYER_BASE_MAX_HP
+var max_health := CombatStats.PLAYER_BASE_MAX_HP
+var current_hp: int:
+	get:
+		return health
+	set(value):
+		health = value
+var max_hp: int:
+	get:
+		return max_health
+	set(value):
+		max_health = value
 var is_hurt = false
 
 var jumps_left = MAX_JUMPS
@@ -89,6 +97,10 @@ var strength := 0
 var _dash_exceptions: Array[Node] = []
 var revive_progress := 0.0
 var _revive_target: CharacterBody2D = null
+var network_prediction_only := false
+var network_remote_replica := false
+var network_target_position := Vector2.ZERO
+var network_target_velocity := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -102,6 +114,10 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if network_remote_replica:
+		var interpolation_weight := 1.0 - exp(-18.0 * delta)
+		global_position = global_position.lerp(network_target_position, interpolation_weight)
+		velocity = network_target_velocity
 	if invulnerability_timer > 0.0:
 		invulnerability_timer = max(invulnerability_timer - delta, 0.0)
 
@@ -120,6 +136,8 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_pressed(_action(&"heal")):
 		_start_heal()
 
+	if network_prediction_only:
+		return
 	var target := _nearest_downed_ally()
 
 	if target and Input.is_action_pressed(_action(&"interact")):
@@ -152,7 +170,11 @@ func _physics_process(delta: float) -> void:
 	)
 	var did_wall_jump := false
 
-	attack_input_buffer_timer = maxf(attack_input_buffer_timer - delta, 0.0)
+	# A press made during an attack represents the next combo intent. Do not let
+	# its short post-lock buffer expire while the current attack coroutine still
+	# owns the attack state; it starts counting down once that state is released.
+	if not is_attacking:
+		attack_input_buffer_timer = maxf(attack_input_buffer_timer - delta, 0.0)
 	if _attack_just_pressed() and not is_healing and not is_ground_slamming:
 		attack_input_buffer_timer = attack_input_buffer_duration
 
@@ -191,7 +213,7 @@ func _physics_process(delta: float) -> void:
 			attack_shape_cast.enabled = true
 			_reset_combo()
 
-	if Input.is_action_just_pressed(_action(&"interact")) and _nearest_downed_ally() == null:
+	if not network_prediction_only and Input.is_action_just_pressed(_action(&"interact")) and _nearest_downed_ally() == null:
 		interact_with_nearest()
 
 	# Reset jumps and wall resources only when touching the floor.
@@ -316,7 +338,7 @@ func attack() -> void:
 
 	attack_shape_cast.force_shapecast_update()
 
-	if attack_shape_cast.is_colliding():
+	if not network_prediction_only and attack_shape_cast.is_colliding():
 		for i in attack_shape_cast.get_collision_count():
 			var body = attack_shape_cast.get_collider(i)
 
@@ -391,11 +413,11 @@ func _reset_combo(clear_recovery := true) -> void:
 
 
 func get_melee_damage() -> int:
-	return ATTACK_DAMAGE + strength
+	return CombatStats.player_melee_damage(strength)
 
 
 func get_slam_damage() -> int:
-	return GROUND_SLAM_DAMAGE + strength
+	return CombatStats.player_slam_damage(strength)
 
 
 func add_attribute(attribute: StringName) -> bool:
@@ -407,8 +429,11 @@ func add_attribute(attribute: StringName) -> bool:
 			max_wall_climb_duration = WALL_CLIMB_DURATION + intellect * 0.5
 			wall_climb_time = minf(wall_climb_time, max_wall_climb_duration)
 		&"health":
+			var previous_max_health := max_health
 			health_attribute += 1
-			max_health = MAX_HEALTH + health_attribute * 5
+			max_health = CombatStats.player_max_hp(health_attribute)
+			# Preserve missing HP instead of turning an attribute choice into a full heal.
+			health = mini(max_health, health + max_health - previous_max_health)
 			_update_health_label()
 		&"strength":
 			strength += 1
@@ -431,7 +456,7 @@ func _start_heal() -> void:
 func _complete_heal() -> void:
 	if not is_healing:
 		return
-	health = mini(max_health, health + heal_amount)
+	health = mini(max_health, health + CombatStats.heal_amount(max_health))
 	heal_doses -= 1
 	is_healing = false
 	heal_progress = 0.0
@@ -466,7 +491,7 @@ func reset_for_new_run() -> void:
 	health_attribute = 0
 	strength = 0
 	max_wall_climb_duration = WALL_CLIMB_DURATION
-	max_health = MAX_HEALTH
+	max_health = CombatStats.PLAYER_BASE_MAX_HP
 	health = max_health
 	heal_doses = max_heal_doses
 	is_healing = false
@@ -502,6 +527,8 @@ func reset_for_new_run() -> void:
 
 func ground_slam_impact() -> void:
 	print("GROUND SLAM IMPACT")
+	if network_prediction_only:
+		return
 
 	ground_slam_shape_cast.force_shapecast_update()
 
@@ -561,6 +588,54 @@ func _can_start_attack() -> bool:
 		and dash_timer <= 0.0
 		and combo_end_recovery_timer <= 0.0
 	)
+
+
+func get_network_state() -> Dictionary:
+	return {
+		"participant_id": participant_id,
+		"position": global_position,
+		"velocity": velocity,
+		"flip_h": anim.flip_h,
+		"animation": anim.animation,
+		"animation_frame": anim.frame,
+		"health": health,
+		"max_health": max_health,
+		"is_downed": is_downed,
+		"is_attacking": is_attacking,
+		"intellect": intellect,
+		"health_attribute": health_attribute,
+		"strength": strength,
+		"heal_doses": heal_doses,
+	}
+
+
+func apply_network_state(state: Dictionary, predicted_local: bool = false) -> void:
+	var network_position: Vector2 = state.get("position", global_position)
+	var network_velocity: Vector2 = state.get("velocity", velocity)
+	if predicted_local:
+		var prediction_error := global_position.distance_to(network_position)
+		if prediction_error >= 160.0:
+			global_position = network_position
+			velocity = network_velocity
+		elif prediction_error >= 3.0:
+			global_position = global_position.lerp(network_position, 0.22)
+	else:
+		network_target_position = network_position
+		network_target_velocity = network_velocity
+	anim.flip_h = bool(state.get("flip_h", anim.flip_h))
+	var network_animation := StringName(state.get("animation", anim.animation))
+	if anim.sprite_frames.has_animation(network_animation):
+		anim.animation = network_animation
+		anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
+	health = int(state.get("health", health))
+	max_health = int(state.get("max_health", max_health))
+	is_downed = bool(state.get("is_downed", is_downed))
+	is_attacking = bool(state.get("is_attacking", is_attacking))
+	intellect = int(state.get("intellect", intellect))
+	health_attribute = int(state.get("health_attribute", health_attribute))
+	strength = int(state.get("strength", strength))
+	heal_doses = int(state.get("heal_doses", heal_doses))
+	_update_health_label()
 
 
 func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
@@ -722,4 +797,7 @@ func _sync_progress() -> void:
 			"intellect": intellect,
 			"health": health_attribute,
 			"strength": strength,
+			"current_hp": health,
+			"max_hp": max_health,
+			"melee_damage": get_melee_damage(),
 		})

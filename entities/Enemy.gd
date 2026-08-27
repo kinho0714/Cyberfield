@@ -11,7 +11,7 @@ enum EnemyRole { NORMAL, BOSS, ELITE }
 @export var attack_windup := 0.22
 @export var attack_recovery := 0.30
 @export var attack_cooldown := 0.45
-@export var attack_damage := 1
+@export var attack_damage := CombatStats.COMMON_ENEMY_BASE_DAMAGE
 @export_range(0.5, 4.0, 0.1) var visual_scale := 1.0
 @export var patrol_radius := -1.0
 @export_range(0.35, 0.50, 0.01) var patrol_speed_ratio := 0.42
@@ -22,7 +22,7 @@ enum EnemyRole { NORMAL, BOSS, ELITE }
 var run_room_id: StringName
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
-@onready var health_label: Label = $HealthLabel
+@onready var health_bar: ProgressBar = $HealthBar
 @onready var attack_shape_cast: ShapeCast2D = $AttackShapeCast
 @onready var wall_check: RayCast2D = $WallCheck
 @onready var floor_check: RayCast2D = $FloorCheck
@@ -36,8 +36,20 @@ const TARGET_DETECTION_RANGE := 100.0
 const TARGET_SWITCH_MARGIN := 20.0
 
 var player: CharacterBody2D = null
-var max_health := 7
-var health := 7
+var max_health := CombatStats.COMMON_ENEMY_BASE_HP
+var health := CombatStats.COMMON_ENEMY_BASE_HP
+var base_max_hp := CombatStats.COMMON_ENEMY_BASE_HP
+var current_hp: int:
+	get:
+		return health
+	set(value):
+		health = value
+var max_hp: int:
+	get:
+		return max_health
+	set(value):
+		max_health = value
+var health_bar_visible_timer := 0.0
 var is_hurt = false
 var is_attacking = false
 
@@ -48,6 +60,7 @@ var patrol_origin := Vector2.ZERO
 var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
+var network_target_position := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -63,12 +76,25 @@ func _ready() -> void:
 	patrol_direction = -1.0 if patrol_rng.randi_range(0, 1) == 0 else 1.0
 	patrol_pause_timer = _next_patrol_pause()
 	_update_health_label()
+	network_target_position = global_position
+
+
+func _process(delta: float) -> void:
+	if not is_physics_processing():
+		global_position = global_position.lerp(network_target_position, 1.0 - exp(-16.0 * delta))
+	if health_bar_visible_timer > 0.0:
+		health_bar_visible_timer = maxf(health_bar_visible_timer - delta, 0.0)
+		health_bar.visible = health_bar_visible_timer > 0.0 and health > 0 and not is_boss()
 
 
 func configure_health(value: int) -> void:
 	max_health = maxi(value, 1)
 	health = max_health
 	_update_health_label()
+
+
+func configure_damage(value: int) -> void:
+	attack_damage = maxi(value, 1)
 
 
 func is_boss() -> bool:
@@ -86,8 +112,41 @@ func configure_elite() -> void:
 
 
 func _update_health_label() -> void:
-	if is_instance_valid(health_label):
-		health_label.text = "HP: %d/%d" % [health, max_health]
+	if is_instance_valid(health_bar):
+		health_bar.max_value = max_health
+		health_bar.value = health
+		health_bar.visible = health_bar_visible_timer > 0.0 and health > 0 and not is_boss()
+
+
+func get_network_state() -> Dictionary:
+	return {
+		"persistent_id": persistent_id,
+		"position": global_position,
+		"velocity": velocity,
+		"health": health,
+		"max_health": max_health,
+		"flip_h": anim.flip_h,
+		"animation": anim.animation,
+		"animation_frame": anim.frame,
+	}
+
+
+func apply_network_state(state: Dictionary) -> void:
+	var network_position: Vector2 = state.get("position", global_position)
+	var network_velocity: Vector2 = state.get("velocity", velocity)
+	var previous_health := health
+	network_target_position = network_position
+	velocity = network_velocity
+	health = int(state.get("health", health))
+	max_health = int(state.get("max_health", max_health))
+	anim.flip_h = bool(state.get("flip_h", anim.flip_h))
+	var network_animation := StringName(state.get("animation", anim.animation))
+	if anim.sprite_frames.has_animation(network_animation):
+		anim.animation = network_animation
+		anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
+	if health < previous_health:
+		health_bar_visible_timer = 2.5
+	_update_health_label()
 
 
 func _physics_process(delta: float) -> void:
@@ -320,6 +379,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 		return
 
 	health = maxi(health - amount, 0)
+	health_bar_visible_timer = 2.5
 	attack_generation += 1
 	is_attacking = false
 	attack_cooldown_timer = maxf(attack_cooldown_timer, attack_cooldown)

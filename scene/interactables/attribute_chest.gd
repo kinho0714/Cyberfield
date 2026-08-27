@@ -1,6 +1,6 @@
 extends Area2D
 
-@export_enum("challenge", "paid") var chest_type := "challenge"
+@export_enum("challenge", "paid", "free") var chest_type := "challenge"
 @export var chest_id: StringName = &"attribute_chest"
 @export var cost := 50
 var room_id: StringName
@@ -29,7 +29,7 @@ func interact(player: Node2D = null) -> void:
 			return
 		if not manager.is_challenge_completed(room_id):
 			return
-	else:
+	elif chest_type == "paid":
 		if not manager.room_states[room_id].completed:
 			feedback = "LIMPE A SALA PRIMEIRO"
 			_refresh()
@@ -38,6 +38,11 @@ func interact(player: Node2D = null) -> void:
 			feedback = "NECESSÁRIO $%d // ATUAL $%d" % [cost, manager.dirty_money]
 			_refresh()
 			return
+	var lan_session := get_tree().get_first_node_in_group("lan_session")
+	if lan_session != null and lan_session.is_host() and player.participant_id == &"player_2":
+		var network_options: Array[StringName] = manager.get_chest_options(chest_id, chest_type == "challenge")
+		lan_session.request_remote_attribute_choice(chest_id, network_options)
+		return
 	var choice_ui := get_tree().get_first_node_in_group("attribute_choice_ui")
 	if choice_ui:
 		choice_ui.open_for(self, player, manager.get_chest_options(chest_id, chest_type == "challenge"))
@@ -69,6 +74,9 @@ func _refresh() -> void:
 		else:
 			label.text = "[E] ESCOLHER ATRIBUTO"
 			visual.color = Color(0.2, 0.9, 0.45)
-	else:
+	elif chest_type == "paid":
 		label.text = feedback if not feedback.is_empty() else "[E] BAÚ DE ATRIBUTO // $%d" % cost
 		visual.color = Color(0.2, 0.7, 1.0) if manager.room_states[room_id].completed else Color(0.3, 0.3, 0.3)
+	else:
+		label.text = "[E] RECOMPENSA DE ATRIBUTO"
+		visual.color = Color(0.2, 0.9, 0.45)

@@ -7,8 +7,8 @@ var enemies_paused := false
 func _ready() -> void:
 	visible = OS.is_debug_build()
 	panel.visible = false
-	$Panel/Margin/VBox/DamageP1.pressed.connect(func() -> void: _call_player(&"player_1", "take_damage", [1]))
-	$Panel/Margin/VBox/DamageP2.pressed.connect(func() -> void: _call_player(&"player_2", "take_damage", [1]))
+	$Panel/Margin/VBox/DamageP1.pressed.connect(func() -> void: _call_player(&"player_1", "take_damage", [CombatStats.COMMON_ENEMY_BASE_DAMAGE]))
+	$Panel/Margin/VBox/DamageP2.pressed.connect(func() -> void: _call_player(&"player_2", "take_damage", [CombatStats.COMMON_ENEMY_BASE_DAMAGE]))
 	$Panel/Margin/VBox/DownP1.pressed.connect(func() -> void: _call_player(&"player_1", "enter_downed"))
 	$Panel/Margin/VBox/DownP2.pressed.connect(func() -> void: _call_player(&"player_2", "enter_downed"))
 	$Panel/Margin/VBox/TeleportP2.pressed.connect(_teleport_p2)

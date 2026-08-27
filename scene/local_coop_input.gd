@@ -4,7 +4,7 @@ extends RefCounted
 
 static func ensure_player_two_actions(device_id: int) -> void:
 	if device_id < 0:
-		push_error("Player 2 input requires a connected joypad device ID")
+		ensure_network_player_two_actions()
 		return
 	_add_action(&"p2_left", 0.25)
 	_add_action(&"p2_right", 0.25)
@@ -29,6 +29,14 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_button(&"p2_dash", JOY_BUTTON_B, device_id)
 	_add_button(&"p2_interact", JOY_BUTTON_Y, device_id)
 	_add_button(&"p2_heal", JOY_BUTTON_LEFT_SHOULDER, device_id)
+
+
+static func ensure_network_player_two_actions() -> void:
+	_add_action(&"p2_left", 0.25)
+	_add_action(&"p2_right", 0.25)
+	_add_action(&"p2_down", 0.25)
+	for action in [&"p2_jump", &"p2_attack", &"p2_dash", &"p2_interact", &"p2_heal"]:
+		_add_action(action)
 
 
 static func _add_action(action: StringName, deadzone := 0.2) -> void:

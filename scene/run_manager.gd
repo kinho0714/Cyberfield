@@ -4,6 +4,8 @@ signal state_changed
 signal run_completed
 signal run_lost
 
+enum RunState { MENU, HUB, PREPARING, ACTIVE, COMPLETED, LOST }
+
 const ENEMY_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
@@ -15,10 +17,10 @@ const RANGED_COUNTS := {
 	&"boss_01": {&"normal": 0, &"hard": 1, &"pro": 1, &"inferno_pro": 2},
 }
 const DIFFICULTY_CONFIGS := {
-	&"normal": {"label": "Normal", "enemy_hp": 7, "boss_hp": 20, "extra_enemies": 0},
-	&"hard": {"label": "Difícil", "enemy_hp": 10, "boss_hp": 25, "extra_enemies": 1},
-	&"pro": {"label": "Pro", "enemy_hp": 15, "boss_hp": 30, "extra_enemies": 2},
-	&"inferno_pro": {"label": "Inferno do Pro", "enemy_hp": 20, "boss_hp": 40, "extra_enemies": 3},
+	&"normal": {"label": "Normal", "extra_enemies": 0},
+	&"hard": {"label": "Difícil", "extra_enemies": 1},
+	&"pro": {"label": "Pro", "extra_enemies": 2},
+	&"inferno_pro": {"label": "Inferno do Pro", "extra_enemies": 3},
 }
 const RUN_SEQUENCE := [
 	{"id": &"initial", "path": "res://scene/levels/cyberfield_area_01.tscn", "type": &"Inicial", "combat": true},
@@ -30,6 +32,7 @@ const RUN_SEQUENCE := [
 ]
 
 var run_active := false
+var run_state: RunState = RunState.MENU
 var run_is_completed := false
 var seed_value := 0
 var current_room_index := 0
@@ -41,11 +44,26 @@ var game_mode: StringName = &"none"
 var player_count := 0
 var difficulty: StringName = &"normal"
 var extra_enemy_count := 0
-var enemy_health := 7
-var boss_health := 20
+var enemy_health := CombatStats.COMMON_ENEMY_BASE_HP
+var ranged_enemy_health := CombatStats.RANGED_ENEMY_BASE_HP
+var boss_health := CombatStats.BOSS_BASE_HP
+var enemy_melee_damage := CombatStats.COMMON_ENEMY_BASE_DAMAGE
+var ranged_melee_damage := CombatStats.RANGED_MELEE_BASE_DAMAGE
+var ranged_projectile_damage := CombatStats.RANGED_PROJECTILE_BASE_DAMAGE
 var p2_joypad_device_id := -1
 var p2_joypad_name := ""
 var dirty_money := 0
+var current_biome_id: StringName
+var current_biome_name := ""
+var generated_module_count := 0
+var generation_fallback := false
+var generation_failure_reason := ""
+var selected_exit_id: StringName
+var selected_exit_destination: StringName
+var collected_biome_loot: Dictionary = {}
+var stage_index := 0
+var current_stage_id: StringName = &""
+var stage_history: Array[Dictionary] = []
 
 
 func configure_run(mode: StringName, selected_difficulty: StringName, joypad_device_id: int = -1) -> void:
@@ -54,11 +72,10 @@ func configure_run(mode: StringName, selected_difficulty: StringName, joypad_dev
 		selected_difficulty = &"normal"
 	var config: Dictionary = DIFFICULTY_CONFIGS[selected_difficulty]
 	game_mode = mode
-	player_count = 2 if mode == &"coop" else 1
+	player_count = 2 if mode in [&"coop", &"lan"] else 1
 	difficulty = selected_difficulty
 	extra_enemy_count = config.extra_enemies
-	enemy_health = config.enemy_hp
-	boss_health = config.boss_hp
+	_apply_difficulty_stats()
 	p2_joypad_device_id = joypad_device_id if is_coop() else -1
 	p2_joypad_name = Input.get_joy_name(p2_joypad_device_id) if p2_joypad_device_id >= 0 else ""
 	state_changed.emit()
@@ -69,25 +86,30 @@ func set_game_mode(mode: StringName) -> void:
 
 
 func is_coop() -> bool:
-	return game_mode == &"coop"
+	return game_mode in [&"coop", &"lan"]
 
 
-func start_new_run(new_seed: int = 0) -> void:
-	seed_value = new_seed if new_seed != 0 else randi()
-	run_active = true
+func prepare_hub() -> void:
+	run_state = RunState.HUB
+	run_active = false
 	run_is_completed = false
 	run_is_lost = false
+	seed_value = 0
 	current_room_index = 0
 	room_states.clear()
 	participants.clear()
 	participant_progress.clear()
 	dirty_money = 0
-	for room_data in RUN_SEQUENCE:
-		room_states[room_data.id] = _new_room_state()
+	stage_index = 0
+	current_stage_id = &""
+	stage_history.clear()
+	_clear_biome_state()
 	state_changed.emit()
 
 
-func clear_run() -> void:
+func prepare_new_run(new_seed: int = 0) -> void:
+	seed_value = new_seed if new_seed != 0 else randi()
+	run_state = RunState.PREPARING
 	run_active = false
 	run_is_completed = false
 	run_is_lost = false
@@ -96,12 +118,48 @@ func clear_run() -> void:
 	participants.clear()
 	participant_progress.clear()
 	dirty_money = 0
+	stage_index = 0
+	current_stage_id = &"lower_city"
+	stage_history.clear()
+	_clear_biome_state()
+	for room_data in RUN_SEQUENCE:
+		room_states[room_data.id] = _new_room_state()
+	state_changed.emit()
+
+
+func activate_run() -> void:
+	if run_state != RunState.PREPARING:
+		return
+	run_state = RunState.ACTIVE
+	run_active = true
+	state_changed.emit()
+
+
+func start_new_run(new_seed: int = 0) -> void:
+	prepare_new_run(new_seed)
+	activate_run()
+
+
+func clear_run() -> void:
+	run_state = RunState.MENU
+	run_active = false
+	run_is_completed = false
+	run_is_lost = false
+	seed_value = 0
+	current_room_index = 0
+	room_states.clear()
+	participants.clear()
+	participant_progress.clear()
+	dirty_money = 0
+	stage_index = 0
+	current_stage_id = &""
+	stage_history.clear()
+	_clear_biome_state()
 	game_mode = &"none"
 	player_count = 0
 	difficulty = &"normal"
 	extra_enemy_count = 0
-	enemy_health = DIFFICULTY_CONFIGS[&"normal"].enemy_hp
-	boss_health = DIFFICULTY_CONFIGS[&"normal"].boss_hp
+	_apply_difficulty_stats()
 	p2_joypad_device_id = -1
 	p2_joypad_name = ""
 	state_changed.emit()
@@ -114,6 +172,9 @@ func restart_run() -> void:
 
 
 func enter_room_by_path(room_path: String) -> StringName:
+	current_biome_id = &""
+	current_biome_name = ""
+	generated_module_count = 0
 	for index in RUN_SEQUENCE.size():
 		if RUN_SEQUENCE[index].path == room_path:
 			current_room_index = index
@@ -146,8 +207,7 @@ func prepare_room(room_id: StringName, room: Node) -> void:
 			continue
 		seen_ids[enemy_id] = true
 		enemy.run_room_id = room_id
-		var configured_health := boss_health if enemy.is_boss() else enemy_health * 2 if enemy.is_elite() else enemy_health
-		enemy.configure_health(configured_health)
+		_configure_enemy_stats(enemy)
 		if enemy.required_for_completion:
 			state.required_enemies[enemy_id] = true
 			if enemy.is_boss():
@@ -157,6 +217,114 @@ func prepare_room(room_id: StringName, room: Node) -> void:
 	_update_room_completion(room_id)
 	_spawn_pending_money(room_id, room)
 	state_changed.emit()
+
+
+func enter_generated_biome(report: Dictionary) -> void:
+	var definition_id := StringName(report.get("biome_id", &"lower_city"))
+	current_biome_id = current_stage_id if not current_stage_id.is_empty() else definition_id
+	current_biome_name = String(report.get("display_name", "CIDADE BAIXA")) if stage_index == 0 else "PRÓXIMO BIOMA // %s" % String(current_stage_id).to_upper()
+	generated_module_count = int(report.get("module_count", 0))
+	generation_fallback = bool(report.get("fallback", false))
+	generation_failure_reason = String(report.get("failure_reason", ""))
+	selected_exit_id = &""
+	selected_exit_destination = &""
+	if not room_states.has(current_biome_id):
+		room_states[current_biome_id] = _new_room_state()
+	room_states[current_biome_id].visited = true
+	state_changed.emit()
+
+
+func prepare_generated_biome(biome_root: Node) -> void:
+	if current_biome_id.is_empty() or not room_states.has(current_biome_id):
+		return
+	var state: Dictionary = room_states[current_biome_id]
+	var seen_ids: Dictionary = {}
+	for enemy in _find_nodes_in_group(biome_root, &"enemy"):
+		var enemy_id: StringName = enemy.persistent_id
+		if enemy_id.is_empty() or seen_ids.has(enemy_id):
+			push_error("Generated biome enemy ID is empty or duplicated: %s" % enemy_id)
+			continue
+		seen_ids[enemy_id] = true
+		enemy.run_room_id = current_biome_id
+		_configure_enemy_stats(enemy)
+		if enemy.required_for_completion:
+			state.required_enemies[enemy_id] = true
+		if state.dead_enemies.has(enemy_id):
+			enemy.queue_free()
+	_update_room_completion(current_biome_id)
+	_spawn_pending_money(current_biome_id, biome_root)
+	state_changed.emit()
+
+
+func select_biome_exit(exit_id: StringName, destination_id: StringName) -> void:
+	if not run_active or current_biome_id.is_empty():
+		return
+	selected_exit_id = exit_id
+	selected_exit_destination = destination_id
+	room_states[current_biome_id].custom_state.selected_exit_id = exit_id
+	room_states[current_biome_id].custom_state.selected_exit_destination = destination_id
+	state_changed.emit()
+
+
+func advance_stage(exit_id: StringName, destination_id: StringName) -> bool:
+	if not run_active or run_state != RunState.ACTIVE or destination_id.is_empty() or stage_index >= 5:
+		return false
+	select_biome_exit(exit_id, destination_id)
+	stage_history.append({
+		"stage_index": stage_index,
+		"biome_id": current_biome_id,
+		"exit_id": exit_id,
+		"destination_id": destination_id,
+	})
+	stage_index += 1
+	current_stage_id = StringName("%s_stage_%02d" % [destination_id, stage_index])
+	current_biome_id = &""
+	current_biome_name = ""
+	generated_module_count = 0
+	state_changed.emit()
+	return true
+
+
+func enter_boss_stage() -> void:
+	current_stage_id = &"boss_stage_06"
+	current_biome_id = current_stage_id
+	current_biome_name = "ARENA DO BOSS"
+	generated_module_count = 1
+	generation_fallback = false
+	generation_failure_reason = ""
+	selected_exit_id = &""
+	selected_exit_destination = &""
+	if not room_states.has(current_biome_id):
+		room_states[current_biome_id] = _new_room_state()
+	room_states[current_biome_id].visited = true
+	state_changed.emit()
+
+
+func prepare_boss_stage(boss_root: Node) -> void:
+	if current_biome_id != &"boss_stage_06":
+		return
+	var state: Dictionary = room_states[current_biome_id]
+	for enemy in _find_nodes_in_group(boss_root, &"enemy"):
+		enemy.run_room_id = current_biome_id
+		_configure_enemy_stats(enemy)
+		state.required_enemies[enemy.persistent_id] = true
+		state.required_bosses[enemy.persistent_id] = true
+	state_changed.emit()
+
+
+func get_stage_seed() -> int:
+	if stage_index <= 0:
+		return seed_value
+	return seed_value + stage_index * 104729 + _stable_hash(String(current_stage_id))
+
+
+func collect_biome_loot(loot_id: StringName, amount: int) -> bool:
+	if not run_active or loot_id.is_empty() or collected_biome_loot.has(loot_id):
+		return false
+	collected_biome_loot[loot_id] = amount
+	dirty_money += maxi(amount, 0)
+	state_changed.emit()
+	return true
 
 
 func register_enemy_death(room_id: StringName, enemy_id: StringName) -> void:
@@ -186,6 +354,7 @@ func is_reward_collected(room_id: StringName, reward_id: StringName) -> bool:
 
 
 func finish_run() -> void:
+	run_state = RunState.COMPLETED
 	run_active = false
 	run_is_completed = true
 	_lock_all_players()
@@ -223,6 +392,7 @@ func set_participant_active(participant_id: StringName, active: bool) -> void:
 func lose_run() -> void:
 	if not run_active:
 		return
+	run_state = RunState.LOST
 	run_active = false
 	run_is_lost = true
 	_lock_all_players()
@@ -230,11 +400,45 @@ func lose_run() -> void:
 	run_lost.emit()
 
 
+func apply_network_loss() -> void:
+	if run_is_lost:
+		return
+	run_state = RunState.LOST
+	run_active = false
+	run_is_lost = true
+	_lock_all_players()
+	state_changed.emit()
+	run_lost.emit()
+
+
+func apply_network_completion() -> void:
+	if run_is_completed:
+		return
+	run_state = RunState.COMPLETED
+	run_active = false
+	run_is_completed = true
+	_lock_all_players()
+	state_changed.emit()
+	run_completed.emit()
+
+
 func get_current_room_id() -> StringName:
+	if not current_biome_id.is_empty():
+		return current_biome_id
 	return RUN_SEQUENCE[current_room_index].id
 
 
+func is_in_hub() -> bool:
+	return run_state == RunState.HUB
+
+
+func is_gameplay_context_active() -> bool:
+	return run_state == RunState.HUB or run_state == RunState.ACTIVE
+
+
 func get_current_room_type() -> StringName:
+	if not current_biome_id.is_empty():
+		return StringName(current_biome_name)
 	return RUN_SEQUENCE[current_room_index].type
 
 
@@ -272,6 +476,29 @@ func get_difficulty_config(value: StringName = difficulty) -> Dictionary:
 	return DIFFICULTY_CONFIGS.get(value, DIFFICULTY_CONFIGS[&"normal"])
 
 
+func _apply_difficulty_stats() -> void:
+	enemy_health = CombatStats.scaled_health(CombatStats.COMMON_ENEMY_BASE_HP, difficulty)
+	ranged_enemy_health = CombatStats.scaled_health(CombatStats.RANGED_ENEMY_BASE_HP, difficulty)
+	boss_health = CombatStats.scaled_health(CombatStats.BOSS_BASE_HP, difficulty)
+	enemy_melee_damage = CombatStats.scaled_damage(CombatStats.COMMON_ENEMY_BASE_DAMAGE, difficulty)
+	ranged_melee_damage = CombatStats.scaled_damage(CombatStats.RANGED_MELEE_BASE_DAMAGE, difficulty)
+	ranged_projectile_damage = CombatStats.scaled_damage(CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, difficulty)
+
+
+func _configure_enemy_stats(enemy: Node) -> void:
+	var boss := enemy.has_method("is_boss") and bool(enemy.is_boss())
+	var elite := enemy.has_method("is_elite") and bool(enemy.is_elite())
+	var configured_health := boss_health
+	if not boss:
+		var base_health := ranged_enemy_health if enemy.is_in_group("ranged_enemy") else enemy_health
+		configured_health = base_health * 2 if elite else base_health
+	enemy.configure_health(configured_health)
+	if enemy.is_in_group("ranged_enemy") and enemy.has_method("configure_damage"):
+		enemy.configure_damage(ranged_melee_damage, ranged_projectile_damage)
+	elif enemy.has_method("configure_damage"):
+		enemy.configure_damage(enemy_melee_damage)
+
+
 func get_difficulty_label() -> String:
 	return get_difficulty_config().label
 
@@ -289,7 +516,7 @@ func activate_challenge(room_id: StringName, room: Node) -> bool:
 		if not String(enemy.persistent_id).begins_with("reward_challenge_"):
 			continue
 		enemy.run_room_id = room_id
-		enemy.configure_health(enemy_health * 2 if enemy.is_elite() else enemy_health)
+		_configure_enemy_stats(enemy)
 		state.required_enemies[enemy.persistent_id] = true
 	state_changed.emit()
 	return true
@@ -608,7 +835,7 @@ func _new_room_state() -> Dictionary:
 
 
 func _new_participant_progress() -> Dictionary:
-	return {"heal_doses": 4, "intellect": 0, "health": 0, "strength": 0}
+	return {"heal_doses": 4, "intellect": 0, "health": 0, "strength": 0, "current_hp": CombatStats.PLAYER_BASE_MAX_HP, "max_hp": CombatStats.PLAYER_BASE_MAX_HP, "melee_damage": CombatStats.PLAYER_BASE_MELEE_DAMAGE}
 
 
 func _has_active_participant() -> bool:
@@ -621,3 +848,14 @@ func _has_active_participant() -> bool:
 func _lock_all_players() -> void:
 	for player in get_tree().get_nodes_in_group("player"):
 		player.set_input_enabled(false)
+
+
+func _clear_biome_state() -> void:
+	current_biome_id = &""
+	current_biome_name = ""
+	generated_module_count = 0
+	generation_fallback = false
+	generation_failure_reason = ""
+	selected_exit_id = &""
+	selected_exit_destination = &""
+	collected_biome_loot.clear()

@@ -1,0 +1,125 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scene/interactables/run_portal.gd" id="1_portal"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
+size = Vector2(1280, 80)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(60, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_portal"]
+size = Vector2(180, 130)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(260, 24)
+
+[node name="LaboratoryHub" type="Node2D"]
+
+[node name="Background" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
+color = Color(0.01, 0.025, 0.055, 1)
+z_index = -20
+
+[node name="Backdrop" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(80, 80, 1200, 80, 1200, 640, 80, 640)
+color = Color(0.025, 0.07, 0.11, 1)
+z_index = -10
+
+[node name="Title" type="Label" parent="."]
+offset_left = 430.0
+offset_top = 70.0
+offset_right = 850.0
+offset_bottom = 120.0
+mouse_filter = 2
+text = "LABORATÓRIO"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 34
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="P1Spawn" type="Marker2D" parent="Gameplay"]
+position = Vector2(390, 590)
+
+[node name="Label" type="Label" parent="Gameplay/P1Spawn"]
+offset_left = -50.0
+offset_top = -64.0
+offset_right = 50.0
+offset_bottom = -38.0
+mouse_filter = 2
+text = "P1 SPAWN"
+horizontal_alignment = 1
+
+[node name="P2Spawn" type="Marker2D" parent="Gameplay"]
+position = Vector2(500, 590)
+
+[node name="Label" type="Label" parent="Gameplay/P2Spawn"]
+offset_left = -50.0
+offset_top = -64.0
+offset_right = 50.0
+offset_bottom = -38.0
+mouse_filter = 2
+text = "P2 SPAWN"
+horizontal_alignment = 1
+
+[node name="RunPortal" type="Area2D" parent="Gameplay" groups=["interactable"]]
+position = Vector2(990, 570)
+collision_layer = 2
+collision_mask = 1
+monitoring = true
+script = ExtResource("1_portal")
+
+[node name="PortalFill" type="Polygon2D" parent="Gameplay/RunPortal"]
+polygon = PackedVector2Array(-58, -82, 58, -82, 58, 70, -58, 70)
+color = Color(0.04, 0.16, 0.24, 0.78)
+
+[node name="PortalFrame" type="Line2D" parent="Gameplay/RunPortal"]
+points = PackedVector2Array(-58, 70, -58, -82, 58, -82, 58, 70)
+width = 6.0
+default_color = Color(0.15, 0.9, 1, 1)
+
+[node name="Prompt" type="Label" parent="Gameplay/RunPortal"]
+offset_left = -150.0
+offset_top = -145.0
+offset_right = 150.0
+offset_bottom = -90.0
+mouse_filter = 2
+text = "PORTAL DA RUN\n[USAR] INICIAR RUN"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/RunPortal"]
+shape = SubResource("RectangleShape2D_portal")
+
+[node name="Geometry" type="Node2D" parent="."]
+
+[node name="Floor" type="StaticBody2D" parent="Geometry"]
+position = Vector2(640, 680)
+
+[node name="Visual" type="Polygon2D" parent="Geometry/Floor"]
+polygon = PackedVector2Array(-640, -40, 640, -40, 640, 40, -640, 40)
+color = Color(0.08, 0.16, 0.22, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/Floor"]
+shape = SubResource("RectangleShape2D_floor")
+
+[node name="LeftWall" type="StaticBody2D" parent="Geometry"]
+position = Vector2(30, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/LeftWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="RightWall" type="StaticBody2D" parent="Geometry"]
+position = Vector2(1250, 360)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/RightWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="TrainingPlatform" type="StaticBody2D" parent="Geometry"]
+position = Vector2(640, 500)
+
+[node name="Visual" type="Polygon2D" parent="Geometry/TrainingPlatform"]
+polygon = PackedVector2Array(-130, -12, 130, -12, 130, 12, -130, 12)
+color = Color(0.08, 0.25, 0.3, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Geometry/TrainingPlatform"]
+shape = SubResource("RectangleShape2D_platform")

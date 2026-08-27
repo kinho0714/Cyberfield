@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="BiomeDefinition" load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_definition.gd" id="1_def"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/corridor.tres" id="2"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/open_area.tres" id="3"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/fork_up.tres" id="4"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/fork_down.tres" id="5"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/vertical_shaft.tres" id="6"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/rise.tres" id="7"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/descent.tres" id="8"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/exit_platform.tres" id="9"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/upper_lower_passage.tres" id="10"]
+[ext_resource type="Resource" path="res://scene/biomes/modules/lower_upper_passage.tres" id="11"]
+
+[resource]
+script = ExtResource("1_def")
+biome_id = &"lower_city"
+display_name = "CIDADE BAIXA"
+module_pool = Array[Resource]([ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8"), ExtResource("9"), ExtResource("10"), ExtResource("11")])
+min_modules = 15
+max_modules = 25
+loot_chest_count = 3
+attribute_reward_count = 2
+possible_exits = Array[StringName]([&"exit_a", &"exit_b"])
+generation_rules = {"generator_version": 2, "horizontal_bias": 0.75, "maximum_attempts": 8}
+debug_draw_modules = true
+debug_draw_connectors = true
+debug_draw_sockets = false

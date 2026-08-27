@@ -33,13 +33,17 @@ color = Color(0.3, 0.12, 0.38, 1)
 [node name="Muzzle" type="Marker2D" parent="Visual"]
 position = Vector2(21, 1)
 
-[node name="HealthLabel" type="Label" parent="."]
+[node name="HealthBar" type="ProgressBar" parent="."]
+visible = false
 offset_left = -24.0
-offset_top = -40.0
+offset_top = -36.0
 offset_right = 24.0
-offset_bottom = -17.0
+offset_bottom = -30.0
 scale = Vector2(1.1, 1.1)
-text = "HP: 7/7"
+max_value = 200.0
+value = 200.0
+show_percentage = false
+mouse_filter = 2
 
 [node name="AimLine" type="Line2D" parent="."]
 visible = false

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"fork_up"
+display_name = "BIFURCAÇÃO SUPERIOR"
+connectors = Array[StringName]([&"left", &"right", &"up"])
+platform_rects = Array[Rect2]([Rect2(350, 370, 180, 22), Rect2(510, 270, 170, 22), Rect2(400, 170, 150, 22)])
+enemy_sockets = Array[Vector2]([Vector2(250, 450), Vector2(590, 240)])
+loot_sockets = Array[Vector2]([Vector2(455, 140)])
+attribute_sockets = Array[Vector2]([Vector2(760, 445)])
+exit_sockets = Array[Vector2]([Vector2(800, 425)])

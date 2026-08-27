@@ -3,6 +3,11 @@ extends CanvasLayer
 @onready var run_manager: Node = get_parent().get_node("RunManager")
 @onready var safe_area: Control = $SafeArea
 @onready var joystick: Control = $SafeArea/LeftCluster/VirtualJoystick
+@onready var left_cluster: Control = $SafeArea/LeftCluster
+@onready var right_cluster: Control = $SafeArea/RightCluster
+@onready var local_settings: LocalSettings = get_parent().get_node("LocalSettings")
+
+var menu_blocked := false
 
 
 func _ready() -> void:
@@ -10,12 +15,15 @@ func _ready() -> void:
 	visible = false
 	run_manager.state_changed.connect(_refresh_visibility)
 	get_viewport().size_changed.connect(_apply_safe_area)
+	local_settings.settings_changed.connect(_apply_control_scale)
+	$SafeArea/PauseButton.pressed.connect(_open_pause_menu)
 	_apply_safe_area()
+	_apply_control_scale()
 	_refresh_visibility()
 
 
 func _refresh_visibility() -> void:
-	var should_be_visible: bool = _touchscreen_is_available() and bool(run_manager.get("run_active"))
+	var should_be_visible: bool = not menu_blocked and _touchscreen_is_available() and bool(run_manager.is_gameplay_context_active())
 	if visible and not should_be_visible and joystick.has_method("release_input"):
 		joystick.release_input()
 	visible = should_be_visible
@@ -46,3 +54,29 @@ func _apply_safe_area() -> void:
 	safe_area.offset_top = clampf(safe_position.y, 0.0, viewport_size.y)
 	safe_area.offset_right = clampf(safe_end.x, 0.0, viewport_size.x) - viewport_size.x
 	safe_area.offset_bottom = clampf(safe_end.y, 0.0, viewport_size.y) - viewport_size.y
+
+
+func _apply_control_scale() -> void:
+	var control_scale: float = local_settings.touch_control_scale
+	var scale_delta: float = control_scale - 1.0
+	left_cluster.pivot_offset = left_cluster.size * 0.5
+	right_cluster.pivot_offset = right_cluster.size * 0.5
+	left_cluster.scale = Vector2.ONE * control_scale
+	right_cluster.scale = Vector2.ONE * control_scale
+	left_cluster.offset_top = -202.0 - maxf(scale_delta, 0.0) * 100.0
+	left_cluster.offset_bottom = -2.0 - maxf(scale_delta, 0.0) * 100.0
+	right_cluster.offset_left = -424.0 - maxf(scale_delta, 0.0) * 190.0
+	right_cluster.offset_right = -24.0 - maxf(scale_delta, 0.0) * 190.0
+	right_cluster.offset_top = -326.0 - maxf(scale_delta, 0.0) * 145.0
+	right_cluster.offset_bottom = -36.0 - maxf(scale_delta, 0.0) * 145.0
+
+
+func _open_pause_menu() -> void:
+	var pause_menu := get_tree().get_first_node_in_group("pause_menu")
+	if pause_menu != null and pause_menu.has_method("toggle_menu"):
+		pause_menu.toggle_menu()
+
+
+func set_menu_blocked(value: bool) -> void:
+	menu_blocked = value
+	_refresh_visibility()

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"upper_lower_passage"
+display_name = "PASSAGEM SUPERIOR / INFERIOR"
+route_style = "upper_lower"
+connectors = Array[StringName]([&"left", &"right"])
+platform_rects = Array[Rect2]([Rect2(0, 250, 410, 24), Rect2(550, 250, 410, 24)])
+enemy_sockets = Array[Vector2]([Vector2(260, 220), Vector2(680, 450)])
+loot_sockets = Array[Vector2]([Vector2(700, 220)])
+attribute_sockets = Array[Vector2]([Vector2(470, 445)])
+exit_sockets = Array[Vector2]([Vector2(820, 425)])

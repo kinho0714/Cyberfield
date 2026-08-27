@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 signal run_requested(mode: StringName, difficulty: StringName, joypad_device_id: int)
+signal lan_requested
 
 const MODE_LABELS := {&"solo": "1 JOGADOR", &"coop": "2 JOGADORES"}
 const DIFFICULTY_LABELS := {&"normal": "NORMAL", &"hard": "DIFÍCIL", &"pro": "PRO", &"inferno_pro": "INFERNO DO PRO"}
@@ -12,6 +13,7 @@ const DIFFICULTY_LABELS := {&"normal": "NORMAL", &"hard": "DIFÍCIL", &"pro": "P
 @onready var play_button: Button = $Overlay/Center/MainPage/Play
 @onready var solo_button: Button = $Overlay/Center/PlayersPage/Solo
 @onready var coop_button: Button = $Overlay/Center/PlayersPage/Coop
+@onready var lan_button: Button = $Overlay/Center/PlayersPage/Lan
 @onready var normal_button: Button = $Overlay/Center/DifficultyPage/Normal
 @onready var confirm_label: Label = $Overlay/Center/ConfirmPage/Selection
 @onready var controller_label: Label = $Overlay/Center/ConfirmPage/Controller
@@ -26,6 +28,7 @@ func _ready() -> void:
 	play_button.pressed.connect(func() -> void: _show_page(players_page, solo_button))
 	solo_button.pressed.connect(func() -> void: _select_mode(&"solo"))
 	coop_button.pressed.connect(func() -> void: _select_mode(&"coop"))
+	lan_button.pressed.connect(func() -> void: lan_requested.emit())
 	$Overlay/Center/PlayersPage/Back.pressed.connect(show_main_page)
 	normal_button.pressed.connect(func() -> void: _select_difficulty(&"normal"))
 	$Overlay/Center/DifficultyPage/Hard.pressed.connect(func() -> void: _select_difficulty(&"hard"))
@@ -79,11 +82,12 @@ func _show_page(page: VBoxContainer, initial_focus: Control) -> void:
 
 
 func _refresh_confirmation() -> void:
-	var config: Dictionary = get_parent().get_node("RunManager").get_difficulty_config(selected_difficulty)
 	var warning := "\nQUANTIDADE EXTREMA DE INIMIGOS" if selected_difficulty == &"inferno_pro" else ""
+	var enemy_hp := CombatStats.scaled_health(CombatStats.COMMON_ENEMY_BASE_HP, selected_difficulty)
+	var boss_hp := CombatStats.scaled_health(CombatStats.BOSS_BASE_HP, selected_difficulty)
 	confirm_label.text = (
 		"MODO: %s\nDIFICULDADE: %s\nENEMY NORMAL: %d HP\nCHEFE: %d HP%s"
-		% [MODE_LABELS[selected_mode], DIFFICULTY_LABELS[selected_difficulty], config.enemy_hp, config.boss_hp, warning]
+		% [MODE_LABELS[selected_mode], DIFFICULTY_LABELS[selected_difficulty], enemy_hp, boss_hp, warning]
 	)
 	_refresh_controller()
 

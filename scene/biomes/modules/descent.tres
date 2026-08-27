@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"descent"
+display_name = "DESCIDA"
+connectors = Array[StringName]([&"left", &"right", &"down"])
+platform_rects = Array[Rect2]([Rect2(150, 170, 160, 22), Rect2(320, 250, 160, 22), Rect2(490, 330, 160, 22), Rect2(660, 410, 160, 22)])
+enemy_sockets = Array[Vector2]([Vector2(210, 140), Vector2(550, 300)])
+loot_sockets = Array[Vector2]([Vector2(720, 380)])
+attribute_sockets = Array[Vector2]([Vector2(430, 445)])
+exit_sockets = Array[Vector2]([Vector2(820, 425)])

@@ -5,8 +5,16 @@ signal coop_waiting_changed(visible: bool)
 const ROOM_BOUNDS := Rect2(0.0, 0.0, 1280.0, 720.0)
 const BOUNDARY_THICKNESS := 48.0
 const PLAYER_SCENE := preload("res://entities/player.tscn")
+const LABORATORY_HUB_SCENE := preload("res://scene/laboratory_hub.tscn")
+const LOWER_CITY_BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_city_biome.tscn")
+const BOSS_STAGE_SCENE := preload("res://scene/biomes/boss_stage.tscn")
 const COOP_SPAWN_OFFSET := 22.0
 const EXIT_GROUP_DISTANCE := 96.0
+const COOP_SAFE_DISTANCE := 480.0
+const COOP_SOFT_LIMIT := 720.0
+const COOP_HARD_LIMIT := 1050.0
+const CAMERA_ZOOM_MIN := 0.78
+const CAMERA_ZOOM_MAX := 1.22
 
 @export_file("*.tscn") var initial_room_path := "res://scene/levels/cyberfield_area_01.tscn"
 @export var initial_entry_id := &"start"
@@ -16,10 +24,17 @@ const EXIT_GROUP_DISTANCE := 96.0
 @onready var fade_rect: ColorRect = $TransitionLayer/FadeRect
 @onready var run_manager: Node = $RunManager
 @onready var mode_select: CanvasLayer = $ModeSelect
+@onready var gameplay_camera: Camera2D = $Camera2D
+@onready var lan_session: LanSession = $LanSession
+@onready var lan_lobby: CanvasLayer = $LanLobby
+@onready var local_settings: LocalSettings = $LocalSettings
 
 var current_room: Node = null
 var is_transitioning := false
 var mode_selected := false
+var current_is_hub := false
+var current_is_generated_biome := false
+var generated_biome_bounds := Rect2()
 
 
 func _ready() -> void:
@@ -28,7 +43,87 @@ func _ready() -> void:
 	fade_rect.modulate.a = 0.0
 	$RunDebugHUD.visible = false
 	mode_select.run_requested.connect(start_configured_run)
+	mode_select.lan_requested.connect(_show_lan_lobby)
+	lan_lobby.close_requested.connect(_show_mode_selection)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+
+
+func _process(delta: float) -> void:
+	if not current_is_generated_biome or is_transitioning:
+		return
+	var active_players := get_players().filter(func(player: Node) -> bool: return player.visible and not player.is_downed)
+	if active_players.is_empty():
+		return
+	var target := Vector2.ZERO
+	for player in active_players:
+		target += player.global_position
+	target /= float(active_players.size())
+	var half_view := get_viewport_rect().size * 0.5
+	target.x = clampf(target.x, generated_biome_bounds.position.x + half_view.x, generated_biome_bounds.end.x - half_view.x)
+	target.y = clampf(target.y, generated_biome_bounds.position.y + half_view.y, generated_biome_bounds.end.y - half_view.y)
+	gameplay_camera.global_position = target
+	_update_coop_camera(active_players, delta)
+	if active_players.size() == 2 and (not lan_session.is_network_game() or lan_session.is_host()):
+		_apply_coop_distance_limits(active_players)
+
+
+func _update_coop_camera(players: Array, delta: float) -> void:
+	var base_zoom := local_settings.get_camera_zoom_base()
+	var desired_zoom := base_zoom
+	if players.size() == 2:
+		var separation: float = players[0].global_position.distance_to(players[1].global_position)
+		var separation_ratio := clampf((separation - COOP_SAFE_DISTANCE) / (COOP_HARD_LIMIT - COOP_SAFE_DISTANCE), 0.0, 1.0)
+		desired_zoom = lerpf(base_zoom, CAMERA_ZOOM_MIN, separation_ratio)
+	desired_zoom = clampf(desired_zoom, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
+	var current_zoom := gameplay_camera.zoom.x
+	var next_zoom := lerpf(current_zoom, desired_zoom, 1.0 - exp(-4.5 * delta))
+	gameplay_camera.zoom = Vector2.ONE * next_zoom
+
+
+func _apply_coop_distance_limits(players: Array) -> void:
+	var first := players[0] as CharacterBody2D
+	var second := players[1] as CharacterBody2D
+	var separation := first.global_position.distance_to(second.global_position)
+	if separation > COOP_SOFT_LIMIT:
+		var strength := clampf((separation - COOP_SOFT_LIMIT) / (COOP_HARD_LIMIT - COOP_SOFT_LIMIT), 0.0, 1.0)
+		var first_away := (first.global_position - second.global_position).normalized()
+		var second_away := -first_away
+		if first.velocity.dot(first_away) > 0.0:
+			first.velocity *= 1.0 - strength * 0.85
+		if second.velocity.dot(second_away) > 0.0:
+			second.velocity *= 1.0 - strength * 0.85
+	if separation <= COOP_HARD_LIMIT:
+		return
+	var first_camera_distance := first.global_position.distance_to(gameplay_camera.global_position)
+	var second_camera_distance := second.global_position.distance_to(gameplay_camera.global_position)
+	var lagging := first if first_camera_distance > second_camera_distance else second
+	var leader := second if lagging == first else first
+	lagging.global_position = _find_safe_tether_position(lagging, leader)
+	lagging.velocity = Vector2.ZERO
+
+
+func _find_safe_tether_position(player: CharacterBody2D, leader: CharacterBody2D) -> Vector2:
+	var direction := signf(player.global_position.x - leader.global_position.x)
+	if direction == 0.0:
+		direction = -1.0
+	var candidates: Array[Vector2] = [
+		leader.global_position + Vector2(direction * 96.0, -40.0),
+		leader.global_position + Vector2(-direction * 96.0, -40.0),
+		leader.global_position + Vector2(direction * 144.0, -64.0),
+	]
+	var collision_shape := player.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision_shape == null or collision_shape.shape == null:
+		return candidates[0]
+	for candidate_value: Variant in candidates:
+		var candidate: Vector2 = candidate_value
+		var query := PhysicsShapeQueryParameters2D.new()
+		query.shape = collision_shape.shape
+		query.transform = Transform2D(0.0, candidate + collision_shape.position)
+		query.collision_mask = player.collision_mask
+		query.exclude = [player.get_rid(), leader.get_rid()]
+		if get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty():
+			return candidate
+	return leader.global_position + Vector2(0.0, -80.0)
 
 
 func start_game_mode(mode: StringName) -> void:
@@ -45,11 +140,11 @@ func start_configured_run(mode: StringName, difficulty: StringName, joypad_devic
 	is_transitioning = true
 	await _fade_to(1.0)
 	run_manager.configure_run(mode, difficulty, joypad_device_id)
+	run_manager.prepare_hub()
 	_create_players(mode == &"coop", joypad_device_id)
-	run_manager.start_new_run()
 	for candidate in get_players():
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_room(initial_room_path, initial_entry_id):
+	if not _load_laboratory_hub():
 		await _clear_run_and_show_menu()
 		return
 	mode_selected = true
@@ -58,6 +153,195 @@ func start_configured_run(mode: StringName, difficulty: StringName, joypad_devic
 	await _fade_to(0.0)
 	_set_all_player_input(true)
 	is_transitioning = false
+
+
+func start_lan_run(config: Dictionary, host_authority: bool) -> void:
+	if is_transitioning:
+		return
+	is_transitioning = true
+	await _fade_to(1.0)
+	var network_difficulty := StringName(config.get("difficulty", "normal"))
+	var network_seed := int(config.get("seed", 0))
+	run_manager.configure_run(&"lan", network_difficulty)
+	run_manager.prepare_new_run(network_seed)
+	_create_players(true, -1)
+	for candidate in get_players():
+		candidate.reset_for_new_run()
+		run_manager.register_participant(candidate.participant_id, true)
+	if not _load_lower_city_biome(network_seed):
+		await _clear_run_and_show_menu()
+		return
+	run_manager.activate_run()
+	mode_selected = true
+	mode_select.visible = false
+	lan_lobby.close_for_run()
+	$RunDebugHUD.visible = true
+	if not host_authority:
+		_configure_client_player_prediction()
+		_set_client_world_passive()
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	if host_authority:
+		_set_all_player_input(true)
+	is_transitioning = false
+
+
+func handle_lan_host_disconnected() -> void:
+	if is_transitioning:
+		return
+	await _clear_run_and_show_menu()
+	lan_lobby.show_connection_error("O HOST DESCONECTOU")
+	mode_select.visible = false
+
+
+func _show_lan_lobby() -> void:
+	mode_select.visible = false
+	lan_lobby.open()
+
+
+func _show_mode_selection() -> void:
+	mode_select.visible = true
+	mode_select.focus_default()
+
+
+func _set_client_world_passive() -> void:
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		enemy.network_target_position = enemy.global_position
+		enemy.set_physics_process(false)
+
+
+func _configure_client_player_prediction() -> void:
+	for player in get_players():
+		if player.participant_id == &"player_2":
+			player.input_profile = "p1"
+			player.network_prediction_only = true
+			player.network_remote_replica = false
+			player.set_input_enabled(true)
+		else:
+			player.network_prediction_only = false
+			player.network_remote_replica = true
+			player.network_target_position = player.global_position
+			player.set_input_enabled(false)
+
+
+func request_start_run_from_hub(portal: Area2D, interactor: Node2D) -> void:
+	if is_transitioning or not can_start_run_from_hub(portal, interactor):
+		return
+	is_transitioning = true
+	coop_waiting_changed.emit(false)
+	_set_all_player_input(false)
+	await _fade_to(1.0)
+	run_manager.prepare_new_run()
+	for candidate in get_players():
+		candidate.reset_for_new_run()
+		run_manager.register_participant(candidate.participant_id, true)
+	if not _load_lower_city_biome():
+		run_manager.prepare_hub()
+		_load_laboratory_hub()
+		await _fade_to(0.0)
+		_set_all_player_input(true)
+		is_transitioning = false
+		return
+	run_manager.activate_run()
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	_set_all_player_input(true)
+	is_transitioning = false
+
+
+func request_biome_advance(exit_id: StringName, destination_id: StringName) -> void:
+	if is_transitioning or not run_manager.run_active:
+		return
+	is_transitioning = true
+	_set_all_player_input(false)
+	await _fade_to(1.0)
+	if not run_manager.advance_stage(exit_id, destination_id):
+		await _fade_to(0.0)
+		_set_all_player_input(true)
+		is_transitioning = false
+		return
+	var stage_seed: int = run_manager.get_stage_seed()
+	if lan_session.is_host():
+		lan_session.broadcast_stage_transition(exit_id, destination_id, stage_seed)
+	if not _load_current_stage(stage_seed):
+		push_error("Could not load placeholder stage for %s" % destination_id)
+		await _fade_to(0.0)
+		_set_all_player_input(true)
+		is_transitioning = false
+		return
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	_set_all_player_input(true)
+	is_transitioning = false
+
+
+func apply_lan_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int) -> void:
+	if is_transitioning or not lan_session.is_network_game():
+		return
+	is_transitioning = true
+	await _fade_to(1.0)
+	if not run_manager.advance_stage(exit_id, destination_id) or not _load_current_stage(stage_seed):
+		push_error("Client could not apply LAN stage transition")
+		await _fade_to(0.0)
+		is_transitioning = false
+		return
+	_configure_client_player_prediction()
+	_set_client_world_passive()
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	is_transitioning = false
+
+
+func can_start_run_from_hub(portal: Area2D, interactor: Node2D) -> bool:
+	if not mode_selected or not current_is_hub or run_manager.run_active:
+		return false
+	if interactor == null or interactor.is_downed or not portal.overlaps_body(interactor):
+		return false
+	for candidate in get_players():
+		var player_body := candidate as CharacterBody2D
+		if player_body == null or candidate.is_downed or not portal.overlaps_body(player_body):
+			coop_waiting_changed.emit(run_manager.is_coop())
+			return false
+	coop_waiting_changed.emit(false)
+	return true
+
+
+func return_to_laboratory() -> void:
+	if is_transitioning or not mode_selected:
+		return
+	is_transitioning = true
+	_set_all_player_input(false)
+	await _fade_to(1.0)
+	run_manager.prepare_hub()
+	for candidate in get_players():
+		candidate.reset_for_new_run()
+		run_manager.register_participant(candidate.participant_id, true)
+	if not _load_laboratory_hub():
+		await _clear_run_and_show_menu()
+		return
+	coop_waiting_changed.emit(false)
+	$RunDebugHUD.visible = true
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	_set_all_player_input(true)
+	is_transitioning = false
+
+
+func abandon_current_run() -> void:
+	if is_transitioning or not mode_selected:
+		return
+	if lan_session.is_network_game():
+		lan_session.shutdown()
+		run_manager.configure_run(&"solo", run_manager.difficulty)
+		for candidate in get_players():
+			if candidate.participant_id == &"player_2":
+				candidate.queue_free()
+			else:
+				candidate.input_profile = "p1"
+				candidate.network_prediction_only = false
+				candidate.network_remote_replica = false
+		await get_tree().process_frame
+	await return_to_laboratory()
 
 
 func return_to_mode_selection() -> void:
@@ -80,7 +364,11 @@ func _clear_run_and_show_menu() -> void:
 	for candidate in get_players():
 		candidate.queue_free()
 	await get_tree().process_frame
+	lan_session.shutdown()
 	run_manager.clear_run()
+	current_is_hub = false
+	current_is_generated_biome = false
+	_reset_camera_for_room()
 	mode_selected = false
 	coop_waiting_changed.emit(false)
 	$RunDebugHUD.visible = false
@@ -108,20 +396,7 @@ func request_room_change(room_path: String, entry_id: StringName) -> void:
 
 
 func restart_current_run() -> void:
-	if is_transitioning or not mode_selected:
-		return
-	is_transitioning = true
-	_set_all_player_input(false)
-	await _fade_to(1.0)
-	run_manager.start_new_run()
-	for candidate in get_players():
-		candidate.reset_for_new_run()
-		run_manager.register_participant(candidate.participant_id, true)
-	_load_room(initial_room_path, initial_entry_id)
-	await get_tree().process_frame
-	await _fade_to(0.0)
-	_set_all_player_input(true)
-	is_transitioning = false
+	return_to_laboratory()
 
 
 func _load_room(room_path: String, entry_id: StringName) -> bool:
@@ -142,7 +417,74 @@ func _load_room(room_path: String, entry_id: StringName) -> bool:
 	if is_instance_valid(current_room):
 		current_room.queue_free()
 	current_room = new_room
+	current_is_hub = false
+	current_is_generated_biome = false
+	_reset_camera_for_room()
 	_position_players(entry_point.global_position)
+	return true
+
+
+func _load_lower_city_biome(generation_seed: int = 0) -> bool:
+	var generated_biome := LOWER_CITY_BIOME_SCENE.instantiate()
+	var seed_to_use: int = run_manager.seed_value if generation_seed == 0 else generation_seed
+	if not generated_biome.generate(seed_to_use, run_manager):
+		push_error("Lower City generation and fallback both failed")
+		generated_biome.queue_free()
+		return false
+	var report: Dictionary = generated_biome.get_generation_report()
+	run_manager.enter_generated_biome(report)
+	room_container.add_child(generated_biome)
+	run_manager.prepare_generated_biome(generated_biome)
+	if is_instance_valid(current_room):
+		current_room.queue_free()
+	current_room = generated_biome
+	current_is_hub = false
+	current_is_generated_biome = true
+	generated_biome_bounds = generated_biome.get_generated_bounds()
+	_configure_camera_for_biome(generated_biome_bounds, generated_biome.get_start_position())
+	_position_players_in_biome(generated_biome.get_start_position())
+	return true
+
+
+func _load_current_stage(generation_seed: int) -> bool:
+	if run_manager.stage_index == 5:
+		return _load_boss_stage()
+	return _load_lower_city_biome(generation_seed)
+
+
+func _load_boss_stage() -> bool:
+	var boss_stage := BOSS_STAGE_SCENE.instantiate()
+	room_container.add_child(boss_stage)
+	run_manager.enter_boss_stage()
+	boss_stage.setup(run_manager)
+	run_manager.prepare_boss_stage(boss_stage)
+	if is_instance_valid(current_room):
+		current_room.queue_free()
+	current_room = boss_stage
+	current_is_hub = false
+	current_is_generated_biome = true
+	generated_biome_bounds = boss_stage.get_generated_bounds()
+	_configure_camera_for_biome(generated_biome_bounds, boss_stage.get_start_position())
+	_position_players_in_biome(boss_stage.get_start_position())
+	return true
+
+
+func _load_laboratory_hub() -> bool:
+	var new_hub := LABORATORY_HUB_SCENE.instantiate()
+	room_container.add_child(new_hub)
+	var p1_spawn := new_hub.get_node_or_null("Gameplay/P1Spawn") as Marker2D
+	var p2_spawn := new_hub.get_node_or_null("Gameplay/P2Spawn") as Marker2D
+	if p1_spawn == null or p2_spawn == null:
+		push_error("Laboratory Hub is missing P1Spawn or P2Spawn")
+		new_hub.queue_free()
+		return false
+	if is_instance_valid(current_room):
+		current_room.queue_free()
+	current_room = new_hub
+	current_is_hub = true
+	current_is_generated_biome = false
+	_reset_camera_for_room()
+	_position_players_in_hub(p1_spawn.global_position, p2_spawn.global_position)
 	return true
 
 
@@ -197,6 +539,44 @@ func _position_players(entry_position: Vector2) -> void:
 		active_players[index].global_position = Vector2(clampf(entry_position.x + offset, 16.0, 1264.0), entry_position.y)
 		active_players[index].velocity = Vector2.ZERO
 		active_players[index].visible = true
+
+
+func _position_players_in_hub(p1_position: Vector2, p2_position: Vector2) -> void:
+	for candidate in get_players():
+		candidate.global_position = p2_position if candidate.participant_id == &"player_2" else p1_position
+		candidate.velocity = Vector2.ZERO
+		candidate.visible = true
+
+
+func _position_players_in_biome(start_position: Vector2) -> void:
+	var active_players := get_players()
+	for index in active_players.size():
+		var offset := -COOP_SPAWN_OFFSET if active_players.size() == 2 and index == 0 else COOP_SPAWN_OFFSET if active_players.size() == 2 else 0.0
+		active_players[index].global_position = start_position + Vector2(offset, 0.0)
+		active_players[index].velocity = Vector2.ZERO
+		active_players[index].visible = true
+
+
+func _configure_camera_for_biome(bounds: Rect2, start_position: Vector2) -> void:
+	gameplay_camera.position_smoothing_enabled = true
+	gameplay_camera.position_smoothing_speed = 6.0
+	gameplay_camera.limit_left = floori(bounds.position.x)
+	gameplay_camera.limit_top = floori(bounds.position.y)
+	gameplay_camera.limit_right = ceili(bounds.end.x)
+	gameplay_camera.limit_bottom = ceili(bounds.end.y)
+	gameplay_camera.global_position = start_position
+	var base_zoom := clampf(local_settings.get_camera_zoom_base(), CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
+	gameplay_camera.zoom = Vector2.ONE * base_zoom
+
+
+func _reset_camera_for_room() -> void:
+	gameplay_camera.position_smoothing_enabled = false
+	gameplay_camera.limit_left = 0
+	gameplay_camera.limit_top = 0
+	gameplay_camera.limit_right = 1280
+	gameplay_camera.limit_bottom = 720
+	gameplay_camera.global_position = Vector2(640.0, 360.0)
+	gameplay_camera.zoom = Vector2.ONE
 
 
 func _set_all_player_input(enabled: bool) -> void:

@@ -161,11 +161,12 @@ collision_mask = 2
 shape = SubResource("CircleShape2D_interaction")
 
 [node name="HealthLabel" type="Label" parent="." unique_id=1304896012]
+visible = false
 offset_left = -24.0
 offset_top = -34.0
 offset_right = 25.0
 offset_bottom = -11.0
-text = "HP: 20"
+text = "HP: 1000"
 
 [node name="DownedLabel" type="Label" parent="." unique_id=1397118722]
 visible = false

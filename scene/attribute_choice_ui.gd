@@ -1,9 +1,11 @@
 extends CanvasLayer
 
+signal network_choice_submitted(attribute: StringName)
+
 const LABELS := {
 	&"intellect": ["INTELECTO", "+0,5 s de stamina de escalada", Color(1.0, 0.5, 0.1)],
-	&"health": ["SAÚDE", "+5 HP máximo (sem cura)", Color(0.2, 0.9, 0.3)],
-	&"strength": ["FORÇA", "+1 dano melee e slam", Color(1.0, 0.2, 0.2)],
+	&"health": ["SAÚDE", "+HP máximo com ganho decrescente", Color(0.2, 0.9, 0.3)],
+	&"strength": ["FORÇA", "+16% dano melee e slam", Color(1.0, 0.2, 0.2)],
 }
 
 var active_player: Node = null
@@ -13,6 +15,7 @@ var selected_index := 0
 var panel: PanelContainer
 var title: Label
 var buttons: Array[Button] = []
+var network_choice_mode := false
 
 func _ready() -> void:
 	add_to_group("attribute_choice_ui")
@@ -49,6 +52,7 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 		return false
 	active_chest = chest
 	active_player = player
+	network_choice_mode = false
 	options = available_options
 	selected_index = 0
 	title.text = "%s // ESCOLHA UM ATRIBUTO" % String(player.participant_id).to_upper()
@@ -65,6 +69,30 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 	visible = true
 	if player.input_profile == "p1":
 		buttons[0].grab_focus()
+	return true
+
+
+func open_network_for(player: Node, available_options: Array[StringName]) -> bool:
+	if visible or player == null or available_options.is_empty():
+		return false
+	active_chest = null
+	active_player = player
+	network_choice_mode = true
+	options = available_options
+	selected_index = 0
+	title.text = "P2 // ESCOLHA UM ATRIBUTO"
+	for index in buttons.size():
+		var button: Button = buttons[index]
+		button.visible = index < options.size()
+		if button.visible:
+			var data: Array = LABELS[options[index]]
+			button.text = "%s — %s" % [data[0], data[1]]
+			button.modulate = data[2]
+			button.mouse_filter = Control.MOUSE_FILTER_STOP
+			button.focus_mode = Control.FOCUS_ALL
+	player.set_input_enabled(false)
+	visible = true
+	buttons[0].grab_focus()
 	return true
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -86,7 +114,18 @@ func _update_p2_selection() -> void:
 		buttons[index].button_pressed = index == selected_index
 
 func _choose(index: int) -> void:
-	if index < 0 or index >= options.size() or active_chest == null or active_player == null:
+	if index < 0 or index >= options.size() or active_player == null:
+		return
+	if network_choice_mode:
+		var selected_attribute: StringName = options[index]
+		active_player.set_input_enabled(true)
+		visible = false
+		active_player = null
+		options.clear()
+		network_choice_mode = false
+		network_choice_submitted.emit(selected_attribute)
+		return
+	if active_chest == null:
 		return
 	if active_chest.apply_choice(active_player, options[index]):
 		active_player.set_input_enabled(true)
@@ -98,8 +137,9 @@ func _choose(index: int) -> void:
 
 func cancel_selection() -> void:
 	if active_player:
-		active_player.set_input_enabled(false)
+		active_player.set_input_enabled(true)
 	visible = false
 	active_player = null
 	active_chest = null
 	options.clear()
+	network_choice_mode = false

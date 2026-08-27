@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"vertical_shaft"
+display_name = "EIXO VERTICAL"
+connectors = Array[StringName]([&"up", &"down", &"left", &"right"])
+platform_rects = Array[Rect2]([Rect2(330, 390, 150, 22), Rect2(500, 290, 150, 22), Rect2(330, 190, 150, 22), Rect2(500, 90, 150, 22)])
+enemy_sockets = Array[Vector2]([Vector2(380, 360), Vector2(550, 260)])
+loot_sockets = Array[Vector2]([Vector2(400, 160)])
+attribute_sockets = Array[Vector2]([Vector2(700, 445)])
+exit_sockets = Array[Vector2]([Vector2(810, 425)])

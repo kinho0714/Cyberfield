@@ -22,14 +22,14 @@ const KNOCKBACK_DURATION := 0.18
 @export var attack_cooldown := 1.20
 @export var cancelled_attack_cooldown := 0.35
 @export var projectile_speed := 420.0
-@export var projectile_damage := 2
+@export var projectile_damage := CombatStats.RANGED_PROJECTILE_BASE_DAMAGE
 @export var melee_horizontal_range := 42.0
 @export var melee_vertical_range := 42.0
 @export var melee_windup := 0.12
 @export var melee_recovery := 0.15
 @export var melee_cooldown := 0.20
 @export var interrupted_attack_cooldown := 0.10
-@export var melee_damage := 1
+@export var melee_damage := CombatStats.RANGED_MELEE_BASE_DAMAGE
 @export var target_switch_margin := 20.0
 @export var patrol_radius := 64.0
 @export_range(0.35, 0.50, 0.01) var patrol_speed_ratio := 0.42
@@ -40,8 +40,20 @@ const KNOCKBACK_DURATION := 0.18
 
 var run_room_id: StringName
 var player: CharacterBody2D = null
-var max_health := 7
-var health := 7
+var max_health := CombatStats.RANGED_ENEMY_BASE_HP
+var health := CombatStats.RANGED_ENEMY_BASE_HP
+var base_max_hp := CombatStats.RANGED_ENEMY_BASE_HP
+var current_hp: int:
+	get:
+		return health
+	set(value):
+		health = value
+var max_hp: int:
+	get:
+		return max_health
+	set(value):
+		max_health = value
+var health_bar_visible_timer := 0.0
 var is_hurt := false
 var is_attacking := false
 var knockback_timer := 0.0
@@ -57,8 +69,9 @@ var patrol_origin := Vector2.ZERO
 var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
+var network_target_position := Vector2.ZERO
 
-@onready var health_label: Label = $HealthLabel
+@onready var health_bar: ProgressBar = $HealthBar
 @onready var visual: Node2D = $Visual
 @onready var aim_line: Line2D = $AimLine
 @onready var muzzle: Marker2D = $Visual/Muzzle
@@ -75,12 +88,26 @@ func _ready() -> void:
 	aim_line.visible = false
 	melee_shape_cast.enabled = false
 	_update_health_label()
+	network_target_position = global_position
+
+
+func _process(delta: float) -> void:
+	if not is_physics_processing():
+		global_position = global_position.lerp(network_target_position, 1.0 - exp(-16.0 * delta))
+	if health_bar_visible_timer > 0.0:
+		health_bar_visible_timer = maxf(health_bar_visible_timer - delta, 0.0)
+		health_bar.visible = health_bar_visible_timer > 0.0 and health > 0
 
 
 func configure_health(value: int) -> void:
 	max_health = maxi(value, 1)
 	health = max_health
 	_update_health_label()
+
+
+func configure_damage(melee_value: int, projectile_value: int) -> void:
+	melee_damage = maxi(melee_value, 1)
+	projectile_damage = maxi(projectile_value, 1)
 
 
 func is_boss() -> bool:
@@ -94,6 +121,31 @@ func is_elite() -> bool:
 func get_ai_debug_text() -> String:
 	var target_name: String = String(player.name) if _is_valid_target(player) else "none"
 	return "%s state=%s target=%s" % [persistent_id, State.keys()[state], target_name]
+
+
+func get_network_state() -> Dictionary:
+	return {
+		"persistent_id": persistent_id,
+		"position": global_position,
+		"velocity": velocity,
+		"health": health,
+		"max_health": max_health,
+		"state": state,
+	}
+
+
+func apply_network_state(network_state: Dictionary) -> void:
+	var network_position: Vector2 = network_state.get("position", global_position)
+	var network_velocity: Vector2 = network_state.get("velocity", velocity)
+	var previous_health := health
+	network_target_position = network_position
+	velocity = network_velocity
+	health = int(network_state.get("health", health))
+	max_health = int(network_state.get("max_health", max_health))
+	state = int(network_state.get("state", state))
+	if health < previous_health:
+		health_bar_visible_timer = 2.5
+	_update_health_label()
 
 
 func _physics_process(delta: float) -> void:
@@ -287,6 +339,9 @@ func _fire_once() -> void:
 	var projectile := PROJECTILE_SCENE.instantiate()
 	projectile.shooter = self
 	get_parent().add_child(projectile)
+	var lan_session := get_tree().get_first_node_in_group("lan_session")
+	if lan_session != null and lan_session.is_host():
+		projectile.network_id = lan_session.replicate_projectile_spawn(muzzle.global_position, locked_direction, projectile_speed, projectile_damage)
 	projectile.setup(muzzle.global_position, locked_direction, self, projectile_speed, projectile_damage)
 	is_attacking = false
 	attack_cooldown_timer = attack_cooldown
@@ -391,6 +446,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 	if is_hurt or state == State.DEAD:
 		return
 	health = maxi(health - amount, 0)
+	health_bar_visible_timer = 2.5
 	_cancel_aim(true)
 	_cancel_melee(true)
 	_update_health_label()
@@ -420,8 +476,10 @@ func _die() -> void:
 
 
 func _update_health_label() -> void:
-	if is_instance_valid(health_label):
-		health_label.text = "HP: %d/%d" % [health, max_health]
+	if is_instance_valid(health_bar):
+		health_bar.max_value = max_health
+		health_bar.value = health
+		health_bar.visible = health_bar_visible_timer > 0.0 and health > 0
 
 
 func _next_patrol_pause() -> float:

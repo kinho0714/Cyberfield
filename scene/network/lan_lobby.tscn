@@ -1,0 +1,165 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/network/lan_lobby.gd" id="1"]
+
+[node name="LanLobby" type="CanvasLayer"]
+layer = 95
+script = ExtResource("1")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.01, 0.02, 0.05, 0.97)
+
+[node name="Center" type="CenterContainer" parent="Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainPage" type="VBoxContainer" parent="Overlay/Center"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Overlay/Center/MainPage"]
+layout_mode = 2
+text = "COOP LAN"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 40
+
+[node name="Info" type="Label" parent="Overlay/Center/MainPage"]
+layout_mode = 2
+text = "Até 2 jogadores na mesma rede local"
+horizontal_alignment = 1
+
+[node name="Create" type="Button" parent="Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "CRIAR SALA"
+
+[node name="Search" type="Button" parent="Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "PROCURAR SALAS"
+
+[node name="DirectIp" type="Button" parent="Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "ENTRAR POR IP"
+
+[node name="Back" type="Button" parent="Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="HostPage" type="VBoxContainer" parent="Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Overlay/Center/HostPage"]
+layout_mode = 2
+text = "LOBBY COOP LAN"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+
+[node name="Status" type="Label" parent="Overlay/Center/HostPage"]
+custom_minimum_size = Vector2(520, 110)
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Difficulty" type="OptionButton" parent="Overlay/Center/HostPage"]
+custom_minimum_size = Vector2(420, 52)
+layout_mode = 2
+
+[node name="Start" type="Button" parent="Overlay/Center/HostPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "INICIAR RUN"
+
+[node name="Back" type="Button" parent="Overlay/Center/HostPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "FECHAR / VOLTAR"
+
+[node name="SearchPage" type="VBoxContainer" parent="Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Overlay/Center/SearchPage"]
+layout_mode = 2
+text = "SALAS NA LAN"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+
+[node name="Status" type="Label" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(600, 32)
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Rooms" type="ItemList" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(600, 190)
+layout_mode = 2
+
+[node name="Join" type="Button" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(420, 50)
+layout_mode = 2
+text = "ENTRAR NA SALA"
+
+[node name="Refresh" type="Button" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "ATUALIZAR"
+
+[node name="DirectIp" type="Button" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "ENTRAR POR IP"
+
+[node name="Back" type="Button" parent="Overlay/Center/SearchPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="IpPage" type="VBoxContainer" parent="Overlay/Center"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="Overlay/Center/IpPage"]
+layout_mode = 2
+text = "ENTRAR POR IP"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 36
+
+[node name="Hint" type="Label" parent="Overlay/Center/IpPage"]
+layout_mode = 2
+text = "Digite o IP exibido no celular HOST"
+horizontal_alignment = 1
+
+[node name="IpInput" type="LineEdit" parent="Overlay/Center/IpPage"]
+custom_minimum_size = Vector2(420, 52)
+layout_mode = 2
+placeholder_text = "192.168.0.10"
+virtual_keyboard_type = 3
+
+[node name="Status" type="Label" parent="Overlay/Center/IpPage"]
+custom_minimum_size = Vector2(520, 48)
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="Join" type="Button" parent="Overlay/Center/IpPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "CONECTAR"
+
+[node name="Back" type="Button" parent="Overlay/Center/IpPage"]
+custom_minimum_size = Vector2(420, 48)
+layout_mode = 2
+text = "VOLTAR"

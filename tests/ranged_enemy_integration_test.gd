@@ -8,7 +8,7 @@ const ROOM_CASES := {
 	&"boss_01": {"path": "res://scene/levels/cyberfield_boss_01.tscn", "totals": [1, 2, 3, 4], "ranged": [0, 1, 1, 2]},
 }
 const DIFFICULTIES := [&"normal", &"hard", &"pro", &"inferno_pro"]
-const EXPECTED_HP := [7, 10, 15, 20]
+const EXPECTED_RANGED_HP := [200, 286, 428, 572]
 
 var failures: PackedStringArray = []
 
@@ -41,7 +41,7 @@ func _test_scene_contracts() -> void:
 	_check(ranged.is_in_group("enemy"), "RangedEnemy must participate in enemy counts and melee hits")
 	_check(is_equal_approx(ranged.aim_windup, 0.50), "RangedEnemy wind-up must default to 0.50 s")
 	_check(is_equal_approx(ranged.aim_lock_before_shot, 0.12), "RangedEnemy aim lock must default to 0.12 s")
-	_check(ranged.projectile_damage == 2, "RangedEnemy projectile damage must default to 2")
+	_check(ranged.projectile_damage == CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, "RangedEnemy projectile damage must use centralized stats")
 	_check(is_equal_approx(ranged.melee_distance, 72.0), "Melee choice must extend to 72 px")
 	_check(is_equal_approx(ranged.ranged_distance, 88.0), "Ranged choice must begin above 88 px")
 	_check(is_equal_approx(ranged.melee_windup, 0.12), "Melee wind-up must default to 0.12 s")
@@ -53,7 +53,7 @@ func _test_scene_contracts() -> void:
 	ranged.free()
 	var projectile := (load("res://entities/ranged_projectile.tscn") as PackedScene).instantiate()
 	_check(is_equal_approx(projectile.speed, 420.0), "Projectile speed must default to 420 px/s")
-	_check(projectile.damage == 2, "Projectile damage must default to 2")
+	_check(projectile.damage == CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, "Projectile damage must use centralized stats")
 	_check(projectile.maximum_lifetime > 0.0, "Projectile must have a finite lifetime")
 	projectile.free()
 
@@ -232,7 +232,7 @@ func _test_room_case(room_id: StringName, difficulty_index: int) -> void:
 		_check(not ids.has(enemy.persistent_id), "%s/%s has duplicate ID %s" % [room_id, difficulty, enemy.persistent_id])
 		ids[enemy.persistent_id] = true
 	for enemy in ranged:
-		_check(enemy.health == EXPECTED_HP[difficulty_index], "%s/%s ranged HP: expected %d, got %d" % [room_id, difficulty, EXPECTED_HP[difficulty_index], enemy.health])
+		_check(enemy.health == EXPECTED_RANGED_HP[difficulty_index], "%s/%s ranged HP: expected %d, got %d" % [room_id, difficulty, EXPECTED_RANGED_HP[difficulty_index], enemy.health])
 	room.free()
 	manager.free()
 

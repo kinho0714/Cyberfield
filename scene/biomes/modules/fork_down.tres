@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"fork_down"
+display_name = "BIFURCAÇÃO INFERIOR"
+connectors = Array[StringName]([&"left", &"right", &"down"])
+platform_rects = Array[Rect2]([Rect2(210, 350, 190, 22), Rect2(570, 365, 210, 22)])
+enemy_sockets = Array[Vector2]([Vector2(260, 320), Vector2(650, 335)])
+loot_sockets = Array[Vector2]([Vector2(470, 445)])
+attribute_sockets = Array[Vector2]([Vector2(720, 445)])
+exit_sockets = Array[Vector2]([Vector2(820, 425)])
