@@ -1,0 +1,130 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://ui/touch_controls.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://ui/touch_button.svg" id="2_button"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_button"]
+radius = 62.0
+
+[node name="TouchControls" type="CanvasLayer"]
+layer = 40
+script = ExtResource("1_script")
+
+[node name="MoveLeft" type="TouchScreenButton" parent="."]
+position = Vector2(105, 605)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "left"
+
+[node name="Label" type="Label" parent="MoveLeft"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "<"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 44
+
+[node name="MoveRight" type="TouchScreenButton" parent="."]
+position = Vector2(255, 605)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "right"
+
+[node name="Label" type="Label" parent="MoveRight"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = ">"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 44
+
+[node name="Dash" type="TouchScreenButton" parent="."]
+position = Vector2(880, 610)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "dash"
+
+[node name="Label" type="Label" parent="Dash"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "DASH"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="Jump" type="TouchScreenButton" parent="."]
+position = Vector2(1030, 610)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "jump"
+
+[node name="Label" type="Label" parent="Jump"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "PULO"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="Attack" type="TouchScreenButton" parent="."]
+position = Vector2(1180, 570)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "attack"
+
+[node name="Label" type="Label" parent="Attack"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "ATAQUE"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 18
+
+[node name="Interact" type="TouchScreenButton" parent="."]
+position = Vector2(1170, 405)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "interact"
+
+[node name="Label" type="Label" parent="Interact"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "USAR"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
+
+[node name="Heal" type="TouchScreenButton" parent="."]
+position = Vector2(1015, 435)
+texture_normal = ExtResource("2_button")
+shape = SubResource("CircleShape2D_button")
+action = "heal"
+
+[node name="Label" type="Label" parent="Heal"]
+offset_left = -70.0
+offset_top = -70.0
+offset_right = 70.0
+offset_bottom = 70.0
+mouse_filter = 2
+text = "CURA"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 20
