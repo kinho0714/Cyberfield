@@ -5,9 +5,15 @@ signal run_completed
 signal run_lost
 
 const ENEMY_SCENE := preload("res://entities/Enemy.tscn")
+const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
 const ATTRIBUTE_IDS := [&"intellect", &"health", &"strength"]
 const CHALLENGE_BASIC_COUNTS := {&"normal": 2, &"hard": 3, &"pro": 4, &"inferno_pro": 5}
+const RANGED_COUNTS := {
+	&"combat_01": {&"normal": 1, &"hard": 1, &"pro": 2, &"inferno_pro": 2},
+	&"combat_02": {&"normal": 1, &"hard": 1, &"pro": 2, &"inferno_pro": 3},
+	&"boss_01": {&"normal": 0, &"hard": 1, &"pro": 1, &"inferno_pro": 2},
+}
 const DIFFICULTY_CONFIGS := {
 	&"normal": {"label": "Normal", "enemy_hp": 7, "boss_hp": 20, "extra_enemies": 0},
 	&"hard": {"label": "Difícil", "enemy_hp": 10, "boss_hp": 25, "extra_enemies": 1},
@@ -127,6 +133,7 @@ func prepare_room(room_id: StringName, room: Node) -> void:
 		return
 	_spawn_difficulty_enemies(room_id, room)
 	_spawn_challenge_enemies(room_id, room)
+	_apply_ranged_composition(room_id, room)
 	var state: Dictionary = room_states[room_id]
 	var seen_ids: Dictionary = {}
 	for enemy in _find_nodes_in_group(room, &"enemy"):
@@ -458,6 +465,41 @@ func _spawn_challenge_enemies(room_id: StringName, room: Node) -> void:
 		var enemy_id := StringName("reward_challenge_basic_%02d" % (index + 1))
 		if not state.dead_enemies.has(enemy_id):
 			_spawn_enemy(gameplay, basic_markers[index], enemy_id)
+
+
+func _apply_ranged_composition(room_id: StringName, room: Node) -> void:
+	if not RANGED_COUNTS.has(room_id):
+		return
+	var desired_count: int = RANGED_COUNTS[room_id].get(difficulty, 0)
+	if desired_count <= 0:
+		return
+	var candidates: Array[Node] = []
+	for enemy in _find_nodes_in_group(room, &"enemy"):
+		if enemy.is_boss() or enemy.is_elite() or String(enemy.persistent_id).begins_with("reward_challenge_"):
+			continue
+		candidates.append(enemy)
+	candidates.sort_custom(func(a: Node, b: Node) -> bool:
+		if not is_equal_approx(a.global_position.y, b.global_position.y):
+			return a.global_position.y < b.global_position.y
+		return String(a.persistent_id) < String(b.persistent_id)
+	)
+	for index in mini(desired_count, candidates.size()):
+		_replace_with_ranged(candidates[index])
+
+
+func _replace_with_ranged(enemy: Node) -> void:
+	var parent := enemy.get_parent()
+	if parent == null:
+		return
+	var replacement := RANGED_ENEMY_SCENE.instantiate()
+	replacement.name = "%sRanged" % enemy.name
+	replacement.persistent_id = enemy.persistent_id
+	replacement.required_for_completion = enemy.required_for_completion
+	var local_position: Vector2 = enemy.position
+	parent.remove_child(enemy)
+	enemy.queue_free()
+	parent.add_child(replacement)
+	replacement.position = local_position
 
 
 func _spawn_pending_money(room_id: StringName, room: Node) -> void:

@@ -200,5 +200,16 @@ shape = SubResource("RectangleShape2D_ryepx")
 target_position = Vector2(30, 0)
 max_results = 8
 
+[node name="WallCheck" type="RayCast2D" parent="."]
+enabled = true
+target_position = Vector2(22, 0)
+collide_with_areas = false
+
+[node name="FloorCheck" type="RayCast2D" parent="."]
+enabled = true
+position = Vector2(15, 0)
+target_position = Vector2(0, 32)
+collide_with_areas = false
+
 [connection signal="body_entered" from="DetectionArea" to="." method="_on_detection_area_body_entered"]
 [connection signal="body_exited" from="DetectionArea" to="." method="_on_detection_area_body_exited"]

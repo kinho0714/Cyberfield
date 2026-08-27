@@ -13,12 +13,19 @@ enum EnemyRole { NORMAL, BOSS, ELITE }
 @export var attack_cooldown := 0.45
 @export var attack_damage := 1
 @export_range(0.5, 4.0, 0.1) var visual_scale := 1.0
+@export var patrol_radius := -1.0
+@export_range(0.35, 0.50, 0.01) var patrol_speed_ratio := 0.42
+@export_range(0.1, 2.0, 0.05) var patrol_pause_min := 0.40
+@export_range(0.1, 2.0, 0.05) var patrol_pause_max := 1.20
+@export_range(16.0, 80.0, 1.0) var separation_distance := 30.0
 
 var run_room_id: StringName
 
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
 @onready var health_label: Label = $HealthLabel
 @onready var attack_shape_cast: ShapeCast2D = $AttackShapeCast
+@onready var wall_check: RayCast2D = $WallCheck
+@onready var floor_check: RayCast2D = $FloorCheck
 
 const GRAVITY = 980.0
 
@@ -37,6 +44,10 @@ var is_attacking = false
 var knockback_timer = 0.0
 var attack_cooldown_timer := 0.0
 var attack_generation := 0
+var patrol_origin := Vector2.ZERO
+var patrol_direction := 1.0
+var patrol_pause_timer := 0.0
+var patrol_rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
@@ -45,6 +56,12 @@ func _ready() -> void:
 	$CollisionShape2D.scale = Vector2.ONE * visual_scale
 	if is_elite():
 		anim.modulate = Color(1.0, 0.35, 0.15, 1.0)
+	if patrol_radius < 0.0:
+		patrol_radius = 120.0 if is_boss() else 96.0 if is_elite() else 80.0
+	patrol_origin = global_position
+	patrol_rng.seed = _stable_hash(String(persistent_id))
+	patrol_direction = -1.0 if patrol_rng.randi_range(0, 1) == 0 else 1.0
+	patrol_pause_timer = _next_patrol_pause()
 	_update_health_label()
 
 
@@ -75,8 +92,9 @@ func _update_health_label() -> void:
 
 func _physics_process(delta: float) -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
 
-	if run_manager and not run_manager.run_active:
+	if (run_manager and not run_manager.run_active) or (room_manager and room_manager.is_transitioning):
 		velocity = Vector2.ZERO
 		return
 
@@ -118,11 +136,10 @@ func _physics_process(delta: float) -> void:
 				and abs(offset.y) <= attack_vertical_range
 			)
 
-			if not in_attack_range:
-				velocity.x = direction * move_speed
+			if not in_attack_range and not is_attacking:
+				velocity.x = _safe_horizontal_velocity(direction, move_speed)
 
-				if not is_attacking:
-					anim.play("walk")
+				anim.play("walk")
 
 			else:
 				velocity.x = 0
@@ -131,17 +148,72 @@ func _physics_process(delta: float) -> void:
 					attack()
 
 			# Prevent a stable player-on-enemy stack without frame-by-frame damage.
-			if abs(offset.x) < 18.0 and offset.y < 0.0 and offset.y > -34.0:
-				velocity.x = -1.0 * direction * move_speed * 0.45
+			if not is_attacking and abs(offset.x) < 18.0 and offset.y < 0.0 and offset.y > -34.0:
+				velocity.x = _safe_horizontal_velocity(-direction, move_speed * 0.45)
 
 	else:
-		if knockback_timer <= 0:
-			velocity.x = 0
-
-		if not is_attacking:
-			anim.play("idle")
+		if knockback_timer <= 0 and not is_hurt and not is_attacking:
+			_update_patrol(delta)
 
 	move_and_slide()
+	if health <= 0:
+		velocity = Vector2.ZERO
+
+
+func _update_patrol(delta: float) -> void:
+	var origin_offset := patrol_origin.x - global_position.x
+	if absf(origin_offset) > patrol_radius:
+		patrol_direction = signf(origin_offset)
+		patrol_pause_timer = 0.0
+	elif patrol_pause_timer > 0.0:
+		patrol_pause_timer = maxf(patrol_pause_timer - delta, 0.0)
+		velocity.x = 0.0
+		anim.play("idle")
+		return
+	var next_offset := global_position.x + patrol_direction * 4.0 - patrol_origin.x
+	if absf(next_offset) > patrol_radius or not _can_move_horizontally(patrol_direction):
+		patrol_direction *= -1.0
+		patrol_pause_timer = _next_patrol_pause()
+		velocity.x = 0.0
+		anim.play("idle")
+		return
+	velocity.x = _safe_horizontal_velocity(patrol_direction, move_speed * patrol_speed_ratio)
+	anim.flip_h = velocity.x < 0.0
+	anim.play("walk")
+
+
+func _safe_horizontal_velocity(direction: float, speed: float) -> float:
+	if direction == 0.0 or not _can_move_horizontally(direction):
+		return 0.0
+	var adjusted_direction := direction
+	for other in get_tree().get_nodes_in_group("enemy"):
+		if other == self or not is_instance_valid(other) or not other is Node2D:
+			continue
+		var offset: Vector2 = global_position - other.global_position
+		if absf(offset.y) <= 28.0 and absf(offset.x) < separation_distance and absf(offset.x) > 0.01:
+			var away := signf(offset.x)
+			if away == direction and _can_move_horizontally(away):
+				adjusted_direction += away * 0.2
+	return signf(adjusted_direction) * speed
+
+
+func _can_move_horizontally(direction: float) -> bool:
+	wall_check.target_position = Vector2(direction * 22.0, 0.0)
+	wall_check.force_raycast_update()
+	floor_check.position.x = direction * 15.0
+	floor_check.force_raycast_update()
+	return not wall_check.is_colliding() and floor_check.is_colliding()
+
+
+func _next_patrol_pause() -> float:
+	return patrol_rng.randf_range(minf(patrol_pause_min, patrol_pause_max), maxf(patrol_pause_min, patrol_pause_max))
+
+
+func _stable_hash(value: String) -> int:
+	var result := 2166136261
+	for byte in value.to_utf8_buffer():
+		result = int((result ^ byte) * 16777619) & 0x7fffffff
+	return result
 
 
 func _on_detection_area_body_entered(body: Node2D) -> void:
@@ -201,6 +273,7 @@ func attack() -> void:
 		return
 
 	is_attacking = true
+	velocity.x = 0.0
 	attack_generation += 1
 	var this_attack := attack_generation
 
