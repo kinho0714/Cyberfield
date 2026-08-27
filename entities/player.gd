@@ -11,6 +11,7 @@ signal revive_progress_changed(progress: float)
 @export_range(0.1, 5.0, 0.1) var revived_invulnerability := 1.5
 @export var revive_range := 52.0
 @export_range(0.1, 2.0, 0.05) var combo_end_recovery := 0.20
+@export_range(0.05, 0.3, 0.01) var attack_input_buffer_duration := 0.18
 @export_range(0.05, 0.5, 0.01) var dash_cancel_window := 0.18
 @export_range(0.1, 1.0, 0.01) var post_dash_attack_window := 0.30
 @export_range(0.05, 0.5, 0.01) var dash_invulnerability_duration := 0.12
@@ -65,6 +66,7 @@ var down_tap_timer = 0.0
 var combo_timer = 0.0
 var combo_step = 0
 var combo_end_recovery_timer := 0.0
+var attack_input_buffer_timer := 0.0
 var dash_cancel_timer := 0.0
 var post_dash_combo_timer := 0.0
 var total_combo_hits := 0
@@ -150,6 +152,10 @@ func _physics_process(delta: float) -> void:
 	)
 	var did_wall_jump := false
 
+	attack_input_buffer_timer = maxf(attack_input_buffer_timer - delta, 0.0)
+	if _attack_just_pressed() and not is_healing and not is_ground_slamming:
+		attack_input_buffer_timer = attack_input_buffer_duration
+
 	# Add gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -209,6 +215,7 @@ func _physics_process(delta: float) -> void:
 		if down_tap_timer > 0.0:
 			down_tap_timer = 0.0
 			is_ground_slamming = true
+			attack_input_buffer_timer = 0.0
 		else:
 			down_tap_timer = GROUND_SLAM_DOUBLE_TAP_WINDOW
 
@@ -227,8 +234,9 @@ func _physics_process(delta: float) -> void:
 			velocity.y = JUMP_VELOCITY
 			jumps_left -= 1
 
-	# Handle attack.
-	if _attack_just_pressed() and not is_attacking and not is_healing and not is_ground_slamming and dash_timer <= 0 and combo_end_recovery_timer <= 0.0:
+	# Consume one buffered press as soon as the existing attack state allows it.
+	if attack_input_buffer_timer > 0.0 and _can_start_attack():
+		attack_input_buffer_timer = 0.0
 		attack()
 
 	# Only control horizontal movement when not being knocked back.
@@ -440,6 +448,7 @@ func set_input_enabled(enabled: bool) -> void:
 	input_enabled = enabled
 
 	if not enabled:
+		attack_input_buffer_timer = 0.0
 		_cancel_heal()
 		_end_dash()
 		dash_invulnerability_timer = 0.0
@@ -475,6 +484,7 @@ func reset_for_new_run() -> void:
 	knockback_timer = 0.0
 	dash_timer = 0.0
 	down_tap_timer = 0.0
+	attack_input_buffer_timer = 0.0
 	_reset_combo()
 	attack_generation += 1
 	wall_climb_time = max_wall_climb_duration
@@ -535,10 +545,22 @@ func _attack_just_pressed() -> bool:
 	if not Input.is_action_just_pressed(_action(&"attack")):
 		return false
 
-	if input_profile == "p1" and get_viewport().gui_get_hovered_control() != null:
+	# Desktop mouse clicks over UI must stay blocked. On mobile, the held virtual
+	# joystick is a hovered Control and must not discard a separate attack touch.
+	if input_profile == "p1" and not OS.has_feature("mobile") and get_viewport().gui_get_hovered_control() != null:
 		return false
 
 	return true
+
+
+func _can_start_attack() -> bool:
+	return (
+		not is_attacking
+		and not is_healing
+		and not is_ground_slamming
+		and dash_timer <= 0.0
+		and combo_end_recovery_timer <= 0.0
+	)
 
 
 func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
@@ -587,6 +609,7 @@ func enter_downed() -> void:
 	velocity = Vector2.ZERO
 	knockback_timer = 0.0
 	dash_timer = 0.0
+	attack_input_buffer_timer = 0.0
 	_reset_combo()
 	_cancel_heal()
 	_end_dash()

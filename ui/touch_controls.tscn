@@ -1,130 +1,149 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://ui/touch_controls.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://ui/touch_button.svg" id="2_button"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_button"]
-radius = 62.0
+[ext_resource type="Script" path="res://ui/virtual_joystick.gd" id="3_joystick"]
+[ext_resource type="Texture2D" path="res://ui/touch_button_primary.svg" id="4_primary"]
+[ext_resource type="Script" path="res://ui/mobile_action_button.gd" id="5_action_button"]
 
 [node name="TouchControls" type="CanvasLayer"]
 layer = 40
 script = ExtResource("1_script")
 
-[node name="MoveLeft" type="TouchScreenButton" parent="."]
-position = Vector2(105, 605)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
-action = "left"
-
-[node name="Label" type="Label" parent="MoveLeft"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="SafeArea" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-text = "<"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 44
 
-[node name="MoveRight" type="TouchScreenButton" parent="."]
-position = Vector2(255, 605)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
-action = "right"
-
-[node name="Label" type="Label" parent="MoveRight"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="LeftCluster" type="Control" parent="SafeArea"]
+layout_mode = 1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -202.0
+offset_right = 220.0
+offset_bottom = -2.0
+grow_vertical = 0
 mouse_filter = 2
-text = ">"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 44
 
-[node name="Dash" type="TouchScreenButton" parent="."]
-position = Vector2(880, 610)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
+[node name="VirtualJoystick" type="Control" parent="SafeArea/LeftCluster"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 200.0
+mouse_filter = 2
+script = ExtResource("3_joystick")
+
+[node name="RightCluster" type="Control" parent="SafeArea"]
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -424.0
+offset_top = -326.0
+offset_right = -24.0
+offset_bottom = -36.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Dash" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(60, 215)
+script = ExtResource("5_action_button")
 action = "dash"
 
-[node name="Label" type="Label" parent="Dash"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Dash"]
+texture = ExtResource("2_button")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Dash"]
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
 mouse_filter = 2
 text = "DASH"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 
-[node name="Jump" type="TouchScreenButton" parent="."]
-position = Vector2(1030, 610)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
+[node name="Jump" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(185, 215)
+script = ExtResource("5_action_button")
 action = "jump"
+touch_radius = 54.0
 
-[node name="Label" type="Label" parent="Jump"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Jump"]
+texture = ExtResource("4_primary")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Jump"]
+offset_left = -54.0
+offset_top = -54.0
+offset_right = 54.0
+offset_bottom = 54.0
 mouse_filter = 2
 text = "PULO"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 
-[node name="Attack" type="TouchScreenButton" parent="."]
-position = Vector2(1180, 570)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
+[node name="Attack" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(325, 195)
+script = ExtResource("5_action_button")
 action = "attack"
+touch_radius = 54.0
 
-[node name="Label" type="Label" parent="Attack"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack"]
+texture = ExtResource("4_primary")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Attack"]
+offset_left = -54.0
+offset_top = -54.0
+offset_right = 54.0
+offset_bottom = 54.0
 mouse_filter = 2
 text = "ATAQUE"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 
-[node name="Interact" type="TouchScreenButton" parent="."]
-position = Vector2(1170, 405)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
+[node name="Interact" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(315, 75)
+script = ExtResource("5_action_button")
 action = "interact"
 
-[node name="Label" type="Label" parent="Interact"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Interact"]
+texture = ExtResource("2_button")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Interact"]
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
 mouse_filter = 2
 text = "USAR"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 
-[node name="Heal" type="TouchScreenButton" parent="."]
-position = Vector2(1015, 435)
-texture_normal = ExtResource("2_button")
-shape = SubResource("CircleShape2D_button")
+[node name="Heal" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(185, 75)
+script = ExtResource("5_action_button")
 action = "heal"
 
-[node name="Label" type="Label" parent="Heal"]
-offset_left = -70.0
-offset_top = -70.0
-offset_right = 70.0
-offset_bottom = 70.0
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Heal"]
+texture = ExtResource("2_button")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Heal"]
+offset_left = -48.0
+offset_top = -48.0
+offset_right = 48.0
+offset_bottom = 48.0
 mouse_filter = 2
 text = "CURA"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
