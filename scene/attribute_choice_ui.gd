@@ -68,7 +68,7 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 	selected_index = 0
 	title.text = "%s // ESCOLHA UM ATRIBUTO" % String(player.participant_id).to_upper()
 	for index in buttons.size():
-		var button := buttons[index]
+		var button: Button = buttons[index]
 		button.visible = index < options.size()
 		if button.visible:
 			var data := _option_data(options[index])
@@ -77,6 +77,7 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 		button.mouse_filter = Control.MOUSE_FILTER_STOP if player.input_profile == "p1" else Control.MOUSE_FILTER_IGNORE
 		button.focus_mode = Control.FOCUS_ALL if player.input_profile == "p1" else Control.FOCUS_NONE
 	player.set_input_enabled(false)
+	_set_touch_controls_blocked(true)
 	visible = true
 	if player.input_profile == "p1":
 		buttons[0].grab_focus()
@@ -103,6 +104,7 @@ func open_network_for(player: Node, available_options: Array[StringName]) -> boo
 			button.mouse_filter = Control.MOUSE_FILTER_STOP
 			button.focus_mode = Control.FOCUS_ALL
 	player.set_input_enabled(false)
+	_set_touch_controls_blocked(true)
 	visible = true
 	buttons[0].grab_focus()
 	return true
@@ -121,6 +123,18 @@ func _unhandled_input(event: InputEvent) -> void:
 	_update_p2_selection()
 	get_viewport().set_input_as_handled()
 
+
+func _input(event: InputEvent) -> void:
+	if not visible or not (event is InputEventScreenTouch) or not event.pressed:
+		return
+	var touch_event := event as InputEventScreenTouch
+	for index in options.size():
+		var button: Button = buttons[index]
+		if button.is_visible_in_tree() and button.get_global_rect().has_point(touch_event.position):
+			_choose(index)
+			get_viewport().set_input_as_handled()
+			return
+
 func _update_p2_selection() -> void:
 	for index in options.size():
 		buttons[index].button_pressed = index == selected_index
@@ -135,6 +149,7 @@ func _choose(index: int) -> void:
 		active_player = null
 		options.clear()
 		network_choice_mode = false
+		_set_touch_controls_blocked(false)
 		network_choice_submitted.emit(selected_attribute)
 		return
 	if active_chest == null:
@@ -145,11 +160,13 @@ func _choose(index: int) -> void:
 		active_player = null
 		active_chest = null
 		options.clear()
+		_set_touch_controls_blocked(false)
 
 
 func cancel_selection() -> void:
 	if active_player:
 		active_player.set_input_enabled(true)
+	_set_touch_controls_blocked(false)
 
 
 func _close_other_modals() -> void:
@@ -167,3 +184,12 @@ func _close_other_modals() -> void:
 	active_chest = null
 	options.clear()
 	network_choice_mode = false
+
+
+func _set_touch_controls_blocked(value: bool) -> void:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager == null:
+		return
+	var touch_controls := room_manager.get_node_or_null("TouchControls")
+	if touch_controls != null and touch_controls.has_method("set_menu_blocked"):
+		touch_controls.set_menu_blocked(value)

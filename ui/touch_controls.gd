@@ -2,10 +2,19 @@ extends CanvasLayer
 
 @onready var run_manager: Node = get_parent().get_node("RunManager")
 @onready var safe_area: Control = $SafeArea
+@onready var pause_button: Button = $SafeArea/PauseButton
 @onready var joystick: Control = $SafeArea/LeftCluster/VirtualJoystick
 @onready var left_cluster: Control = $SafeArea/LeftCluster
 @onready var right_cluster: Control = $SafeArea/RightCluster
 @onready var local_settings: LocalSettings = get_parent().get_node("LocalSettings")
+@onready var action_buttons: Array[Node] = [
+	$SafeArea/LeftCluster/Heal,
+	$SafeArea/RightCluster/Dash,
+	$SafeArea/RightCluster/Jump,
+	$SafeArea/RightCluster/Attack1,
+	$SafeArea/RightCluster/Attack2,
+	$SafeArea/RightCluster/Interact,
+]
 
 var menu_blocked := false
 
@@ -16,17 +25,27 @@ func _ready() -> void:
 	run_manager.state_changed.connect(_refresh_visibility)
 	get_viewport().size_changed.connect(_apply_safe_area)
 	local_settings.settings_changed.connect(_apply_control_scale)
-	$SafeArea/PauseButton.pressed.connect(_open_pause_menu)
-	$SafeArea/WeaponButton.pressed.connect(_switch_weapon)
+	pause_button.pressed.connect(_open_pause_menu)
 	_apply_safe_area()
 	_apply_control_scale()
 	_refresh_visibility()
 
 
+func _input(event: InputEvent) -> void:
+	if (
+		visible
+		and not menu_blocked
+		and event is InputEventScreenTouch
+		and event.pressed
+		and pause_button.get_global_rect().has_point(event.position)
+	):
+		_open_pause_menu()
+		get_viewport().set_input_as_handled()
+
+
 func _refresh_visibility() -> void:
 	var should_be_visible: bool = not menu_blocked and _touchscreen_is_available() and bool(run_manager.is_gameplay_context_active())
-	if visible and not should_be_visible and joystick.has_method("release_input"):
-		joystick.release_input()
+	_set_touch_input_active(should_be_visible)
 	visible = should_be_visible
 
 
@@ -59,17 +78,11 @@ func _apply_safe_area() -> void:
 
 func _apply_control_scale() -> void:
 	var control_scale: float = local_settings.touch_control_scale
-	var scale_delta: float = control_scale - 1.0
-	left_cluster.pivot_offset = left_cluster.size * 0.5
-	right_cluster.pivot_offset = right_cluster.size * 0.5
+	# Scale inward/upward while keeping the safe-area corners fixed.
+	left_cluster.pivot_offset = Vector2(0.0, left_cluster.size.y)
+	right_cluster.pivot_offset = right_cluster.size
 	left_cluster.scale = Vector2.ONE * control_scale
 	right_cluster.scale = Vector2.ONE * control_scale
-	left_cluster.offset_top = -202.0 - maxf(scale_delta, 0.0) * 100.0
-	left_cluster.offset_bottom = -2.0 - maxf(scale_delta, 0.0) * 100.0
-	right_cluster.offset_left = -424.0 - maxf(scale_delta, 0.0) * 190.0
-	right_cluster.offset_right = -24.0 - maxf(scale_delta, 0.0) * 190.0
-	right_cluster.offset_top = -326.0 - maxf(scale_delta, 0.0) * 145.0
-	right_cluster.offset_bottom = -36.0 - maxf(scale_delta, 0.0) * 145.0
 
 
 func _open_pause_menu() -> void:
@@ -78,12 +91,18 @@ func _open_pause_menu() -> void:
 		pause_menu.toggle_menu()
 
 
-func _switch_weapon() -> void:
-	Input.action_press(&"switch_weapon")
-	await get_tree().physics_frame
-	Input.action_release(&"switch_weapon")
-
-
 func set_menu_blocked(value: bool) -> void:
 	menu_blocked = value
 	_refresh_visibility()
+
+
+func _set_touch_input_active(value: bool) -> void:
+	if not value:
+		if joystick.has_method("release_input"):
+			joystick.release_input()
+		for button in action_buttons:
+			if button.has_method("release_input"):
+				button.release_input()
+	joystick.mouse_filter = Control.MOUSE_FILTER_STOP if value else Control.MOUSE_FILTER_IGNORE
+	for button in action_buttons:
+		button.set_process_input(value)

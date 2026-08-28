@@ -32,34 +32,43 @@ grow_horizontal = 0
 text = "II"
 theme_override_font_sizes/font_size = 20
 
-[node name="WeaponButton" type="Button" parent="SafeArea"]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -168.0
-offset_top = 18.0
-offset_right = -92.0
-offset_bottom = 68.0
-grow_horizontal = 0
-text = "ARMA"
-theme_override_font_sizes/font_size = 14
-
 [node name="LeftCluster" type="Control" parent="SafeArea"]
 layout_mode = 1
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = -202.0
+offset_top = -326.0
 offset_right = 220.0
-offset_bottom = -2.0
+offset_bottom = -6.0
 grow_vertical = 0
 mouse_filter = 2
 
+[node name="Heal" type="Node2D" parent="SafeArea/LeftCluster"]
+position = Vector2(100, 48)
+script = ExtResource("5_action_button")
+action = "heal"
+touch_radius = 42.0
+
+[node name="Visual" type="Sprite2D" parent="SafeArea/LeftCluster/Heal"]
+scale = Vector2(0.86, 0.86)
+texture = ExtResource("2_button")
+
+[node name="Label" type="Label" parent="SafeArea/LeftCluster/Heal"]
+offset_left = -42.0
+offset_top = -42.0
+offset_right = 42.0
+offset_bottom = 42.0
+mouse_filter = 2
+text = "CURAR"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 14
+
 [node name="VirtualJoystick" type="Control" parent="SafeArea/LeftCluster"]
 layout_mode = 0
+offset_top = 120.0
 offset_right = 200.0
-offset_bottom = 200.0
+offset_bottom = 320.0
 mouse_filter = 2
 script = ExtResource("3_joystick")
 
@@ -70,15 +79,15 @@ anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -424.0
-offset_top = -326.0
+offset_top = -380.0
 offset_right = -24.0
-offset_bottom = -36.0
+offset_bottom = -20.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 
 [node name="Dash" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(60, 215)
+position = Vector2(185, 145)
 script = ExtResource("5_action_button")
 action = "dash"
 
@@ -97,10 +106,10 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 16
 
 [node name="Jump" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(185, 215)
+position = Vector2(185, 275)
 script = ExtResource("5_action_button")
 action = "jump"
-touch_radius = 54.0
+touch_radius = 52.0
 
 [node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Jump"]
 texture = ExtResource("4_primary")
@@ -117,10 +126,10 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 18
 
 [node name="Attack1" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(325, 195)
+position = Vector2(320, 275)
 script = ExtResource("5_action_button")
 action = "attack_slot_1"
-touch_radius = 54.0
+touch_radius = 56.0
 
 [node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack1"]
 texture = ExtResource("4_primary")
@@ -137,7 +146,7 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 16
 
 [node name="Attack2" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(65, 82)
+position = Vector2(320, 145)
 script = ExtResource("5_action_button")
 action = "attack_slot_2"
 touch_radius = 50.0
@@ -157,39 +166,22 @@ vertical_alignment = 1
 theme_override_font_sizes/font_size = 16
 
 [node name="Interact" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(315, 75)
+position = Vector2(70, 35)
 script = ExtResource("5_action_button")
 action = "interact"
+touch_radius = 40.0
 
 [node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Interact"]
+scale = Vector2(0.84, 0.84)
 texture = ExtResource("2_button")
 
 [node name="Label" type="Label" parent="SafeArea/RightCluster/Interact"]
-offset_left = -48.0
-offset_top = -48.0
-offset_right = 48.0
-offset_bottom = 48.0
+offset_left = -40.0
+offset_top = -40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
 text = "USAR"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_font_sizes/font_size = 16
-
-[node name="Heal" type="Node2D" parent="SafeArea/RightCluster"]
-position = Vector2(185, 75)
-script = ExtResource("5_action_button")
-action = "heal"
-
-[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Heal"]
-texture = ExtResource("2_button")
-
-[node name="Label" type="Label" parent="SafeArea/RightCluster/Heal"]
-offset_left = -48.0
-offset_top = -48.0
-offset_right = 48.0
-offset_bottom = 48.0
-mouse_filter = 2
-text = "CURA"
-horizontal_alignment = 1
-vertical_alignment = 1
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 14

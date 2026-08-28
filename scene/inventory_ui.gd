@@ -5,6 +5,7 @@ var slot_buttons: Array[Button] = []
 var _blocked_players: Array[Node] = []
 var _tree_paused := false
 var _return_to_pause := false
+var _close_button: Button
 
 
 func _ready() -> void:
@@ -31,10 +32,11 @@ func _ready() -> void:
 		button.pressed.connect(_select_slot.bind(index))
 		panel.add_child(button)
 		slot_buttons.append(button)
-	var close := Button.new()
-	close.text = "FECHAR"
-	close.pressed.connect(close_inventory)
-	panel.add_child(close)
+	_close_button = Button.new()
+	_close_button.text = "FECHAR"
+	_close_button.custom_minimum_size = Vector2(540, 54)
+	_close_button.pressed.connect(close_inventory)
+	panel.add_child(_close_button)
 	overlay.visible = false
 
 
@@ -45,6 +47,17 @@ func _input(event: InputEvent) -> void:
 	elif overlay.visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
 		close_inventory()
 		get_viewport().set_input_as_handled()
+	elif overlay.visible and event is InputEventScreenTouch and event.pressed:
+		var touch_event := event as InputEventScreenTouch
+		if _touch_hits(_close_button, touch_event.position):
+			close_inventory()
+			get_viewport().set_input_as_handled()
+			return
+		for index in slot_buttons.size():
+			if _touch_hits(slot_buttons[index], touch_event.position) and not slot_buttons[index].disabled:
+				_select_slot(index)
+				get_viewport().set_input_as_handled()
+				return
 
 
 func toggle_inventory() -> void:
@@ -141,3 +154,7 @@ func _block_local_players(room_manager: Node) -> void:
 	if local != null and local.input_enabled:
 		local.set_input_enabled(false)
 		_blocked_players.append(local)
+
+
+func _touch_hits(control: Control, position: Vector2) -> bool:
+	return control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(position)

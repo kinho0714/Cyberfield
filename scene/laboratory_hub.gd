@@ -5,8 +5,10 @@ func _ready() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var summary := $LastRunSummary as Label
 	if run_manager == null or run_manager.last_run_results.is_empty():
+		summary.visible = false
 		summary.text = "ÚLTIMA RUN // NENHUM RESULTADO NESTA SESSÃO"
 		return
+	summary.visible = true
 	var result: Dictionary = run_manager.last_run_results
 	var weapons := _normalize_weapons(result.get("weapons_found"))
 	var participants := _normalize_dictionary(result.get("participants"))

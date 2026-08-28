@@ -8,6 +8,8 @@ var _blocked_players: Array[Node] = []
 var _tree_paused := false
 var _destination_panel: VBoxContainer
 var _highlighted_teleporter_id: StringName
+var _close_button: Button
+var _destination_buttons: Dictionary = {}
 
 
 func _ready() -> void:
@@ -19,6 +21,13 @@ func _ready() -> void:
 	_destination_panel.position = Vector2(size.x - 310.0, 80.0)
 	_destination_panel.size = Vector2(250.0, 500.0)
 	add_child(_destination_panel)
+	_close_button = Button.new()
+	_close_button.text = "FECHAR"
+	_close_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	_close_button.position = Vector2(-170.0, 20.0)
+	_close_button.size = Vector2(150.0, 50.0)
+	_close_button.pressed.connect(close_map)
+	add_child(_close_button)
 	resized.connect(_on_resized)
 
 
@@ -29,6 +38,18 @@ func _input(event: InputEvent) -> void:
 	elif visible and event.is_action_pressed(&"ui_cancel") and not event.is_echo():
 		close_map()
 		get_viewport().set_input_as_handled()
+	elif visible and event is InputEventScreenTouch and event.pressed:
+		var touch_event := event as InputEventScreenTouch
+		if _touch_hits(_close_button, touch_event.position):
+			close_map()
+			get_viewport().set_input_as_handled()
+			return
+		for button_value: Variant in _destination_buttons:
+			var button := button_value as Button
+			if _touch_hits(button, touch_event.position):
+				_choose_destination(StringName(_destination_buttons[button]))
+				get_viewport().set_input_as_handled()
+				return
 
 
 func toggle_map() -> void:
@@ -160,6 +181,7 @@ func _draw_players(origin: Vector2, scale: float, modules: Array) -> void:
 
 
 func _rebuild_destinations() -> void:
+	_destination_buttons.clear()
 	for child in _destination_panel.get_children():
 		child.queue_free()
 	if source_teleporter_id.is_empty():
@@ -179,6 +201,7 @@ func _rebuild_destinations() -> void:
 		button.focus_entered.connect(_highlight_destination.bind(destination_id))
 		button.mouse_entered.connect(_highlight_destination.bind(destination_id))
 		_destination_panel.add_child(button)
+		_destination_buttons[button] = destination_id
 		if not button.has_focus():
 			button.grab_focus()
 
@@ -208,6 +231,10 @@ func _block_local_players(room_manager: Node) -> void:
 func _map_state() -> BiomeMapState:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	return run_manager.get_current_map_state() if run_manager != null else null
+
+
+func _touch_hits(control: Control, position: Vector2) -> bool:
+	return control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(position)
 
 
 func _map_transform(modules: Array) -> Dictionary:

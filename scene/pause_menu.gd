@@ -11,6 +11,7 @@ extends CanvasLayer
 
 var input_blocked_players: Array[Node] = []
 var tree_paused_by_menu := false
+var settings_slider_touch_index := -1
 
 
 func _ready() -> void:
@@ -46,6 +47,21 @@ func _input(event: InputEvent) -> void:
 			return
 		toggle_menu()
 		get_viewport().set_input_as_handled()
+		return
+	if not overlay.visible:
+		return
+	if event is InputEventScreenTouch:
+		var touch_event := event as InputEventScreenTouch
+		if touch_event.pressed:
+			_handle_screen_touch_pressed(touch_event)
+		elif touch_event.index == settings_slider_touch_index:
+			settings_slider_touch_index = -1
+			get_viewport().set_input_as_handled()
+	elif event is InputEventScreenDrag:
+		var drag_event := event as InputEventScreenDrag
+		if drag_event.index == settings_slider_touch_index:
+			_update_touch_slider(drag_event.position)
+			get_viewport().set_input_as_handled()
 
 
 func toggle_menu() -> void:
@@ -75,6 +91,7 @@ func open_menu() -> void:
 
 
 func close_menu() -> void:
+	settings_slider_touch_index = -1
 	if tree_paused_by_menu:
 		get_tree().paused = false
 		tree_paused_by_menu = false
@@ -109,6 +126,58 @@ func _show_settings() -> void:
 	main_page.visible = false
 	settings_page.visible = true
 	zoom_option.grab_focus()
+
+
+func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
+	var position: Vector2 = event.position
+	if settings_page.visible:
+		if _touch_hits($Overlay/Center/SettingsPage/Back, position):
+			_show_main()
+		elif _touch_hits(zoom_option, position):
+			_cycle_camera_zoom()
+		elif _touch_hits(debug_toggle, position):
+			var next_debug_value: bool = not debug_toggle.button_pressed
+			debug_toggle.set_pressed_no_signal(next_debug_value)
+			_set_debug_hud(next_debug_value)
+		elif _touch_hits(touch_slider, position):
+			settings_slider_touch_index = event.index
+			_update_touch_slider(position)
+		else:
+			return
+	else:
+		if _touch_hits($Overlay/Center/MainPage/Continue, position):
+			close_menu()
+		elif _touch_hits($Overlay/Center/MainPage/Inventory, position):
+			_open_inventory()
+		elif _touch_hits($Overlay/Center/MainPage/Settings, position):
+			_show_settings()
+		elif _touch_hits($Overlay/Center/MainPage/Abandon, position):
+			_abandon_run()
+		elif _touch_hits($Overlay/Center/MainPage/MainMenu, position):
+			_return_to_main_menu()
+		else:
+			return
+	get_viewport().set_input_as_handled()
+
+
+func _touch_hits(control: Control, position: Vector2) -> bool:
+	return control.is_visible_in_tree() and control.get_global_rect().has_point(position)
+
+
+func _cycle_camera_zoom() -> void:
+	if zoom_option.item_count <= 0:
+		return
+	var next_index: int = wrapi(zoom_option.selected + 1, 0, zoom_option.item_count)
+	zoom_option.select(next_index)
+	_set_camera_zoom(next_index)
+
+
+func _update_touch_slider(position: Vector2) -> void:
+	var slider_rect: Rect2 = touch_slider.get_global_rect()
+	if slider_rect.size.x <= 0.0:
+		return
+	var ratio: float = clampf((position.x - slider_rect.position.x) / slider_rect.size.x, 0.0, 1.0)
+	touch_slider.value = lerpf(touch_slider.min_value, touch_slider.max_value, ratio)
 
 
 func _open_inventory() -> void:
