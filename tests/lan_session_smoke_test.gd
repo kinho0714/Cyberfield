@@ -4,6 +4,10 @@ const LAN_SESSION_SCRIPT := preload("res://scene/network/lan_session.gd")
 
 
 func _initialize() -> void:
+	call_deferred("_run")
+
+
+func _run() -> void:
 	var session := LAN_SESSION_SCRIPT.new() as LanSession
 	root.add_child(session)
 	var result := session.host_room("Cyberfield Smoke Test")

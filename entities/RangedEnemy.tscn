@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://entities/RangedEnemy.gd" id="1"]
+[ext_resource type="Script" path="res://entities/temp_pixel_visual.gd" id="2_temp_visual"]
 
 [sub_resource type="CapsuleShape2D" id="Capsule"]
 radius = 8.0
@@ -29,6 +30,11 @@ color = Color(1, 0.75, 1, 1)
 [node name="Weapon" type="Polygon2D" parent="Visual"]
 polygon = PackedVector2Array(5, -1, 20, -1, 20, 4, 5, 4)
 color = Color(0.3, 0.12, 0.38, 1)
+
+[node name="TempPixelVisual" type="Node2D" parent="."]
+script = ExtResource("2_temp_visual")
+character_kind = "ranged"
+source_visual_path = NodePath("../Visual")
 
 [node name="Muzzle" type="Marker2D" parent="Visual"]
 position = Vector2(21, 1)

@@ -3,6 +3,11 @@ extends RefCounted
 
 signal changed
 
+const TRAP_UNOPENED := &"unopened"
+const TRAP_ACTIVE := &"active"
+const TRAP_CLEARED := &"cleared"
+const TRAP_REWARDED := &"rewarded"
+
 var stage_id: StringName
 var discovered_module_ids: Dictionary = {}
 var discovered_connections: Dictionary = {}
@@ -17,6 +22,7 @@ var discovered_bandage_ids: Dictionary = {}
 var collected_bandage_ids: Dictionary = {}
 var discovered_teleporter_ids: Dictionary = {}
 var active_teleporter_ids: Dictionary = {}
+var trap_event_states: Dictionary = {}
 
 
 func _init(value: StringName = &"") -> void:
@@ -57,6 +63,48 @@ func activate_teleporter(teleporter_id: StringName) -> bool:
 	return did_change
 
 
+func register_trap_event(trap_id: StringName, enemy_ids: Array[StringName]) -> bool:
+	if trap_id.is_empty() or trap_event_states.has(trap_id):
+		return false
+	var serialized_ids: Array[String] = []
+	for enemy_id in enemy_ids:
+		serialized_ids.append(String(enemy_id))
+	trap_event_states[trap_id] = {"state": String(TRAP_UNOPENED), "enemy_ids": serialized_ids}
+	changed.emit()
+	return true
+
+
+func get_trap_event_state(trap_id: StringName) -> StringName:
+	var event: Dictionary = trap_event_states.get(trap_id, {}) as Dictionary
+	return StringName(event.get("state", TRAP_UNOPENED))
+
+
+func get_trap_event_enemy_ids(trap_id: StringName) -> Array[StringName]:
+	var result: Array[StringName] = []
+	var event: Dictionary = trap_event_states.get(trap_id, {}) as Dictionary
+	for value: Variant in event.get("enemy_ids", []):
+		result.append(StringName(value))
+	return result
+
+
+func transition_trap_event(trap_id: StringName, next_state: StringName) -> bool:
+	if not trap_event_states.has(trap_id):
+		return false
+	var event: Dictionary = trap_event_states[trap_id]
+	var current_state := StringName(event.get("state", TRAP_UNOPENED))
+	var valid_transition := (
+		current_state == TRAP_UNOPENED and next_state == TRAP_ACTIVE
+		or current_state == TRAP_ACTIVE and next_state == TRAP_CLEARED
+		or current_state == TRAP_CLEARED and next_state == TRAP_REWARDED
+	)
+	if not valid_transition:
+		return false
+	event.state = String(next_state)
+	trap_event_states[trap_id] = event
+	changed.emit()
+	return true
+
+
 func to_dictionary() -> Dictionary:
 	return {
 		"stage_id": String(stage_id),
@@ -73,6 +121,7 @@ func to_dictionary() -> Dictionary:
 		"collected_bandage_ids": _sorted_strings(collected_bandage_ids),
 		"discovered_teleporter_ids": _sorted_strings(discovered_teleporter_ids),
 		"active_teleporter_ids": _sorted_strings(active_teleporter_ids),
+		"trap_event_states": _serialized_trap_events(),
 	}
 
 
@@ -91,6 +140,7 @@ func apply_dictionary(value: Dictionary) -> void:
 	_apply_array(collected_bandage_ids, value.get("collected_bandage_ids", []))
 	_apply_array(discovered_teleporter_ids, value.get("discovered_teleporter_ids", []))
 	_apply_array(active_teleporter_ids, value.get("active_teleporter_ids", []))
+	_apply_trap_events(value.get("trap_event_states", []))
 	changed.emit()
 
 
@@ -131,3 +181,34 @@ func _apply_array(target: Dictionary, values: Variant) -> void:
 	if values is Array:
 		for value: Variant in values:
 			target[StringName(value)] = true
+
+
+func _serialized_trap_events() -> Array[Dictionary]:
+	var ids: Array[String] = []
+	for trap_id: Variant in trap_event_states.keys():
+		ids.append(String(trap_id))
+	ids.sort()
+	var result: Array[Dictionary] = []
+	for trap_id in ids:
+		var event: Dictionary = trap_event_states[StringName(trap_id)]
+		result.append({
+			"trap_id": trap_id,
+			"state": String(event.get("state", TRAP_UNOPENED)),
+			"enemy_ids": (event.get("enemy_ids", []) as Array).duplicate(),
+		})
+	return result
+
+
+func _apply_trap_events(values: Variant) -> void:
+	trap_event_states.clear()
+	if not values is Array:
+		return
+	for value: Variant in values:
+		var event := value as Dictionary
+		var trap_id := StringName(event.get("trap_id", &""))
+		if trap_id.is_empty():
+			continue
+		trap_event_states[trap_id] = {
+			"state": String(event.get("state", TRAP_UNOPENED)),
+			"enemy_ids": (event.get("enemy_ids", []) as Array).duplicate(),
+		}

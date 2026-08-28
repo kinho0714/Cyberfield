@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scene/interactables/run_portal.gd" id="1_portal"]
 [ext_resource type="Script" path="res://scene/laboratory_hub.gd" id="2_hub"]
+[ext_resource type="Script" path="res://scene/interactables/meta_terminal.gd" id="3_meta_terminal"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(1280, 80)
@@ -14,6 +15,9 @@ size = Vector2(180, 130)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
 size = Vector2(260, 24)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_terminal"]
+size = Vector2(120, 110)
 
 [node name="LaboratoryHub" type="Node2D"]
 script = ExtResource("2_hub")
@@ -38,7 +42,29 @@ text = "LABORATÓRIO"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 34
 
+[node name="Subtitle" type="Label" parent="."]
+offset_left = 390.0
+offset_top = 112.0
+offset_right = 890.0
+offset_bottom = 145.0
+mouse_filter = 2
+text = "PREPARAÇÃO • DESBLOQUEIOS • PRÓXIMA RUN"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.35, 0.82, 0.92, 1)
+
+[node name="MetaSummary" type="Label" parent="."]
+offset_left = 350.0
+offset_top = 150.0
+offset_right = 930.0
+offset_bottom = 210.0
+mouse_filter = 2
+text = "CRÉDITOS  ◈ 0    •    ARMAS LIBERADAS  2/3    •    RUNS  0\nTERMINAL À ESQUERDA  •  PORTAL À DIREITA"
+horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.78, 0.9, 0.94, 1)
+theme_override_font_sizes/font_size = 17
+
 [node name="LastRunSummary" type="Label" parent="."]
+visible = false
 offset_left = 350.0
 offset_top = 132.0
 offset_right = 930.0
@@ -106,6 +132,34 @@ horizontal_alignment = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/RunPortal"]
 shape = SubResource("RectangleShape2D_portal")
+
+[node name="MetaTerminal" type="Area2D" parent="Gameplay" groups=["interactable"]]
+position = Vector2(210, 585)
+collision_layer = 2
+collision_mask = 1
+monitoring = true
+script = ExtResource("3_meta_terminal")
+
+[node name="Body" type="Polygon2D" parent="Gameplay/MetaTerminal"]
+polygon = PackedVector2Array(-44, -68, 44, -68, 50, 42, -50, 42)
+color = Color(0.055, 0.16, 0.22, 1)
+
+[node name="Screen" type="Polygon2D" parent="Gameplay/MetaTerminal"]
+polygon = PackedVector2Array(-34, -56, 34, -56, 34, -12, -34, -12)
+color = Color(0.08, 0.8, 0.82, 1)
+
+[node name="Prompt" type="Label" parent="Gameplay/MetaTerminal"]
+visible = false
+offset_left = -145.0
+offset_top = -130.0
+offset_right = 145.0
+offset_bottom = -82.0
+mouse_filter = 2
+text = "TERMINAL DE PREPARAÇÃO\n[USAR] ACESSAR"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/MetaTerminal"]
+shape = SubResource("RectangleShape2D_terminal")
 
 [node name="Geometry" type="Node2D" parent="."]
 

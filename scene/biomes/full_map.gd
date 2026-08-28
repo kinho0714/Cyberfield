@@ -10,6 +10,10 @@ var _destination_panel: VBoxContainer
 var _highlighted_teleporter_id: StringName
 var _close_button: Button
 var _destination_buttons: Dictionary = {}
+var _vote_destination_id: StringName
+var _vote_confirmed_ids: Array[StringName] = []
+var _vote_active_ids: Array[StringName] = []
+var _vote_status: Label
 
 
 func _ready() -> void:
@@ -28,6 +32,12 @@ func _ready() -> void:
 	_close_button.size = Vector2(150.0, 50.0)
 	_close_button.pressed.connect(close_map)
 	add_child(_close_button)
+	_vote_status = Label.new()
+	_vote_status.position = Vector2(54.0, 64.0)
+	_vote_status.size = Vector2(520.0, 150.0)
+	_vote_status.add_theme_font_size_override("font_size", 18)
+	_vote_status.visible = false
+	add_child(_vote_status)
 	resized.connect(_on_resized)
 
 
@@ -85,24 +95,35 @@ func open_map(origin_id: StringName = &"") -> void:
 	queue_redraw()
 
 
-func close_map() -> void:
+func close_map(notify_cancel: bool = true) -> void:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if notify_cancel and not _vote_destination_id.is_empty() and room_manager != null:
+		var lan_session: LanSession = room_manager.get_node("LanSession")
+		if lan_session.is_client():
+			lan_session.cancel_fast_travel_confirmation()
+		else:
+			room_manager.cancel_fast_travel_confirmation(lan_session.get_local_participant_id())
 	if _tree_paused:
 		get_tree().paused = false
 		_tree_paused = false
 	visible = false
 	source_teleporter_id = &""
-	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
 		room_manager.get_node("TouchControls").set_menu_blocked(false)
 	for player in _blocked_players:
 		if is_instance_valid(player):
 			player.set_input_enabled(true)
 	_blocked_players.clear()
+	_vote_destination_id = &""
+	_vote_confirmed_ids.clear()
+	_vote_active_ids.clear()
+	_vote_status.visible = false
 
 
 func _process(_delta: float) -> void:
 	if visible:
 		queue_redraw()
+		_process_local_vote_confirmations()
 
 
 func _draw() -> void:
@@ -209,8 +230,48 @@ func _rebuild_destinations() -> void:
 func _choose_destination(destination_id: StringName) -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	var origin_id := source_teleporter_id
-	close_map()
-	room_manager.request_fast_travel(origin_id, destination_id)
+	var lan_session: LanSession = room_manager.get_node("LanSession")
+	room_manager.request_fast_travel(origin_id, destination_id, lan_session.get_local_participant_id())
+
+
+func apply_fast_travel_vote(origin_id: StringName, destination_id: StringName, confirmed_ids: Array[StringName], active_ids: Array[StringName]) -> void:
+	if origin_id.is_empty() or destination_id.is_empty():
+		clear_fast_travel_vote()
+		return
+	if not visible:
+		open_map(origin_id)
+	source_teleporter_id = origin_id
+	_vote_destination_id = destination_id
+	_vote_confirmed_ids = confirmed_ids.duplicate()
+	_vote_active_ids = active_ids.duplicate()
+	_vote_status.visible = true
+	var lines: PackedStringArray = ["CONFIRMAÇÃO COLETIVA // %s" % String(destination_id).to_upper()]
+	for participant_id in _vote_active_ids:
+		lines.append("%s — %s" % [String(participant_id).replace("player_", "P"), "PRONTO" if _vote_confirmed_ids.has(participant_id) else "AGUARDANDO"])
+	_vote_status.text = "\n".join(lines)
+
+
+func clear_fast_travel_vote() -> void:
+	if visible and not _vote_destination_id.is_empty():
+		close_map(false)
+	_vote_destination_id = &""
+	_vote_confirmed_ids.clear()
+	_vote_active_ids.clear()
+	if _vote_status != null:
+		_vote_status.visible = false
+
+
+func _process_local_vote_confirmations() -> void:
+	if _vote_destination_id.is_empty():
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager == null:
+		return
+	var lan_session: LanSession = room_manager.get_node("LanSession")
+	for player in room_manager.get_players():
+		var is_local: bool = not lan_session.is_network_game() or player.participant_id == lan_session.get_local_participant_id()
+		if is_local and _vote_active_ids.has(player.participant_id) and not _vote_confirmed_ids.has(player.participant_id) and Input.is_action_just_pressed(player._action(&"interact")):
+			room_manager.request_fast_travel(source_teleporter_id, _vote_destination_id, player.participant_id)
 
 
 func _highlight_destination(destination_id: StringName) -> void:
@@ -222,7 +283,7 @@ func _block_local_players(room_manager: Node) -> void:
 	_blocked_players.clear()
 	var lan_session: LanSession = room_manager.get_node("LanSession")
 	for player in room_manager.get_players():
-		var local: bool = not lan_session.is_network_game() or lan_session.is_host() and player.participant_id == &"player_1" or lan_session.is_client() and player.participant_id == &"player_2"
+		var local: bool = not lan_session.is_network_game() or player.participant_id == lan_session.get_local_participant_id()
 		if local and player.input_enabled:
 			player.set_input_enabled(false)
 			_blocked_players.append(player)

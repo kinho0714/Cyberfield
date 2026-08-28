@@ -1,9 +1,10 @@
-[gd_scene format=3 uid="uid://s2lruayi3b4v"]
+[gd_scene load_steps=30 format=3 uid="uid://s2lruayi3b4v"]
 
 [ext_resource type="Script" uid="uid://br8bt27e2bvhu" path="res://entities/Enemy.gd" id="1_udkgx"]
 [ext_resource type="Texture2D" uid="uid://csubg0u0yn2r7" path="res://sprites/3 - Skeleton/Bone_Toss (32 x 32).png" id="2_vec32"]
 [ext_resource type="Texture2D" uid="uid://dr65stk41a8hg" path="res://sprites/3 - Skeleton/Limping_Movement (32 x 32).png" id="3_trd40"]
 [ext_resource type="Texture2D" uid="uid://koo0sji40ha0" path="res://sprites/3 - Skeleton/Standing_Idle (32 x 32).png" id="3_up2cs"]
+[ext_resource type="Script" path="res://entities/temp_pixel_visual.gd" id="4_temp_visual"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pedfs"]
 atlas = ExtResource("2_vec32")
@@ -178,6 +179,11 @@ sprite_frames = SubResource("SpriteFrames_h0jfm")
 animation = &"attack"
 autoplay = "idle"
 flip_h = true
+
+[node name="TempPixelVisual" type="Node2D" parent="."]
+script = ExtResource("4_temp_visual")
+character_kind = "common"
+source_visual_path = NodePath("../AnimatedSprite2D")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=961697689]
 shape = SubResource("CapsuleShape2D_h0jfm")

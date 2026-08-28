@@ -45,9 +45,9 @@ func interact(player: Node2D = null) -> void:
 			_refresh()
 			return
 	var lan_session := get_tree().get_first_node_in_group("lan_session")
-	if lan_session != null and lan_session.is_host() and player.participant_id == &"player_2":
+	if lan_session != null and lan_session.is_host() and player.participant_id != lan_session.get_local_participant_id():
 		var network_options: Array[StringName] = manager.get_chest_options(chest_id, chest_type == "challenge")
-		lan_session.request_remote_attribute_choice(chest_id, network_options)
+		lan_session.request_remote_attribute_choice(player.participant_id, chest_id, network_options)
 		return
 	var choice_ui := get_tree().get_first_node_in_group("attribute_choice_ui")
 	if choice_ui:

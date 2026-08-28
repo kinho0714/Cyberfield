@@ -42,6 +42,16 @@ func _ready() -> void:
 		difficulty.set_item_metadata(difficulty.item_count - 1, entry[1])
 
 
+func _input(event: InputEvent) -> void:
+	if not visible or not (event is InputEventScreenTouch):
+		return
+	var touch_event := event as InputEventScreenTouch
+	if not touch_event.pressed:
+		return
+	if _handle_touch_pressed(touch_event.position):
+		get_viewport().set_input_as_handled()
+
+
 func open() -> void:
 	visible = true
 	_return_to_main()
@@ -94,7 +104,7 @@ func _select_room(index: int) -> void:
 		return
 	selected_room_key = room_key
 	join_button.disabled = false
-	search_status.text = "Selecionada: %s // %s:%d // %d/2" % [String(room.get("name", "Sala")), String(room.get("address", "")), int(room.get("port", 0)), int(room.get("players", 0))]
+	search_status.text = "Selecionada: %s // %s:%d // %d/%d" % [String(room.get("name", "Sala")), String(room.get("address", "")), int(room.get("port", 0)), int(room.get("players", 0)), LanSession.MAX_PLAYERS]
 
 
 func _join_ip() -> void:
@@ -126,11 +136,70 @@ func _show_page(page: VBoxContainer, focus: Control) -> void:
 	focus.grab_focus()
 
 
+func _handle_touch_pressed(position: Vector2) -> bool:
+	if main_page.visible:
+		if _touch_hits($Overlay/Center/MainPage/Create, position):
+			_create_room()
+		elif _touch_hits($Overlay/Center/MainPage/Search, position):
+			_search_rooms()
+		elif _touch_hits($Overlay/Center/MainPage/DirectIp, position):
+			_show_page(ip_page, ip_input)
+		elif _touch_hits($Overlay/Center/MainPage/Back, position):
+			_close()
+		else:
+			return false
+		return true
+	if host_page.visible:
+		if lan_session.is_host() and _touch_hits(difficulty, position):
+			difficulty.get_popup().hide()
+			difficulty.select(wrapi(difficulty.selected + 1, 0, difficulty.item_count))
+		elif lan_session.is_host() and _touch_hits($Overlay/Center/HostPage/Start, position):
+			_start_run()
+		elif _touch_hits($Overlay/Center/HostPage/Back, position):
+			_return_to_main()
+		else:
+			return false
+		return true
+	if search_page.visible:
+		if _touch_hits(room_list, position):
+			var local_position: Vector2 = room_list.get_global_transform_with_canvas().affine_inverse() * position
+			var item_index := room_list.get_item_at_position(local_position, true)
+			if item_index >= 0:
+				room_list.select(item_index)
+				_select_room(item_index)
+			return true
+		if _touch_hits(join_button, position):
+			_join_selected_room()
+		elif _touch_hits($Overlay/Center/SearchPage/Refresh, position):
+			_search_rooms()
+		elif _touch_hits($Overlay/Center/SearchPage/DirectIp, position):
+			_show_page(ip_page, ip_input)
+		elif _touch_hits($Overlay/Center/SearchPage/Back, position):
+			_return_to_main()
+		else:
+			return false
+		return true
+	if ip_page.visible:
+		if _touch_hits($Overlay/Center/IpPage/Join, position):
+			_join_ip()
+		elif _touch_hits($Overlay/Center/IpPage/Back, position):
+			_return_to_main()
+		else:
+			return false
+		return true
+	return false
+
+
+func _touch_hits(control: Control, position: Vector2) -> bool:
+	return control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(position)
+
+
 func _refresh() -> void:
 	var role_text := lan_session.get_role_label()
 	var player_count := lan_session.get_player_count()
-	var host_only_note := "\nDEBUG: o host pode iniciar 1/2." if lan_session.role == LanSession.Role.HOST and player_count == 1 else ""
-	host_status.text = "%s // PEER %d\nJOGADORES: %d/2\n%s%s\n%s" % [role_text, multiplayer.get_unique_id(), player_count, lan_session.connection_message, host_only_note, lan_session.get_discovery_diagnostics()]
+	var peer_id := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED else 0
+	var host_only_note := "\nDEBUG: o host pode iniciar 1/%d." % LanSession.MAX_PLAYERS if lan_session.role == LanSession.Role.HOST and player_count == 1 else ""
+	host_status.text = "%s // PEER %d\nJOGADORES: %d/%d\n%s%s\n%s" % [role_text, peer_id, player_count, LanSession.MAX_PLAYERS, lan_session.connection_message, host_only_note, lan_session.get_discovery_diagnostics()]
 	$Overlay/Center/HostPage/Start.visible = lan_session.role == LanSession.Role.HOST
 	difficulty.disabled = lan_session.role != LanSession.Role.HOST
 	search_status.text = lan_session.connection_message
@@ -142,7 +211,7 @@ func _refresh_rooms() -> void:
 	var selected_visual_index := -1
 	for room in lan_session.discovered_rooms:
 		var room_key := _room_key(room)
-		room_list.add_item("%s — %s:%d — %d/2" % [room.name, room.address, int(room.port), int(room.players)])
+		room_list.add_item("%s — %s:%d — %d/%d" % [room.name, room.address, int(room.port), int(room.players), LanSession.MAX_PLAYERS])
 		room_list.set_item_metadata(room_list.item_count - 1, room_key)
 		if room_key == selected_room_key:
 			selected_visual_index = room_list.item_count - 1

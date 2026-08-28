@@ -16,10 +16,7 @@ func _ready() -> void:
 	shape.size = Vector2(58, 30)
 	collision.shape = shape
 	add_child(collision)
-	var visual := Polygon2D.new()
-	visual.polygon = PackedVector2Array([Vector2(-29, -15), Vector2(29, -15), Vector2(29, 15), Vector2(-29, 15)])
-	visual.color = Color(0.25, 0.85, 1.0)
-	add_child(visual)
+	add_child(_build_temporary_weapon_visual())
 	var label := Label.new()
 	label.position = Vector2(-105, -60)
 	label.size = Vector2(210, 48)
@@ -32,6 +29,27 @@ func _ready() -> void:
 	body_exited.connect(func(body: Node) -> void:
 		if body.is_in_group("player"):
 			label.visible = get_overlapping_bodies().any(func(candidate: Node) -> bool: return candidate != body and candidate.is_in_group("player")))
+
+
+func _build_temporary_weapon_visual() -> Node2D:
+	var root := Node2D.new()
+	root.name = "TempWeaponSprite"
+	var glow := Polygon2D.new()
+	glow.polygon = PackedVector2Array([Vector2(-28, -13), Vector2(28, -13), Vector2(28, 13), Vector2(-28, 13)])
+	glow.color = Color(0.05, 0.35, 0.45, 0.45)
+	root.add_child(glow)
+	var core := Polygon2D.new()
+	if weapon_id == &"arc_emitter":
+		core.polygon = PackedVector2Array([Vector2(-20, -6), Vector2(18, -6), Vector2(25, -2), Vector2(25, 3), Vector2(4, 3), Vector2(4, 8), Vector2(-8, 8), Vector2(-8, 3), Vector2(-20, 3)])
+		core.color = Color(0.75, 0.25, 1.0)
+	elif weapon_id == &"breaker_maul":
+		core.polygon = PackedVector2Array([Vector2(-24, -10), Vector2(4, -10), Vector2(4, -4), Vector2(22, -4), Vector2(22, 3), Vector2(4, 3), Vector2(4, 10), Vector2(-24, 10)])
+		core.color = Color(1.0, 0.55, 0.22)
+	else:
+		core.polygon = PackedVector2Array([Vector2(-24, -3), Vector2(14, -3), Vector2(24, 0), Vector2(14, 3), Vector2(-24, 3), Vector2(-24, 8), Vector2(-29, 8), Vector2(-29, -8), Vector2(-24, -8)])
+		core.color = Color(0.3, 0.9, 1.0)
+	root.add_child(core)
+	return root
 
 
 func interact(player: Node2D = null) -> void:

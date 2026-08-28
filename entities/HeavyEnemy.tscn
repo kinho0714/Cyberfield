@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="PackedScene" path="res://entities/Enemy.tscn" id="1_enemy"]
+[ext_resource type="Script" path="res://entities/HeavyEnemy.gd" id="2_heavy"]
+
+[node name="HeavyEnemy" instance=ExtResource("1_enemy")]
+script = ExtResource("2_heavy")
+enemy_role = 3
+move_speed = 64.0
+attack_horizontal_range = 36.0
+attack_vertical_range = 46.0
+attack_windup = 0.58
+attack_recovery = 0.52
+attack_cooldown = 0.72
+attack_damage = 90
+knockback_resistance = 0.58
+patrol_radius = 72.0
+patrol_speed_ratio = 0.36
+separation_distance = 38.0

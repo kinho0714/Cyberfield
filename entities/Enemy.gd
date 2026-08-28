@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-enum EnemyRole { NORMAL, BOSS, ELITE }
+enum EnemyRole { NORMAL, BOSS, ELITE, HEAVY }
 
 @export var persistent_id: StringName
 @export var required_for_completion := true
@@ -12,6 +12,8 @@ enum EnemyRole { NORMAL, BOSS, ELITE }
 @export var attack_recovery := 0.30
 @export var attack_cooldown := 0.45
 @export var attack_damage := CombatStats.COMMON_ENEMY_BASE_DAMAGE
+@export_range(0.0, 0.9, 0.01) var knockback_resistance := 0.0
+@export var attack_telegraph_color := Color(1.0, 0.35, 0.12, 1.0)
 @export_range(0.5, 4.0, 0.1) var visual_scale := 1.0
 @export var patrol_radius := -1.0
 @export_range(0.35, 0.50, 0.01) var patrol_speed_ratio := 0.42
@@ -56,6 +58,8 @@ var is_attacking = false
 var knockback_timer = 0.0
 var attack_cooldown_timer := 0.0
 var attack_generation := 0
+var attack_telegraph_active := false
+var boss_phase_two_active := false
 var patrol_origin := Vector2.ZERO
 var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
@@ -69,8 +73,7 @@ func _ready() -> void:
 	attack_shape_cast.enabled = true
 	anim.scale = Vector2.ONE * visual_scale
 	$CollisionShape2D.scale = Vector2.ONE * visual_scale
-	if is_elite():
-		anim.modulate = Color(1.0, 0.35, 0.15, 1.0)
+	anim.modulate = _default_visual_modulate()
 	if patrol_radius < 0.0:
 		patrol_radius = 120.0 if is_boss() else 96.0 if is_elite() else 80.0
 	patrol_origin = global_position
@@ -109,10 +112,25 @@ func is_elite() -> bool:
 	return enemy_role == EnemyRole.ELITE
 
 
+func is_heavy() -> bool:
+	return enemy_role == EnemyRole.HEAVY
+
+
 func configure_elite() -> void:
 	enemy_role = EnemyRole.ELITE
 	move_speed *= 1.15
 	visual_scale = 1.2
+	knockback_resistance = maxf(knockback_resistance, 0.15)
+
+
+func _default_visual_modulate() -> Color:
+	if boss_phase_two_active:
+		return Color(0.82, 0.45, 1.0, 1.0)
+	if is_heavy():
+		return Color(0.95, 0.68, 0.18, 1.0)
+	if is_elite():
+		return Color(1.0, 0.35, 0.15, 1.0)
+	return Color.WHITE
 
 
 func _update_health_label() -> void:
@@ -132,6 +150,8 @@ func get_network_state() -> Dictionary:
 		"flip_h": anim.flip_h,
 		"animation": anim.animation,
 		"animation_frame": anim.frame,
+		"attack_telegraph_active": attack_telegraph_active,
+		"boss_phase_two_active": boss_phase_two_active,
 	}
 
 
@@ -148,6 +168,9 @@ func apply_network_state(state: Dictionary) -> void:
 	if anim.sprite_frames.has_animation(network_animation):
 		anim.animation = network_animation
 		anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
+	attack_telegraph_active = bool(state.get("attack_telegraph_active", attack_telegraph_active))
+	boss_phase_two_active = bool(state.get("boss_phase_two_active", boss_phase_two_active))
+	anim.modulate = attack_telegraph_color if attack_telegraph_active else _default_visual_modulate()
 	if health < previous_health:
 		health_bar_visible_timer = 2.5
 	_update_health_label()
@@ -356,10 +379,14 @@ func attack() -> void:
 	velocity.x = 0.0
 	attack_generation += 1
 	var this_attack := attack_generation
+	attack_telegraph_active = true
+	anim.modulate = attack_telegraph_color
 
 	anim.play("attack")
 
 	await get_tree().create_timer(attack_windup).timeout
+	attack_telegraph_active = false
+	anim.modulate = _default_visual_modulate()
 
 	if not _is_valid_target(player) or is_hurt or knockback_timer > 0.0 or this_attack != attack_generation:
 		is_attacking = false
@@ -403,14 +430,17 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 	health_bar_visible_timer = 2.5
 	attack_generation += 1
 	is_attacking = false
+	attack_telegraph_active = false
 	attack_cooldown_timer = maxf(attack_cooldown_timer, attack_cooldown)
+	_activate_boss_phase_two_if_needed()
 	_update_health_label()
 
 	print("Enemy health: ", health)
 
 	if knockback_direction != 0.0:
-		velocity.x = knockback_direction * KNOCKBACK_FORCE * knockback_multiplier
-		velocity.y = KNOCKBACK_UP * knockback_multiplier
+		var effective_knockback: float = knockback_multiplier * (1.0 - clampf(knockback_resistance, 0.0, 0.9))
+		velocity.x = knockback_direction * KNOCKBACK_FORCE * effective_knockback
+		velocity.y = KNOCKBACK_UP * effective_knockback
 		knockback_timer = KNOCKBACK_DURATION
 
 	is_hurt = true
@@ -418,7 +448,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 
 	await get_tree().create_timer(0.1).timeout
 
-	anim.modulate = Color(1, 1, 1, 1)
+	anim.modulate = _default_visual_modulate()
 
 	is_hurt = false
 
@@ -431,3 +461,12 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 			run_manager.register_enemy_death(run_room_id, persistent_id)
 
 		queue_free()
+
+
+func _activate_boss_phase_two_if_needed() -> void:
+	if not is_boss() or boss_phase_two_active or health <= 0 or health > roundi(max_health * 0.5):
+		return
+	boss_phase_two_active = true
+	move_speed *= 1.18
+	attack_cooldown *= 0.78
+	patrol_speed_ratio = minf(patrol_speed_ratio * 1.15, 0.50)

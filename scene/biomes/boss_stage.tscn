@@ -21,7 +21,7 @@ z_index = -10
 
 [node name="Title" type="Label" parent="."]
 position = Vector2(630, 80)
-text = "STAGE 6 // BOSS PLACEHOLDER"
+text = "STAGE 6 // GUARDIÃO PROVISÓRIO"
 theme_override_font_sizes/font_size = 30
 
 [node name="Start" type="Marker2D" parent="."]

@@ -22,7 +22,7 @@ func _ready() -> void:
 	panel.custom_minimum_size = Vector2(560, 320)
 	center.add_child(panel)
 	var title := Label.new()
-	title.text = "INVENTÁRIO // 2 SLOTS"
+	title.text = "EQUIPAMENTOS DA RUN"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 30)
 	panel.add_child(title)
@@ -134,7 +134,7 @@ func _refresh() -> void:
 			continue
 		var data := WeaponCatalog.get_definition(weapon_id)
 		slot_buttons[index].disabled = false
-		slot_buttons[index].text = "%s SLOT %d // %s\nTIPO %s  DANO %d  RECARGA %.2fs  RARIDADE %s" % [">" if player.active_weapon_slot == index else " ", index + 1, data.name, String(data.type).to_upper(), data.damage, data.cooldown, String(data.rarity).to_upper()]
+		slot_buttons[index].text = "%s  SLOT %d   •   %s\n%s    DANO %d    RECARGA %.2fs    %s" % ["▶" if player.active_weapon_slot == index else " ", index + 1, data.name, String(data.type).to_upper(), data.damage, data.cooldown, String(data.rarity).to_upper()]
 
 
 func _local_player() -> Node:
@@ -143,7 +143,7 @@ func _local_player() -> Node:
 		return null
 	var lan: LanSession = room_manager.get_node("LanSession")
 	for player in room_manager.get_players():
-		if not lan.is_network_game() or lan.is_host() and player.participant_id == &"player_1" or lan.is_client() and player.participant_id == &"player_2":
+		if not lan.is_network_game() or player.participant_id == lan.get_local_participant_id():
 			return player
 	return null
 

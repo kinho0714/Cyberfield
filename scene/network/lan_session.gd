@@ -12,8 +12,8 @@ enum Role { OFFLINE, HOST, CLIENT }
 
 const GAME_PORT := 27840
 const DISCOVERY_PORT := 27841
-const PROTOCOL_VERSION := 2
-const MAX_PLAYERS := 2
+const PROTOCOL_VERSION := 3
+const MAX_PLAYERS := 4
 const DISCOVERY_INTERVAL := 0.75
 const ROOM_EXPIRY := 2.5
 const SNAPSHOT_INTERVAL := 0.05
@@ -23,6 +23,10 @@ var role: Role = Role.OFFLINE
 var room_name := "Cyberfield LAN"
 var connection_message := ""
 var connected_peer_id := 0
+var connected_peer_ids: Array[int] = []
+var local_participant_id: StringName = &"player_1"
+var _peer_participants: Dictionary = {}
+var session_player_count := 1
 var discovered_rooms: Array[Dictionary] = []
 var _peer: ENetMultiplayerPeer
 var _discovery_sender: PacketPeerUDP
@@ -36,8 +40,8 @@ var _last_sent_input: Dictionary = {}
 var _input_keepalive_elapsed := 0.0
 var _input_sequence := 0
 var _pulse_release_deadlines: Dictionary = {}
-var _pending_attribute_chest_id: StringName = &""
-var _pending_attribute_options: Array[StringName] = []
+var _last_action_sequences: Dictionary = {}
+var _pending_attribute_choices: Dictionary = {}
 var _client_attribute_chest_id: StringName = &""
 var _next_projectile_id := 1
 var _client_projectiles: Dictionary = {}
@@ -70,7 +74,7 @@ func _process(delta: float) -> void:
 	if role == Role.CLIENT and multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
 		_input_keepalive_elapsed += delta
 		_send_local_input()
-	elif role == Role.HOST and connected_peer_id > 0:
+	elif role == Role.HOST and not connected_peer_ids.is_empty():
 		_snapshot_elapsed += delta
 		if _snapshot_elapsed >= SNAPSHOT_INTERVAL:
 			_snapshot_elapsed = 0.0
@@ -129,33 +133,42 @@ func start_host_run(difficulty: StringName) -> void:
 		return
 	stop_discovery()
 	var run_seed := randi()
+	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
+	var serialized_weapon_pool: Array[String] = []
+	if meta != null:
+		for weapon_id: StringName in meta.get_run_weapon_pool():
+			serialized_weapon_pool.append(String(weapon_id))
 	var config := {
 		"protocol": PROTOCOL_VERSION,
 		"seed": run_seed,
 		"difficulty": String(difficulty),
 		"biome_id": "lower_city",
-		"player_count": MAX_PLAYERS,
+		"player_count": get_player_count(),
+		"weapon_pool": serialized_weapon_pool,
 	}
-	if connected_peer_id > 0:
-		_receive_run_config.rpc_id(connected_peer_id, config)
+	for peer_id: int in connected_peer_ids:
+		var peer_config: Dictionary = config.duplicate()
+		peer_config["local_participant_id"] = String(get_participant_for_peer(peer_id))
+		_receive_run_config.rpc_id(peer_id, peer_config)
 	_start_network_run(config)
 
 
 func broadcast_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int) -> void:
 	_reported_layout_mismatch = false
-	if role == Role.HOST and connected_peer_id > 0:
-		_receive_stage_transition.rpc_id(connected_peer_id, String(exit_id), String(destination_id), stage_seed)
+	if role == Role.HOST:
+		for peer_id: int in connected_peer_ids:
+			_receive_stage_transition.rpc_id(peer_id, String(exit_id), String(destination_id), stage_seed)
 
 
-func request_remote_attribute_choice(chest_id: StringName, options: Array[StringName]) -> void:
-	if role != Role.HOST or connected_peer_id <= 0 or chest_id.is_empty() or options.is_empty():
+func request_remote_attribute_choice(participant_id: StringName, chest_id: StringName, options: Array[StringName]) -> void:
+	var peer_id := get_peer_for_participant(participant_id)
+	if role != Role.HOST or peer_id <= 0 or chest_id.is_empty() or options.is_empty():
 		return
-	_pending_attribute_chest_id = chest_id
-	_pending_attribute_options = options.duplicate()
+	_pending_attribute_choices[peer_id] = {"chest_id": chest_id, "options": options.duplicate()}
 	var serialized_options: Array[String] = []
 	for option in options:
 		serialized_options.append(String(option))
-	_show_remote_attribute_choice.rpc_id(connected_peer_id, String(chest_id), serialized_options)
+	_show_remote_attribute_choice.rpc_id(peer_id, String(chest_id), serialized_options)
 
 
 func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: StringName = &"player") -> int:
@@ -163,14 +176,15 @@ func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: floa
 		return 0
 	var projectile_id := _next_projectile_id
 	_next_projectile_id += 1
-	if connected_peer_id > 0:
-		_spawn_network_projectile.rpc_id(connected_peer_id, projectile_id, origin, direction, speed, damage, String(target_group))
+	for peer_id: int in connected_peer_ids:
+		_spawn_network_projectile.rpc_id(peer_id, projectile_id, origin, direction, speed, damage, String(target_group))
 	return projectile_id
 
 
 func replicate_projectile_despawn(projectile_id: int) -> void:
-	if role == Role.HOST and connected_peer_id > 0 and projectile_id > 0:
-		_despawn_network_projectile.rpc_id(connected_peer_id, projectile_id)
+	if role == Role.HOST and projectile_id > 0:
+		for peer_id: int in connected_peer_ids:
+			_despawn_network_projectile.rpc_id(peer_id, projectile_id)
 
 
 func shutdown() -> void:
@@ -183,12 +197,16 @@ func shutdown() -> void:
 	if multiplayer.has_multiplayer_peer():
 		multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
 	connected_peer_id = 0
+	connected_peer_ids.clear()
+	local_participant_id = &"player_1"
+	_peer_participants.clear()
+	session_player_count = 1
 	_snapshot_elapsed = 0.0
 	_input_keepalive_elapsed = 0.0
 	_last_sent_input.clear()
 	_pulse_release_deadlines.clear()
-	_pending_attribute_chest_id = &""
-	_pending_attribute_options.clear()
+	_last_action_sequences.clear()
+	_pending_attribute_choices.clear()
 	_client_attribute_chest_id = &""
 	for projectile_value: Variant in _client_projectiles.values():
 		var projectile := projectile_value as Node
@@ -236,9 +254,66 @@ func request_teleporter_activation(teleporter_id: StringName) -> void:
 		_request_teleporter_activation.rpc_id(1, String(teleporter_id))
 
 
+func request_remote_teleporter_menu(participant_id: StringName, origin_id: StringName) -> void:
+	var peer_id := get_peer_for_participant(participant_id)
+	if role == Role.HOST and peer_id > 0 and not origin_id.is_empty():
+		_open_remote_teleporter_menu.rpc_id(peer_id, String(origin_id))
+
+
 func request_fast_travel(origin_id: StringName, destination_id: StringName) -> void:
 	if role == Role.CLIENT:
 		_request_fast_travel.rpc_id(1, String(origin_id), String(destination_id))
+
+
+func cancel_fast_travel_confirmation() -> void:
+	if role == Role.CLIENT:
+		_cancel_fast_travel_confirmation.rpc_id(1)
+	elif role == Role.HOST:
+		var room_manager := get_tree().get_first_node_in_group("room_manager")
+		if room_manager != null:
+			room_manager.cancel_fast_travel_confirmation(local_participant_id)
+
+
+func broadcast_fast_travel_vote(origin_id: StringName, destination_id: StringName, confirmed_ids: Array[StringName], active_ids: Array[StringName]) -> void:
+	if role != Role.HOST:
+		return
+	var confirmed: Array[String] = []
+	var active: Array[String] = []
+	for participant_id in confirmed_ids:
+		confirmed.append(String(participant_id))
+	for participant_id in active_ids:
+		active.append(String(participant_id))
+	for peer_id: int in connected_peer_ids:
+		_receive_fast_travel_vote.rpc_id(peer_id, String(origin_id), String(destination_id), confirmed, active)
+
+
+func broadcast_fast_travel_applied(destination_id: StringName) -> void:
+	if role != Role.HOST:
+		return
+	for peer_id: int in connected_peer_ids:
+		_apply_fast_travel.rpc_id(peer_id, String(destination_id))
+
+
+func request_return_to_laboratory() -> void:
+	if role == Role.CLIENT:
+		_request_return_to_laboratory.rpc_id(1)
+
+
+func open_meta_terminal_for(participant_id: StringName) -> void:
+	if role != Role.HOST:
+		return
+	var peer_id := get_peer_for_participant(participant_id)
+	if peer_id > 0:
+		_open_meta_terminal.rpc_id(peer_id)
+
+
+func broadcast_return_to_laboratory() -> void:
+	if role != Role.HOST:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var results: Dictionary = room_manager.run_manager.last_run_results.duplicate(true) if room_manager != null else {}
+	for peer_id: int in connected_peer_ids:
+		_apply_return_to_laboratory.rpc_id(peer_id, results)
 
 
 func request_weapon_pickup(pickup_id: StringName) -> void:
@@ -253,9 +328,25 @@ func request_bandage_pickup(pickup_id: StringName) -> void:
 
 func get_player_count() -> int:
 	if role == Role.HOST:
-		return 1 + (1 if connected_peer_id > 0 else 0)
+		return 1 + connected_peer_ids.size()
 	if role == Role.CLIENT and multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() == MultiplayerPeer.CONNECTION_CONNECTED:
-		return 2
+		return session_player_count
+	return 0
+
+
+func get_local_participant_id() -> StringName:
+	return local_participant_id
+
+
+func get_participant_for_peer(peer_id: int) -> StringName:
+	return StringName(_peer_participants.get(peer_id, &""))
+
+
+func get_peer_for_participant(participant_id: StringName) -> int:
+	for peer_value: Variant in _peer_participants:
+		var peer_id := int(peer_value)
+		if StringName(_peer_participants[peer_id]) == participant_id:
+			return peer_id
 	return 0
 
 
@@ -396,21 +487,29 @@ func _send_local_input() -> void:
 
 @rpc("any_peer", "call_remote", "unreliable_ordered", 1)
 func _submit_client_input(state: Dictionary) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var sender_id := multiplayer.get_remote_sender_id()
+	var participant_id := get_participant_for_peer(sender_id)
+	if role != Role.HOST or participant_id.is_empty():
 		return
-	_apply_remote_input(state)
+	_apply_remote_input(participant_id, state)
 
 
 @rpc("any_peer", "call_remote", "reliable", 1)
-func _submit_action_pulse(action_name: String, _sequence: int) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+func _submit_action_pulse(action_name: String, sequence: int) -> void:
+	var sender_id := multiplayer.get_remote_sender_id()
+	var participant_id := get_participant_for_peer(sender_id)
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var base_action := StringName(action_name)
 	if not INPUT_ACTIONS.has(base_action) or base_action in [&"left", &"right"]:
 		return
-	var p2_action := StringName("p2_" + action_name)
-	Input.action_press(p2_action)
-	_pulse_release_deadlines[p2_action] = Time.get_ticks_msec() + 50
+	var sequence_key := "%d:%s" % [sender_id, action_name]
+	if sequence <= int(_last_action_sequences.get(sequence_key, -1)):
+		return
+	_last_action_sequences[sequence_key] = sequence
+	var remote_action := _remote_action(participant_id, base_action)
+	Input.action_press(remote_action)
+	_pulse_release_deadlines[remote_action] = Time.get_ticks_msec() + 90
 
 
 func _release_finished_action_pulses() -> void:
@@ -418,18 +517,22 @@ func _release_finished_action_pulses() -> void:
 		return
 	var now := Time.get_ticks_msec()
 	for action_value: Variant in _pulse_release_deadlines.keys():
-		var p2_action := StringName(action_value)
-		if now < int(_pulse_release_deadlines.get(p2_action, now)):
+		var remote_action := StringName(action_value)
+		if now < int(_pulse_release_deadlines.get(remote_action, now)):
 			continue
-		var base_action := StringName(String(p2_action).trim_prefix("p2_"))
-		if not bool(_remote_input_state.get(base_action, false)):
-			Input.action_release(p2_action)
-		_pulse_release_deadlines.erase(p2_action)
+		var parts := String(remote_action).split("_", true, 1)
+		var participant_id := StringName("player_%s" % parts[0].trim_prefix("p")) if parts.size() == 2 else &""
+		var base_action := StringName(parts[1]) if parts.size() == 2 else &""
+		var participant_state: Dictionary = _remote_input_state.get(participant_id, {}) as Dictionary
+		if not bool(participant_state.get(base_action, false)):
+			Input.action_release(remote_action)
+		_pulse_release_deadlines.erase(remote_action)
 
 
-func _apply_remote_input(state: Dictionary) -> void:
+func _apply_remote_input(participant_id: StringName, state: Dictionary) -> void:
+	var participant_state: Dictionary = _remote_input_state.get(participant_id, {}) as Dictionary
 	for base_action in INPUT_ACTIONS:
-		var p2_action := StringName("p2_" + String(base_action))
+		var remote_action := _remote_action(participant_id, base_action)
 		var pressed := false
 		var strength := 1.0
 		if base_action == &"left" or base_action == &"right":
@@ -437,18 +540,33 @@ func _apply_remote_input(state: Dictionary) -> void:
 			pressed = strength > 0.0
 		else:
 			pressed = bool(state.get(String(base_action), false))
-		var was_pressed := bool(_remote_input_state.get(base_action, false))
+		var was_pressed := bool(participant_state.get(base_action, false))
 		if pressed:
-			Input.action_press(p2_action, strength)
+			Input.action_press(remote_action, strength)
 		elif was_pressed:
-			Input.action_release(p2_action)
-		_remote_input_state[base_action] = pressed
+			Input.action_release(remote_action)
+		participant_state[base_action] = pressed
+	_remote_input_state[participant_id] = participant_state
 
 
 func _release_remote_inputs() -> void:
-	for base_action in INPUT_ACTIONS:
-		Input.action_release(StringName("p2_" + String(base_action)))
+	for participant_value: Variant in _remote_input_state:
+		var participant_id := StringName(participant_value)
+		for base_action in INPUT_ACTIONS:
+			Input.action_release(_remote_action(participant_id, base_action))
 	_remote_input_state.clear()
+
+
+func _release_remote_player_inputs(participant_id: StringName) -> void:
+	for base_action in INPUT_ACTIONS:
+		Input.action_release(_remote_action(participant_id, base_action))
+	_remote_input_state.erase(participant_id)
+
+
+func _remote_action(participant_id: StringName, base_action: StringName) -> StringName:
+	var profile := String(participant_id).replace("player_", "p")
+	LocalCoopInput.ensure_network_player_actions(StringName(profile))
+	return StringName("%s_%s" % [profile, base_action])
 
 
 func _broadcast_authoritative_snapshot() -> void:
@@ -483,8 +601,10 @@ func _broadcast_authoritative_snapshot() -> void:
 		"layout_signature": layout_signature,
 		"map_state": room_manager.run_manager.serialize_current_map_state(),
 		"run_elapsed_time": room_manager.run_manager.run_elapsed_time,
+		"run_results": room_manager.run_manager.last_run_results.duplicate(true),
 	}
-	_apply_authoritative_snapshot.rpc_id(connected_peer_id, snapshot)
+	for peer_id: int in connected_peer_ids:
+		_apply_authoritative_snapshot.rpc_id(peer_id, snapshot)
 
 
 @rpc("authority", "call_remote", "unreliable_ordered", 2)
@@ -497,13 +617,19 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 	var players_by_id: Dictionary = {}
 	for player in room_manager.get_players():
 		players_by_id[player.participant_id] = player
+	var authoritative_player_ids: Dictionary = {}
 	var player_states: Array = snapshot.get("players", []) as Array
 	for state_value: Variant in player_states:
 		var state: Dictionary = state_value as Dictionary
 		var participant_id := StringName(state.get("participant_id", &""))
+		authoritative_player_ids[participant_id] = true
 		if players_by_id.has(participant_id):
-			var predicted_local := participant_id == &"player_2"
+			var predicted_local := participant_id == local_participant_id
 			players_by_id[participant_id].apply_network_state(state, predicted_local)
+	for participant_value: Variant in players_by_id:
+		var participant_id := StringName(participant_value)
+		if not authoritative_player_ids.has(participant_id):
+			(players_by_id[participant_id] as Node).queue_free()
 	var enemies_by_id: Dictionary = {}
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		enemies_by_id[enemy.persistent_id] = enemy
@@ -558,13 +684,15 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 	if bool(snapshot.get("run_lost", false)) and room_manager.run_manager.run_active:
 		room_manager.run_manager.apply_network_loss()
 	elif bool(snapshot.get("run_completed", false)) and not room_manager.run_manager.run_is_completed:
-		room_manager.run_manager.apply_network_completion()
+		room_manager.run_manager.apply_network_completion(snapshot.get("run_results", {}) as Dictionary)
 
 
 @rpc("authority", "call_remote", "reliable", 0)
 func _receive_run_config(config: Dictionary) -> void:
 	if role != Role.CLIENT or int(config.get("protocol", -1)) != PROTOCOL_VERSION:
 		return
+	local_participant_id = StringName(config.get("local_participant_id", local_participant_id))
+	session_player_count = clampi(int(config.get("player_count", 2)), 1, MAX_PLAYERS)
 	_start_network_run(config)
 
 
@@ -590,7 +718,7 @@ func _show_remote_attribute_choice(chest_id: String, serialized_options: Array[S
 	if room_manager == null or attribute_ui == null:
 		return
 	for player in room_manager.get_players():
-		if player.participant_id == &"player_2":
+		if player.participant_id == local_participant_id:
 			_client_attribute_chest_id = StringName(chest_id)
 			attribute_ui.open_network_for(player, options)
 			return
@@ -630,39 +758,39 @@ func _on_client_attribute_choice(attribute: StringName) -> void:
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _submit_remote_attribute_choice(chest_id: String, attribute: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var sender_id := multiplayer.get_remote_sender_id()
+	var participant_id := get_participant_for_peer(sender_id)
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var requested_chest_id := StringName(chest_id)
 	var requested_attribute := StringName(attribute)
-	if requested_chest_id != _pending_attribute_chest_id or not _pending_attribute_options.has(requested_attribute):
+	var pending: Dictionary = _pending_attribute_choices.get(sender_id, {}) as Dictionary
+	var pending_options: Array = pending.get("options", []) as Array
+	if requested_chest_id != StringName(pending.get("chest_id", &"")) or not pending_options.has(requested_attribute):
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null:
 		return
-	var player_two: Node = null
-	for player in room_manager.get_players():
-		if player.participant_id == &"player_2":
-			player_two = player
-			break
-	if player_two == null:
+	var remote_player: Node = room_manager._find_player(participant_id)
+	if remote_player == null:
 		return
 	for interactable in get_tree().get_nodes_in_group("interactable"):
 		if interactable.has_method("apply_choice") and StringName(interactable.get("chest_id")) == requested_chest_id:
-			interactable.apply_choice(player_two, requested_attribute)
-			_pending_attribute_chest_id = &""
-			_pending_attribute_options.clear()
+			interactable.apply_choice(remote_player, requested_attribute)
+			_pending_attribute_choices.erase(sender_id)
 			return
 
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _request_map_discovery(module_id: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var participant_id := get_participant_for_peer(multiplayer.get_remote_sender_id())
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null or room_manager.current_room == null:
 		return
-	var player_two: Node = room_manager._find_player(&"player_2")
-	var module_index := int(room_manager.current_room.get_module_index_at(player_two.global_position)) if player_two != null else -1
+	var remote_player: Node = room_manager._find_player(participant_id)
+	var module_index := int(room_manager.current_room.get_module_index_at(remote_player.global_position)) if remote_player != null else -1
 	var graph: Dictionary = room_manager.current_room.get_map_graph()
 	var modules: Array = graph.get("modules", []) as Array
 	if module_index < 0 or module_index >= modules.size() or StringName((modules[module_index] as Dictionary).instance_id) != StringName(module_id):
@@ -675,48 +803,93 @@ func _request_map_discovery(module_id: String) -> void:
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _request_teleporter_activation(teleporter_id: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var participant_id := get_participant_for_peer(multiplayer.get_remote_sender_id())
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
-		room_manager.activate_teleporter_authoritative(StringName(teleporter_id), &"player_2")
+		room_manager.activate_teleporter_authoritative(StringName(teleporter_id), participant_id)
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _open_remote_teleporter_menu(origin_id: String) -> void:
+	if role != Role.CLIENT or origin_id.is_empty():
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		room_manager.open_local_teleporter_menu(StringName(origin_id))
 
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _request_weapon_pickup(pickup_id: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var participant_id := get_participant_for_peer(multiplayer.get_remote_sender_id())
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null:
 		return
-	var player_two: Node = room_manager._find_player(&"player_2")
+	var remote_player: Node = room_manager._find_player(participant_id)
+	if remote_player == null:
+		return
 	for pickup in get_tree().get_nodes_in_group("weapon_pickup"):
 		if StringName(pickup.pickup_id) == StringName(pickup_id):
-			pickup.claim_authoritative(player_two)
+			pickup.claim_authoritative(remote_player)
 			return
 
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _request_bandage_pickup(pickup_id: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var participant_id := get_participant_for_peer(multiplayer.get_remote_sender_id())
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null:
 		return
-	var player_two: Node = room_manager._find_player(&"player_2")
+	var remote_player: Node = room_manager._find_player(participant_id)
 	for pickup in get_tree().get_nodes_in_group("bandage_pickup"):
-		if StringName(pickup.pickup_id) == StringName(pickup_id) and player_two.global_position.distance_to(pickup.global_position) <= 100.0:
-			pickup.claim_authoritative(player_two)
+		if StringName(pickup.pickup_id) == StringName(pickup_id) and remote_player != null and remote_player.global_position.distance_to(pickup.global_position) <= 100.0:
+			pickup.claim_authoritative(remote_player)
 			return
 
 
 @rpc("any_peer", "call_remote", "reliable", 0)
 func _request_fast_travel(origin_id: String, destination_id: String) -> void:
-	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+	var sender_id := multiplayer.get_remote_sender_id()
+	var participant_id := get_participant_for_peer(sender_id)
+	if role != Role.HOST or participant_id.is_empty():
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	if room_manager != null and room_manager.perform_fast_travel_authoritative(StringName(origin_id), StringName(destination_id)):
-		_apply_fast_travel.rpc_id(connected_peer_id, destination_id)
+	if room_manager != null:
+		room_manager.submit_fast_travel_confirmation(participant_id, StringName(origin_id), StringName(destination_id))
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _cancel_fast_travel_confirmation() -> void:
+	var participant_id := get_participant_for_peer(multiplayer.get_remote_sender_id())
+	if role != Role.HOST or participant_id.is_empty():
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		room_manager.cancel_fast_travel_confirmation(participant_id)
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _receive_fast_travel_vote(origin_id: String, destination_id: String, confirmed: Array[String], active: Array[String]) -> void:
+	if role != Role.CLIENT:
+		return
+	var confirmed_ids: Array[StringName] = []
+	var active_ids: Array[StringName] = []
+	for participant_id in confirmed:
+		confirmed_ids.append(StringName(participant_id))
+	for participant_id in active:
+		active_ids.append(StringName(participant_id))
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map == null:
+		return
+	if origin_id.is_empty() or not active_ids.has(local_participant_id):
+		full_map.clear_fast_travel_vote()
+	else:
+		full_map.apply_fast_travel_vote(StringName(origin_id), StringName(destination_id), confirmed_ids, active_ids)
 
 
 @rpc("authority", "call_remote", "reliable", 0)
@@ -728,6 +901,39 @@ func _apply_fast_travel(destination_id: String) -> void:
 		room_manager.apply_network_fast_travel(StringName(destination_id))
 
 
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_return_to_laboratory() -> void:
+	if role != Role.HOST or get_participant_for_peer(multiplayer.get_remote_sender_id()).is_empty():
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null and not room_manager.run_manager.run_active:
+		room_manager.call_deferred("return_to_laboratory")
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _apply_return_to_laboratory(results: Dictionary) -> void:
+	if role != Role.CLIENT:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		if not results.is_empty():
+			room_manager.run_manager.last_run_results = results.duplicate(true)
+		room_manager.call_deferred("apply_network_return_to_laboratory")
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _open_meta_terminal() -> void:
+	if role != Role.CLIENT:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var ui := get_tree().get_first_node_in_group("meta_lab_ui") as MetaLabUI
+	if room_manager == null or ui == null:
+		return
+	var player: Node = room_manager._find_player(local_participant_id)
+	if player != null:
+		ui.open_terminal(player)
+
+
 func _start_network_run(config: Dictionary) -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
@@ -736,25 +942,84 @@ func _start_network_run(config: Dictionary) -> void:
 
 func _on_peer_connected(peer_id: int) -> void:
 	if role == Role.HOST:
-		connected_peer_id = peer_id
-		_set_message("Jogador conectado. Lobby 2/2.")
-	lobby_changed.emit()
+		if not connected_peer_ids.has(peer_id) and connected_peer_ids.size() < MAX_PLAYERS - 1:
+			connected_peer_ids.append(peer_id)
+			connected_peer_ids.sort()
+			var used_participants: Array = _peer_participants.values()
+			for slot in range(2, MAX_PLAYERS + 1):
+				var candidate := StringName("player_%d" % slot)
+				if not used_participants.has(candidate):
+					_peer_participants[peer_id] = candidate
+					break
+		connected_peer_id = connected_peer_ids[0] if not connected_peer_ids.is_empty() else 0
+		session_player_count = 1 + connected_peer_ids.size()
+		call_deferred("_publish_host_lobby_state", "Jogador conectado. Lobby %d/%d." % [get_player_count(), MAX_PLAYERS])
 
 
 func _on_peer_disconnected(peer_id: int) -> void:
-	if role == Role.HOST and peer_id == connected_peer_id:
-		connected_peer_id = 0
-		_release_remote_inputs()
-		_pending_attribute_chest_id = &""
-		_pending_attribute_options.clear()
-		_set_message("Cliente desconectado. A sala continua aberta.")
-	lobby_changed.emit()
+	if role == Role.HOST and connected_peer_ids.has(peer_id):
+		var participant_id := get_participant_for_peer(peer_id)
+		connected_peer_ids.erase(peer_id)
+		_peer_participants.erase(peer_id)
+		connected_peer_id = connected_peer_ids[0] if not connected_peer_ids.is_empty() else 0
+		session_player_count = 1 + connected_peer_ids.size()
+		_release_remote_player_inputs(participant_id)
+		_pending_attribute_choices.erase(peer_id)
+		for key_value: Variant in _last_action_sequences.keys():
+			if String(key_value).begins_with("%d:" % peer_id):
+				_last_action_sequences.erase(key_value)
+		var room_manager := get_tree().get_first_node_in_group("room_manager")
+		if room_manager != null:
+			var disconnected_player: Node = room_manager._find_player(participant_id)
+			if disconnected_player != null:
+				disconnected_player.queue_free()
+			room_manager.run_manager.set_participant_active(participant_id, false)
+			room_manager.call_deferred("handle_teleport_participant_removed", participant_id)
+		call_deferred("_publish_host_lobby_state", "Cliente desconectado. A sala continua aberta.")
 
 
 func _on_connected_to_server() -> void:
 	connected_peer_id = 1
+	session_player_count = 2
+	call_deferred("_publish_client_connection_ready")
+
+
+func _publish_host_lobby_state(message: String) -> void:
+	if role != Role.HOST:
+		return
+	_set_message(message)
+	_broadcast_lobby_state()
+	lobby_changed.emit()
+
+
+func _publish_client_connection_ready() -> void:
+	if role != Role.CLIENT:
+		return
 	_set_message("Conectado ao host. Aguardando início da run.")
 	lobby_changed.emit()
+
+
+func _broadcast_lobby_state() -> void:
+	if role != Role.HOST or not multiplayer.has_multiplayer_peer():
+		return
+	var available_peers: PackedInt32Array = multiplayer.get_peers()
+	for peer_id: int in connected_peer_ids:
+		if available_peers.has(peer_id):
+			_sync_lobby_state.rpc_id(peer_id, get_player_count(), String(get_participant_for_peer(peer_id)))
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _sync_lobby_state(player_count: int, participant_id: String) -> void:
+	if role != Role.CLIENT:
+		return
+	session_player_count = clampi(player_count, 1, MAX_PLAYERS)
+	local_participant_id = StringName(participant_id)
+	call_deferred("_emit_lobby_changed_if_networked")
+
+
+func _emit_lobby_changed_if_networked() -> void:
+	if role != Role.OFFLINE:
+		lobby_changed.emit()
 
 
 func _on_connection_failed() -> void:

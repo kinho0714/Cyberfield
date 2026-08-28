@@ -93,7 +93,7 @@ func open_network_for(player: Node, available_options: Array[StringName]) -> boo
 	network_choice_mode = true
 	options = available_options
 	selected_index = 0
-	title.text = "P2 // ESCOLHA UM ATRIBUTO"
+	title.text = "%s // ESCOLHA UM ATRIBUTO" % String(player.participant_id).replace("player_", "P")
 	for index in buttons.size():
 		var button: Button = buttons[index]
 		button.visible = index < options.size()

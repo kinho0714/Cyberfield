@@ -20,6 +20,23 @@ func _ready() -> void:
 	shape.radius = 28.0
 	shape_node.shape = shape
 	add_child(shape_node)
+	var glow := Polygon2D.new()
+	glow.polygon = PackedVector2Array([Vector2(-25, -17), Vector2(25, -17), Vector2(25, 17), Vector2(-25, 17)])
+	glow.color = Color(0.1, 0.95, 0.85, 0.22)
+	glow.scale = Vector2(1.25, 1.25)
+	glow.z_index = 1
+	add_child(glow)
+	var packet := Polygon2D.new()
+	packet.polygon = PackedVector2Array([Vector2(-23, -15), Vector2(23, -15), Vector2(23, 15), Vector2(-23, 15)])
+	packet.color = Color(0.9, 0.96, 0.92, 1.0)
+	packet.z_index = 2
+	add_child(packet)
+	var cross := Line2D.new()
+	cross.points = PackedVector2Array([Vector2(-9, 0), Vector2(9, 0), Vector2.ZERO, Vector2(0, -9), Vector2(0, 9)])
+	cross.width = 5.0
+	cross.default_color = Color(0.08, 0.75, 0.68, 1.0)
+	cross.z_index = 3
+	add_child(cross)
 	var label := Label.new()
 	label.position = Vector2(-62, -48)
 	label.size = Vector2(124, 42)

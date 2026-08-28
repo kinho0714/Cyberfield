@@ -8,6 +8,7 @@ enum RunState { MENU, HUB, PREPARING, ACTIVE, COMPLETED, LOST }
 
 const ENEMY_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
+const HEAVY_ENEMY_SCENE := preload("res://entities/HeavyEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
 const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
 const BANDAGE_DROP_CHANCE := 0.11
@@ -50,10 +51,12 @@ var difficulty: StringName = &"normal"
 var extra_enemy_count := 0
 var enemy_health := CombatStats.COMMON_ENEMY_BASE_HP
 var ranged_enemy_health := CombatStats.RANGED_ENEMY_BASE_HP
+var heavy_enemy_health := CombatStats.HEAVY_ENEMY_BASE_HP
 var boss_health := CombatStats.BOSS_BASE_HP
 var enemy_melee_damage := CombatStats.COMMON_ENEMY_BASE_DAMAGE
 var ranged_melee_damage := CombatStats.RANGED_MELEE_BASE_DAMAGE
 var ranged_projectile_damage := CombatStats.RANGED_PROJECTILE_BASE_DAMAGE
+var heavy_enemy_damage := CombatStats.HEAVY_ENEMY_BASE_DAMAGE
 var p2_joypad_device_id := -1
 var p2_joypad_name := ""
 var dirty_money := 0
@@ -73,6 +76,12 @@ var run_elapsed_time := 0.0
 var total_money_earned := 0
 var weapons_found: Dictionary = {}
 var last_run_results: Dictionary = {}
+var boss_defeated := false
+var trap_events_activated := 0
+var trap_events_cleared := 0
+var trap_events_rewarded := 0
+var completion_rewards: Dictionary = {}
+var run_weapon_pool: Array[StringName] = [&"scrap_blade"]
 
 
 func _process(delta: float) -> void:
@@ -80,13 +89,13 @@ func _process(delta: float) -> void:
 		run_elapsed_time += delta
 
 
-func configure_run(mode: StringName, selected_difficulty: StringName, joypad_device_id: int = -1) -> void:
+func configure_run(mode: StringName, selected_difficulty: StringName, joypad_device_id: int = -1, network_player_count: int = 2) -> void:
 	if not DIFFICULTY_CONFIGS.has(selected_difficulty):
 		push_error("Unknown difficulty: %s" % selected_difficulty)
 		selected_difficulty = &"normal"
 	var config: Dictionary = DIFFICULTY_CONFIGS[selected_difficulty]
 	game_mode = mode
-	player_count = 2 if mode in [&"coop", &"lan"] else 1
+	player_count = clampi(network_player_count, 1, 4) if mode == &"lan" else 2 if mode == &"coop" else 1
 	difficulty = selected_difficulty
 	extra_enemy_count = config.extra_enemies
 	_apply_difficulty_stats()
@@ -121,7 +130,9 @@ func prepare_hub() -> void:
 	state_changed.emit()
 
 
-func prepare_new_run(new_seed: int = 0) -> void:
+func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false) -> void:
+	if not preserve_configured_weapon_pool:
+		_configure_run_weapon_pool_from_meta()
 	seed_value = new_seed if new_seed != 0 else randi()
 	run_state = RunState.PREPARING
 	run_active = false
@@ -140,6 +151,22 @@ func prepare_new_run(new_seed: int = 0) -> void:
 	for room_data in RUN_SEQUENCE:
 		room_states[room_data.id] = _new_room_state()
 	state_changed.emit()
+
+
+func configure_run_weapon_pool(values: Array) -> void:
+	run_weapon_pool.clear()
+	for value: Variant in values:
+		var weapon_id := StringName(value)
+		if WeaponCatalog.WEAPONS.has(weapon_id) and not run_weapon_pool.has(weapon_id):
+			run_weapon_pool.append(weapon_id)
+	if run_weapon_pool.is_empty():
+		run_weapon_pool.append(&"scrap_blade")
+
+
+func _configure_run_weapon_pool_from_meta() -> void:
+	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
+	if meta != null:
+		configure_run_weapon_pool(meta.get_run_weapon_pool())
 
 
 func activate_run() -> void:
@@ -393,6 +420,7 @@ func register_enemy_death(room_id: StringName, enemy_id: StringName) -> void:
 		return
 	var state: Dictionary = room_states[room_id]
 	state.dead_enemies[enemy_id] = true
+	_update_trap_event_completion(room_id, enemy_id)
 	_update_room_completion(room_id)
 	state_changed.emit()
 
@@ -415,6 +443,10 @@ func is_reward_collected(room_id: StringName, reward_id: StringName) -> bool:
 
 
 func finish_run() -> void:
+	if run_is_completed:
+		return
+	boss_defeated = get_current_room_id() == &"boss_stage_06" and get_alive_boss_count() == 0
+	_grant_boss_completion_reward()
 	_capture_run_results(true)
 	run_state = RunState.COMPLETED
 	run_active = false
@@ -478,13 +510,17 @@ func apply_network_loss() -> void:
 	run_lost.emit()
 
 
-func apply_network_completion() -> void:
+func apply_network_completion(authoritative_results: Dictionary = {}) -> void:
 	if run_is_completed:
 		return
 	run_state = RunState.COMPLETED
 	run_active = false
 	run_is_completed = true
-	_capture_run_results(true)
+	if authoritative_results.is_empty():
+		_capture_run_results(true)
+	else:
+		last_run_results = authoritative_results.duplicate(true)
+		boss_defeated = bool(last_run_results.get("boss_defeated", false))
 	map_states.clear()
 	_lock_all_players()
 	state_changed.emit()
@@ -548,24 +584,112 @@ func get_difficulty_config(value: StringName = difficulty) -> Dictionary:
 func _apply_difficulty_stats() -> void:
 	enemy_health = CombatStats.scaled_health(CombatStats.COMMON_ENEMY_BASE_HP, difficulty)
 	ranged_enemy_health = CombatStats.scaled_health(CombatStats.RANGED_ENEMY_BASE_HP, difficulty)
+	heavy_enemy_health = CombatStats.scaled_health(CombatStats.HEAVY_ENEMY_BASE_HP, difficulty)
 	boss_health = CombatStats.scaled_health(CombatStats.BOSS_BASE_HP, difficulty)
 	enemy_melee_damage = CombatStats.scaled_damage(CombatStats.COMMON_ENEMY_BASE_DAMAGE, difficulty)
 	ranged_melee_damage = CombatStats.scaled_damage(CombatStats.RANGED_MELEE_BASE_DAMAGE, difficulty)
 	ranged_projectile_damage = CombatStats.scaled_damage(CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, difficulty)
+	heavy_enemy_damage = CombatStats.scaled_damage(CombatStats.HEAVY_ENEMY_BASE_DAMAGE, difficulty)
 
 
 func _configure_enemy_stats(enemy: Node) -> void:
 	var boss := enemy.has_method("is_boss") and bool(enemy.is_boss())
 	var elite := enemy.has_method("is_elite") and bool(enemy.is_elite())
+	var heavy := enemy.has_method("is_heavy") and bool(enemy.is_heavy())
 	var configured_health := boss_health
 	if not boss:
-		var base_health := ranged_enemy_health if enemy.is_in_group("ranged_enemy") else enemy_health
-		configured_health = base_health * 2 if elite else base_health
+		var base_health := heavy_enemy_health if heavy else ranged_enemy_health if enemy.is_in_group("ranged_enemy") else enemy_health
+		configured_health = roundi(base_health * CombatStats.ELITE_HP_MULTIPLIER) if elite else base_health
 	enemy.configure_health(configured_health)
 	if enemy.is_in_group("ranged_enemy") and enemy.has_method("configure_damage"):
 		enemy.configure_damage(ranged_melee_damage, ranged_projectile_damage)
 	elif enemy.has_method("configure_damage"):
-		enemy.configure_damage(enemy_melee_damage)
+		enemy.configure_damage(heavy_enemy_damage if heavy else enemy_melee_damage)
+
+
+func get_trap_event_composition(trap_id: StringName, available_spawns: int) -> Array[StringName]:
+	var count := mini(maxi(available_spawns, 0), 3 if difficulty == &"inferno_pro" else 2)
+	var result: Array[StringName] = []
+	if count <= 0:
+		return result
+	result.append(&"common")
+	if count >= 2:
+		result.append(&"ranged")
+	if count >= 3:
+		result.append(&"common")
+	var heavy_allowed := stage_index >= 2
+	heavy_allowed = heavy_allowed or difficulty in [&"pro", &"inferno_pro"] and stage_index >= 1
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value + _stable_hash("trap_composition:%s" % trap_id)
+	var heavy_chance: float = {&"normal": 0.22, &"hard": 0.42, &"pro": 0.68, &"inferno_pro": 0.88}.get(difficulty, 0.22)
+	if heavy_allowed and count >= 2 and rng.randf() <= heavy_chance:
+		result[count - 1] = &"heavy"
+	return result
+
+
+func activate_trap_event(trap_id: StringName, enemy_ids: Array[StringName]) -> bool:
+	if not run_active or trap_id.is_empty():
+		return false
+	var map_state := get_current_map_state()
+	map_state.register_trap_event(trap_id, enemy_ids)
+	if not map_state.transition_trap_event(trap_id, BiomeMapState.TRAP_ACTIVE):
+		return false
+	trap_events_activated += 1
+	state_changed.emit()
+	return true
+
+
+func register_trap_event_enemy(enemy: Node, trap_id: StringName) -> void:
+	if enemy == null or trap_id.is_empty():
+		return
+	var room_id := get_current_room_id()
+	if not room_states.has(room_id):
+		room_states[room_id] = _new_room_state()
+	enemy.run_room_id = room_id
+	_configure_enemy_stats(enemy)
+	room_states[room_id].required_enemies[enemy.persistent_id] = true
+	if room_states[room_id].dead_enemies.has(enemy.persistent_id):
+		enemy.queue_free()
+
+
+func is_enemy_dead(room_id: StringName, enemy_id: StringName) -> bool:
+	return room_states.has(room_id) and room_states[room_id].dead_enemies.has(enemy_id)
+
+
+func claim_trap_event_reward(trap_id: StringName) -> int:
+	var map_state := get_current_map_state()
+	if not map_state.transition_trap_event(trap_id, BiomeMapState.TRAP_REWARDED):
+		return 0
+	var rng := RandomNumberGenerator.new()
+	rng.seed = seed_value + _stable_hash("trap_reward:%s" % trap_id)
+	var amount := rng.randi_range(48, 68) + stage_index * 6 + extra_enemy_count * 4
+	dirty_money += amount
+	total_money_earned += amount
+	trap_events_rewarded += 1
+	completion_rewards.trap_money = int(completion_rewards.get("trap_money", 0)) + amount
+	map_state.collect_content(&"loot", trap_id)
+	state_changed.emit()
+	return amount
+
+
+func _update_trap_event_completion(room_id: StringName, enemy_id: StringName) -> void:
+	if room_id != get_current_room_id():
+		return
+	var map_state := get_current_map_state()
+	for trap_id_value: Variant in map_state.trap_event_states.keys():
+		var trap_id := StringName(trap_id_value)
+		if map_state.get_trap_event_state(trap_id) != BiomeMapState.TRAP_ACTIVE:
+			continue
+		var event_enemy_ids := map_state.get_trap_event_enemy_ids(trap_id)
+		if not event_enemy_ids.has(enemy_id):
+			continue
+		var all_dead := true
+		for event_enemy_id in event_enemy_ids:
+			if not room_states[room_id].dead_enemies.has(event_enemy_id):
+				all_dead = false
+				break
+		if all_dead and map_state.transition_trap_event(trap_id, BiomeMapState.TRAP_CLEARED):
+			trap_events_cleared += 1
 
 
 func get_difficulty_label() -> String:
@@ -988,6 +1112,7 @@ func format_run_time(value: float = run_elapsed_time) -> String:
 
 func _capture_run_results(completed: bool) -> void:
 	last_run_results = {
+		"run_id": "%d:%s:%d" % [seed_value, String(difficulty), hash(JSON.stringify(stage_history))],
 		"completed": completed,
 		"elapsed_time": run_elapsed_time,
 		"money_earned": total_money_earned,
@@ -998,6 +1123,13 @@ func _capture_run_results(completed: bool) -> void:
 		"stage_history": stage_history.duplicate(true),
 		"participants": participant_progress.duplicate(true),
 		"weapons_found": weapons_found.duplicate(true),
+		"boss_defeated": boss_defeated,
+		"trap_events": {
+			"activated": trap_events_activated,
+			"cleared": trap_events_cleared,
+			"rewarded": trap_events_rewarded,
+		},
+		"completion_rewards": completion_rewards.duplicate(true),
 	}
 
 
@@ -1006,3 +1138,17 @@ func _reset_run_quality_state() -> void:
 	total_money_earned = 0
 	weapons_found.clear()
 	last_run_results.clear()
+	boss_defeated = false
+	trap_events_activated = 0
+	trap_events_cleared = 0
+	trap_events_rewarded = 0
+	completion_rewards.clear()
+
+
+func _grant_boss_completion_reward() -> void:
+	if not boss_defeated or completion_rewards.has("boss_money"):
+		return
+	var amount := 100 + extra_enemy_count * 20
+	completion_rewards.boss_money = amount
+	dirty_money += amount
+	total_money_earned += amount

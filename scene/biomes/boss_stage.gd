@@ -15,7 +15,14 @@ func setup(manager: Node) -> void:
 	boss.enemy_role = 1
 	boss.required_for_completion = true
 	boss.visual_scale = 1.65
+	var temporary_visual := boss.get_node_or_null("TempPixelVisual") as TempPixelVisual
+	if temporary_visual != null:
+		temporary_visual.set_character_kind(&"boss")
 	boss.move_speed = 118.0
+	boss.attack_windup = 0.42
+	boss.attack_recovery = 0.40
+	boss.attack_cooldown = 0.55
+	boss.attack_telegraph_color = Color(1.0, 0.16, 0.35, 1.0)
 	boss.position = $BossSpawn.position
 	$Entities.add_child(boss)
 	boss_spawned = true

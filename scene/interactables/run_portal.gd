@@ -29,22 +29,17 @@ func _refresh_prompt() -> void:
 		prompt.visible = true
 		prompt.text = "PORTAL DA RUN"
 		return
-	var p1_ready := false
-	var p2_ready := false
+	var readiness: Array[String] = []
+	var any_ready := false
 	for player in manager.get_players():
 		var player_body := player as CharacterBody2D
 		if player_body == null:
 			continue
 		var ready: bool = not bool(player_body.get("is_downed")) and overlaps_body(player_body)
-		if StringName(player_body.get("participant_id")) == &"player_2":
-			p2_ready = ready
-		else:
-			p1_ready = ready
-	prompt.visible = p1_ready or p2_ready
+		any_ready = any_ready or ready
+		readiness.append("%s: %s" % [String(player_body.get("participant_id")).replace("player_", "P"), "PRONTO" if ready else "AGUARDANDO"])
+	prompt.visible = any_ready
 	if not run_manager.is_coop():
 		prompt.text = "PORTAL DA RUN\n[USAR] INICIAR RUN"
 		return
-	prompt.text = "PORTAL DA RUN\nP1: %s  //  P2: %s\n[USAR] INICIAR" % [
-		"PRONTO" if p1_ready else "AGUARDANDO",
-		"PRONTO" if p2_ready else "AGUARDANDO",
-	]
+	prompt.text = "PORTAL DA RUN\n%s\n[USAR] INICIAR" % "  //  ".join(readiness)

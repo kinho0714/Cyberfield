@@ -4,17 +4,21 @@ extends Node2D
 func _ready() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var summary := $LastRunSummary as Label
+	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
+	var meta_summary := $MetaSummary as Label
+	if meta != null:
+		meta_summary.text = "CRÉDITOS  ◈ %d    •    ARMAS LIBERADAS  %d/%d    •    RUNS  %d\nTERMINAL À ESQUERDA  •  PORTAL À DIREITA" % [meta.credits, meta.unlocked_weapons.size(), WeaponCatalog.WEAPONS.size(), int(meta.statistics.get("runs", 0))]
 	if run_manager == null or run_manager.last_run_results.is_empty():
 		summary.visible = false
 		summary.text = "ÚLTIMA RUN // NENHUM RESULTADO NESTA SESSÃO"
 		return
-	summary.visible = true
+	summary.visible = false
 	var result: Dictionary = run_manager.last_run_results
-	var weapons := _normalize_weapons(result.get("weapons_found"))
-	var participants := _normalize_dictionary(result.get("participants"))
+	var weapons: Array = _normalize_weapons(result.get("weapons_found"))
+	var participants: Dictionary = _normalize_dictionary(result.get("participants"))
 	var attributes: PackedStringArray = []
 	for participant_id in participants:
-		var values := _normalize_dictionary(participants[participant_id])
+		var values: Dictionary = _normalize_dictionary(participants[participant_id])
 		attributes.append("%s: INT %d | SAÚDE %d | FORÇA %d" % [String(participant_id).replace("player_", "P"), _safe_int(values.get("intellect")), _safe_int(values.get("health")), _safe_int(values.get("strength"))])
 	var weapon_lines: PackedStringArray = []
 	for weapon_id in weapons:
@@ -23,8 +27,11 @@ func _ready() -> void:
 		weapon_lines.append("• NENHUMA ARMA REGISTRADA")
 	if attributes.is_empty():
 		attributes.append("INT 0 | SAÚDE 0 | FORÇA 0")
-	var stages := _normalize_sequence(result.get("stage_history"))
-	summary.text = "ÚLTIMA RUN // %s\nTEMPO %s | DIFICULDADE %s | STAGE %d/6 | DINHEIRO $%d\nARMAS:\n%s\nATRIBUTOS: %s" % ["VITÓRIA" if bool(result.get("completed", false)) else "DERROTA", _format_time(_safe_float(result.get("elapsed_time"))), String(result.get("difficulty", "normal")).to_upper(), clampi(maxi(stages.size(), _safe_int(result.get("stage_index")) + 1), 1, 6), _safe_int(result.get("money_earned")), "\n".join(weapon_lines), " // ".join(attributes)]
+	var stages: Array = _normalize_sequence(result.get("stage_history"))
+	var trap_events: Dictionary = _normalize_dictionary(result.get("trap_events"))
+	var event_summary: String = "EVENTOS: %d ATIVADOS | %d CONCLUÍDOS | %d RECOMPENSADOS" % [_safe_int(trap_events.get("activated")), _safe_int(trap_events.get("cleared")), _safe_int(trap_events.get("rewarded"))]
+	var boss_summary: String = "BOSS: %s" % ("DERROTADO" if bool(result.get("boss_defeated", false)) else "NÃO DERROTADO")
+	summary.text = "ÚLTIMA RUN // %s\nTEMPO %s | DIFICULDADE %s | STAGE %d/6 | DINHEIRO $%d\n%s | %s\nARMAS:\n%s\nATRIBUTOS: %s" % ["VITÓRIA" if bool(result.get("completed", false)) else "DERROTA", _format_time(_safe_float(result.get("elapsed_time"))), String(result.get("difficulty", "normal")).to_upper(), clampi(maxi(stages.size(), _safe_int(result.get("stage_index")) + 1), 1, 6), _safe_int(result.get("money_earned")), boss_summary, event_summary, "\n".join(weapon_lines), " // ".join(attributes)]
 
 
 func _format_time(seconds: float) -> String:

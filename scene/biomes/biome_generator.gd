@@ -9,6 +9,8 @@ const OUTER_BOUNDARY_THICKNESS := 96.0
 const OUTER_BOUNDARY_VERTICAL_MARGIN := CELL_SIZE.y * 2.0
 const ENEMY_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
+const HEAVY_ENEMY_SCENE := preload("res://entities/HeavyEnemy.tscn")
+const TRAP_CHEST_SCENE := preload("res://scene/interactables/trap_chest.tscn")
 const ATTRIBUTE_CHEST_SCENE := preload("res://scene/interactables/attribute_chest.tscn")
 const LOOT_SCENE := preload("res://scene/biomes/biome_loot_placeholder.tscn")
 const EXIT_SCENE := preload("res://scene/biomes/biome_exit.tscn")
@@ -20,6 +22,9 @@ const MINIMUM_FUNCTIONAL_PLATFORM_WIDTH := 150.0
 const UPPER_BOUND_MARGIN := CELL_SIZE.y * 0.75
 const SPECIAL_WEAPON_DROP_CHANCE := 0.38
 const SPAWN_EDGE_CLEARANCE := 72.0
+const TRAP_CHEST_CHANCE := 0.12
+const VERTICAL_SHAFT_INNER_WIDTH := 136.0
+const VERTICAL_SHAFT_WALL_THICKNESS := 18.0
 
 @export var biome_definition: BiomeDefinition
 
@@ -32,6 +37,8 @@ var spawned_loot_count := 0
 var spawned_attribute_count := 0
 var spawned_enemy_count := 0
 var spawned_ranged_count := 0
+var spawned_heavy_count := 0
+var spawned_trap_chest_count := 0
 var rejected_layout_count := 0
 var rejected_micro_ledge_count := 0
 var _start_position := Vector2.ZERO
@@ -47,6 +54,9 @@ var _content_modules: Dictionary = {
 }
 var _content_entries: Array[Dictionary] = []
 var _teleporter_entries: Array[Dictionary] = []
+var _trap_event_ids: Array[StringName] = []
+var _heavy_enemy_ids: Array[StringName] = []
+var _reserved_event_marker_ids: Dictionary = {}
 
 
 func generate(run_seed: int, run_manager: Node) -> bool:
@@ -121,6 +131,10 @@ func get_generation_report() -> Dictionary:
 		"attribute_count": spawned_attribute_count,
 		"enemy_count": spawned_enemy_count,
 		"ranged_enemy_count": spawned_ranged_count,
+		"heavy_enemy_count": spawned_heavy_count,
+		"heavy_enemy_ids": _heavy_enemy_ids.duplicate(),
+		"trap_chest_count": spawned_trap_chest_count,
+		"trap_event_ids": _trap_event_ids.duplicate(),
 		"combat_module_count": combat_modules.size(),
 		"max_empty_sequence": maximum_empty_sequence,
 		"auxiliary_platform_count": auxiliary_platform_count,
@@ -354,7 +368,12 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	spawned_attribute_count = 0
 	spawned_enemy_count = 0
 	spawned_ranged_count = 0
+	spawned_heavy_count = 0
+	spawned_trap_chest_count = 0
 	rejected_micro_ledge_count = 0
+	_trap_event_ids.clear()
+	_heavy_enemy_ids.clear()
+	_reserved_event_marker_ids.clear()
 	_content_modules = {"loot": [], "attribute": [], "exit": [], "enemy": [], "weapon": []}
 	_content_entries.clear()
 	_teleporter_entries.clear()
@@ -369,6 +388,7 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	_start_position = Vector2(140.0, FLOOR_TOP - 36.0)
 	_spawn_teleporters(run_manager)
 	_spawn_required_content(rng, run_manager)
+	generation_signature += _phase8_content_signature()
 	generated_bounds = _calculate_bounds().grow(160.0)
 	call_deferred("_sync_runtime_debug_visibility")
 
@@ -561,8 +581,9 @@ func _build_vertical_connections() -> void:
 			# The shaft is deliberately a clean corridor. The former 56 px rest was
 			# flush with the left wall and formed a hook inside the climb clearance
 			# zone, which could catch CharacterBody2D during wall climb.
-			_add_static_rect(connections, Rect2(center_x - 92.0, shaft_top, 18.0, climbable_height), Color(0.11, 0.35, 0.38, 1.0))
-			_add_static_rect(connections, Rect2(center_x + 74.0, shaft_top, 18.0, climbable_height), Color(0.11, 0.35, 0.38, 1.0))
+			var shaft_half_width := VERTICAL_SHAFT_INNER_WIDTH * 0.5
+			_add_static_rect(connections, Rect2(center_x - shaft_half_width - VERTICAL_SHAFT_WALL_THICKNESS, shaft_top, VERTICAL_SHAFT_WALL_THICKNESS, climbable_height), Color(0.11, 0.35, 0.38, 1.0))
+			_add_static_rect(connections, Rect2(center_x + shaft_half_width, shaft_top, VERTICAL_SHAFT_WALL_THICKNESS, climbable_height), Color(0.11, 0.35, 0.38, 1.0))
 			rejected_micro_ledge_count += 1
 
 
@@ -712,16 +733,53 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 		used_modules[module_index] = true
 	for index in selected.size():
 		var marker := selected[index]
-		var loot := LOOT_SCENE.instantiate()
-		loot.name = "BiomeLoot%02d" % (index + 1)
-		loot.loot_id = StringName("%s_loot_%02d" % [stage_prefix, index + 1])
-		loot.amount = 15 + run_manager.extra_enemy_count * 5
+		var loot_id := StringName("%s_loot_%02d" % [stage_prefix, index + 1])
+		var event_markers := _trap_event_markers_for_loot(marker)
+		var spawn_trap := event_markers.size() >= 2 and rng.randf() <= TRAP_CHEST_CHANCE
+		var loot: Node2D
+		if spawn_trap:
+			var trap := TRAP_CHEST_SCENE.instantiate() as TrapChest
+			trap.name = "BiomeLoot%02d" % (index + 1)
+			trap.trap_id = loot_id
+			for event_marker in event_markers:
+				trap.event_spawn_positions.append((event_marker as Marker2D).global_position)
+				_reserved_event_marker_ids[(event_marker as Marker2D).get_instance_id()] = true
+			loot = trap
+			spawned_trap_chest_count += 1
+			_trap_event_ids.append(loot_id)
+		else:
+			var ordinary_loot := LOOT_SCENE.instantiate()
+			ordinary_loot.name = "BiomeLoot%02d" % (index + 1)
+			ordinary_loot.loot_id = loot_id
+			ordinary_loot.amount = 15 + run_manager.extra_enemy_count * 5
+			loot = ordinary_loot
 		add_child(loot)
 		loot.global_position = marker.global_position
 		spawned_loot_count += 1
 		var module_index := int(marker.get_meta("module_index"))
 		(_content_modules.loot as Array).append(module_index)
-		_content_entries.append({"kind": &"loot", "content_id": loot.loot_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
+		_content_entries.append({"kind": &"loot", "content_id": loot_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
+
+
+func _trap_event_markers_for_loot(loot_marker: Marker2D) -> Array[Marker2D]:
+	var module_index := int(loot_marker.get_meta("module_index", -1))
+	if module_index < 0 or module_index >= _nodes.size():
+		return []
+	var definition := _nodes[module_index].definition as BiomeModuleDefinition
+	if definition == null or definition.module_id not in [&"corridor", &"open_area", &"upper_lower_passage", &"lower_upper_passage"]:
+		return []
+	if _nodes[module_index].required_connectors.has(&"up") or _nodes[module_index].required_connectors.has(&"down"):
+		return []
+	var result: Array[Marker2D] = []
+	for marker_value: Variant in _sockets.enemy:
+		var marker := marker_value as Marker2D
+		if int(marker.get_meta("module_index", -1)) != module_index or not _is_valid_spawn_socket(marker, 66.0):
+			continue
+		if marker.global_position.distance_to(loot_marker.global_position) < 90.0:
+			continue
+		result.append(marker)
+	result.sort_custom(func(first: Marker2D, second: Marker2D) -> bool: return first.global_position.x < second.global_position.x)
+	return result.slice(0, mini(result.size(), 3))
 
 
 func _spawn_weapon_pickups(rng: RandomNumberGenerator, stage_prefix: String) -> void:
@@ -738,6 +796,12 @@ func _spawn_weapon_pickups(rng: RandomNumberGenerator, stage_prefix: String) -> 
 	var pickup := WEAPON_PICKUP_SCRIPT.new() as WeaponPickup
 	pickup.pickup_id = StringName("%s_weapon_01" % stage_prefix)
 	var weapon_pool: Array[StringName] = [&"breaker_maul", &"arc_emitter"]
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var configured_pool: Array = []
+	if run_manager != null:
+		configured_pool = run_manager.get("run_weapon_pool") as Array
+	if not configured_pool.is_empty():
+		weapon_pool.assign(configured_pool)
 	pickup.weapon_id = weapon_pool[rng.randi_range(0, weapon_pool.size() - 1)]
 	add_child(pickup)
 	pickup.global_position = marker.global_position
@@ -750,7 +814,7 @@ func _spawn_enemies(rng: RandomNumberGenerator, run_manager: Node, stage_prefix:
 	var candidates: Array = _sockets.enemy.duplicate()
 	candidates = candidates.filter(func(marker: Marker2D) -> bool:
 		var module_index := int(marker.get_meta("module_index"))
-		return module_index != 0 and not _exit_module_indices.has(module_index) and _is_valid_spawn_socket(marker, 48.0) and not _position_near_teleporter(marker.global_position)
+		return module_index != 0 and not _exit_module_indices.has(module_index) and not _reserved_event_marker_ids.has(marker.get_instance_id()) and _is_valid_spawn_socket(marker, 48.0) and not _position_near_teleporter(marker.global_position)
 	)
 	var by_module := {}
 	for marker_value: Variant in candidates:
@@ -815,13 +879,22 @@ func _spawn_enemies(rng: RandomNumberGenerator, run_manager: Node, stage_prefix:
 	desired_count = mini(desired_count, ordered_candidates.size())
 	var ranged_ratio: float = {&"normal": 0.18, &"hard": 0.28, &"pro": 0.38, &"inferno_pro": 0.52}.get(difficulty, 0.18)
 	var ranged_count := mini(ceili(desired_count * ranged_ratio), desired_count)
+	var heavy_indices := _choose_heavy_spawn_indices(ordered_candidates, ranged_count, run_manager, rng)
 	var marker_use_count := {}
 	for index in desired_count:
-		var enemy := RANGED_ENEMY_SCENE.instantiate() if index < ranged_count else ENEMY_SCENE.instantiate()
-		if index < ranged_count:
+		var enemy: Node
+		if heavy_indices.has(index):
+			enemy = HEAVY_ENEMY_SCENE.instantiate()
+			spawned_heavy_count += 1
+		elif index < ranged_count:
+			enemy = RANGED_ENEMY_SCENE.instantiate()
 			spawned_ranged_count += 1
+		else:
+			enemy = ENEMY_SCENE.instantiate()
 		enemy.name = "LowerCityEnemy%02d" % (index + 1)
 		enemy.persistent_id = StringName("%s_enemy_%02d" % [stage_prefix, index + 1])
+		if enemy.has_method("is_heavy") and bool(enemy.is_heavy()):
+			_heavy_enemy_ids.append(enemy.persistent_id)
 		enemy.run_room_id = StringName(stage_prefix)
 		add_child(enemy)
 		var marker := ordered_candidates[index] as Marker2D
@@ -832,8 +905,63 @@ func _spawn_enemies(rng: RandomNumberGenerator, run_manager: Node, stage_prefix:
 		enemy.global_position = marker.global_position + Vector2(formation_offset, 0.0)
 		spawned_enemy_count += 1
 		var module_index := int(marker.get_meta("module_index"))
+		enemy.set_meta("source_module_index", module_index)
+		enemy.set_meta("structurally_validated_spawn", true)
 		if not (_content_modules.enemy as Array).has(module_index):
 			(_content_modules.enemy as Array).append(module_index)
+
+
+func _choose_heavy_spawn_indices(candidates: Array[Marker2D], ranged_count: int, run_manager: Node, rng: RandomNumberGenerator) -> Dictionary:
+	var difficulty: StringName = run_manager.difficulty
+	var stage: int = run_manager.stage_index
+	var minimum_stage: int = {&"normal": 2, &"hard": 1, &"pro": 1, &"inferno_pro": 0}.get(difficulty, 2)
+	if stage < minimum_stage:
+		return {}
+	var chance: float = {&"normal": 0.18, &"hard": 0.24, &"pro": 0.36, &"inferno_pro": 0.48}.get(difficulty, 0.18)
+	chance += minf(stage * 0.03, 0.12)
+	var maximum: int = 1 if difficulty in [&"normal", &"hard"] else 2
+	var eligible: Array[int] = []
+	var used_markers: Dictionary = {}
+	for index in range(ranged_count, candidates.size()):
+		var marker := candidates[index]
+		var marker_id := marker.get_instance_id()
+		if used_markers.has(marker_id):
+			continue
+		used_markers[marker_id] = true
+		if _is_valid_heavy_spawn_socket(marker):
+			eligible.append(index)
+	_shuffle(eligible, rng)
+	var result: Dictionary = {}
+	for index in eligible:
+		if result.size() >= maximum:
+			break
+		if rng.randf() <= chance:
+			result[index] = true
+	return result
+
+
+func _phase8_content_signature() -> String:
+	var heavy_ids: Array[String] = []
+	for enemy_id in _heavy_enemy_ids:
+		heavy_ids.append(String(enemy_id))
+	heavy_ids.sort()
+	var trap_ids: Array[String] = []
+	for event_id in _trap_event_ids:
+		trap_ids.append(String(event_id))
+	trap_ids.sort()
+	return "|heavy:%s|traps:%s" % [",".join(heavy_ids), ",".join(trap_ids)]
+
+
+func _is_valid_heavy_spawn_socket(marker: Marker2D) -> bool:
+	if not _is_valid_spawn_socket(marker, 66.0):
+		return false
+	var module_index := int(marker.get_meta("module_index", -1))
+	if module_index < 0 or module_index >= _nodes.size() or _nodes[module_index].role not in [&"combat", &"reward"]:
+		return false
+	var definition := _nodes[module_index].definition as BiomeModuleDefinition
+	if definition == null or definition.module_id not in [&"corridor", &"open_area", &"upper_lower_passage", &"lower_upper_passage"]:
+		return false
+	return not _nodes[module_index].required_connectors.has(&"up") and not _nodes[module_index].required_connectors.has(&"down")
 
 
 func _is_valid_spawn_socket(marker: Marker2D, half_width: float) -> bool:
@@ -970,6 +1098,9 @@ func _clear_generated_children() -> void:
 	_content_modules = {"loot": [], "attribute": [], "exit": [], "enemy": [], "weapon": []}
 	_content_entries.clear()
 	_teleporter_entries.clear()
+	_trap_event_ids.clear()
+	_heavy_enemy_ids.clear()
+	_reserved_event_marker_ids.clear()
 
 
 func _scale_source_position(value: Vector2) -> Vector2:

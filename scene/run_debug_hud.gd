@@ -118,10 +118,10 @@ func _process(_delta: float) -> void:
 		if not player.visible:
 			continue
 		lines.append("%s // HP %d/%d // COMBO %d // PERFIL %s" % [String(player.participant_id).replace("player_", "P"), player.health, player.max_health, player.total_combo_hits, player.input_profile])
-		if local_settings.debug_hud_visible and player.input_profile == "p2":
+		if local_settings.debug_hud_visible and player.participant_id != &"player_1":
 			var lan_session := get_tree().get_first_node_in_group("lan_session")
 			if lan_session != null and lan_session.is_network_game():
-				lines.append("P2 REDE: %s // %d/2" % [lan_session.get_role_label(), lan_session.get_player_count()])
+				lines.append("%s REDE: %s // %d/%d" % [String(player.participant_id).replace("player_", "P"), lan_session.get_role_label(), lan_session.get_player_count(), LanSession.MAX_PLAYERS])
 			else:
 				var connected := Input.get_connected_joypads().has(player.joypad_device_id)
 				lines.append("P2 CONTROLE: %s // ID %d" % ["CONECTADO" if connected else "DESCONECTADO", player.joypad_device_id])
@@ -131,8 +131,8 @@ func _process(_delta: float) -> void:
 func _get_local_player(players: Array[Node]) -> Node:
 	var local_participant := &"player_1"
 	var lan_session := get_tree().get_first_node_in_group("lan_session")
-	if lan_session != null and lan_session.is_client():
-		local_participant = &"player_2"
+	if lan_session != null and lan_session.is_network_game():
+		local_participant = lan_session.get_local_participant_id()
 	for player in players:
 		if player.participant_id == local_participant and player.visible:
 			return player
@@ -152,8 +152,9 @@ func _update_local_player_hud(player: Node) -> void:
 	local_health.value = player.health
 	local_health_text.text = "%d / %d" % [player.health, player.max_health]
 	var potion_segments := "■".repeat(player.heal_doses) + "□".repeat(player.max_heal_doses - player.heal_doses)
-	var weapon_name := WeaponCatalog.get_display_name(player.get_active_weapon_id())
-	local_stats.text = "POÇÃO %s  |  I %d  S %d  F %d  |  $%d\nARMA %d: %s" % [potion_segments, player.intellect, player.health_attribute, player.strength, run_manager.dirty_money, player.active_weapon_slot + 1, weapon_name]
+	var slot_1 := WeaponCatalog.get_display_name(player.equipped_weapons[0])
+	var slot_2 := WeaponCatalog.get_display_name(player.equipped_weapons[1]) if not player.equipped_weapons[1].is_empty() else "VAZIO"
+	local_stats.text = "CURA %s    INT %d  SAÚDE %d  FORÇA %d    $%d\n%s S1 %s    %s S2 %s" % [potion_segments, player.intellect, player.health_attribute, player.strength, run_manager.dirty_money, "▶" if player.active_weapon_slot == 0 else " ", slot_1, "▶" if player.active_weapon_slot == 1 else " ", slot_2]
 
 
 func _update_partner_hud(player: Node) -> void:
@@ -175,7 +176,7 @@ func _update_boss_hud() -> void:
 	boss_panel.visible = active_boss != null and run_manager.run_active
 	if active_boss == null:
 		return
-	boss_name.text = "BOSS PLACEHOLDER"
+	boss_name.text = "GUARDIÃO PROVISÓRIO" + (" // FASE 2" if bool(active_boss.get("boss_phase_two_active")) else "")
 	boss_health.max_value = active_boss.max_health
 	boss_health.value = active_boss.health
 
@@ -192,7 +193,7 @@ func _refresh() -> void:
 		return
 	if not run_manager.current_biome_id.is_empty():
 		var lan_session := get_tree().get_first_node_in_group("lan_session")
-		var network_text := "\nREDE: %s // PEER %d // %d/2" % [lan_session.get_role_label(), multiplayer.get_unique_id(), lan_session.get_player_count()] if lan_session != null and lan_session.is_network_game() else ""
+		var network_text := "\nREDE: %s // PEER %d // %d/%d" % [lan_session.get_role_label(), multiplayer.get_unique_id(), lan_session.get_player_count(), LanSession.MAX_PLAYERS] if lan_session != null and lan_session.is_network_game() else ""
 		var fallback_text := "\nGENERATION FALLBACK: %s" % run_manager.generation_failure_reason if run_manager.generation_fallback else ""
 		var exit_text := "\nSAÍDA: %s → %s" % [run_manager.selected_exit_id, run_manager.selected_exit_destination] if not run_manager.selected_exit_id.is_empty() else ""
 		status_label.text = (

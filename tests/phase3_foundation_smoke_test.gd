@@ -129,7 +129,8 @@ func _test_lobby_selection_contract() -> void:
 	var session := main.get_node("LanSession")
 	var join_button := lobby.get_node("Overlay/Center/SearchPage/Join") as Button
 	_check(join_button.disabled, "LAN Enter button must start disabled")
-	session.discovered_rooms = [{"name": "Test Room", "address": "127.0.0.1", "port": session.GAME_PORT, "players": 1}]
+	var discovered_rooms: Array[Dictionary] = [{"name": "Test Room", "address": "127.0.0.1", "port": session.GAME_PORT, "players": 1}]
+	session.discovered_rooms = discovered_rooms
 	lobby._refresh_rooms()
 	lobby._select_room(0)
 	_check(not join_button.disabled, "one tap must select a room and enable Enter")

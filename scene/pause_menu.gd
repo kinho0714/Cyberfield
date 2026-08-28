@@ -108,9 +108,7 @@ func _block_local_gameplay_input() -> void:
 	var lan_session: LanSession = get_parent().get_node("LanSession")
 	for player in get_parent().get_players():
 		var is_local_player: bool = not lan_session.is_network_game()
-		if lan_session.is_host() and player.participant_id == &"player_1":
-			is_local_player = true
-		elif lan_session.is_client() and player.participant_id == &"player_2":
+		if player.participant_id == lan_session.get_local_participant_id():
 			is_local_player = true
 		if is_local_player and player.input_enabled:
 			player.set_input_enabled(false)

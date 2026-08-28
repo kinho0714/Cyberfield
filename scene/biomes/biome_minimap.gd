@@ -70,7 +70,7 @@ func _discover_player_modules(players: Array[Node], biome_root: Node) -> void:
 		var module := modules[module_index] as Dictionary
 		var module_id := StringName(module.instance_id)
 		if lan_session.is_client():
-			if player.participant_id == &"player_2" and not run_manager.get_current_map_state().discovered_module_ids.has(module_id):
+			if player.participant_id == lan_session.get_local_participant_id() and not run_manager.get_current_map_state().discovered_module_ids.has(module_id):
 				lan_session.request_map_discovery(module_id)
 			continue
 		var neighbors: Array[StringName] = []

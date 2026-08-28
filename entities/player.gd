@@ -6,7 +6,7 @@ signal downed_state_changed(is_now_downed: bool)
 signal revive_progress_changed(progress: float)
 
 @export var participant_id: StringName = &"player_1"
-@export_enum("p1", "p2") var input_profile := "p1"
+@export_enum("p1", "p2", "p3", "p4") var input_profile := "p1"
 @export var joypad_device_id := -1
 @export_range(0.5, 10.0, 0.1) var revive_duration := 2.0
 @export_range(0.1, 1.0, 0.05) var revive_health_ratio := 0.4
@@ -39,7 +39,12 @@ const MAX_JUMPS = 2
 
 const WALL_SLIDE_SPEED = 100.0
 const WALL_CLIMB_SPEED = 80.0
-const WALL_CLIMB_DURATION = 2.0
+const WALL_CLIMB_DURATION = 3.6
+const WALL_TRANSFER_ASSIST_DISTANCE := 20.0
+const WALL_TRANSFER_GRACE_DURATION := 0.38
+const WALL_JUMP_HORIZONTAL_ASSIST := 340.0
+const WALL_JUMP_STAMINA_COST := 0.16
+const WALL_TRANSFER_SAFE_SHAFT_WIDTH := 144.0
 
 const ATTACK_HIT_DELAY = 0.1
 const ATTACK_DURATION = 0.2
@@ -86,6 +91,8 @@ var attack_generation := 0
 var wall_climb_time = WALL_CLIMB_DURATION
 var max_wall_climb_duration := WALL_CLIMB_DURATION
 var wall_jump_available = true
+var wall_transfer_assist_timer := 0.0
+var last_wall_jump_normal_x := 0.0
 var input_enabled = true
 var is_downed := false
 var is_invulnerable := false
@@ -115,11 +122,14 @@ var network_prediction_only := false
 var network_remote_replica := false
 var network_target_position := Vector2.ZERO
 var network_target_velocity := Vector2.ZERO
+var network_correction_velocity := Vector2.ZERO
 
 
 func _ready() -> void:
-	if input_profile == "p2":
+	if input_profile == "p2" and joypad_device_id >= 0:
 		LocalCoopInput.ensure_player_two_actions(joypad_device_id)
+	elif input_profile != "p1":
+		LocalCoopInput.ensure_network_player_actions(StringName(input_profile))
 	attack_shape_cast.enabled = true
 	ground_slam_shape_cast.enabled = true
 	heal_doses = max_heal_doses
@@ -129,9 +139,14 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if network_remote_replica:
-		var interpolation_weight := 1.0 - exp(-18.0 * delta)
-		global_position = global_position.lerp(network_target_position, interpolation_weight)
+		var interpolation_weight := 1.0 - exp(-12.0 * delta)
+		var extrapolated_target := network_target_position + network_target_velocity * LanSession.SNAPSHOT_INTERVAL
+		global_position = global_position.lerp(extrapolated_target, interpolation_weight)
 		velocity = network_target_velocity
+	elif network_prediction_only and network_correction_velocity.length_squared() > 0.01:
+		var correction_step := network_correction_velocity * delta
+		global_position += correction_step
+		network_correction_velocity = network_correction_velocity.move_toward(Vector2.ZERO, 180.0 * delta)
 	if invulnerability_timer > 0.0:
 		invulnerability_timer = max(invulnerability_timer - delta, 0.0)
 
@@ -176,8 +191,13 @@ func _physics_process(delta: float) -> void:
 		return
 
 	var direction: float = Input.get_axis(_action(&"left"), _action(&"right"))
+	wall_transfer_assist_timer = maxf(wall_transfer_assist_timer - delta, 0.0)
 	var wall_normal: Vector2 = get_wall_normal() if is_on_wall() else Vector2.ZERO
+	if wall_normal.x == 0.0 and wall_transfer_assist_timer > 0.0 and direction != 0.0:
+		wall_normal = _nearby_wall_normal(direction)
 	var touching_wall_in_air: bool = not is_on_floor() and wall_normal.x != 0.0
+	if touching_wall_in_air and last_wall_jump_normal_x != 0.0 and signf(wall_normal.x) != signf(last_wall_jump_normal_x) and wall_climb_time > WALL_JUMP_STAMINA_COST:
+		wall_jump_available = true
 	var holding_against_wall: bool = (
 		direction != 0.0
 		and sign(direction) == -sign(wall_normal.x)
@@ -240,6 +260,8 @@ func _physics_process(delta: float) -> void:
 		jumps_left = MAX_JUMPS
 		wall_climb_time = max_wall_climb_duration
 		wall_jump_available = true
+		wall_transfer_assist_timer = 0.0
+		last_wall_jump_normal_x = 0.0
 		is_ground_slamming = false
 		down_tap_timer = 0.0
 
@@ -274,8 +296,7 @@ func _physics_process(delta: float) -> void:
 	if jump_pressed and not is_attacking and not is_ground_slamming and knockback_timer <= 0:
 		if touching_wall_in_air:
 			if wall_jump_available:
-				velocity.y = JUMP_VELOCITY
-				wall_jump_available = false
+				_launch_wall_jump(wall_normal)
 				did_wall_jump = true
 		elif jumps_left > 0:
 			velocity.y = JUMP_VELOCITY
@@ -288,7 +309,13 @@ func _physics_process(delta: float) -> void:
 
 	# Only control horizontal movement when not being knocked back.
 	if knockback_timer <= 0 and dash_timer <= 0 and not is_ground_slamming:
-		if direction:
+		# Mobile players usually still hold toward the source wall on the jump
+		# frame. Preserve the launch briefly so that residual joystick input cannot
+		# cancel it before the thumb changes direction.
+		var preserve_wall_impulse := wall_transfer_assist_timer > 0.0 and absf(velocity.x) > SPEED
+		if preserve_wall_impulse:
+			pass
+		elif direction:
 			velocity.x = direction * SPEED
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
@@ -332,6 +359,23 @@ func _physics_process(delta: float) -> void:
 		ground_slam_impact()
 		is_ground_slamming = false
 		down_tap_timer = 0.0
+
+
+func _nearby_wall_normal(direction: float) -> Vector2:
+	var horizontal_direction := signf(direction)
+	if horizontal_direction == 0.0:
+		return Vector2.ZERO
+	var motion := Vector2(horizontal_direction * WALL_TRANSFER_ASSIST_DISTANCE, 0.0)
+	return Vector2(-horizontal_direction, 0.0) if test_move(global_transform, motion) else Vector2.ZERO
+
+
+func _launch_wall_jump(wall_normal: Vector2) -> void:
+	velocity.y = JUMP_VELOCITY
+	velocity.x = wall_normal.x * WALL_JUMP_HORIZONTAL_ASSIST
+	wall_climb_time = maxf(wall_climb_time - WALL_JUMP_STAMINA_COST, 0.0)
+	wall_transfer_assist_timer = WALL_TRANSFER_GRACE_DURATION
+	last_wall_jump_normal_x = wall_normal.x
+	wall_jump_available = false
 
 
 func attack(slot: int = -1) -> void:
@@ -450,10 +494,19 @@ func _reset_combo(clear_recovery := true) -> void:
 
 
 func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
-	if is_downed or is_healing or not input_enabled or network_prediction_only:
+	if is_downed or is_healing or not input_enabled:
 		return
 	weapon_cooldowns[slot] = float(definition.get("cooldown", 0.42))
 	var player_anim := anim if anim != null else get_node("AnimatedSprite2D") as AnimatedSprite2D
+	is_attacking = true
+	attack_generation += 1
+	var presentation_generation := attack_generation
+	player_anim.play("attack")
+	if network_prediction_only:
+		await get_tree().create_timer(ATTACK_DURATION).timeout
+		if presentation_generation == attack_generation:
+			is_attacking = false
+		return
 	var direction := Vector2.LEFT if player_anim.flip_h else Vector2.RIGHT
 	var origin := global_position + Vector2(direction.x * 28.0, -8.0)
 	var projectile := RANGED_PROJECTILE_SCENE.instantiate()
@@ -463,6 +516,9 @@ func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 	var lan_session := get_tree().get_first_node_in_group("lan_session") if is_inside_tree() else null
 	if lan_session != null:
 		projectile.network_id = lan_session.replicate_projectile_spawn(origin, direction, 620.0, damage, &"enemy")
+	await get_tree().create_timer(ATTACK_DURATION).timeout
+	if presentation_generation == attack_generation:
+		is_attacking = false
 
 
 func get_melee_damage(slot: int = -1) -> int:
@@ -656,9 +712,14 @@ func reset_for_new_run() -> void:
 	attack_generation += 1
 	wall_climb_time = max_wall_climb_duration
 	wall_jump_available = true
+	wall_transfer_assist_timer = 0.0
+	last_wall_jump_normal_x = 0.0
+	network_correction_velocity = Vector2.ZERO
 	attack_shape_cast.enabled = true
 	ground_slam_shape_cast.enabled = true
-	anim.modulate = Color(0.45, 0.8, 1.0, 1.0) if input_profile == "p2" else Color.WHITE
+	var participant_colors: Array[Color] = [Color.WHITE, Color(0.45, 0.8, 1.0), Color(1.0, 0.65, 0.35), Color(0.7, 0.5, 1.0)]
+	var participant_index := clampi(int(String(participant_id).trim_prefix("player_")) - 1, 0, participant_colors.size() - 1)
+	anim.modulate = participant_colors[participant_index]
 	anim.play("idle")
 	downed_label.visible = false
 	revive_bar.visible = false
@@ -704,8 +765,8 @@ func interact_with_nearest() -> void:
 
 
 func _action(base_action: StringName) -> StringName:
-	if input_profile == "p2":
-		return StringName("p2_" + String(base_action))
+	if input_profile != "p1":
+		return StringName("%s_%s" % [input_profile, base_action])
 
 	return base_action
 
@@ -766,24 +827,32 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false) -> vo
 	var network_position: Vector2 = state.get("position", global_position)
 	var network_velocity: Vector2 = state.get("velocity", velocity)
 	if predicted_local:
-		var prediction_error := global_position.distance_to(network_position)
-		if prediction_error >= 160.0:
+		var error_offset := network_position - global_position
+		var prediction_error := error_offset.length()
+		if prediction_error >= 192.0:
 			global_position = network_position
 			velocity = network_velocity
-		elif prediction_error >= 3.0:
-			global_position = global_position.lerp(network_position, 0.22)
+			network_correction_velocity = Vector2.ZERO
+		elif prediction_error >= 18.0:
+			# Correct material divergence over several physics frames. Small latency
+			# offsets are intentionally left to prediction instead of pulling the
+			# local player backwards on every 20 Hz snapshot.
+			var correction_speed := clampf(prediction_error * 2.5, 35.0, 140.0)
+			network_correction_velocity = error_offset.normalized() * correction_speed
 	else:
 		network_target_position = network_position
 		network_target_velocity = network_velocity
-	anim.flip_h = bool(state.get("flip_h", anim.flip_h))
-	var network_animation := StringName(state.get("animation", anim.animation))
-	if anim.sprite_frames.has_animation(network_animation):
-		anim.animation = network_animation
-		anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
+	if not predicted_local:
+		anim.flip_h = bool(state.get("flip_h", anim.flip_h))
+		var network_animation := StringName(state.get("animation", anim.animation))
+		if anim.sprite_frames.has_animation(network_animation):
+			anim.animation = network_animation
+			anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
 	health = int(state.get("health", health))
 	max_health = int(state.get("max_health", max_health))
 	is_downed = bool(state.get("is_downed", is_downed))
-	is_attacking = bool(state.get("is_attacking", is_attacking))
+	if not predicted_local:
+		is_attacking = bool(state.get("is_attacking", is_attacking))
 	intellect = int(state.get("intellect", intellect))
 	health_attribute = int(state.get("health_attribute", health_attribute))
 	strength = int(state.get("strength", strength))
@@ -791,7 +860,8 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false) -> vo
 	var network_weapons: Array = state.get("equipped_weapons", equipped_weapons) as Array
 	if network_weapons.size() == 2:
 		equipped_weapons = [StringName(network_weapons[0]), StringName(network_weapons[1])]
-	active_weapon_slot = clampi(int(state.get("active_weapon_slot", active_weapon_slot)), 0, 1)
+	if not predicted_local:
+		active_weapon_slot = clampi(int(state.get("active_weapon_slot", active_weapon_slot)), 0, 1)
 	acquired_upgrades = (state.get("acquired_upgrades", acquired_upgrades) as Dictionary).duplicate(true)
 	_update_health_label()
 
@@ -848,6 +918,9 @@ func enter_downed() -> void:
 	_cancel_heal()
 	_end_dash()
 	dash_invulnerability_timer = 0.0
+	wall_transfer_assist_timer = 0.0
+	last_wall_jump_normal_x = 0.0
+	network_correction_velocity = Vector2.ZERO
 	attack_generation += 1
 	revive_progress = 0.0
 	attack_shape_cast.enabled = false
@@ -855,6 +928,9 @@ func enter_downed() -> void:
 	downed_label.visible = true
 	revive_bar.visible = false
 	_update_participant_state(false)
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null and not network_prediction_only:
+		room_manager.handle_teleport_participant_removed(participant_id)
 	downed_state_changed.emit(true)
 
 

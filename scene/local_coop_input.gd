@@ -38,11 +38,13 @@ static func ensure_player_two_actions(device_id: int) -> void:
 
 
 static func ensure_network_player_two_actions() -> void:
-	_add_action(&"p2_left", 0.25)
-	_add_action(&"p2_right", 0.25)
-	_add_action(&"p2_down", 0.25)
-	for action in [&"p2_jump", &"p2_attack", &"p2_attack_slot_1", &"p2_attack_slot_2", &"p2_dash", &"p2_interact", &"p2_heal", &"p2_switch_weapon"]:
-		_add_action(action)
+	ensure_network_player_actions(&"p2")
+
+
+static func ensure_network_player_actions(profile: StringName) -> void:
+	for base_action: StringName in [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon"]:
+		var action := StringName("%s_%s" % [profile, base_action])
+		_add_action(action, 0.25 if base_action in [&"left", &"right", &"down"] else 0.2)
 
 
 static func _add_action(action: StringName, deadzone := 0.2) -> void:

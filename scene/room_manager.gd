@@ -36,6 +36,9 @@ var mode_selected := false
 var current_is_hub := false
 var current_is_generated_biome := false
 var generated_biome_bounds := Rect2()
+var fast_travel_vote_origin: StringName
+var fast_travel_vote_destination: StringName
+var fast_travel_confirmations: Dictionary = {}
 
 
 func _ready() -> void:
@@ -64,15 +67,15 @@ func _process(delta: float) -> void:
 	target.y = clampf(target.y, generated_biome_bounds.position.y + half_view.y, generated_biome_bounds.end.y - half_view.y)
 	gameplay_camera.global_position = target
 	_update_coop_camera(active_players, delta)
-	if active_players.size() == 2 and (not lan_session.is_network_game() or lan_session.is_host()):
+	if active_players.size() >= 2 and (not lan_session.is_network_game() or lan_session.is_host()):
 		_apply_coop_distance_limits(active_players)
 
 
 func _update_coop_camera(players: Array, delta: float) -> void:
 	var base_zoom := local_settings.get_camera_zoom_base()
 	var desired_zoom := base_zoom
-	if players.size() == 2:
-		var separation: float = players[0].global_position.distance_to(players[1].global_position)
+	if players.size() >= 2:
+		var separation := _maximum_player_separation(players)
 		var separation_ratio := clampf((separation - COOP_SAFE_DISTANCE) / (COOP_HARD_LIMIT - COOP_SAFE_DISTANCE), 0.0, 1.0)
 		desired_zoom = lerpf(base_zoom, CAMERA_ZOOM_MIN, separation_ratio)
 	desired_zoom = clampf(desired_zoom, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
@@ -82,25 +85,42 @@ func _update_coop_camera(players: Array, delta: float) -> void:
 
 
 func _apply_coop_distance_limits(players: Array) -> void:
-	var first := players[0] as CharacterBody2D
-	var second := players[1] as CharacterBody2D
-	var separation := first.global_position.distance_to(second.global_position)
-	if separation > COOP_SOFT_LIMIT:
-		var strength := clampf((separation - COOP_SOFT_LIMIT) / (COOP_HARD_LIMIT - COOP_SOFT_LIMIT), 0.0, 1.0)
-		var first_away := (first.global_position - second.global_position).normalized()
-		var second_away := -first_away
-		if first.velocity.dot(first_away) > 0.0:
-			first.velocity *= 1.0 - strength * 0.85
-		if second.velocity.dot(second_away) > 0.0:
-			second.velocity *= 1.0 - strength * 0.85
-	if separation <= COOP_HARD_LIMIT:
-		return
-	var first_camera_distance := first.global_position.distance_to(gameplay_camera.global_position)
-	var second_camera_distance := second.global_position.distance_to(gameplay_camera.global_position)
-	var lagging := first if first_camera_distance > second_camera_distance else second
-	var leader := second if lagging == first else first
-	lagging.global_position = _find_safe_tether_position(lagging, leader)
-	lagging.velocity = Vector2.ZERO
+	for player_value: Variant in players:
+		var player := player_value as CharacterBody2D
+		var leader := _nearest_other_player(player, players)
+		if leader == null:
+			continue
+		var separation := player.global_position.distance_to(leader.global_position)
+		if separation > COOP_SOFT_LIMIT:
+			var strength := clampf((separation - COOP_SOFT_LIMIT) / (COOP_HARD_LIMIT - COOP_SOFT_LIMIT), 0.0, 1.0)
+			var away := (player.global_position - leader.global_position).normalized()
+			if player.velocity.dot(away) > 0.0:
+				player.velocity *= 1.0 - strength * 0.85
+		if separation > COOP_HARD_LIMIT:
+			player.global_position = _find_safe_tether_position(player, leader)
+			player.velocity = Vector2.ZERO
+
+
+func _maximum_player_separation(players: Array) -> float:
+	var maximum := 0.0
+	for first_index in players.size():
+		for second_index in range(first_index + 1, players.size()):
+			maximum = maxf(maximum, players[first_index].global_position.distance_to(players[second_index].global_position))
+	return maximum
+
+
+func _nearest_other_player(player: CharacterBody2D, players: Array) -> CharacterBody2D:
+	var nearest: CharacterBody2D = null
+	var nearest_distance := INF
+	for candidate_value: Variant in players:
+		var candidate := candidate_value as CharacterBody2D
+		if candidate == player:
+			continue
+		var distance := player.global_position.distance_squared_to(candidate.global_position)
+		if distance < nearest_distance:
+			nearest = candidate
+			nearest_distance = distance
+	return nearest
 
 
 func _find_safe_tether_position(player: CharacterBody2D, leader: CharacterBody2D) -> Vector2:
@@ -163,9 +183,11 @@ func start_lan_run(config: Dictionary, host_authority: bool) -> void:
 	await _fade_to(1.0)
 	var network_difficulty := StringName(config.get("difficulty", "normal"))
 	var network_seed := int(config.get("seed", 0))
-	run_manager.configure_run(&"lan", network_difficulty)
-	run_manager.prepare_new_run(network_seed)
-	_create_players(true, -1)
+	var network_player_count := clampi(int(config.get("player_count", 2)), 1, LanSession.MAX_PLAYERS)
+	run_manager.configure_run(&"lan", network_difficulty, -1, network_player_count)
+	run_manager.configure_run_weapon_pool(config.get("weapon_pool", []) as Array)
+	run_manager.prepare_new_run(network_seed, true)
+	_create_network_players(network_player_count)
 	for candidate in get_players():
 		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
@@ -213,7 +235,7 @@ func _set_client_world_passive() -> void:
 
 func _configure_client_player_prediction() -> void:
 	for player in get_players():
-		if player.participant_id == &"player_2":
+		if player.participant_id == lan_session.get_local_participant_id():
 			player.input_profile = "p1"
 			player.network_prediction_only = true
 			player.network_remote_replica = false
@@ -310,6 +332,20 @@ func can_start_run_from_hub(portal: Area2D, interactor: Node2D) -> bool:
 func return_to_laboratory() -> void:
 	if is_transitioning or not mode_selected:
 		return
+	if lan_session.is_client():
+		lan_session.request_return_to_laboratory()
+		return
+	if lan_session.is_host():
+		lan_session.broadcast_return_to_laboratory()
+	await _return_to_laboratory_local()
+
+
+func apply_network_return_to_laboratory() -> void:
+	if lan_session.is_client() and not is_transitioning and mode_selected:
+		await _return_to_laboratory_local()
+
+
+func _return_to_laboratory_local() -> void:
 	is_transitioning = true
 	_set_all_player_input(false)
 	await _fade_to(1.0)
@@ -326,6 +362,7 @@ func return_to_laboratory() -> void:
 	await _fade_to(0.0)
 	_set_all_player_input(true)
 	is_transitioning = false
+	_show_latest_run_results()
 
 
 func abandon_current_run() -> void:
@@ -335,7 +372,7 @@ func abandon_current_run() -> void:
 		lan_session.shutdown()
 		run_manager.configure_run(&"solo", run_manager.difficulty)
 		for candidate in get_players():
-			if candidate.participant_id == &"player_2":
+			if candidate.participant_id != &"player_1":
 				candidate.queue_free()
 			else:
 				candidate.input_profile = "p1"
@@ -490,6 +527,12 @@ func _load_laboratory_hub() -> bool:
 	return true
 
 
+func _show_latest_run_results() -> void:
+	var result_ui := get_tree().get_first_node_in_group("run_result_ui")
+	if result_ui != null:
+		result_ui.show_latest_results()
+
+
 func get_players() -> Array[Node]:
 	var result: Array[Node] = []
 	for candidate in get_tree().get_nodes_in_group("player"):
@@ -518,32 +561,124 @@ func activate_teleporter_authoritative(teleporter_id: StringName, participant_id
 	return true
 
 
-func open_teleporter_menu(origin_id: StringName, _interactor: Node2D) -> void:
+func open_teleporter_menu(origin_id: StringName, interactor: Node2D) -> void:
+	if interactor == null:
+		return
+	var participant_id := StringName(interactor.get("participant_id"))
+	if lan_session.is_host() and participant_id != lan_session.get_local_participant_id():
+		lan_session.request_remote_teleporter_menu(participant_id, origin_id)
+		return
+	if lan_session.is_client() and participant_id != lan_session.get_local_participant_id():
+		return
+	open_local_teleporter_menu(origin_id)
+
+
+func open_local_teleporter_menu(origin_id: StringName) -> void:
 	var full_map := get_tree().get_first_node_in_group("full_map")
 	if full_map != null:
 		full_map.open_map(origin_id)
 
 
-func request_fast_travel(origin_id: StringName, destination_id: StringName) -> void:
+func request_fast_travel(origin_id: StringName, destination_id: StringName, participant_id: StringName = &"") -> void:
+	var requester := participant_id if not participant_id.is_empty() else lan_session.get_local_participant_id()
 	if lan_session.is_client():
 		lan_session.request_fast_travel(origin_id, destination_id)
 		return
-	perform_fast_travel_authoritative(origin_id, destination_id)
+	submit_fast_travel_confirmation(requester, origin_id, destination_id)
+
+
+func submit_fast_travel_confirmation(participant_id: StringName, origin_id: StringName, destination_id: StringName) -> bool:
+	if not run_manager.run_active or is_transitioning or not _valid_fast_travel_pair(origin_id, destination_id):
+		return false
+	var active_ids := get_active_teleport_participant_ids()
+	if not active_ids.has(participant_id):
+		return false
+	if fast_travel_vote_origin != origin_id or fast_travel_vote_destination != destination_id:
+		fast_travel_vote_origin = origin_id
+		fast_travel_vote_destination = destination_id
+		fast_travel_confirmations.clear()
+	fast_travel_confirmations[participant_id] = true
+	_publish_fast_travel_vote(active_ids)
+	if active_ids.all(func(id: StringName) -> bool: return fast_travel_confirmations.has(id)):
+		if perform_fast_travel_authoritative(origin_id, destination_id):
+			_clear_fast_travel_vote(false)
+			if lan_session.is_host():
+				lan_session.broadcast_fast_travel_applied(destination_id)
+			return true
+	return false
+
+
+func cancel_fast_travel_confirmation(participant_id: StringName) -> void:
+	if fast_travel_vote_origin.is_empty() or not get_active_teleport_participant_ids().has(participant_id):
+		return
+	# A close action is an explicit decline of the current proposal. Abort the
+	# collective vote for everyone so no peer remains blocked waiting for a player
+	# who has already returned to gameplay.
+	_clear_fast_travel_vote(true)
+
+
+func handle_teleport_participant_removed(participant_id: StringName) -> void:
+	fast_travel_confirmations.erase(participant_id)
+	if fast_travel_vote_origin.is_empty():
+		return
+	var active_ids := get_active_teleport_participant_ids()
+	if active_ids.is_empty():
+		_clear_fast_travel_vote(true)
+		return
+	_publish_fast_travel_vote(active_ids)
+	if active_ids.all(func(id: StringName) -> bool: return fast_travel_confirmations.has(id)):
+		if perform_fast_travel_authoritative(fast_travel_vote_origin, fast_travel_vote_destination):
+			var destination_id := fast_travel_vote_destination
+			_clear_fast_travel_vote(false)
+			if lan_session.is_host():
+				lan_session.broadcast_fast_travel_applied(destination_id)
+
+
+func get_active_teleport_participant_ids() -> Array[StringName]:
+	var result: Array[StringName] = []
+	for player in get_players():
+		if player.visible and not player.is_downed and bool(run_manager.participants.get(player.participant_id, true)):
+			result.append(player.participant_id)
+	return result
+
+
+func _publish_fast_travel_vote(active_ids: Array[StringName]) -> void:
+	var confirmed_ids: Array[StringName] = []
+	for participant_value: Variant in fast_travel_confirmations:
+		confirmed_ids.append(StringName(participant_value))
+	confirmed_ids.sort()
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map != null and active_ids.has(lan_session.get_local_participant_id()):
+		full_map.apply_fast_travel_vote(fast_travel_vote_origin, fast_travel_vote_destination, confirmed_ids, active_ids)
+	if lan_session.is_host():
+		lan_session.broadcast_fast_travel_vote(fast_travel_vote_origin, fast_travel_vote_destination, confirmed_ids, active_ids)
+
+
+func _clear_fast_travel_vote(notify_interfaces: bool) -> void:
+	fast_travel_vote_origin = &""
+	fast_travel_vote_destination = &""
+	fast_travel_confirmations.clear()
+	if notify_interfaces:
+		var full_map := get_tree().get_first_node_in_group("full_map")
+		if full_map != null:
+			full_map.clear_fast_travel_vote()
+		if lan_session.is_host():
+			lan_session.broadcast_fast_travel_vote(&"", &"", [], [])
+
+
+func _valid_fast_travel_pair(origin_id: StringName, destination_id: StringName) -> bool:
+	var state: BiomeMapState = run_manager.get_current_map_state()
+	return origin_id != destination_id and _find_teleporter(origin_id) != null and _find_teleporter(destination_id) != null and state.active_teleporter_ids.has(origin_id) and state.active_teleporter_ids.has(destination_id)
 
 
 func perform_fast_travel_authoritative(origin_id: StringName, destination_id: StringName) -> bool:
 	if not run_manager.run_active or is_transitioning:
 		return false
-	var state: BiomeMapState = run_manager.get_current_map_state()
 	var origin: BiomeTeleporter = _find_teleporter(origin_id)
 	var destination: BiomeTeleporter = _find_teleporter(destination_id)
-	if origin == null or destination == null or not state.active_teleporter_ids.has(origin_id) or not state.active_teleporter_ids.has(destination_id):
+	if origin == null or destination == null or not _valid_fast_travel_pair(origin_id, destination_id):
 		return false
-	for player in get_players():
-		if player.is_downed or player.global_position.distance_to(origin.global_position) > TELEPORT_GROUP_DISTANCE:
-			coop_waiting_changed.emit(true)
-			return false
-	var players := get_players()
+	var players: Array = get_players().filter(func(player: Node) -> bool: return player.visible and not player.is_downed and bool(run_manager.participants.get(player.participant_id, true)))
 	for index in players.size():
 		players[index].global_position = destination.arrival_position + Vector2((index * 2 - players.size() + 1) * COOP_SPAWN_OFFSET, 0)
 		players[index].velocity = Vector2.ZERO
@@ -551,10 +686,16 @@ func perform_fast_travel_authoritative(origin_id: StringName, destination_id: St
 	gameplay_camera.global_position = destination.arrival_position
 	get_tree().process_frame.connect(func() -> void: gameplay_camera.position_smoothing_enabled = true, CONNECT_ONE_SHOT)
 	coop_waiting_changed.emit(false)
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map != null:
+		full_map.close_map(false)
 	return true
 
 
 func apply_network_fast_travel(destination_id: StringName) -> void:
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map != null:
+		full_map.close_map(false)
 	var destination: BiomeTeleporter = _find_teleporter(destination_id)
 	if destination == null:
 		return
@@ -597,39 +738,48 @@ func can_use_exit(exit: Area2D, interactor: Node2D) -> bool:
 
 
 func _create_players(coop: bool, joypad_device_id: int) -> void:
+	_create_player_count(2 if coop else 1, joypad_device_id)
+
+
+func _create_network_players(player_count: int) -> void:
+	_create_player_count(clampi(player_count, 1, LanSession.MAX_PLAYERS), -1)
+
+
+func _create_player_count(player_count: int, joypad_device_id: int) -> void:
 	for candidate in get_players():
 		candidate.queue_free()
-	var player_one := PLAYER_SCENE.instantiate()
-	player_one.name = "Player"
-	player_one.participant_id = &"player_1"
-	player_one.input_profile = "p1"
-	add_child(player_one)
-	if coop:
-		var player_two := PLAYER_SCENE.instantiate()
-		player_two.name = "Player2"
-		player_two.participant_id = &"player_2"
-		player_two.input_profile = "p2"
-		player_two.joypad_device_id = joypad_device_id
-		add_child(player_two)
-		player_two.anim.modulate = Color(0.45, 0.8, 1.0, 1.0)
-		player_one.add_collision_exception_with(player_two)
-		player_two.add_collision_exception_with(player_one)
+	var created_players: Array[CharacterBody2D] = []
+	var colors: Array[Color] = [Color.WHITE, Color(0.45, 0.8, 1.0), Color(1.0, 0.65, 0.35), Color(0.7, 0.5, 1.0)]
+	for index in player_count:
+		var player := PLAYER_SCENE.instantiate() as CharacterBody2D
+		var slot := index + 1
+		player.name = "Player" if slot == 1 else "Player%d" % slot
+		player.participant_id = StringName("player_%d" % slot)
+		player.input_profile = "p%d" % slot
+		player.joypad_device_id = joypad_device_id if slot == 2 and player_count == 2 else -1
+		add_child(player)
+		player.anim.modulate = colors[index]
+		for existing: CharacterBody2D in created_players:
+			player.add_collision_exception_with(existing)
+			existing.add_collision_exception_with(player)
+		created_players.append(player)
 
 
 func _position_players(entry_position: Vector2) -> void:
 	var active_players := get_players()
 	for index in active_players.size():
-		var offset := 0.0
-		if active_players.size() == 2:
-			offset = -COOP_SPAWN_OFFSET if index == 0 else COOP_SPAWN_OFFSET
+		var offset := (float(index) - float(active_players.size() - 1) * 0.5) * COOP_SPAWN_OFFSET * 2.0
 		active_players[index].global_position = Vector2(clampf(entry_position.x + offset, 16.0, 1264.0), entry_position.y)
 		active_players[index].velocity = Vector2.ZERO
 		active_players[index].visible = true
 
 
 func _position_players_in_hub(p1_position: Vector2, p2_position: Vector2) -> void:
-	for candidate in get_players():
-		candidate.global_position = p2_position if candidate.participant_id == &"player_2" else p1_position
+	var players := get_players()
+	for index in players.size():
+		var candidate := players[index]
+		var base_position: Vector2 = p1_position if index == 0 else p2_position
+		candidate.global_position = base_position + Vector2(float(maxi(index - 1, 0)) * COOP_SPAWN_OFFSET * 2.0, 0.0)
 		candidate.velocity = Vector2.ZERO
 		candidate.visible = true
 
@@ -637,7 +787,7 @@ func _position_players_in_hub(p1_position: Vector2, p2_position: Vector2) -> voi
 func _position_players_in_biome(start_position: Vector2) -> void:
 	var active_players := get_players()
 	for index in active_players.size():
-		var offset := -COOP_SPAWN_OFFSET if active_players.size() == 2 and index == 0 else COOP_SPAWN_OFFSET if active_players.size() == 2 else 0.0
+		var offset := (float(index) - float(active_players.size() - 1) * 0.5) * COOP_SPAWN_OFFSET * 2.0
 		active_players[index].global_position = start_position + Vector2(offset, 0.0)
 		active_players[index].velocity = Vector2.ZERO
 		active_players[index].visible = true
