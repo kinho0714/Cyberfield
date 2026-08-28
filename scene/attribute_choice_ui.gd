@@ -8,6 +8,16 @@ const LABELS := {
 	&"strength": ["FORÇA", "+16% dano melee e slam", Color(1.0, 0.2, 0.2)],
 }
 
+
+func _option_data(option_id: StringName) -> Array:
+	var definition := AttributeUpgradeCatalog.get_definition(option_id)
+	if definition.is_empty():
+		var legacy := LABELS.get(option_id, [String(option_id).to_upper(), "UPGRADE", Color.WHITE]) as Array
+		return [legacy[0], "ATRIBUTO", legacy[1], legacy[2]]
+	var category := StringName(definition.category)
+	var color := Color(0.2, 0.9, 0.3) if category == &"health" else Color(1.0, 0.2, 0.2) if category == &"strength" else Color(1.0, 0.5, 0.1)
+	return [AttributeUpgradeCatalog.CATEGORY_LABELS.get(category, String(category).to_upper()), String(definition.name), String(definition.effect), color]
+
 var active_player: Node = null
 var active_chest: Node = null
 var options: Array[StringName] = []
@@ -50,6 +60,7 @@ func _build_interface() -> void:
 func open_for(chest: Node, player: Node, available_options: Array[StringName]) -> bool:
 	if visible or player == null or player.is_downed or available_options.is_empty():
 		return false
+	_close_other_modals()
 	active_chest = chest
 	active_player = player
 	network_choice_mode = false
@@ -60,9 +71,9 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 		var button := buttons[index]
 		button.visible = index < options.size()
 		if button.visible:
-			var data: Array = LABELS[options[index]]
-			button.text = "%s — %s" % [data[0], data[1]]
-			button.modulate = data[2]
+			var data := _option_data(options[index])
+			button.text = "%s // %s\n%s" % [data[0], data[1], data[2]]
+			button.modulate = data[3]
 		button.mouse_filter = Control.MOUSE_FILTER_STOP if player.input_profile == "p1" else Control.MOUSE_FILTER_IGNORE
 		button.focus_mode = Control.FOCUS_ALL if player.input_profile == "p1" else Control.FOCUS_NONE
 	player.set_input_enabled(false)
@@ -75,6 +86,7 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 func open_network_for(player: Node, available_options: Array[StringName]) -> bool:
 	if visible or player == null or available_options.is_empty():
 		return false
+	_close_other_modals()
 	active_chest = null
 	active_player = player
 	network_choice_mode = true
@@ -85,9 +97,9 @@ func open_network_for(player: Node, available_options: Array[StringName]) -> boo
 		var button: Button = buttons[index]
 		button.visible = index < options.size()
 		if button.visible:
-			var data: Array = LABELS[options[index]]
-			button.text = "%s — %s" % [data[0], data[1]]
-			button.modulate = data[2]
+			var data := _option_data(options[index])
+			button.text = "%s // %s\n%s" % [data[0], data[1], data[2]]
+			button.modulate = data[3]
 			button.mouse_filter = Control.MOUSE_FILTER_STOP
 			button.focus_mode = Control.FOCUS_ALL
 	player.set_input_enabled(false)
@@ -138,6 +150,18 @@ func _choose(index: int) -> void:
 func cancel_selection() -> void:
 	if active_player:
 		active_player.set_input_enabled(true)
+
+
+func _close_other_modals() -> void:
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map != null and full_map.visible:
+		full_map.close_map()
+	var inventory := get_tree().get_first_node_in_group("inventory_ui")
+	if inventory != null and inventory.overlay.visible:
+		inventory.close_inventory()
+	var pause := get_tree().get_first_node_in_group("pause_menu")
+	if pause != null and pause.overlay.visible:
+		pause.close_menu()
 	visible = false
 	active_player = null
 	active_chest = null

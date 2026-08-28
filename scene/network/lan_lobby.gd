@@ -14,6 +14,7 @@ signal close_requested
 @onready var ip_input: LineEdit = $Overlay/Center/IpPage/IpInput
 @onready var difficulty: OptionButton = $Overlay/Center/HostPage/Difficulty
 @onready var join_button: Button = $Overlay/Center/SearchPage/Join
+var selected_room_key := ""
 
 
 func _ready() -> void:
@@ -31,6 +32,7 @@ func _ready() -> void:
 	$Overlay/Center/IpPage/Join.pressed.connect(_join_ip)
 	$Overlay/Center/IpPage/Back.pressed.connect(_return_to_main)
 	room_list.item_selected.connect(_select_room)
+	room_list.item_activated.connect(func(_index: int) -> void: _join_selected_room())
 	join_button.disabled = true
 	lan_session.lobby_changed.connect(_refresh)
 	lan_session.discovered_rooms_changed.connect(_refresh_rooms)
@@ -68,14 +70,14 @@ func _search_rooms() -> void:
 
 
 func _join_selected_room() -> void:
-	var selected := room_list.get_selected_items()
-	if selected.is_empty():
+	if selected_room_key.is_empty():
 		search_status.text = "Selecione uma sala ou use ENTRAR POR IP."
 		return
-	var room_index := int(room_list.get_item_metadata(selected[0]))
-	if room_index < 0 or room_index >= lan_session.discovered_rooms.size():
+	var room := _find_room_by_key(selected_room_key)
+	if room.is_empty():
+		selected_room_key = ""
+		join_button.disabled = true
 		return
-	var room: Dictionary = lan_session.discovered_rooms[room_index]
 	if lan_session.join_room(String(room.address), int(room.port)) == OK:
 		_show_page(host_page, $Overlay/Center/HostPage/Back)
 	_refresh()
@@ -85,11 +87,12 @@ func _select_room(index: int) -> void:
 	if index < 0 or index >= room_list.item_count:
 		join_button.disabled = true
 		return
-	var room_index: int = int(room_list.get_item_metadata(index))
-	if room_index < 0 or room_index >= lan_session.discovered_rooms.size():
+	var room_key := String(room_list.get_item_metadata(index))
+	var room := _find_room_by_key(room_key)
+	if room.is_empty():
 		join_button.disabled = true
 		return
-	var room: Dictionary = lan_session.discovered_rooms[room_index]
+	selected_room_key = room_key
 	join_button.disabled = false
 	search_status.text = "Selecionada: %s // %s:%d // %d/2" % [String(room.get("name", "Sala")), String(room.get("address", "")), int(room.get("port", 0)), int(room.get("players", 0))]
 
@@ -127,7 +130,7 @@ func _refresh() -> void:
 	var role_text := lan_session.get_role_label()
 	var player_count := lan_session.get_player_count()
 	var host_only_note := "\nDEBUG: o host pode iniciar 1/2." if lan_session.role == LanSession.Role.HOST and player_count == 1 else ""
-	host_status.text = "%s // PEER %d\nJOGADORES: %d/2\n%s%s" % [role_text, multiplayer.get_unique_id(), player_count, lan_session.connection_message, host_only_note]
+	host_status.text = "%s // PEER %d\nJOGADORES: %d/2\n%s%s\n%s" % [role_text, multiplayer.get_unique_id(), player_count, lan_session.connection_message, host_only_note, lan_session.get_discovery_diagnostics()]
 	$Overlay/Center/HostPage/Start.visible = lan_session.role == LanSession.Role.HOST
 	difficulty.disabled = lan_session.role != LanSession.Role.HOST
 	search_status.text = lan_session.connection_message
@@ -136,10 +139,30 @@ func _refresh() -> void:
 
 func _refresh_rooms() -> void:
 	room_list.clear()
-	join_button.disabled = true
-	for index in lan_session.discovered_rooms.size():
-		var room: Dictionary = lan_session.discovered_rooms[index]
+	var selected_visual_index := -1
+	for room in lan_session.discovered_rooms:
+		var room_key := _room_key(room)
 		room_list.add_item("%s — %s:%d — %d/2" % [room.name, room.address, int(room.port), int(room.players)])
-		room_list.set_item_metadata(room_list.item_count - 1, index)
+		room_list.set_item_metadata(room_list.item_count - 1, room_key)
+		if room_key == selected_room_key:
+			selected_visual_index = room_list.item_count - 1
+	if selected_visual_index >= 0:
+		room_list.select(selected_visual_index)
+		_select_room(selected_visual_index)
+	else:
+		if not selected_room_key.is_empty():
+			selected_room_key = ""
+		join_button.disabled = true
 	if room_list.item_count == 0:
 		search_status.text = "Nenhuma sala encontrada. Tente atualizar ou entrar por IP."
+
+
+func _room_key(room: Dictionary) -> String:
+	return "%s:%d" % [String(room.get("address", "")), int(room.get("port", LanSession.GAME_PORT))]
+
+
+func _find_room_by_key(key: String) -> Dictionary:
+	for room in lan_session.discovered_rooms:
+		if _room_key(room) == key:
+			return room
+	return {}

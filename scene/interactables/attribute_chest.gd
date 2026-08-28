@@ -10,6 +10,12 @@ var feedback := ""
 @onready var label: Label = $Label
 
 func _ready() -> void:
+	collision_mask = 1
+	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)
+	body_exited.connect(func(body: Node) -> void:
+		if body.is_in_group("player"):
+			label.visible = get_overlapping_bodies().any(func(candidate: Node) -> bool: return candidate != body and candidate.is_in_group("player")))
+	label.visible = false
 	var manager := get_tree().get_first_node_in_group("run_manager")
 	if manager:
 		room_id = manager.get_current_room_id()
@@ -53,7 +59,11 @@ func apply_choice(player: Node, attribute: StringName) -> bool:
 		return false
 	if not manager.record_chest_choice(room_id, chest_id, player.participant_id, attribute):
 		return false
-	player.add_attribute(attribute)
+	var applied: bool = bool(player.add_upgrade(attribute)) if not AttributeUpgradeCatalog.get_definition(attribute).is_empty() else bool(player.add_attribute(attribute))
+	if not applied:
+		return false
+	if not chest_id.is_empty():
+		manager.get_current_map_state().collect_content(&"attribute", chest_id)
 	_refresh()
 	return true
 

@@ -23,6 +23,7 @@ extends CanvasLayer
 @onready var boss_panel: PanelContainer = $GameplayHUD/BossPanel
 @onready var boss_name: Label = $GameplayHUD/BossPanel/VBox/Name
 @onready var boss_health: ProgressBar = $GameplayHUD/BossPanel/VBox/Health
+@onready var run_timer: Label = $GameplayHUD/RunTimer
 
 var run_manager: Node
 var local_settings: LocalSettings
@@ -57,6 +58,10 @@ func _apply_debug_visibility() -> void:
 	$Panel.visible = local_settings.debug_hud_visible
 	room_title.visible = local_settings.debug_hud_visible
 	players_status.visible = local_settings.debug_hud_visible
+	for collider_visual in get_tree().get_nodes_in_group("procedural_debug_collider"):
+		collider_visual.visible = local_settings.debug_hud_visible
+	for debug_label in get_tree().get_nodes_in_group("procedural_debug_text"):
+		debug_label.visible = local_settings.debug_hud_visible
 
 
 func _apply_safe_area() -> void:
@@ -76,9 +81,15 @@ func _apply_safe_area() -> void:
 	gameplay_hud.offset_top = clampf(safe_position.y, 0.0, viewport_size.y)
 	gameplay_hud.offset_right = clampf(safe_end.x, 0.0, viewport_size.x) - viewport_size.x
 	gameplay_hud.offset_bottom = clampf(safe_end.y, 0.0, viewport_size.y) - viewport_size.y
+	var result_center := $EndOverlay/Center as Control
+	result_center.offset_left = clampf(safe_position.x, 0.0, viewport_size.x) + 24.0
+	result_center.offset_top = clampf(safe_position.y, 0.0, viewport_size.y) + 18.0
+	result_center.offset_right = clampf(safe_end.x, 0.0, viewport_size.x) - viewport_size.x - 24.0
+	result_center.offset_bottom = clampf(safe_end.y, 0.0, viewport_size.y) - viewport_size.y - 18.0
 
 
 func _process(_delta: float) -> void:
+	run_timer.text = run_manager.format_run_time()
 	var downed_player: Node = null
 	for player in get_tree().get_nodes_in_group("player"):
 		if player.is_downed:
@@ -92,7 +103,12 @@ func _process(_delta: float) -> void:
 	players.sort_custom(func(a: Node, b: Node) -> bool: return String(a.participant_id) < String(b.participant_id))
 	var local_player := _get_local_player(players)
 	var partner_player := _get_partner_player(players, local_player)
-	gameplay_hud.visible = run_manager.is_gameplay_context_active() and local_player != null
+	gameplay_hud.visible = run_manager.is_gameplay_context_active() and local_player != null and not end_overlay.visible
+	if end_overlay.visible:
+		revive_panel.visible = false
+		$Panel.visible = false
+		room_title.visible = false
+		players_status.visible = false
 	if local_player != null:
 		_update_local_player_hud(local_player)
 	_update_partner_hud(partner_player)
@@ -136,7 +152,8 @@ func _update_local_player_hud(player: Node) -> void:
 	local_health.value = player.health
 	local_health_text.text = "%d / %d" % [player.health, player.max_health]
 	var potion_segments := "■".repeat(player.heal_doses) + "□".repeat(player.max_heal_doses - player.heal_doses)
-	local_stats.text = "POÇÃO %s  |  I %d  S %d  F %d  |  $%d" % [potion_segments, player.intellect, player.health_attribute, player.strength, run_manager.dirty_money]
+	var weapon_name := WeaponCatalog.get_display_name(player.get_active_weapon_id())
+	local_stats.text = "POÇÃO %s  |  I %d  S %d  F %d  |  $%d\nARMA %d: %s" % [potion_segments, player.intellect, player.health_attribute, player.strength, run_manager.dirty_money, player.active_weapon_slot + 1, weapon_name]
 
 
 func _update_partner_hud(player: Node) -> void:
@@ -185,10 +202,11 @@ func _refresh() -> void:
 		room_title.text = "BIOMA // %s" % run_manager.current_biome_name
 		end_overlay.visible = run_manager.run_is_completed or run_manager.run_is_lost
 		if run_manager.run_is_lost:
-			end_title.text = "RUN PERDIDA"
+			end_title.text = _build_run_summary(false)
 		elif run_manager.run_is_completed:
-			end_title.text = _build_run_summary()
+			end_title.text = _build_run_summary(true)
 		if end_overlay.visible:
+			gameplay_hud.visible = false
 			end_restart.grab_focus()
 		return
 	status_label.text = (
@@ -202,19 +220,22 @@ func _refresh() -> void:
 	elif run_manager.run_is_completed:
 		end_title.text = "RUN CONCLUÍDA"
 	if end_overlay.visible:
+		gameplay_hud.visible = false
 		end_restart.grab_focus()
 
 
-func _build_run_summary() -> String:
+func _build_run_summary(completed: bool = true) -> String:
 	var route_parts: PackedStringArray = []
 	for stage: Dictionary in run_manager.stage_history:
 		route_parts.append(String(stage.get("exit_id", "?")).to_upper())
 	var route_text := " → ".join(route_parts) if not route_parts.is_empty() else "DIRETA"
 	var summary: PackedStringArray = [
-		"RUN CONCLUÍDA",
-		"DIFICULDADE: %s // DINHEIRO: $%d" % [run_manager.get_difficulty_label(), run_manager.dirty_money],
+		"RUN CONCLUÍDA" if completed else "RUN PERDIDA",
+		"TEMPO: %s // DIFICULDADE: %s" % [run_manager.format_run_time(float(run_manager.last_run_results.get("elapsed_time", run_manager.run_elapsed_time))), run_manager.get_difficulty_label()],
+		"DINHEIRO OBTIDO: $%d // RESTANTE: $%d" % [run_manager.total_money_earned, run_manager.dirty_money],
 		"STAGES: %d/6 // ROTA: %s" % [mini(run_manager.stage_index + 1, 6), route_text],
 	]
 	for player in get_parent().get_players():
-		summary.append("%s — INT %d // SAÚDE %d // FORÇA %d" % [String(player.participant_id).replace("player_", "P"), player.intellect, player.health_attribute, player.strength])
+		var weapons := "%s / %s" % [WeaponCatalog.get_display_name(player.equipped_weapons[0]), WeaponCatalog.get_display_name(player.equipped_weapons[1]) if not player.equipped_weapons[1].is_empty() else "VAZIO"]
+		summary.append("%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s" % [String(player.participant_id).replace("player_", "P"), player.intellect, player.health_attribute, player.strength, weapons])
 	return "\n".join(summary)

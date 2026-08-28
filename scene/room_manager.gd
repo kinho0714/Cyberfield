@@ -10,6 +10,7 @@ const LOWER_CITY_BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_cit
 const BOSS_STAGE_SCENE := preload("res://scene/biomes/boss_stage.tscn")
 const COOP_SPAWN_OFFSET := 22.0
 const EXIT_GROUP_DISTANCE := 96.0
+const TELEPORT_GROUP_DISTANCE := 128.0
 const COOP_SAFE_DISTANCE := 480.0
 const COOP_SOFT_LIMIT := 720.0
 const COOP_HARD_LIMIT := 1050.0
@@ -443,6 +444,7 @@ func _load_lower_city_biome(generation_seed: int = 0) -> bool:
 	generated_biome_bounds = generated_biome.get_generated_bounds()
 	_configure_camera_for_biome(generated_biome_bounds, generated_biome.get_start_position())
 	_position_players_in_biome(generated_biome.get_start_position())
+	refresh_teleporter_states()
 	return true
 
 
@@ -495,6 +497,90 @@ func get_players() -> Array[Node]:
 			result.append(candidate)
 	result.sort_custom(func(a: Node, b: Node) -> bool: return String(a.participant_id) < String(b.participant_id))
 	return result
+
+
+func request_teleporter_activation(teleporter_id: StringName, interactor: Node2D) -> void:
+	if not current_is_generated_biome or interactor == null:
+		return
+	if lan_session.is_client():
+		lan_session.request_teleporter_activation(teleporter_id)
+		return
+	activate_teleporter_authoritative(teleporter_id, interactor.participant_id)
+
+
+func activate_teleporter_authoritative(teleporter_id: StringName, participant_id: StringName) -> bool:
+	var teleporter := _find_teleporter(teleporter_id)
+	var interactor := _find_player(participant_id)
+	if teleporter == null or interactor == null or interactor.global_position.distance_to(teleporter.global_position) > TELEPORT_GROUP_DISTANCE:
+		return false
+	run_manager.activate_map_teleporter(teleporter_id)
+	teleporter.set_active(true)
+	return true
+
+
+func open_teleporter_menu(origin_id: StringName, _interactor: Node2D) -> void:
+	var full_map := get_tree().get_first_node_in_group("full_map")
+	if full_map != null:
+		full_map.open_map(origin_id)
+
+
+func request_fast_travel(origin_id: StringName, destination_id: StringName) -> void:
+	if lan_session.is_client():
+		lan_session.request_fast_travel(origin_id, destination_id)
+		return
+	perform_fast_travel_authoritative(origin_id, destination_id)
+
+
+func perform_fast_travel_authoritative(origin_id: StringName, destination_id: StringName) -> bool:
+	if not run_manager.run_active or is_transitioning:
+		return false
+	var state: BiomeMapState = run_manager.get_current_map_state()
+	var origin: BiomeTeleporter = _find_teleporter(origin_id)
+	var destination: BiomeTeleporter = _find_teleporter(destination_id)
+	if origin == null or destination == null or not state.active_teleporter_ids.has(origin_id) or not state.active_teleporter_ids.has(destination_id):
+		return false
+	for player in get_players():
+		if player.is_downed or player.global_position.distance_to(origin.global_position) > TELEPORT_GROUP_DISTANCE:
+			coop_waiting_changed.emit(true)
+			return false
+	var players := get_players()
+	for index in players.size():
+		players[index].global_position = destination.arrival_position + Vector2((index * 2 - players.size() + 1) * COOP_SPAWN_OFFSET, 0)
+		players[index].velocity = Vector2.ZERO
+	gameplay_camera.position_smoothing_enabled = false
+	gameplay_camera.global_position = destination.arrival_position
+	get_tree().process_frame.connect(func() -> void: gameplay_camera.position_smoothing_enabled = true, CONNECT_ONE_SHOT)
+	coop_waiting_changed.emit(false)
+	return true
+
+
+func apply_network_fast_travel(destination_id: StringName) -> void:
+	var destination: BiomeTeleporter = _find_teleporter(destination_id)
+	if destination == null:
+		return
+	gameplay_camera.position_smoothing_enabled = false
+	gameplay_camera.global_position = destination.arrival_position
+	get_tree().process_frame.connect(func() -> void: gameplay_camera.position_smoothing_enabled = true, CONNECT_ONE_SHOT)
+
+
+func refresh_teleporter_states() -> void:
+	var state: BiomeMapState = run_manager.get_current_map_state()
+	for teleporter in get_tree().get_nodes_in_group("biome_teleporter"):
+		teleporter.set_active(state.active_teleporter_ids.has(teleporter.teleporter_id))
+
+
+func _find_teleporter(teleporter_id: StringName) -> BiomeTeleporter:
+	for candidate in get_tree().get_nodes_in_group("biome_teleporter"):
+		if candidate.teleporter_id == teleporter_id:
+			return candidate as BiomeTeleporter
+	return null
+
+
+func _find_player(participant_id: StringName) -> Node:
+	for player in get_players():
+		if player.participant_id == participant_id:
+			return player
+	return null
 
 
 func can_use_exit(exit: Area2D, interactor: Node2D) -> bool:

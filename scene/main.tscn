@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://b3x4ydn1pkenx"]
+[gd_scene load_steps=15 format=3 uid="uid://b3x4ydn1pkenx"]
 
 [ext_resource type="Script" path="res://scene/room_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scene/run_manager.gd" id="3_run"]
@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" path="res://scene/network/lan_lobby.tscn" id="11_lan_lobby"]
 [ext_resource type="Script" path="res://scene/local_settings.gd" id="12_settings"]
 [ext_resource type="PackedScene" path="res://scene/pause_menu.tscn" id="13_pause"]
+[ext_resource type="Script" path="res://scene/biomes/full_map.gd" id="14_full_map"]
+[ext_resource type="Script" path="res://scene/inventory_ui.gd" id="15_inventory"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_manager")
@@ -40,6 +42,10 @@ limit_bottom = 720
 
 [node name="PauseMenu" parent="." instance=ExtResource("13_pause")]
 
+[node name="InventoryUI" type="CanvasLayer" parent="."]
+layer = 87
+script = ExtResource("15_inventory")
+
 [node name="MinimapLayer" type="CanvasLayer" parent="."]
 layer = 48
 
@@ -55,6 +61,18 @@ offset_bottom = 224.0
 grow_horizontal = 0
 mouse_filter = 2
 script = ExtResource("9_minimap")
+
+[node name="FullMapLayer" type="CanvasLayer" parent="."]
+layer = 86
+
+[node name="FullMap" type="Control" parent="FullMapLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("14_full_map")
 
 [node name="ModeSelect" type="CanvasLayer" parent="."]
 layer = 90
@@ -94,6 +112,11 @@ theme_override_font_sizes/font_size = 52
 custom_minimum_size = Vector2(360, 54)
 layout_mode = 2
 text = "JOGAR"
+
+[node name="Quit" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(360, 54)
+layout_mode = 2
+text = "SAIR"
 
 [node name="PlayersPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
 visible = false
@@ -220,6 +243,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="RunTimer" type="Label" parent="RunDebugHUD/GameplayHUD"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 560.0
+offset_top = 18.0
+offset_right = -560.0
+offset_bottom = 50.0
+grow_horizontal = 2
+text = "00:00"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 22
 
 [node name="PlayerPanel" type="PanelContainer" parent="RunDebugHUD/GameplayHUD"]
 offset_left = 18.0
@@ -376,24 +412,32 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+offset_left = 36.0
+offset_top = 24.0
+offset_right = -36.0
+offset_bottom = -24.0
 
 [node name="VBox" type="VBoxContainer" parent="RunDebugHUD/EndOverlay/Center"]
 layout_mode = 2
-theme_override_constants/separation = 24
+custom_minimum_size = Vector2(620, 0)
+theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="RunDebugHUD/EndOverlay/Center/VBox"]
 layout_mode = 2
+custom_minimum_size = Vector2(0, 300)
 text = "RUN PERDIDA"
 horizontal_alignment = 1
-theme_override_font_sizes/font_size = 52
+vertical_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 24
 
 [node name="Restart" type="Button" parent="RunDebugHUD/EndOverlay/Center/VBox"]
-custom_minimum_size = Vector2(240, 52)
+custom_minimum_size = Vector2(420, 48)
 layout_mode = 2
 text = "REINICIAR RUN"
 
 [node name="BackToMode" type="Button" parent="RunDebugHUD/EndOverlay/Center/VBox"]
-custom_minimum_size = Vector2(240, 52)
+custom_minimum_size = Vector2(420, 48)
 layout_mode = 2
 text = "SELEÇÃO DE MODO"
 

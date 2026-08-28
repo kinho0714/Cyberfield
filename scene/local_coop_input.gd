@@ -11,11 +11,14 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_action(&"p2_down", 0.25)
 	_add_action(&"p2_jump")
 	_add_action(&"p2_attack")
+	_add_action(&"p2_attack_slot_1")
+	_add_action(&"p2_attack_slot_2")
 	_add_action(&"p2_dash")
 	_add_action(&"p2_interact")
 	_add_action(&"p2_heal")
+	_add_action(&"p2_switch_weapon")
 
-	for action in [&"p2_left", &"p2_right", &"p2_down", &"p2_jump", &"p2_attack", &"p2_dash", &"p2_interact", &"p2_heal"]:
+	for action in [&"p2_left", &"p2_right", &"p2_down", &"p2_jump", &"p2_attack", &"p2_attack_slot_1", &"p2_attack_slot_2", &"p2_dash", &"p2_interact", &"p2_heal", &"p2_switch_weapon"]:
 		InputMap.action_erase_events(action)
 
 	_add_axis(&"p2_left", JOY_AXIS_LEFT_X, -1.0, device_id)
@@ -26,16 +29,19 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_button(&"p2_down", JOY_BUTTON_DPAD_DOWN, device_id)
 	_add_button(&"p2_jump", JOY_BUTTON_A, device_id)
 	_add_button(&"p2_attack", JOY_BUTTON_X, device_id)
+	_add_button(&"p2_attack_slot_1", JOY_BUTTON_RIGHT_SHOULDER, device_id)
+	_add_axis(&"p2_attack_slot_2", JOY_AXIS_TRIGGER_RIGHT, 1.0, device_id)
 	_add_button(&"p2_dash", JOY_BUTTON_B, device_id)
 	_add_button(&"p2_interact", JOY_BUTTON_Y, device_id)
 	_add_button(&"p2_heal", JOY_BUTTON_LEFT_SHOULDER, device_id)
+	_add_button(&"p2_switch_weapon", JOY_BUTTON_LEFT_STICK, device_id)
 
 
 static func ensure_network_player_two_actions() -> void:
 	_add_action(&"p2_left", 0.25)
 	_add_action(&"p2_right", 0.25)
 	_add_action(&"p2_down", 0.25)
-	for action in [&"p2_jump", &"p2_attack", &"p2_dash", &"p2_interact", &"p2_heal"]:
+	for action in [&"p2_jump", &"p2_attack", &"p2_attack_slot_1", &"p2_attack_slot_2", &"p2_dash", &"p2_interact", &"p2_heal", &"p2_switch_weapon"]:
 		_add_action(action)
 
 

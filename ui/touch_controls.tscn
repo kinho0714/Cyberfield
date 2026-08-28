@@ -32,6 +32,19 @@ grow_horizontal = 0
 text = "II"
 theme_override_font_sizes/font_size = 20
 
+[node name="WeaponButton" type="Button" parent="SafeArea"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -168.0
+offset_top = 18.0
+offset_right = -92.0
+offset_bottom = 68.0
+grow_horizontal = 0
+text = "ARMA"
+theme_override_font_sizes/font_size = 14
+
 [node name="LeftCluster" type="Control" parent="SafeArea"]
 layout_mode = 1
 anchor_top = 1.0
@@ -103,22 +116,42 @@ horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 18
 
-[node name="Attack" type="Node2D" parent="SafeArea/RightCluster"]
+[node name="Attack1" type="Node2D" parent="SafeArea/RightCluster"]
 position = Vector2(325, 195)
 script = ExtResource("5_action_button")
-action = "attack"
+action = "attack_slot_1"
 touch_radius = 54.0
 
-[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack"]
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack1"]
 texture = ExtResource("4_primary")
 
-[node name="Label" type="Label" parent="SafeArea/RightCluster/Attack"]
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Attack1"]
 offset_left = -54.0
 offset_top = -54.0
 offset_right = 54.0
 offset_bottom = 54.0
 mouse_filter = 2
-text = "ATAQUE"
+text = "ATQ 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+theme_override_font_sizes/font_size = 16
+
+[node name="Attack2" type="Node2D" parent="SafeArea/RightCluster"]
+position = Vector2(65, 82)
+script = ExtResource("5_action_button")
+action = "attack_slot_2"
+touch_radius = 50.0
+
+[node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack2"]
+texture = ExtResource("4_primary")
+
+[node name="Label" type="Label" parent="SafeArea/RightCluster/Attack2"]
+offset_left = -50.0
+offset_top = -50.0
+offset_right = 50.0
+offset_bottom = 50.0
+mouse_filter = 2
+text = "ATQ 2"
 horizontal_alignment = 1
 vertical_alignment = 1
 theme_override_font_sizes/font_size = 16

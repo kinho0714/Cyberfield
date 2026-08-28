@@ -18,6 +18,7 @@ func _ready() -> void:
 	overlay.visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	$Overlay/Center/MainPage/Continue.pressed.connect(close_menu)
+	$Overlay/Center/MainPage/Inventory.pressed.connect(_open_inventory)
 	$Overlay/Center/MainPage/Settings.pressed.connect(_show_settings)
 	$Overlay/Center/MainPage/Abandon.pressed.connect(_abandon_run)
 	$Overlay/Center/MainPage/MainMenu.pressed.connect(_return_to_main_menu)
@@ -31,8 +32,18 @@ func _ready() -> void:
 	_load_controls()
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+func _input(event: InputEvent) -> void:
+	if (event.is_action_pressed(&"pause_menu") or event.is_action_pressed(&"ui_cancel")) and not event.is_echo():
+		var inventory := get_tree().get_first_node_in_group("inventory_ui")
+		if inventory != null and inventory.overlay.visible:
+			inventory.close_inventory()
+			get_viewport().set_input_as_handled()
+			return
+		var full_map := get_tree().get_first_node_in_group("full_map")
+		if full_map != null and full_map.visible:
+			full_map.close_map()
+			get_viewport().set_input_as_handled()
+			return
 		toggle_menu()
 		get_viewport().set_input_as_handled()
 
@@ -45,6 +56,9 @@ func toggle_menu() -> void:
 
 
 func open_menu() -> void:
+	var attribute_ui := get_tree().get_first_node_in_group("attribute_choice_ui")
+	if attribute_ui != null and attribute_ui.visible:
+		return
 	var room_manager := get_parent()
 	if not bool(room_manager.mode_selected) or bool(room_manager.is_transitioning):
 		return
@@ -95,6 +109,14 @@ func _show_settings() -> void:
 	main_page.visible = false
 	settings_page.visible = true
 	zoom_option.grab_focus()
+
+
+func _open_inventory() -> void:
+	var inventory := get_tree().get_first_node_in_group("inventory_ui")
+	if inventory == null:
+		return
+	close_menu()
+	inventory.open_from_pause()
 
 
 func _load_controls() -> void:

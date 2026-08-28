@@ -37,6 +37,11 @@ custom_minimum_size = Vector2(420, 54)
 layout_mode = 2
 text = "CONTINUAR"
 
+[node name="Inventory" type="Button" parent="Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(420, 54)
+layout_mode = 2
+text = "INVENTÁRIO"
+
 [node name="Settings" type="Button" parent="Overlay/Center/MainPage"]
 custom_minimum_size = Vector2(420, 54)
 layout_mode = 2

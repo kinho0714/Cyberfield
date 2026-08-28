@@ -17,6 +17,7 @@ func _ready() -> void:
 	get_viewport().size_changed.connect(_apply_safe_area)
 	local_settings.settings_changed.connect(_apply_control_scale)
 	$SafeArea/PauseButton.pressed.connect(_open_pause_menu)
+	$SafeArea/WeaponButton.pressed.connect(_switch_weapon)
 	_apply_safe_area()
 	_apply_control_scale()
 	_refresh_visibility()
@@ -75,6 +76,12 @@ func _open_pause_menu() -> void:
 	var pause_menu := get_tree().get_first_node_in_group("pause_menu")
 	if pause_menu != null and pause_menu.has_method("toggle_menu"):
 		pause_menu.toggle_menu()
+
+
+func _switch_weapon() -> void:
+	Input.action_press(&"switch_weapon")
+	await get_tree().physics_frame
+	Input.action_release(&"switch_weapon")
 
 
 func set_menu_blocked(value: bool) -> void:

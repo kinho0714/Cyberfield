@@ -26,6 +26,7 @@ var selected_joypad_device_id := -1
 
 func _ready() -> void:
 	play_button.pressed.connect(func() -> void: _show_page(players_page, solo_button))
+	$Overlay/Center/MainPage/Quit.pressed.connect(get_tree().quit)
 	solo_button.pressed.connect(func() -> void: _select_mode(&"solo"))
 	coop_button.pressed.connect(func() -> void: _select_mode(&"coop"))
 	lan_button.pressed.connect(func() -> void: lan_requested.emit())

@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scene/interactables/run_portal.gd" id="1_portal"]
+[ext_resource type="Script" path="res://scene/laboratory_hub.gd" id="2_hub"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(1280, 80)
@@ -15,6 +16,7 @@ size = Vector2(180, 130)
 size = Vector2(260, 24)
 
 [node name="LaboratoryHub" type="Node2D"]
+script = ExtResource("2_hub")
 
 [node name="Background" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
@@ -36,12 +38,25 @@ text = "LABORATÓRIO"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 34
 
+[node name="LastRunSummary" type="Label" parent="."]
+offset_left = 350.0
+offset_top = 132.0
+offset_right = 930.0
+offset_bottom = 330.0
+text = "ÚLTIMA RUN // NENHUM RESULTADO NESTA SESSÃO"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+theme_override_font_sizes/font_size = 18
+
 [node name="Gameplay" type="Node2D" parent="."]
 
 [node name="P1Spawn" type="Marker2D" parent="Gameplay"]
 position = Vector2(390, 590)
 
 [node name="Label" type="Label" parent="Gameplay/P1Spawn"]
+visible = false
+groups = ["procedural_debug_text"]
 offset_left = -50.0
 offset_top = -64.0
 offset_right = 50.0
@@ -54,6 +69,8 @@ horizontal_alignment = 1
 position = Vector2(500, 590)
 
 [node name="Label" type="Label" parent="Gameplay/P2Spawn"]
+visible = false
+groups = ["procedural_debug_text"]
 offset_left = -50.0
 offset_top = -64.0
 offset_right = 50.0

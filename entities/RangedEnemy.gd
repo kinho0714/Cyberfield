@@ -70,6 +70,8 @@ var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
 var network_target_position := Vector2.ZERO
+var _fall_origin_y := 0.0
+var _was_on_floor := false
 
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var visual: Node2D = $Visual
@@ -89,6 +91,8 @@ func _ready() -> void:
 	melee_shape_cast.enabled = false
 	_update_health_label()
 	network_target_position = global_position
+	_fall_origin_y = global_position.y
+	_was_on_floor = is_on_floor()
 
 
 func _process(delta: float) -> void:
@@ -158,7 +162,10 @@ func _physics_process(delta: float) -> void:
 		aim_line.visible = false
 		velocity = Vector2.ZERO
 		return
-	if not is_on_floor():
+	var started_on_floor := is_on_floor()
+	if _was_on_floor and not started_on_floor:
+		_fall_origin_y = global_position.y
+	if not started_on_floor:
 		velocity.y += GRAVITY * delta
 	elif velocity.y > 0.0:
 		velocity.y = 0.0
@@ -190,6 +197,20 @@ func _physics_process(delta: float) -> void:
 	else:
 		_update_movement_and_attack(delta)
 	move_and_slide()
+	if not started_on_floor and is_on_floor():
+		_apply_fall_damage(global_position.y - _fall_origin_y)
+	_was_on_floor = is_on_floor()
+
+
+func _apply_fall_damage(distance: float) -> void:
+	var damage := EnemyFallDamage.calculate(distance, max_health)
+	if damage > 0 and health > 0:
+		take_damage(damage, 0.0, 0.0)
+
+
+func apply_extreme_fall() -> void:
+	if health > 0:
+		take_damage(max_health, 0.0, 0.0)
 
 
 func _update_movement_and_attack(delta: float) -> void:

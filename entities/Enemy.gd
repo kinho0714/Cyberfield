@@ -61,6 +61,8 @@ var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
 var network_target_position := Vector2.ZERO
+var _fall_origin_y := 0.0
+var _was_on_floor := false
 
 
 func _ready() -> void:
@@ -77,6 +79,8 @@ func _ready() -> void:
 	patrol_pause_timer = _next_patrol_pause()
 	_update_health_label()
 	network_target_position = global_position
+	_fall_origin_y = global_position.y
+	_was_on_floor = is_on_floor()
 
 
 func _process(delta: float) -> void:
@@ -157,6 +161,9 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
+	var started_on_floor := is_on_floor()
+	if _was_on_floor and not started_on_floor:
+		_fall_origin_y = global_position.y
 	# Add gravity.
 	if not is_on_floor():
 		velocity.y += GRAVITY * delta
@@ -215,8 +222,22 @@ func _physics_process(delta: float) -> void:
 			_update_patrol(delta)
 
 	move_and_slide()
+	if not started_on_floor and is_on_floor():
+		_apply_fall_damage(global_position.y - _fall_origin_y)
+	_was_on_floor = is_on_floor()
 	if health <= 0:
 		velocity = Vector2.ZERO
+
+
+func _apply_fall_damage(distance: float) -> void:
+	var damage := EnemyFallDamage.calculate(distance, max_health)
+	if damage > 0 and health > 0:
+		take_damage(damage, 0.0, 0.0)
+
+
+func apply_extreme_fall() -> void:
+	if health > 0:
+		take_damage(max_health, 0.0, 0.0)
 
 
 func _update_patrol(delta: float) -> void:

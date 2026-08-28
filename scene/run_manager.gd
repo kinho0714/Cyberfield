@@ -9,7 +9,11 @@ enum RunState { MENU, HUB, PREPARING, ACTIVE, COMPLETED, LOST }
 const ENEMY_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
+const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
+const BANDAGE_DROP_CHANCE := 0.11
+const BIOME_MAP_STATE := preload("res://scene/biomes/biome_map_state.gd")
 const ATTRIBUTE_IDS := [&"intellect", &"health", &"strength"]
+const ATTRIBUTE_TRIPLE_CHOICE_CHANCE := 0.60
 const CHALLENGE_BASIC_COUNTS := {&"normal": 2, &"hard": 3, &"pro": 4, &"inferno_pro": 5}
 const RANGED_COUNTS := {
 	&"combat_01": {&"normal": 1, &"hard": 1, &"pro": 2, &"inferno_pro": 2},
@@ -64,6 +68,16 @@ var collected_biome_loot: Dictionary = {}
 var stage_index := 0
 var current_stage_id: StringName = &""
 var stage_history: Array[Dictionary] = []
+var map_states: Dictionary = {}
+var run_elapsed_time := 0.0
+var total_money_earned := 0
+var weapons_found: Dictionary = {}
+var last_run_results: Dictionary = {}
+
+
+func _process(delta: float) -> void:
+	if run_active:
+		run_elapsed_time += delta
 
 
 func configure_run(mode: StringName, selected_difficulty: StringName, joypad_device_id: int = -1) -> void:
@@ -122,6 +136,7 @@ func prepare_new_run(new_seed: int = 0) -> void:
 	current_stage_id = &"lower_city"
 	stage_history.clear()
 	_clear_biome_state()
+	_reset_run_quality_state()
 	for room_data in RUN_SEQUENCE:
 		room_states[room_data.id] = _new_room_state()
 	state_changed.emit()
@@ -155,6 +170,7 @@ func clear_run() -> void:
 	current_stage_id = &""
 	stage_history.clear()
 	_clear_biome_state()
+	_reset_run_quality_state()
 	game_mode = &"none"
 	player_count = 0
 	difficulty = &"normal"
@@ -231,6 +247,7 @@ func enter_generated_biome(report: Dictionary) -> void:
 	if not room_states.has(current_biome_id):
 		room_states[current_biome_id] = _new_room_state()
 	room_states[current_biome_id].visited = true
+	get_current_map_state()
 	state_changed.emit()
 
 
@@ -322,9 +339,53 @@ func collect_biome_loot(loot_id: StringName, amount: int) -> bool:
 	if not run_active or loot_id.is_empty() or collected_biome_loot.has(loot_id):
 		return false
 	collected_biome_loot[loot_id] = amount
+	get_current_map_state().collect_content(&"loot", loot_id)
 	dirty_money += maxi(amount, 0)
+	total_money_earned += maxi(amount, 0)
 	state_changed.emit()
 	return true
+
+
+func get_current_map_state() -> BiomeMapState:
+	var state_id := current_stage_id if not current_stage_id.is_empty() else current_biome_id
+	if state_id.is_empty():
+		state_id = &"stage_00"
+	if not map_states.has(state_id):
+		var new_state := BIOME_MAP_STATE.new(state_id) as BiomeMapState
+		new_state.changed.connect(_on_map_state_changed)
+		map_states[state_id] = new_state
+	return map_states[state_id] as BiomeMapState
+
+
+func discover_map_module(module_id: StringName, neighbors: Array[StringName]) -> bool:
+	return get_current_map_state().discover_module(module_id, neighbors)
+
+
+func discover_map_content(kind: StringName, content_id: StringName) -> bool:
+	return get_current_map_state().discover_content(kind, content_id)
+
+
+func activate_map_teleporter(teleporter_id: StringName) -> bool:
+	return get_current_map_state().activate_teleporter(teleporter_id)
+
+
+func serialize_current_map_state() -> Dictionary:
+	return get_current_map_state().to_dictionary()
+
+
+func apply_network_map_state(value: Dictionary) -> void:
+	if value.is_empty():
+		return
+	var state_id := StringName(value.get("stage_id", current_stage_id))
+	if not map_states.has(state_id):
+		var new_state := BIOME_MAP_STATE.new(state_id) as BiomeMapState
+		new_state.changed.connect(_on_map_state_changed)
+		map_states[state_id] = new_state
+	(map_states[state_id] as BiomeMapState).apply_dictionary(value)
+
+
+func _on_map_state_changed() -> void:
+	state_changed.emit()
 
 
 func register_enemy_death(room_id: StringName, enemy_id: StringName) -> void:
@@ -354,9 +415,11 @@ func is_reward_collected(room_id: StringName, reward_id: StringName) -> bool:
 
 
 func finish_run() -> void:
+	_capture_run_results(true)
 	run_state = RunState.COMPLETED
 	run_active = false
 	run_is_completed = true
+	map_states.clear()
 	_lock_all_players()
 	state_changed.emit()
 	run_completed.emit()
@@ -395,6 +458,8 @@ func lose_run() -> void:
 	run_state = RunState.LOST
 	run_active = false
 	run_is_lost = true
+	_capture_run_results(false)
+	map_states.clear()
 	_lock_all_players()
 	state_changed.emit()
 	run_lost.emit()
@@ -406,6 +471,8 @@ func apply_network_loss() -> void:
 	run_state = RunState.LOST
 	run_active = false
 	run_is_lost = true
+	_capture_run_results(false)
+	map_states.clear()
 	_lock_all_players()
 	state_changed.emit()
 	run_lost.emit()
@@ -417,6 +484,8 @@ func apply_network_completion() -> void:
 	run_state = RunState.COMPLETED
 	run_active = false
 	run_is_completed = true
+	_capture_run_results(true)
+	map_states.clear()
 	_lock_all_players()
 	state_changed.emit()
 	run_completed.emit()
@@ -546,18 +615,17 @@ func try_pay_chest(room_id: StringName, chest_id: StringName, cost: int) -> bool
 
 
 func get_chest_options(chest_id: StringName, all_options := false) -> Array[StringName]:
-	if all_options:
-		return [&"intellect", &"health", &"strength"]
-	var options: Array[StringName] = []
-	options.assign(ATTRIBUTE_IDS)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value + _stable_hash(String(chest_id))
-	for index in range(options.size() - 1, 0, -1):
-		var swap_index := rng.randi_range(0, index)
-		var value := options[index]
-		options[index] = options[swap_index]
-		options[swap_index] = value
-	return [options[0], options[1]]
+	var categories: Array[StringName] = [&"health", &"strength", &"intellect"]
+	var option_count := 3 if all_options or rng.randf() < ATTRIBUTE_TRIPLE_CHOICE_CHANCE else 2
+	var rotation := posmod(_stable_hash(String(chest_id)), categories.size())
+	var result: Array[StringName] = []
+	for offset in option_count:
+		var category := categories[(rotation + offset) % categories.size()]
+		var upgrades := AttributeUpgradeCatalog.get_ids_for_category(category)
+		result.append(upgrades[rng.randi_range(0, upgrades.size() - 1)])
+	return result
 
 
 func record_chest_choice(room_id: StringName, chest_id: StringName, participant_id: StringName, attribute: StringName) -> bool:
@@ -598,9 +666,12 @@ func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: in
 		minimum = 20
 		maximum = 30
 	var amount := rng.randi_range(minimum, maximum) if rng.randf() <= chance else 0
-	state.drops_rolled[enemy_id] = {"amount": amount, "collected": amount == 0, "position": death_position}
+	var bandage := rng.randf() <= BANDAGE_DROP_CHANCE
+	state.drops_rolled[enemy_id] = {"amount": amount, "collected": amount == 0, "position": death_position, "bandage": bandage, "bandage_collected": not bandage}
 	if amount > 0:
 		_spawn_money_pickup(room_id, enemy_id, amount, death_position)
+	if bandage:
+		_spawn_bandage_pickup(room_id, enemy_id, death_position)
 	state_changed.emit()
 
 
@@ -611,7 +682,23 @@ func collect_money_drop(room_id: StringName, drop_id: StringName) -> bool:
 	if not drops.has(drop_id) or drops[drop_id].collected:
 		return false
 	drops[drop_id].collected = true
-	dirty_money += drops[drop_id].amount
+	var collected_amount := int(drops[drop_id].amount)
+	dirty_money += collected_amount
+	total_money_earned += collected_amount
+	state_changed.emit()
+	return true
+
+
+func collect_bandage_drop(room_id: StringName, drop_id: StringName, player: Node) -> bool:
+	if not room_states.has(room_id):
+		return false
+	var drop: Dictionary = room_states[room_id].drops_rolled.get(drop_id, {})
+	if drop.is_empty() or drop.get("bandage_collected", true) or not player.apply_bandage(0.10):
+		return false
+	drop.bandage_collected = true
+	var map_state := get_current_map_state()
+	if map_state != null:
+		map_state.collect_content(&"bandage", drop_id)
 	state_changed.emit()
 	return true
 
@@ -735,6 +822,25 @@ func _spawn_pending_money(room_id: StringName, room: Node) -> void:
 		var drop: Dictionary = state.drops_rolled[drop_id]
 		if drop.amount > 0 and not drop.collected:
 			_spawn_money_pickup(room_id, drop_id, drop.amount, drop.position, room)
+		if drop.get("bandage", false) and not drop.get("bandage_collected", false):
+			_spawn_bandage_pickup(room_id, drop_id, drop.position, room)
+
+
+func _spawn_bandage_pickup(room_id: StringName, drop_id: StringName, position: Vector2, room_override: Node = null) -> void:
+	var room := room_override
+	if room == null:
+		var room_manager := get_tree().get_first_node_in_group("room_manager")
+		room = room_manager.current_room if room_manager else null
+	if room == null:
+		return
+	for existing in _find_nodes_in_group(room, &"bandage_pickup"):
+		if existing.pickup_id == drop_id:
+			return
+	var pickup := BANDAGE_PICKUP_SCRIPT.new() as BandagePickup
+	pickup.pickup_id = drop_id
+	pickup.room_id = room_id
+	room.add_child(pickup)
+	pickup.global_position = position
 
 
 func _spawn_money_pickup(room_id: StringName, drop_id: StringName, amount: int, position: Vector2, room_override: Node = null) -> void:
@@ -846,6 +952,8 @@ func _has_active_participant() -> bool:
 
 
 func _lock_all_players() -> void:
+	if not is_inside_tree():
+		return
 	for player in get_tree().get_nodes_in_group("player"):
 		player.set_input_enabled(false)
 
@@ -859,3 +967,42 @@ func _clear_biome_state() -> void:
 	selected_exit_id = &""
 	selected_exit_destination = &""
 	collected_biome_loot.clear()
+	map_states.clear()
+
+
+func record_weapon_found(participant_id: StringName, weapon_id: StringName) -> void:
+	var player_weapons: Array = weapons_found.get(participant_id, []) as Array
+	if not player_weapons.has(weapon_id):
+		player_weapons.append(weapon_id)
+	weapons_found[participant_id] = player_weapons
+	state_changed.emit()
+
+
+func format_run_time(value: float = run_elapsed_time) -> String:
+	var total_seconds := maxi(0, floori(value))
+	var hours := total_seconds / 3600
+	var minutes := (total_seconds % 3600) / 60
+	var seconds := total_seconds % 60
+	return "%02d:%02d:%02d" % [hours, minutes, seconds] if hours > 0 else "%02d:%02d" % [minutes, seconds]
+
+
+func _capture_run_results(completed: bool) -> void:
+	last_run_results = {
+		"completed": completed,
+		"elapsed_time": run_elapsed_time,
+		"money_earned": total_money_earned,
+		"money_remaining": dirty_money,
+		"difficulty": difficulty,
+		"stage_index": stage_index,
+		"player_count": player_count,
+		"stage_history": stage_history.duplicate(true),
+		"participants": participant_progress.duplicate(true),
+		"weapons_found": weapons_found.duplicate(true),
+	}
+
+
+func _reset_run_quality_state() -> void:
+	run_elapsed_time = 0.0
+	total_money_earned = 0
+	weapons_found.clear()
+	last_run_results.clear()

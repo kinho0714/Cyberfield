@@ -2,6 +2,7 @@ class_name LanSession
 extends Node
 
 const NETWORK_PROJECTILE_SCENE := preload("res://entities/ranged_projectile.tscn")
+const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
 
 signal lobby_changed
 signal discovered_rooms_changed
@@ -16,7 +17,7 @@ const MAX_PLAYERS := 2
 const DISCOVERY_INTERVAL := 0.75
 const ROOM_EXPIRY := 2.5
 const SNAPSHOT_INTERVAL := 0.05
-const INPUT_ACTIONS := [&"left", &"right", &"down", &"jump", &"attack", &"dash", &"interact", &"heal"]
+const INPUT_ACTIONS := [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon"]
 
 var role: Role = Role.OFFLINE
 var room_name := "Cyberfield LAN"
@@ -25,6 +26,7 @@ var connected_peer_id := 0
 var discovered_rooms: Array[Dictionary] = []
 var _peer: ENetMultiplayerPeer
 var _discovery_sender: PacketPeerUDP
+var _discovery_senders: Array[Dictionary] = []
 var _discovery_listener: PacketPeerUDP
 var _discovery_elapsed := 0.0
 var _snapshot_elapsed := 0.0
@@ -40,6 +42,9 @@ var _client_attribute_chest_id: StringName = &""
 var _next_projectile_id := 1
 var _client_projectiles: Dictionary = {}
 var _reported_layout_mismatch := false
+var last_discovery_sent := "NUNCA"
+var last_discovery_received := "NUNCA"
+var discovery_interfaces: Array[String] = []
 
 
 func _ready() -> void:
@@ -82,9 +87,7 @@ func host_room(requested_name: String = "Cyberfield LAN") -> Error:
 		return result
 	multiplayer.multiplayer_peer = _peer
 	role = Role.HOST
-	_discovery_sender = PacketPeerUDP.new()
-	_discovery_sender.set_broadcast_enabled(true)
-	_discovery_sender.set_dest_address("255.255.255.255", DISCOVERY_PORT)
+	_configure_discovery_senders()
 	_set_message("Sala aberta em %s:%d" % [get_preferred_lan_address(), GAME_PORT])
 	lobby_changed.emit()
 	return OK
@@ -92,8 +95,6 @@ func host_room(requested_name: String = "Cyberfield LAN") -> Error:
 
 func search_rooms() -> Error:
 	stop_discovery()
-	discovered_rooms.clear()
-	_room_last_seen.clear()
 	_discovery_listener = PacketPeerUDP.new()
 	var result := _discovery_listener.bind(DISCOVERY_PORT, "*")
 	if result != OK:
@@ -157,13 +158,13 @@ func request_remote_attribute_choice(chest_id: StringName, options: Array[String
 	_show_remote_attribute_choice.rpc_id(connected_peer_id, String(chest_id), serialized_options)
 
 
-func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: float, damage: int) -> int:
+func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: StringName = &"player") -> int:
 	if role != Role.HOST:
 		return 0
 	var projectile_id := _next_projectile_id
 	_next_projectile_id += 1
 	if connected_peer_id > 0:
-		_spawn_network_projectile.rpc_id(connected_peer_id, projectile_id, origin, direction, speed, damage)
+		_spawn_network_projectile.rpc_id(connected_peer_id, projectile_id, origin, direction, speed, damage, String(target_group))
 	return projectile_id
 
 
@@ -205,6 +206,11 @@ func stop_discovery() -> void:
 		_discovery_listener.close()
 	_discovery_listener = null
 	_discovery_sender = null
+	for sender_data: Dictionary in _discovery_senders:
+		var sender := sender_data.get("peer") as PacketPeerUDP
+		if sender != null:
+			sender.close()
+	_discovery_senders.clear()
 	_discovery_elapsed = 0.0
 
 
@@ -218,6 +224,31 @@ func is_host() -> bool:
 
 func is_client() -> bool:
 	return role == Role.CLIENT
+
+
+func request_map_discovery(module_id: StringName) -> void:
+	if role == Role.CLIENT:
+		_request_map_discovery.rpc_id(1, String(module_id))
+
+
+func request_teleporter_activation(teleporter_id: StringName) -> void:
+	if role == Role.CLIENT:
+		_request_teleporter_activation.rpc_id(1, String(teleporter_id))
+
+
+func request_fast_travel(origin_id: StringName, destination_id: StringName) -> void:
+	if role == Role.CLIENT:
+		_request_fast_travel.rpc_id(1, String(origin_id), String(destination_id))
+
+
+func request_weapon_pickup(pickup_id: StringName) -> void:
+	if role == Role.CLIENT:
+		_request_weapon_pickup.rpc_id(1, String(pickup_id))
+
+
+func request_bandage_pickup(pickup_id: StringName) -> void:
+	if role == Role.CLIENT:
+		_request_bandage_pickup.rpc_id(1, String(pickup_id))
 
 
 func get_player_count() -> int:
@@ -250,8 +281,37 @@ func get_preferred_lan_address() -> String:
 	return fallback_address
 
 
+func get_discovery_diagnostics() -> String:
+	return "IP %s // ENET %d // UDP %d\nIFACES %s\nENVIO %s // RECEBIDO %s" % [get_preferred_lan_address(), GAME_PORT, DISCOVERY_PORT, ", ".join(discovery_interfaces), last_discovery_sent, last_discovery_received]
+
+
+func _configure_discovery_senders() -> void:
+	_discovery_senders.clear()
+	discovery_interfaces.clear()
+	for address_value: Variant in IP.get_local_addresses():
+		var address := String(address_value)
+		if address.contains(":") or address.begins_with("127.") or address.begins_with("169.254."):
+			continue
+		var octets := address.split(".")
+		if octets.size() != 4:
+			continue
+		var sender := PacketPeerUDP.new()
+		var bind_result := sender.bind(0, address)
+		if bind_result != OK:
+			continue
+		sender.set_broadcast_enabled(true)
+		var directed_broadcast := "%s.%s.%s.255" % [octets[0], octets[1], octets[2]]
+		_discovery_senders.append({"peer": sender, "address": address, "broadcasts": [directed_broadcast, "255.255.255.255"]})
+		discovery_interfaces.append("%s→%s/255.255.255.255" % [address, directed_broadcast])
+	if _discovery_senders.is_empty():
+		var fallback := PacketPeerUDP.new()
+		fallback.set_broadcast_enabled(true)
+		_discovery_senders.append({"peer": fallback, "address": "*", "broadcasts": ["255.255.255.255"]})
+		discovery_interfaces.append("*→255.255.255.255")
+
+
 func _process_discovery(delta: float) -> void:
-	if role == Role.HOST and _discovery_sender != null:
+	if role == Role.HOST and not _discovery_senders.is_empty():
 		_discovery_elapsed += delta
 		if _discovery_elapsed >= DISCOVERY_INTERVAL:
 			_discovery_elapsed = 0.0
@@ -261,7 +321,13 @@ func _process_discovery(delta: float) -> void:
 				"port": GAME_PORT,
 				"players": get_player_count(),
 			}
-			_discovery_sender.put_packet(JSON.stringify(announcement).to_utf8_buffer())
+			var payload := JSON.stringify(announcement).to_utf8_buffer()
+			for sender_data: Dictionary in _discovery_senders:
+				var sender := sender_data.peer as PacketPeerUDP
+				for broadcast_value: Variant in sender_data.broadcasts:
+					sender.set_dest_address(String(broadcast_value), DISCOVERY_PORT)
+					sender.put_packet(payload)
+			last_discovery_sent = "%s @ %d" % [Time.get_time_string_from_system(), DISCOVERY_PORT]
 	if _discovery_listener == null:
 		return
 	while _discovery_listener.get_available_packet_count() > 0:
@@ -273,6 +339,7 @@ func _process_discovery(delta: float) -> void:
 		if int(data.get("protocol", -1)) != PROTOCOL_VERSION:
 			continue
 		var host_address := _discovery_listener.get_packet_ip()
+		last_discovery_received = "%s @ %s" % [Time.get_time_string_from_system(), host_address]
 		var key := "%s:%d" % [host_address, int(data.get("port", GAME_PORT))]
 		data["address"] = host_address
 		data["last_seen"] = Time.get_ticks_msec() / 1000.0
@@ -308,9 +375,12 @@ func _send_local_input() -> void:
 		"down": Input.is_action_pressed(&"down"),
 		"jump": Input.is_action_pressed(&"jump"),
 		"attack": Input.is_action_pressed(&"attack"),
+		"attack_slot_1": Input.is_action_pressed(&"attack_slot_1"),
+		"attack_slot_2": Input.is_action_pressed(&"attack_slot_2"),
 		"dash": Input.is_action_pressed(&"dash"),
 		"interact": Input.is_action_pressed(&"interact"),
 		"heal": Input.is_action_pressed(&"heal"),
+		"switch_weapon": Input.is_action_pressed(&"switch_weapon"),
 		"sequence": _input_sequence,
 	}
 	var comparable_state: Dictionary = state.duplicate()
@@ -392,6 +462,9 @@ func _broadcast_authoritative_snapshot() -> void:
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		if enemy.has_method("get_network_state"):
 			enemies.append(enemy.get_network_state())
+	var bandages: Array[Dictionary] = []
+	for pickup in get_tree().get_nodes_in_group("bandage_pickup"):
+		bandages.append({"pickup_id": String(pickup.pickup_id), "room_id": String(pickup.room_id), "position": pickup.global_position})
 	var layout_signature := ""
 	if room_manager.current_room != null and room_manager.current_room.has_method("get_generation_report"):
 		var generation_report: Dictionary = room_manager.current_room.get_generation_report()
@@ -399,6 +472,7 @@ func _broadcast_authoritative_snapshot() -> void:
 	var snapshot := {
 		"players": players,
 		"enemies": enemies,
+		"bandages": bandages,
 		"dirty_money": int(room_manager.run_manager.dirty_money),
 		"selected_exit_id": String(room_manager.run_manager.selected_exit_id),
 		"stage_index": int(room_manager.run_manager.stage_index),
@@ -407,6 +481,8 @@ func _broadcast_authoritative_snapshot() -> void:
 		"run_lost": bool(room_manager.run_manager.run_is_lost),
 		"run_completed": bool(room_manager.run_manager.run_is_completed),
 		"layout_signature": layout_signature,
+		"map_state": room_manager.run_manager.serialize_current_map_state(),
+		"run_elapsed_time": room_manager.run_manager.run_elapsed_time,
 	}
 	_apply_authoritative_snapshot.rpc_id(connected_peer_id, snapshot)
 
@@ -443,11 +519,35 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 		var enemy_id := StringName(enemy_id_value)
 		if not authoritative_enemy_ids.has(enemy_id):
 			enemies_by_id[enemy_id].queue_free()
+	var local_bandages := {}
+	for pickup in get_tree().get_nodes_in_group("bandage_pickup"):
+		local_bandages[pickup.pickup_id] = pickup
+	var authoritative_bandages := {}
+	for data_value: Variant in snapshot.get("bandages", []):
+		var data := data_value as Dictionary
+		var pickup_id := StringName(data.pickup_id)
+		authoritative_bandages[pickup_id] = true
+		if not local_bandages.has(pickup_id) and room_manager.current_room != null:
+			var pickup := BANDAGE_PICKUP_SCRIPT.new() as BandagePickup
+			pickup.pickup_id = pickup_id
+			pickup.room_id = StringName(data.room_id)
+			room_manager.current_room.add_child(pickup)
+			pickup.global_position = Vector2(data.position)
+	for pickup_id in local_bandages:
+		if not authoritative_bandages.has(pickup_id):
+			local_bandages[pickup_id].queue_free()
 	var collected_loot: Array = snapshot.get("collected_loot", []) as Array
 	for loot in get_tree().get_nodes_in_group("biome_loot"):
 		if collected_loot.has(loot.loot_id):
 			loot.queue_free()
 	room_manager.run_manager.dirty_money = int(snapshot.get("dirty_money", room_manager.run_manager.dirty_money))
+	room_manager.run_manager.apply_network_map_state(snapshot.get("map_state", {}))
+	room_manager.run_manager.run_elapsed_time = float(snapshot.get("run_elapsed_time", room_manager.run_manager.run_elapsed_time))
+	var map_state: BiomeMapState = room_manager.run_manager.get_current_map_state()
+	for pickup in get_tree().get_nodes_in_group("weapon_pickup"):
+		if map_state.collected_weapon_ids.has(pickup.pickup_id):
+			pickup.queue_free()
+	room_manager.refresh_teleporter_states()
 	var authoritative_signature := String(snapshot.get("layout_signature", ""))
 	if not authoritative_signature.is_empty() and room_manager.current_room != null and room_manager.current_room.has_method("get_generation_report"):
 		var local_report: Dictionary = room_manager.current_room.get_generation_report()
@@ -497,7 +597,7 @@ func _show_remote_attribute_choice(chest_id: String, serialized_options: Array[S
 
 
 @rpc("authority", "call_remote", "reliable", 3)
-func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: Vector2, speed: float, damage: int) -> void:
+func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: String = "player") -> void:
 	if role != Role.CLIENT or _client_projectiles.has(projectile_id):
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
@@ -507,7 +607,7 @@ func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: V
 	projectile.network_id = projectile_id
 	projectile.network_visual_only = true
 	room_manager.current_room.add_child(projectile)
-	projectile.setup(origin, direction, null, speed, damage)
+	projectile.setup(origin, direction, null, speed, damage, StringName(target_group))
 	_client_projectiles[projectile_id] = projectile
 
 
@@ -552,6 +652,80 @@ func _submit_remote_attribute_choice(chest_id: String, attribute: String) -> voi
 			_pending_attribute_chest_id = &""
 			_pending_attribute_options.clear()
 			return
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_map_discovery(module_id: String) -> void:
+	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager == null or room_manager.current_room == null:
+		return
+	var player_two: Node = room_manager._find_player(&"player_2")
+	var module_index := int(room_manager.current_room.get_module_index_at(player_two.global_position)) if player_two != null else -1
+	var graph: Dictionary = room_manager.current_room.get_map_graph()
+	var modules: Array = graph.get("modules", []) as Array
+	if module_index < 0 or module_index >= modules.size() or StringName((modules[module_index] as Dictionary).instance_id) != StringName(module_id):
+		return
+	var neighbors: Array[StringName] = []
+	for neighbor_value: Variant in (modules[module_index] as Dictionary).neighbors:
+		neighbors.append(StringName((modules[int(neighbor_value)] as Dictionary).instance_id))
+	room_manager.run_manager.discover_map_module(StringName(module_id), neighbors)
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_teleporter_activation(teleporter_id: String) -> void:
+	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		room_manager.activate_teleporter_authoritative(StringName(teleporter_id), &"player_2")
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_weapon_pickup(pickup_id: String) -> void:
+	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager == null:
+		return
+	var player_two: Node = room_manager._find_player(&"player_2")
+	for pickup in get_tree().get_nodes_in_group("weapon_pickup"):
+		if StringName(pickup.pickup_id) == StringName(pickup_id):
+			pickup.claim_authoritative(player_two)
+			return
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_bandage_pickup(pickup_id: String) -> void:
+	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager == null:
+		return
+	var player_two: Node = room_manager._find_player(&"player_2")
+	for pickup in get_tree().get_nodes_in_group("bandage_pickup"):
+		if StringName(pickup.pickup_id) == StringName(pickup_id) and player_two.global_position.distance_to(pickup.global_position) <= 100.0:
+			pickup.claim_authoritative(player_two)
+			return
+
+
+@rpc("any_peer", "call_remote", "reliable", 0)
+func _request_fast_travel(origin_id: String, destination_id: String) -> void:
+	if role != Role.HOST or multiplayer.get_remote_sender_id() != connected_peer_id:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null and room_manager.perform_fast_travel_authoritative(StringName(origin_id), StringName(destination_id)):
+		_apply_fast_travel.rpc_id(connected_peer_id, destination_id)
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _apply_fast_travel(destination_id: String) -> void:
+	if role != Role.CLIENT:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		room_manager.apply_network_fast_travel(StringName(destination_id))
 
 
 func _start_network_run(config: Dictionary) -> void:

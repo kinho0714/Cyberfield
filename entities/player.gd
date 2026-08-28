@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const RANGED_PROJECTILE_SCENE := preload("res://entities/ranged_projectile.tscn")
+
 signal downed_state_changed(is_now_downed: bool)
 signal revive_progress_changed(progress: float)
 
@@ -48,6 +50,7 @@ const KNOCKBACK_FORCE = 300.0
 const KNOCKBACK_UP = -120.0
 const KNOCKBACK_DURATION = 0.18
 const FINISHER_KNOCKBACK_MULTIPLIER := 1.5
+const DROP_THROUGH_COOLDOWN := 0.18
 
 var is_attacking = false
 var is_ground_slamming = false
@@ -94,6 +97,17 @@ var heal_progress := 0.0
 var intellect := 0
 var health_attribute := 0
 var strength := 0
+var acquired_upgrades: Dictionary = {}
+var healing_bonus := 0.0
+var damage_resistance := 0.0
+var knockback_bonus := 0.0
+var slam_damage_bonus := 0.0
+var tech_damage_bonus := 0.0
+var dash_duration_bonus := 0.0
+var drop_through_timer := 0.0
+var equipped_weapons: Array[StringName] = [&"scrap_blade", &""]
+var active_weapon_slot := 0
+var weapon_cooldowns: Array[float] = [0.0, 0.0]
 var _dash_exceptions: Array[Node] = []
 var revive_progress := 0.0
 var _revive_target: CharacterBody2D = null
@@ -169,13 +183,18 @@ func _physics_process(delta: float) -> void:
 		and sign(direction) == -sign(wall_normal.x)
 	)
 	var did_wall_jump := false
+	drop_through_timer = maxf(drop_through_timer - delta, 0.0)
+	for slot in 2:
+		weapon_cooldowns[slot] = maxf(weapon_cooldowns[slot] - delta, 0.0)
 
 	# A press made during an attack represents the next combo intent. Do not let
 	# its short post-lock buffer expire while the current attack coroutine still
 	# owns the attack state; it starts counting down once that state is released.
 	if not is_attacking:
 		attack_input_buffer_timer = maxf(attack_input_buffer_timer - delta, 0.0)
-	if _attack_just_pressed() and not is_healing and not is_ground_slamming:
+	var requested_attack_slot := _requested_attack_slot()
+	if requested_attack_slot >= 0 and not is_healing and not is_ground_slamming:
+		active_weapon_slot = requested_attack_slot
 		attack_input_buffer_timer = attack_input_buffer_duration
 
 	# Add gravity.
@@ -245,8 +264,14 @@ func _physics_process(delta: float) -> void:
 		velocity.x = 0.0
 		velocity.y = GROUND_SLAM_SPEED
 
+	var jump_pressed := Input.is_action_just_pressed(_action(&"jump"))
+	if jump_pressed and Input.is_action_pressed(_action(&"down")) and _can_drop_through_platform():
+		position.y += 10.0
+		velocity.y = 90.0
+		drop_through_timer = DROP_THROUGH_COOLDOWN
+		jump_pressed = false
 	# Handle wall jump before the regular jump + double jump.
-	if Input.is_action_just_pressed(_action(&"jump")) and not is_attacking and not is_ground_slamming and knockback_timer <= 0:
+	if jump_pressed and not is_attacking and not is_ground_slamming and knockback_timer <= 0:
 		if touching_wall_in_air:
 			if wall_jump_available:
 				velocity.y = JUMP_VELOCITY
@@ -259,7 +284,7 @@ func _physics_process(delta: float) -> void:
 	# Consume one buffered press as soon as the existing attack state allows it.
 	if attack_input_buffer_timer > 0.0 and _can_start_attack():
 		attack_input_buffer_timer = 0.0
-		attack()
+		attack(active_weapon_slot)
 
 	# Only control horizontal movement when not being knocked back.
 	if knockback_timer <= 0 and dash_timer <= 0 and not is_ground_slamming:
@@ -280,6 +305,8 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed(_action(&"dash")) and dash_timer <= 0 and knockback_timer <= 0 and not is_ground_slamming and not is_healing and (combo_end_recovery_timer <= 0.0 or dash_cancel_timer > 0.0):
 		if not is_attacking or dash_cancel_timer > 0.0:
 			_start_dash()
+	if Input.is_action_just_pressed(_action(&"switch_weapon")):
+		switch_weapon()
 
 	# Climb while holding toward a wall, then slide once climbing is unavailable.
 	if touching_wall_in_air and knockback_timer <= 0 and dash_timer <= 0 and not is_ground_slamming and not did_wall_jump:
@@ -307,9 +334,19 @@ func _physics_process(delta: float) -> void:
 		down_tap_timer = 0.0
 
 
-func attack() -> void:
+func attack(slot: int = -1) -> void:
+	var requested_slot := active_weapon_slot if slot < 0 else clampi(slot, 0, 1)
+	var weapon_id := equipped_weapons[requested_slot]
+	if weapon_id.is_empty() or weapon_cooldowns[requested_slot] > 0.0:
+		return
+	active_weapon_slot = requested_slot
+	var definition := WeaponCatalog.get_definition(weapon_id)
+	if StringName(definition.get("type", &"melee")) == &"ranged":
+		_fire_ranged_weapon(requested_slot, definition)
+		return
 	if is_attacking or combo_end_recovery_timer > 0.0 or is_downed or is_healing or not input_enabled:
 		return
+	weapon_cooldowns[requested_slot] = float(definition.get("cooldown", ATTACK_DURATION))
 
 	is_attacking = true
 	attack_generation += 1
@@ -348,8 +385,8 @@ func attack() -> void:
 				)
 
 				last_attack_hit = true
-				var knockback_multiplier := FINISHER_KNOCKBACK_MULTIPLIER if combo_step == MAX_COMBO_ATTACKS else 1.0
-				body.take_damage(get_melee_damage(), knockback_direction, knockback_multiplier)
+				var knockback_multiplier := (FINISHER_KNOCKBACK_MULTIPLIER if combo_step == MAX_COMBO_ATTACKS else 1.0) * get_weapon_knockback() * (1.0 + knockback_bonus)
+				body.take_damage(get_melee_damage(requested_slot), knockback_direction, knockback_multiplier)
 				break
 	if combo_step == MAX_COMBO_ATTACKS and last_attack_hit:
 		dash_cancel_timer = dash_cancel_window
@@ -385,7 +422,7 @@ func _start_dash() -> void:
 		_reset_combo()
 	var dash_direction := -1.0 if anim.flip_h else 1.0
 	velocity.x = dash_direction * DASH_SPEED
-	dash_timer = DASH_DURATION
+	dash_timer = DASH_DURATION * (1.0 + dash_duration_bonus)
 	dash_invulnerability_timer = dash_invulnerability_duration
 	_dash_exceptions.clear()
 	for enemy in get_tree().get_nodes_in_group("enemy"):
@@ -412,12 +449,73 @@ func _reset_combo(clear_recovery := true) -> void:
 		combo_end_recovery_timer = 0.0
 
 
-func get_melee_damage() -> int:
-	return CombatStats.player_melee_damage(strength)
+func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
+	if is_downed or is_healing or not input_enabled or network_prediction_only:
+		return
+	weapon_cooldowns[slot] = float(definition.get("cooldown", 0.42))
+	var player_anim := anim if anim != null else get_node("AnimatedSprite2D") as AnimatedSprite2D
+	var direction := Vector2.LEFT if player_anim.flip_h else Vector2.RIGHT
+	var origin := global_position + Vector2(direction.x * 28.0, -8.0)
+	var projectile := RANGED_PROJECTILE_SCENE.instantiate()
+	get_parent().add_child(projectile)
+	var damage := maxi(1, roundi(float(definition.get("damage", 34)) * (1.0 + 0.10 * intellect + tech_damage_bonus)))
+	projectile.setup(origin, direction, self, 620.0, damage, &"enemy")
+	var lan_session := get_tree().get_first_node_in_group("lan_session") if is_inside_tree() else null
+	if lan_session != null:
+		projectile.network_id = lan_session.replicate_projectile_spawn(origin, direction, 620.0, damage, &"enemy")
+
+
+func get_melee_damage(slot: int = -1) -> int:
+	var weapon_id := get_active_weapon_id() if slot < 0 else equipped_weapons[clampi(slot, 0, 1)]
+	var weapon_damage := int(WeaponCatalog.get_definition(weapon_id).get("damage", CombatStats.PLAYER_BASE_MELEE_DAMAGE))
+	return maxi(1, roundi(weapon_damage * (1.0 + CombatStats.STRENGTH_DAMAGE_PER_LEVEL * strength)))
 
 
 func get_slam_damage() -> int:
-	return CombatStats.player_slam_damage(strength)
+	return maxi(1, roundi(CombatStats.player_slam_damage(strength) * (1.0 + slam_damage_bonus)))
+
+
+func get_weapon_knockback() -> float:
+	return float(WeaponCatalog.get_definition(get_active_weapon_id()).get("knockback", 1.0))
+
+
+func get_active_weapon_id() -> StringName:
+	return equipped_weapons[active_weapon_slot] if not equipped_weapons[active_weapon_slot].is_empty() else &"scrap_blade"
+
+
+func equip_weapon(weapon_id: StringName, replace_slot: int = -1) -> bool:
+	if weapon_id.is_empty() or not WeaponCatalog.WEAPONS.has(weapon_id):
+		return false
+	if equipped_weapons.has(weapon_id):
+		return false
+	var target_slot := replace_slot
+	if target_slot < 0:
+		target_slot = equipped_weapons.find(&"")
+	if target_slot < 0:
+		target_slot = active_weapon_slot
+	target_slot = clampi(target_slot, 0, 1)
+	equipped_weapons[target_slot] = weapon_id
+	active_weapon_slot = target_slot
+	_sync_progress()
+	return true
+
+
+func switch_weapon() -> void:
+	var other_slot := 1 - active_weapon_slot
+	if not equipped_weapons[other_slot].is_empty():
+		active_weapon_slot = other_slot
+		_sync_progress()
+
+
+func _can_drop_through_platform() -> bool:
+	if drop_through_timer > 0.0 or not is_on_floor():
+		return false
+	for index in get_slide_collision_count():
+		var collision := get_slide_collision(index)
+		var collider := collision.get_collider() as Node
+		if collider != null and collider.get_meta("collision_role", &"") == &"one_way_platform":
+			return true
+	return false
 
 
 func add_attribute(attribute: StringName) -> bool:
@@ -443,6 +541,33 @@ func add_attribute(attribute: StringName) -> bool:
 	return true
 
 
+func add_upgrade(upgrade_id: StringName) -> bool:
+	var definition := AttributeUpgradeCatalog.get_definition(upgrade_id)
+	if definition.is_empty() or is_downed:
+		return false
+	var category := StringName(definition.category)
+	acquired_upgrades[upgrade_id] = int(acquired_upgrades.get(upgrade_id, 0)) + 1
+	match StringName(definition.key):
+		&"max_health": return add_attribute(&"health")
+		&"healing": healing_bonus += float(definition.magnitude)
+		&"resistance": damage_resistance = minf(damage_resistance + float(definition.magnitude), 0.30)
+		&"melee_damage": pass
+		&"knockback": knockback_bonus += float(definition.magnitude)
+		&"slam_damage": slam_damage_bonus += float(definition.magnitude)
+		&"climb_stamina":
+			max_wall_climb_duration += float(definition.magnitude)
+		&"dash_duration":
+			dash_duration_bonus += float(definition.magnitude)
+		&"tech_damage":
+			tech_damage_bonus += float(definition.magnitude)
+		_: return false
+	if category == &"health": health_attribute += 1
+	elif category == &"strength": strength += 1
+	elif category == &"intellect": intellect += 1
+	_sync_progress()
+	return true
+
+
 func _start_heal() -> void:
 	if is_healing or is_attacking or is_ground_slamming or dash_timer > 0.0 or is_downed or not input_enabled or heal_doses <= 0 or health >= max_health:
 		return
@@ -456,7 +581,7 @@ func _start_heal() -> void:
 func _complete_heal() -> void:
 	if not is_healing:
 		return
-	health = mini(max_health, health + CombatStats.heal_amount(max_health))
+	health = mini(max_health, health + roundi(CombatStats.heal_amount(max_health) * (1.0 + healing_bonus)))
 	heal_doses -= 1
 	is_healing = false
 	heal_progress = 0.0
@@ -471,7 +596,6 @@ func _cancel_heal() -> void:
 
 func set_input_enabled(enabled: bool) -> void:
 	input_enabled = enabled
-
 	if not enabled:
 		attack_input_buffer_timer = 0.0
 		_cancel_heal()
@@ -486,10 +610,28 @@ func set_input_enabled(enabled: bool) -> void:
 		attack_shape_cast.enabled = not is_downed
 
 
+func apply_bandage(heal_ratio: float = 0.10) -> bool:
+	if is_downed or health >= max_health:
+		return false
+	health = mini(max_health, health + maxi(1, roundi(max_health * heal_ratio)))
+	_update_health_label()
+	return true
+
+
 func reset_for_new_run() -> void:
 	intellect = 0
 	health_attribute = 0
 	strength = 0
+	acquired_upgrades.clear()
+	healing_bonus = 0.0
+	damage_resistance = 0.0
+	knockback_bonus = 0.0
+	slam_damage_bonus = 0.0
+	tech_damage_bonus = 0.0
+	dash_duration_bonus = 0.0
+	equipped_weapons = [&"scrap_blade", &""]
+	active_weapon_slot = 0
+	weapon_cooldowns = [0.0, 0.0]
 	max_wall_climb_duration = WALL_CLIMB_DURATION
 	max_health = CombatStats.PLAYER_BASE_MAX_HP
 	health = max_health
@@ -580,6 +722,14 @@ func _attack_just_pressed() -> bool:
 	return true
 
 
+func _requested_attack_slot() -> int:
+	if Input.is_action_just_pressed(_action(&"attack_slot_2")):
+		return 1
+	if Input.is_action_just_pressed(_action(&"attack_slot_1")) or _attack_just_pressed():
+		return 0
+	return -1
+
+
 func _can_start_attack() -> bool:
 	return (
 		not is_attacking
@@ -606,6 +756,9 @@ func get_network_state() -> Dictionary:
 		"health_attribute": health_attribute,
 		"strength": strength,
 		"heal_doses": heal_doses,
+		"equipped_weapons": equipped_weapons.duplicate(),
+		"active_weapon_slot": active_weapon_slot,
+		"acquired_upgrades": acquired_upgrades.duplicate(true),
 	}
 
 
@@ -635,6 +788,11 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false) -> vo
 	health_attribute = int(state.get("health_attribute", health_attribute))
 	strength = int(state.get("strength", strength))
 	heal_doses = int(state.get("heal_doses", heal_doses))
+	var network_weapons: Array = state.get("equipped_weapons", equipped_weapons) as Array
+	if network_weapons.size() == 2:
+		equipped_weapons = [StringName(network_weapons[0]), StringName(network_weapons[1])]
+	active_weapon_slot = clampi(int(state.get("active_weapon_slot", active_weapon_slot)), 0, 1)
+	acquired_upgrades = (state.get("acquired_upgrades", acquired_upgrades) as Dictionary).duplicate(true)
 	_update_health_label()
 
 
@@ -648,7 +806,8 @@ func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
 	dash_invulnerability_timer = 0.0
 	_reset_combo()
 	is_ground_slamming = false
-	health = maxi(health - amount, 0)
+	var reduced_amount := maxi(1, roundi(amount * (1.0 - damage_resistance)))
+	health = maxi(health - reduced_amount, 0)
 	_update_health_label()
 
 	print("Player health: ", health)
@@ -790,6 +949,8 @@ func _update_health_label() -> void:
 
 
 func _sync_progress() -> void:
+	if not is_inside_tree():
+		return
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager and run_manager.has_method("update_participant_progress"):
 		run_manager.update_participant_progress(participant_id, {
@@ -800,4 +961,7 @@ func _sync_progress() -> void:
 			"current_hp": health,
 			"max_hp": max_health,
 			"melee_damage": get_melee_damage(),
+			"equipped_weapons": equipped_weapons.duplicate(),
+			"active_weapon_slot": active_weapon_slot,
+			"upgrades": acquired_upgrades.duplicate(true),
 		})

@@ -10,8 +10,21 @@ var _source_signature := ""
 
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	gui_input.connect(_on_gui_input)
 	visible = false
+
+
+func _on_gui_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	var activated: bool = event is InputEventScreenTouch and bool(event.pressed)
+	activated = activated or event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT
+	if activated:
+		var full_map := get_tree().get_first_node_in_group("full_map")
+		if full_map != null:
+			full_map.open_map()
+		accept_event()
 
 
 func _process(delta: float) -> void:
@@ -20,6 +33,10 @@ func _process(delta: float) -> void:
 		return
 	_elapsed = 0.0
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager != null and (run_manager.run_is_lost or run_manager.run_is_completed):
+		visible = false
+		return
 	if room_manager == null or not bool(room_manager.current_is_generated_biome):
 		visible = false
 		return
@@ -35,16 +52,53 @@ func _process(delta: float) -> void:
 		_discovered.clear()
 	visible = true
 	_discover_player_modules(room_manager.get_players(), biome_root)
+	_sync_discovered_from_state()
 	queue_redraw()
 
 
 func _discover_player_modules(players: Array[Node], biome_root: Node) -> void:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var lan_session: LanSession = room_manager.get_node("LanSession")
+	var modules: Array = _graph.get("modules", []) as Array
 	for player in players:
 		if not player.visible:
 			continue
 		var module_index := int(biome_root.get_module_index_at(player.global_position))
-		if module_index >= 0:
-			_discovered[module_index] = true
+		if module_index < 0 or module_index >= modules.size():
+			continue
+		var module := modules[module_index] as Dictionary
+		var module_id := StringName(module.instance_id)
+		if lan_session.is_client():
+			if player.participant_id == &"player_2" and not run_manager.get_current_map_state().discovered_module_ids.has(module_id):
+				lan_session.request_map_discovery(module_id)
+			continue
+		var neighbors: Array[StringName] = []
+		for neighbor_value: Variant in module.neighbors:
+			neighbors.append(StringName((modules[int(neighbor_value)] as Dictionary).instance_id))
+		run_manager.discover_map_module(module_id, neighbors)
+		_discover_module_content(run_manager, module_index)
+
+
+func _discover_module_content(run_manager: Node, module_index: int) -> void:
+	for entry_value: Variant in _graph.get("content_entries", []):
+		var entry := entry_value as Dictionary
+		if int(entry.module_index) == module_index:
+			run_manager.discover_map_content(StringName(entry.kind), StringName(entry.content_id))
+	for entry_value: Variant in _graph.get("teleporters", []):
+		var entry := entry_value as Dictionary
+		if int(entry.module_index) == module_index:
+			run_manager.discover_map_content(&"teleporter", StringName(entry.teleporter_id))
+
+
+func _sync_discovered_from_state() -> void:
+	_discovered.clear()
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	var state: BiomeMapState = run_manager.get_current_map_state()
+	for module_value: Variant in _graph.get("modules", []):
+		var module := module_value as Dictionary
+		if state.discovered_module_ids.has(StringName(module.instance_id)):
+			_discovered[int(module.index)] = true
 
 
 func _draw() -> void:
@@ -88,14 +142,17 @@ func _draw() -> void:
 			color = Color(0.75, 0.4, 1.0, 1.0)
 		draw_circle(point, 6.0, color)
 	_draw_discovered_content(modules, map_origin, map_scale)
+	_draw_teleporters(modules, map_origin, map_scale)
 	_draw_players(map_origin, map_scale)
 
 
 func _draw_discovered_content(modules: Array, map_origin: Vector2, map_scale: float) -> void:
+	var state: BiomeMapState = get_tree().get_first_node_in_group("run_manager").get_current_map_state()
 	var content: Dictionary = _graph.get("content_modules", {}) as Dictionary
 	var styles := {
 		"loot": {"color": Color(1.0, 0.9, 0.25), "offset": Vector2(-7.0, -7.0)},
 		"attribute": {"color": Color(0.72, 0.35, 1.0), "offset": Vector2(7.0, -7.0)},
+		"weapon": {"color": Color(0.25, 0.9, 1.0), "offset": Vector2(-7.0, 7.0)},
 		"exit": {"color": Color(1.0, 0.55, 0.15), "offset": Vector2(0.0, 8.0)},
 	}
 	for content_type_value: Variant in styles.keys():
@@ -107,6 +164,20 @@ func _draw_discovered_content(modules: Array, map_origin: Vector2, map_scale: fl
 		for module_index_value: Variant in module_indices:
 			var module_index := int(module_index_value)
 			if not _discovered.has(module_index) or module_index < 0 or module_index >= modules.size():
+				continue
+			var has_visible_entry := false
+			for entry_value: Variant in _graph.get("content_entries", []):
+				var entry := entry_value as Dictionary
+				if String(entry.kind) != content_type or int(entry.module_index) != module_index:
+					continue
+				var content_id := StringName(entry.content_id)
+				has_visible_entry = content_type == "exit" and state.discovered_exit_ids.has(content_id)
+				has_visible_entry = has_visible_entry or content_type == "loot" and state.discovered_loot_ids.has(content_id) and not state.collected_loot_ids.has(content_id)
+				has_visible_entry = has_visible_entry or content_type == "attribute" and state.discovered_attribute_ids.has(content_id) and not state.collected_attribute_ids.has(content_id)
+				has_visible_entry = has_visible_entry or content_type == "weapon" and state.discovered_weapon_ids.has(content_id) and not state.collected_weapon_ids.has(content_id)
+				if has_visible_entry:
+					break
+			if not has_visible_entry:
 				continue
 			var module: Dictionary = modules[module_index] as Dictionary
 			var point := map_origin + Vector2(module.grid) * map_scale + content_offset
@@ -129,6 +200,17 @@ func _draw_players(map_origin: Vector2, map_scale: float) -> void:
 		var color := Color.WHITE if player.participant_id == &"player_1" else Color(0.35, 0.75, 1.0)
 		draw_circle(point, 3.0, color)
 		draw_arc(point, 9.0, 0.0, TAU, 24, color, 2.0, true)
+
+
+func _draw_teleporters(modules: Array, map_origin: Vector2, map_scale: float) -> void:
+	var state: BiomeMapState = get_tree().get_first_node_in_group("run_manager").get_current_map_state()
+	for entry_value: Variant in _graph.get("teleporters", []):
+		var entry := entry_value as Dictionary
+		if not state.active_teleporter_ids.has(StringName(entry.teleporter_id)):
+			continue
+		var module := modules[int(entry.module_index)] as Dictionary
+		var point := map_origin + Vector2(module.grid) * map_scale + Vector2(8, 0)
+		draw_circle(point, 4.5, Color.CYAN, false, 2.0)
 
 
 func _calculate_map_transform(modules: Array) -> Dictionary:
