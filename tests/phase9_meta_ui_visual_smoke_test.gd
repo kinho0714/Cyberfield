@@ -63,6 +63,7 @@ func _test_ui_and_visual_contracts() -> void:
 	run_manager.call("configure_run_weapon_pool", [&"arc_emitter"])
 	run_manager.call("prepare_new_run", 900009, true)
 	assert((run_manager.get("run_weapon_pool") as Array) == [&"arc_emitter"])
+	await _test_player_color_variants()
 	var scenes: Array[PackedScene] = [PLAYER_SCENE, COMMON_SCENE, RANGED_SCENE, HEAVY_SCENE]
 	for packed_scene: PackedScene in scenes:
 		var actor := packed_scene.instantiate() as CharacterBody2D
@@ -83,3 +84,23 @@ func _test_ui_and_visual_contracts() -> void:
 	pickup.free()
 	main.free()
 	await process_frame
+
+
+func _test_player_color_variants() -> void:
+	var expected_variants: Array[StringName] = [&"original", &"orange", &"white", &"red"]
+	var expected_frames: Dictionary = {&"idle": 4, &"walk": 8, &"jump": 5, &"attack": 5, &"dash": 5}
+	for participant_index in 4:
+		var player := PLAYER_SCENE.instantiate() as CharacterBody2D
+		player.set("participant_id", StringName("player_%d" % (participant_index + 1)))
+		root.add_child(player)
+		await process_frame
+		var visual := player.get_node("JhonIdleVisual") as AnimatedSprite2D
+		assert(StringName(visual.get("_active_variant")) == expected_variants[participant_index])
+		assert(visual.scale.is_equal_approx(Vector2(1.333333, 1.333333)))
+		assert(visual.position.is_equal_approx(Vector2(0.0, -31.666655)))
+		assert(visual.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST)
+		for animation_value: Variant in expected_frames:
+			var animation_name: StringName = StringName(animation_value)
+			assert(visual.sprite_frames.has_animation(animation_name))
+			assert(visual.sprite_frames.get_frame_count(animation_name) == int(expected_frames[animation_name]))
+		player.free()

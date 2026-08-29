@@ -596,7 +596,7 @@ func _spawn_required_content(rng: RandomNumberGenerator, run_manager: Node) -> v
 	_spawn_attribute_reward(0, _exit_module_indices[0], stage_prefix)
 	_spawn_attribute_reward(1, _exit_module_indices[1], stage_prefix)
 	_spawn_loot(rng, run_manager, stage_prefix)
-	_spawn_weapon_pickups(rng, stage_prefix)
+	_spawn_weapon_pickups(rng, run_manager, stage_prefix)
 	_spawn_enemies(rng, run_manager, stage_prefix)
 
 
@@ -782,7 +782,7 @@ func _trap_event_markers_for_loot(loot_marker: Marker2D) -> Array[Marker2D]:
 	return result.slice(0, mini(result.size(), 3))
 
 
-func _spawn_weapon_pickups(rng: RandomNumberGenerator, stage_prefix: String) -> void:
+func _spawn_weapon_pickups(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: String) -> void:
 	if rng.randf() > SPECIAL_WEAPON_DROP_CHANCE:
 		return
 	var candidates: Array = _sockets.loot.filter(func(marker: Marker2D) -> bool:
@@ -796,7 +796,6 @@ func _spawn_weapon_pickups(rng: RandomNumberGenerator, stage_prefix: String) -> 
 	var pickup := WEAPON_PICKUP_SCRIPT.new() as WeaponPickup
 	pickup.pickup_id = StringName("%s_weapon_01" % stage_prefix)
 	var weapon_pool: Array[StringName] = [&"breaker_maul", &"arc_emitter"]
-	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var configured_pool: Array = []
 	if run_manager != null:
 		configured_pool = run_manager.get("run_weapon_pool") as Array

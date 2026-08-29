@@ -67,8 +67,8 @@ func _generate_report(test_seed: int, stage: int, difficulty: StringName) -> Dic
 	manager.stage_index = stage
 	manager.current_stage_id = StringName("lower_city_stage_%02d" % stage)
 	var biome := BIOME_SCENE.instantiate()
-	root.add_child(biome)
 	assert(biome.generate(manager.get_stage_seed(), manager))
+	root.add_child(biome)
 	var report: Dictionary = biome.get_generation_report().duplicate(true)
 	for enemy_value: Variant in get_nodes_in_group(&"enemy"):
 		var enemy := enemy_value as Node
