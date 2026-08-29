@@ -25,6 +25,8 @@ const SPAWN_EDGE_CLEARANCE := 72.0
 const TRAP_CHEST_CHANCE := 0.12
 const VERTICAL_SHAFT_INNER_WIDTH := 136.0
 const VERTICAL_SHAFT_WALL_THICKNESS := 18.0
+const MINIMUM_TRAVERSAL_CLEARANCE := 112.0
+const MINIMUM_STACKED_PASSAGE_OVERLAP := 32.0
 
 @export var biome_definition: BiomeDefinition
 
@@ -41,6 +43,8 @@ var spawned_heavy_count := 0
 var spawned_trap_chest_count := 0
 var rejected_layout_count := 0
 var rejected_micro_ledge_count := 0
+var invalid_platform_clearance_count := 0
+var minimum_platform_clearance: float = INF
 var _start_position := Vector2.ZERO
 var _nodes: Array[Dictionary] = []
 var _sockets := {"enemy": [], "loot": [], "attribute": [], "exit": []}
@@ -143,6 +147,8 @@ func get_generation_report() -> Dictionary:
 		"rejected_layout_count": rejected_layout_count,
 		"micro_ledge_count": 0,
 		"rejected_micro_ledge_count": rejected_micro_ledge_count,
+		"invalid_platform_clearance_count": invalid_platform_clearance_count,
+		"minimum_platform_clearance": 0.0 if is_inf(minimum_platform_clearance) else minimum_platform_clearance,
 		"signature": generation_signature,
 	}
 
@@ -371,6 +377,8 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	spawned_heavy_count = 0
 	spawned_trap_chest_count = 0
 	rejected_micro_ledge_count = 0
+	invalid_platform_clearance_count = 0
+	minimum_platform_clearance = INF
 	_trap_event_ids.clear()
 	_heavy_enemy_ids.clear()
 	_reserved_event_marker_ids.clear()
@@ -430,7 +438,12 @@ func _build_module(parent: Node2D, index: int) -> void:
 	if has_purposeful_platforms:
 		for platform_rect in definition.platform_rects:
 			if _platform_is_functional(definition, platform_rect, has_vertical_route or has_internal_routes):
-				_add_static_rect(module, _scale_source_rect(platform_rect), Color(0.09, 0.23, 0.28, 1.0), true)
+				var scaled_platform: Rect2 = _scaled_platform_rect(platform_rect, definition)
+				var clearance: float = _platform_clearance_below(scaled_platform, platform_rect, definition)
+				minimum_platform_clearance = minf(minimum_platform_clearance, clearance)
+				if clearance + 0.01 < MINIMUM_TRAVERSAL_CLEARANCE:
+					invalid_platform_clearance_count += 1
+				_add_static_rect(module, scaled_platform, Color(0.09, 0.23, 0.28, 1.0), true)
 	_create_module_sockets(module, definition, index)
 	if biome_definition.debug_draw_modules:
 		var label := Label.new()
@@ -523,10 +536,11 @@ func _platform_is_functional(definition: BiomeModuleDefinition, platform_rect: R
 
 
 func _create_socket_type(module: Node2D, positions: Array[Vector2], socket_type: StringName, module_index: int) -> void:
+	var definition := _nodes[module_index].definition as BiomeModuleDefinition
 	for socket_index in positions.size():
 		var marker := Marker2D.new()
 		marker.name = "%s_%02d_%02d" % [socket_type, module_index, socket_index]
-		marker.position = _scale_source_position(positions[socket_index])
+		marker.position = _scaled_socket_position(positions[socket_index], definition)
 		marker.add_to_group(StringName("%s_spawn_point" % socket_type))
 		marker.set_meta("module_index", module_index)
 		module.add_child(marker)
@@ -975,7 +989,7 @@ func _is_valid_spawn_socket(marker: Marker2D, half_width: float) -> bool:
 	for source_rect in definition.platform_rects:
 		if not _platform_is_functional(definition, source_rect, _nodes[module_index].required_connectors.has(&"up") or _nodes[module_index].required_connectors.has(&"down") or definition.route_style in ["upper_lower", "lower_upper"]):
 			continue
-		var platform := _scale_source_rect(source_rect)
+		var platform := _scaled_platform_rect(source_rect, definition)
 		if local_position.x >= platform.position.x + half_width and local_position.x <= platform.end.x - half_width and absf(local_position.y - platform.position.y) <= 58.0:
 			supported = true
 			break
@@ -1109,6 +1123,55 @@ func _scale_source_position(value: Vector2) -> Vector2:
 func _scale_source_rect(value: Rect2) -> Rect2:
 	var scale_factor := CELL_SIZE / SOURCE_MODULE_SIZE
 	return Rect2(value.position * scale_factor, value.size * scale_factor)
+
+
+func _scaled_platform_rect(source_rect: Rect2, definition: BiomeModuleDefinition) -> Rect2:
+	var result: Rect2 = _scale_source_rect(source_rect)
+	var maximum_bottom: float = FLOOR_TOP - MINIMUM_TRAVERSAL_CLEARANCE
+	if definition != null:
+		for lower_source: Rect2 in definition.platform_rects:
+			if lower_source.position.y <= source_rect.position.y or not _source_rects_overlap_horizontally(source_rect, lower_source):
+				continue
+			var lower_platform: Rect2 = _scaled_platform_rect(lower_source, definition)
+			maximum_bottom = minf(maximum_bottom, lower_platform.position.y - MINIMUM_TRAVERSAL_CLEARANCE)
+	if result.end.y > maximum_bottom:
+		result.position.y -= result.end.y - maximum_bottom
+	return result
+
+
+func _platform_clearance_below(platform: Rect2, source_rect: Rect2, definition: BiomeModuleDefinition) -> float:
+	var lower_surface: float = FLOOR_TOP
+	if definition != null:
+		for lower_source: Rect2 in definition.platform_rects:
+			if lower_source.position.y <= source_rect.position.y or not _source_rects_overlap_horizontally(source_rect, lower_source):
+				continue
+			var lower_platform: Rect2 = _scaled_platform_rect(lower_source, definition)
+			lower_surface = minf(lower_surface, lower_platform.position.y)
+	return lower_surface - platform.end.y
+
+
+func _source_rects_overlap_horizontally(first: Rect2, second: Rect2) -> bool:
+	return minf(first.end.x, second.end.x) - maxf(first.position.x, second.position.x) >= MINIMUM_STACKED_PASSAGE_OVERLAP
+
+
+func _scaled_socket_position(source_position: Vector2, definition: BiomeModuleDefinition) -> Vector2:
+	var result: Vector2 = _scale_source_position(source_position)
+	if definition == null:
+		return result
+	var closest_distance: float = INF
+	var platform_shift: float = 0.0
+	for source_rect: Rect2 in definition.platform_rects:
+		if source_position.x < source_rect.position.x or source_position.x > source_rect.end.x:
+			continue
+		var vertical_distance: float = source_position.y - source_rect.position.y
+		if vertical_distance < -90.0 or vertical_distance > 40.0 or absf(vertical_distance) >= closest_distance:
+			continue
+		var scaled_original: Rect2 = _scale_source_rect(source_rect)
+		var scaled_adjusted: Rect2 = _scaled_platform_rect(source_rect, definition)
+		closest_distance = absf(vertical_distance)
+		platform_shift = scaled_adjusted.position.y - scaled_original.position.y
+	result.y += platform_shift
+	return result
 
 
 func _on_kill_zone_body_entered(body: Node2D) -> void:

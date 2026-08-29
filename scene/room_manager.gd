@@ -39,6 +39,7 @@ var generated_biome_bounds := Rect2()
 var fast_travel_vote_origin: StringName
 var fast_travel_vote_destination: StringName
 var fast_travel_confirmations: Dictionary = {}
+var pending_lan_run_config: Dictionary = {}
 
 
 func _ready() -> void:
@@ -176,25 +177,23 @@ func start_configured_run(mode: StringName, difficulty: StringName, joypad_devic
 	is_transitioning = false
 
 
-func start_lan_run(config: Dictionary, host_authority: bool) -> void:
+func enter_lan_hub(config: Dictionary, host_authority: bool) -> void:
 	if is_transitioning:
 		return
 	is_transitioning = true
 	await _fade_to(1.0)
 	var network_difficulty := StringName(config.get("difficulty", "normal"))
-	var network_seed := int(config.get("seed", 0))
 	var network_player_count := clampi(int(config.get("player_count", 2)), 1, LanSession.MAX_PLAYERS)
 	run_manager.configure_run(&"lan", network_difficulty, -1, network_player_count)
 	run_manager.configure_run_weapon_pool(config.get("weapon_pool", []) as Array)
-	run_manager.prepare_new_run(network_seed, true)
+	run_manager.prepare_hub()
+	pending_lan_run_config = config.duplicate(true)
 	_create_network_players(network_player_count)
 	for candidate in get_players():
-		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_lower_city_biome(network_seed):
+	if not _load_laboratory_hub():
 		await _clear_run_and_show_menu()
 		return
-	run_manager.activate_run()
 	mode_selected = true
 	mode_select.visible = false
 	lan_lobby.close_for_run()
@@ -250,25 +249,65 @@ func _configure_client_player_prediction() -> void:
 func request_start_run_from_hub(portal: Area2D, interactor: Node2D) -> void:
 	if is_transitioning or not can_start_run_from_hub(portal, interactor):
 		return
+	if lan_session.is_client():
+		return
+	var run_seed := 0
+	var preserve_weapon_pool := false
+	if lan_session.is_host():
+		var config: Dictionary = pending_lan_run_config.duplicate(true)
+		run_seed = randi()
+		config["protocol"] = LanSession.PROTOCOL_VERSION
+		config["seed"] = run_seed
+		config["difficulty"] = String(run_manager.difficulty)
+		config["player_count"] = get_players().size()
+		var serialized_weapon_pool: Array[String] = []
+		for weapon_id: StringName in run_manager.run_weapon_pool:
+			serialized_weapon_pool.append(String(weapon_id))
+		config["weapon_pool"] = serialized_weapon_pool
+		pending_lan_run_config = config.duplicate(true)
+		preserve_weapon_pool = true
+		lan_session.broadcast_run_start(config)
+	await _begin_run_from_hub(run_seed, preserve_weapon_pool)
+
+
+func apply_lan_run_start(config: Dictionary) -> void:
+	if not lan_session.is_client() or is_transitioning or not current_is_hub or run_manager.run_active:
+		return
+	pending_lan_run_config = config.duplicate(true)
+	var network_difficulty := StringName(config.get("difficulty", "normal"))
+	var network_player_count := clampi(int(config.get("player_count", get_players().size())), 1, LanSession.MAX_PLAYERS)
+	run_manager.configure_run(&"lan", network_difficulty, -1, network_player_count)
+	run_manager.configure_run_weapon_pool(config.get("weapon_pool", []) as Array)
+	await _begin_run_from_hub(int(config.get("seed", 0)), true)
+
+
+func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) -> void:
 	is_transitioning = true
 	coop_waiting_changed.emit(false)
 	_set_all_player_input(false)
 	await _fade_to(1.0)
-	run_manager.prepare_new_run()
+	run_manager.prepare_new_run(run_seed, preserve_weapon_pool)
 	for candidate in get_players():
 		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_lower_city_biome():
+	if not _load_lower_city_biome(run_seed):
 		run_manager.prepare_hub()
 		_load_laboratory_hub()
 		await _fade_to(0.0)
-		_set_all_player_input(true)
+		if lan_session.is_client():
+			_configure_client_player_prediction()
+		else:
+			_set_all_player_input(true)
 		is_transitioning = false
 		return
 	run_manager.activate_run()
+	if lan_session.is_client():
+		_configure_client_player_prediction()
+		_set_client_world_passive()
 	await get_tree().process_frame
 	await _fade_to(0.0)
-	_set_all_player_input(true)
+	if not lan_session.is_client():
+		_set_all_player_input(true)
 	is_transitioning = false
 
 

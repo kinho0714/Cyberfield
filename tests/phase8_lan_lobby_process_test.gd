@@ -13,6 +13,8 @@ var run_requested := false
 var run_started_at_msec := 0
 var routed_participant_index := 2
 var last_route_at_msec := 0
+var hub_seen := false
+var portal_positioned := false
 
 
 func _initialize() -> void:
@@ -64,8 +66,24 @@ func _test_host_flow() -> void:
 	if player_count == LanSession.MAX_PLAYERS and not run_requested:
 		run_requested = true
 		_touch(lobby.get_node("Overlay/Center/HostPage/Start") as Control)
-	if not run_requested or not bool(manager.mode_selected) or not manager.run_manager.run_active:
+	if not run_requested or not bool(manager.mode_selected):
 		return
+	if not manager.run_manager.run_active:
+		assert(manager.current_is_hub)
+		hub_seen = true
+		var portal := manager.current_room.get_node_or_null("Gameplay/RunPortal") as Area2D
+		assert(portal != null)
+		if not portal_positioned:
+			for player: Node in manager.get_players():
+				(player as Node2D).global_position = portal.global_position
+				(player as CharacterBody2D).velocity = Vector2.ZERO
+			portal_positioned = true
+			return
+		var host_player := manager._find_player(&"player_1") as Node2D
+		if manager.can_start_run_from_hub(portal, host_player):
+			portal.interact(host_player)
+		return
+	assert(hub_seen)
 	if run_started_at_msec == 0:
 		run_started_at_msec = Time.get_ticks_msec()
 		return
@@ -94,7 +112,11 @@ func _test_host_flow() -> void:
 func _test_client_flow() -> void:
 	if session.is_client() and (lobby.get("host_page") as Control).visible:
 		assert((lobby.get_node("Overlay/Center/HostPage/Difficulty") as OptionButton).disabled)
+	if bool(manager.mode_selected) and not manager.run_manager.run_active:
+		assert(manager.current_is_hub)
+		hub_seen = true
 	if bool(manager.mode_selected) and manager.run_manager.run_active:
+		assert(hub_seen)
 		assert(session.get_local_participant_id() != &"player_1")
 		var full_map := get_first_node_in_group("full_map") as Control
 		if full_map != null and full_map.visible:

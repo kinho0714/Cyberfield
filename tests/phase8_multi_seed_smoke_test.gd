@@ -11,7 +11,7 @@ func _initialize() -> void:
 		var totals := {
 			"enemies": 0, "ranged": 0, "heavy": 0, "traps": 0,
 			"encounters": 0, "invalid": 0, "spawn_failures": 0,
-			"duplicate_events": 0, "micro_ledges": 0,
+			"duplicate_events": 0, "micro_ledges": 0, "invalid_clearances": 0,
 		}
 		for sample in SAMPLES:
 			var test_seed := 880000 + sample * 3571
@@ -29,6 +29,7 @@ func _initialize() -> void:
 			totals.encounters += int(report.combat_module_count)
 			totals.invalid += int(report.invalid_spawn_count)
 			totals.micro_ledges += int(report.micro_ledge_count)
+			totals.invalid_clearances += int(report.invalid_platform_clearance_count)
 			var unique_events: Dictionary = {}
 			for event_id_value: Variant in report.trap_event_ids:
 				var event_id := StringName(event_id_value)
@@ -37,8 +38,11 @@ func _initialize() -> void:
 				unique_events[event_id] = true
 			assert(int(report.invalid_spawn_count) == 0)
 			assert(int(report.micro_ledge_count) == 0)
+			assert(int(report.invalid_platform_clearance_count) == 0)
+			if int(report.auxiliary_platform_count) > 0:
+				assert(float(report.minimum_platform_clearance) + 0.01 >= BiomeGenerator.MINIMUM_TRAVERSAL_CLEARANCE)
 		difficulty_totals[difficulty] = totals.duplicate(true)
-		print("PHASE8_MULTI_SEED %s avg_enemies=%.2f avg_ranged=%.2f avg_heavy=%.2f traps=%d valid_events=%d encounters=%d invalid=%d spawn_failures=%d duplicate_events=%d micro_ledges=%d" % [
+		print("PHASE8_MULTI_SEED %s avg_enemies=%.2f avg_ranged=%.2f avg_heavy=%.2f traps=%d valid_events=%d encounters=%d invalid=%d spawn_failures=%d duplicate_events=%d micro_ledges=%d invalid_clearances=%d" % [
 			difficulty,
 			float(totals.enemies) / SAMPLES,
 			float(totals.ranged) / SAMPLES,
@@ -50,6 +54,7 @@ func _initialize() -> void:
 			totals.spawn_failures,
 			totals.duplicate_events,
 			totals.micro_ledges,
+			totals.invalid_clearances,
 		])
 	assert(int((difficulty_totals[&"inferno_pro"] as Dictionary).heavy) >= int((difficulty_totals[&"pro"] as Dictionary).heavy))
 	assert(int((difficulty_totals[&"pro"] as Dictionary).heavy) >= int((difficulty_totals[&"normal"] as Dictionary).heavy))

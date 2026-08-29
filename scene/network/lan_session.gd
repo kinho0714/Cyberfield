@@ -132,7 +132,6 @@ func start_host_run(difficulty: StringName) -> void:
 	if role != Role.HOST:
 		return
 	stop_discovery()
-	var run_seed := randi()
 	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
 	var serialized_weapon_pool: Array[String] = []
 	if meta != null:
@@ -140,7 +139,7 @@ func start_host_run(difficulty: StringName) -> void:
 			serialized_weapon_pool.append(String(weapon_id))
 	var config := {
 		"protocol": PROTOCOL_VERSION,
-		"seed": run_seed,
+		"seed": 0,
 		"difficulty": String(difficulty),
 		"biome_id": "lower_city",
 		"player_count": get_player_count(),
@@ -150,7 +149,14 @@ func start_host_run(difficulty: StringName) -> void:
 		var peer_config: Dictionary = config.duplicate()
 		peer_config["local_participant_id"] = String(get_participant_for_peer(peer_id))
 		_receive_run_config.rpc_id(peer_id, peer_config)
-	_start_network_run(config)
+	_start_network_hub(config)
+
+
+func broadcast_run_start(config: Dictionary) -> void:
+	if role != Role.HOST:
+		return
+	for peer_id: int in connected_peer_ids:
+		_receive_run_start.rpc_id(peer_id, config)
 
 
 func broadcast_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int) -> void:
@@ -693,7 +699,16 @@ func _receive_run_config(config: Dictionary) -> void:
 		return
 	local_participant_id = StringName(config.get("local_participant_id", local_participant_id))
 	session_player_count = clampi(int(config.get("player_count", 2)), 1, MAX_PLAYERS)
-	_start_network_run(config)
+	_start_network_hub(config)
+
+
+@rpc("authority", "call_remote", "reliable", 0)
+func _receive_run_start(config: Dictionary) -> void:
+	if role != Role.CLIENT or int(config.get("protocol", -1)) != PROTOCOL_VERSION:
+		return
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	if room_manager != null:
+		room_manager.apply_lan_run_start(config)
 
 
 @rpc("authority", "call_remote", "reliable", 0)
@@ -934,10 +949,10 @@ func _open_meta_terminal() -> void:
 		ui.open_terminal(player)
 
 
-func _start_network_run(config: Dictionary) -> void:
+func _start_network_hub(config: Dictionary) -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
-		room_manager.start_lan_run(config, role == Role.HOST)
+		room_manager.enter_lan_hub(config, role == Role.HOST)
 
 
 func _on_peer_connected(peer_id: int) -> void:

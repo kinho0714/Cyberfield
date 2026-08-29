@@ -29,6 +29,20 @@ func _run() -> void:
 	lan._release_remote_player_inputs(&"player_3")
 	assert(not Input.is_action_pressed(&"p3_left") and not Input.is_action_pressed(&"p3_jump"))
 
+	var hub_config := {
+		"protocol": LanSession.PROTOCOL_VERSION,
+		"difficulty": "normal",
+		"player_count": 1,
+		"weapon_pool": [],
+	}
+	await manager.enter_lan_hub(hub_config, true)
+	assert(manager.mode_selected)
+	assert(manager.current_is_hub)
+	assert(not manager.run_manager.run_active)
+	assert(manager.get_players().size() == 1)
+	assert(manager.get_players()[0].participant_id == &"player_1")
+	assert(manager.current_room.name == "LaboratoryHub")
+
 	for player_count in range(1, LanSession.MAX_PLAYERS + 1):
 		manager._create_network_players(player_count)
 		await process_frame
@@ -38,6 +52,21 @@ func _run() -> void:
 		assert(manager.run_manager.player_count == player_count)
 		for index in player_count:
 			assert(players[index].participant_id == StringName("player_%d" % (index + 1)))
+
+	hub_config["player_count"] = LanSession.MAX_PLAYERS
+	await manager.enter_lan_hub(hub_config, true)
+	assert(manager.current_is_hub and not manager.run_manager.run_active)
+	assert(manager.get_players().size() == LanSession.MAX_PLAYERS)
+	var expected_variants: Array[StringName] = [&"original", &"orange", &"white", &"red"]
+	for index in LanSession.MAX_PLAYERS:
+		assert(manager.get_players()[index].participant_id == StringName("player_%d" % (index + 1)))
+		var visual := manager.get_players()[index].get_node("JhonIdleVisual") as AnimatedSprite2D
+		assert(StringName(visual.get("_active_variant")) == expected_variants[index])
+
+	await manager._begin_run_from_hub(975310, true)
+	assert(manager.run_manager.run_active and manager.current_is_generated_biome)
+	await manager._return_to_laboratory_local()
+	assert(manager.current_is_hub and not manager.run_manager.run_active)
 
 	lan.local_participant_id = &"player_4"
 	manager._configure_client_player_prediction()
