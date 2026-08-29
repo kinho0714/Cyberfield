@@ -88,13 +88,13 @@ func _test_ui_and_visual_contracts() -> void:
 
 func _test_player_color_variants() -> void:
 	var expected_variants: Array[StringName] = [&"original", &"orange", &"white", &"red"]
-	var expected_frames: Dictionary = {&"idle": 4, &"walk": 8, &"jump": 5, &"attack": 5, &"dash": 5}
+	var expected_frames: Dictionary = {&"idle": 4, &"walk": 8, &"jump": 5, &"attack": 5, &"dash": 5, &"fall": 6, &"wall_slide": 6}
 	for participant_index in 4:
 		var player := PLAYER_SCENE.instantiate() as CharacterBody2D
 		player.set("participant_id", StringName("player_%d" % (participant_index + 1)))
 		root.add_child(player)
 		await process_frame
-		var visual := player.get_node("JhonIdleVisual") as AnimatedSprite2D
+		var visual := player.get_node("JhonIdleVisual") as JhonIdleVisual
 		assert(StringName(visual.get("_active_variant")) == expected_variants[participant_index])
 		assert(visual.scale.is_equal_approx(Vector2(1.333333, 1.333333)))
 		assert(visual.position.is_equal_approx(Vector2(0.0, -31.666655)))
@@ -103,4 +103,15 @@ func _test_player_color_variants() -> void:
 			var animation_name: StringName = StringName(animation_value)
 			assert(visual.sprite_frames.has_animation(animation_name))
 			assert(visual.sprite_frames.get_frame_count(animation_name) == int(expected_frames[animation_name]))
+		assert(not visual.sprite_frames.get_animation_loop(&"fall"))
+		assert(visual.sprite_frames.get_animation_loop(&"wall_slide"))
+		var state_source := player.get_node("AnimatedSprite2D") as AnimatedSprite2D
+		state_source.animation = &"jump"
+		player.velocity = Vector2(0.0, -180.0)
+		visual._update_presentation()
+		assert(visual.visible and visual.animation == &"jump")
+		player.velocity.y = 180.0
+		visual._update_presentation()
+		assert(visual.visible and visual.animation == &"fall")
+		assert(not visual._is_wall_slide_visual_state(player))
 		player.free()
