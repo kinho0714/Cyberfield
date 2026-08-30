@@ -1,0 +1,298 @@
+{
+  "source_size": [
+    1536,
+    1024
+  ],
+  "format": "PNG RGBA",
+  "filtering": "nearest recommended in Godot",
+  "purpose": "Cyberfield Laboratory Hub modular structural kit",
+  "notes": "Crops preserve the approved generated appearance. Transparent pixels with alpha < 8 were normalized to alpha 0. No resampling was applied.",
+  "assets": {
+    "lab_catwalk_long_a.png": {
+      "size": [
+        254,
+        52
+      ],
+      "source_box": [
+        8,
+        6,
+        262,
+        58
+      ],
+      "mode": "RGBA"
+    },
+    "lab_catwalk_long_b.png": {
+      "size": [
+        216,
+        52
+      ],
+      "source_box": [
+        273,
+        6,
+        489,
+        58
+      ],
+      "mode": "RGBA"
+    },
+    "lab_catwalk_long_c.png": {
+      "size": [
+        218,
+        52
+      ],
+      "source_box": [
+        500,
+        6,
+        718,
+        58
+      ],
+      "mode": "RGBA"
+    },
+    "lab_wall_panel_a.png": {
+      "size": [
+        194,
+        162
+      ],
+      "source_box": [
+        8,
+        68,
+        202,
+        230
+      ],
+      "mode": "RGBA"
+    },
+    "lab_wall_fans.png": {
+      "size": [
+        140,
+        162
+      ],
+      "source_box": [
+        207,
+        68,
+        347,
+        230
+      ],
+      "mode": "RGBA"
+    },
+    "lab_wall_panel_b.png": {
+      "size": [
+        95,
+        162
+      ],
+      "source_box": [
+        352,
+        68,
+        447,
+        230
+      ],
+      "mode": "RGBA"
+    },
+    "lab_floor_large_a.png": {
+      "size": [
+        301,
+        90
+      ],
+      "source_box": [
+        458,
+        68,
+        759,
+        158
+      ],
+      "mode": "RGBA"
+    },
+    "lab_floor_large_b.png": {
+      "size": [
+        172,
+        90
+      ],
+      "source_box": [
+        768,
+        68,
+        940,
+        158
+      ],
+      "mode": "RGBA"
+    },
+    "lab_platform_a.png": {
+      "size": [
+        216,
+        55
+      ],
+      "source_box": [
+        532,
+        277,
+        748,
+        332
+      ],
+      "mode": "RGBA"
+    },
+    "lab_platform_b.png": {
+      "size": [
+        158,
+        55
+      ],
+      "source_box": [
+        756,
+        277,
+        914,
+        332
+      ],
+      "mode": "RGBA"
+    },
+    "lab_railings.png": {
+      "size": [
+        370,
+        105
+      ],
+      "source_box": [
+        510,
+        342,
+        880,
+        447
+      ],
+      "mode": "RGBA"
+    },
+    "lab_stairs.png": {
+      "size": [
+        186,
+        208
+      ],
+      "source_box": [
+        872,
+        366,
+        1058,
+        574
+      ],
+      "mode": "RGBA"
+    },
+    "lab_ladder.png": {
+      "size": [
+        43,
+        164
+      ],
+      "source_box": [
+        995,
+        286,
+        1038,
+        450
+      ],
+      "mode": "RGBA"
+    },
+    "lab_supports.png": {
+      "size": [
+        387,
+        130
+      ],
+      "source_box": [
+        505,
+        445,
+        892,
+        575
+      ],
+      "mode": "RGBA"
+    },
+    "lab_vertical_beams.png": {
+      "size": [
+        210,
+        560
+      ],
+      "source_box": [
+        930,
+        40,
+        1140,
+        600
+      ],
+      "mode": "RGBA"
+    },
+    "lab_pipes_red.png": {
+      "size": [
+        285,
+        342
+      ],
+      "source_box": [
+        1170,
+        8,
+        1455,
+        350
+      ],
+      "mode": "RGBA"
+    },
+    "lab_cables.png": {
+      "size": [
+        383,
+        304
+      ],
+      "source_box": [
+        1135,
+        400,
+        1518,
+        704
+      ],
+      "mode": "RGBA"
+    },
+    "lab_neon_lights.png": {
+      "size": [
+        475,
+        150
+      ],
+      "source_box": [
+        535,
+        640,
+        1010,
+        790
+      ],
+      "mode": "RGBA"
+    },
+    "lab_door_a.png": {
+      "size": [
+        214,
+        166
+      ],
+      "source_box": [
+        7,
+        600,
+        221,
+        766
+      ],
+      "mode": "RGBA"
+    },
+    "lab_windows.png": {
+      "size": [
+        337,
+        150
+      ],
+      "source_box": [
+        7,
+        422,
+        344,
+        572
+      ],
+      "mode": "RGBA"
+    },
+    "lab_vents_panels.png": {
+      "size": [
+        483,
+        238
+      ],
+      "source_box": [
+        7,
+        772,
+        490,
+        1010
+      ],
+      "mode": "RGBA"
+    },
+    "Cyberfield_Lab_Structural_Atlas_v1.png": {
+      "size": [
+        1536,
+        1024
+      ],
+      "source_box": [
+        0,
+        0,
+        1536,
+        1024
+      ],
+      "mode": "RGBA"
+    }
+  }
+}
