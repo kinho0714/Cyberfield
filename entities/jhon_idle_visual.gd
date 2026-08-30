@@ -6,6 +6,7 @@ const DASH_FRAME_COUNT := 5
 const ORIGINAL_ADDITIONAL_SHEETS: Dictionary = {
 	&"fall": preload("res://assets/characters/jhon/variants/jhon_a_fall_72_v1.png"),
 	&"wall_slide": preload("res://assets/characters/jhon/variants/jhon_a_wall_slide_72_v1.png"),
+	&"wall_climb": preload("res://assets/characters/jhon/variants/jhon_a_wall_climb_72_v1.png"),
 }
 const VARIANT_SHEETS: Dictionary = {
 	&"orange": {
@@ -16,6 +17,7 @@ const VARIANT_SHEETS: Dictionary = {
 		&"dash": preload("res://assets/characters/jhon/variants/jhon_orange_dash_72_v1.png"),
 		&"fall": preload("res://assets/characters/jhon/variants/jhon_orange_fall_72_v1.png"),
 		&"wall_slide": preload("res://assets/characters/jhon/variants/jhon_orange_wall_slide_72_v1.png"),
+		&"wall_climb": preload("res://assets/characters/jhon/variants/jhon_orange_wall_climb_72_v1.png"),
 	},
 	&"white": {
 		&"idle": preload("res://assets/characters/jhon/variants/jhon_white_idle_72_v1.png"),
@@ -25,6 +27,7 @@ const VARIANT_SHEETS: Dictionary = {
 		&"dash": preload("res://assets/characters/jhon/variants/jhon_white_dash_72_v1.png"),
 		&"fall": preload("res://assets/characters/jhon/variants/jhon_white_fall_72_v1.png"),
 		&"wall_slide": preload("res://assets/characters/jhon/variants/jhon_white_wall_slide_72_v1.png"),
+		&"wall_climb": preload("res://assets/characters/jhon/variants/jhon_white_wall_climb_72_v1.png"),
 	},
 	&"red": {
 		&"idle": preload("res://assets/characters/jhon/variants/jhon_red_idle_72_v1.png"),
@@ -34,6 +37,7 @@ const VARIANT_SHEETS: Dictionary = {
 		&"dash": preload("res://assets/characters/jhon/variants/jhon_red_dash_72_v1.png"),
 		&"fall": preload("res://assets/characters/jhon/variants/jhon_red_fall_72_v1.png"),
 		&"wall_slide": preload("res://assets/characters/jhon/variants/jhon_red_wall_slide_72_v1.png"),
+		&"wall_climb": preload("res://assets/characters/jhon/variants/jhon_red_wall_climb_72_v1.png"),
 	},
 }
 
@@ -54,6 +58,7 @@ func _ready() -> void:
 	_original_sprite_frames = sprite_frames.duplicate(true) as SpriteFrames
 	_add_sheet_animation(_original_sprite_frames, &"fall", ORIGINAL_ADDITIONAL_SHEETS.get(&"fall") as Texture2D, 6, 8.0, false)
 	_add_sheet_animation(_original_sprite_frames, &"wall_slide", ORIGINAL_ADDITIONAL_SHEETS.get(&"wall_slide") as Texture2D, 6, 8.0, true)
+	_add_sheet_animation(_original_sprite_frames, &"wall_climb", ORIGINAL_ADDITIONAL_SHEETS.get(&"wall_climb") as Texture2D, 6, 8.0, true)
 	sprite_frames = _original_sprite_frames
 	_update_presentation()
 
@@ -74,6 +79,7 @@ func _update_presentation() -> void:
 		float(player.get("dash_timer")) > 0.0
 		or absf(player.velocity.x) >= 500.0
 	)
+	var wall_climb_active: bool = _is_wall_climb_visual_state(player)
 	var wall_slide_active: bool = _is_wall_slide_visual_state(player)
 	var fallback_only: bool = (
 		bool(player.get("is_ground_slamming"))
@@ -88,6 +94,8 @@ func _update_presentation() -> void:
 			presentation_animation = &"dash"
 		elif melee_attack:
 			presentation_animation = &"attack"
+		elif wall_climb_active:
+			presentation_animation = &"wall_climb"
 		elif wall_slide_active:
 			presentation_animation = &"wall_slide"
 		elif _state_source.animation == &"idle" and absf(player.velocity.x) < 1.0:
@@ -168,6 +176,7 @@ func _build_variant_frames(sheets: Dictionary) -> SpriteFrames:
 	_add_sheet_animation(result, &"dash", sheets.get(&"dash") as Texture2D, 5, 33.333333, false)
 	_add_sheet_animation(result, &"fall", sheets.get(&"fall") as Texture2D, 6, 8.0, false)
 	_add_sheet_animation(result, &"wall_slide", sheets.get(&"wall_slide") as Texture2D, 6, 8.0, true)
+	_add_sheet_animation(result, &"wall_climb", sheets.get(&"wall_climb") as Texture2D, 6, 8.0, true)
 	return result
 
 
@@ -216,9 +225,19 @@ func _can_show_fall(player: CharacterBody2D) -> bool:
 	return not player.is_on_floor() and not _is_wall_slide_visual_state(player) and player.velocity.y > 60.0
 
 
+func _is_wall_climb_visual_state(player: CharacterBody2D) -> bool:
+	var wall_transfer_timer: float = float(player.get("wall_transfer_assist_timer"))
+	return (
+		not player.is_on_floor()
+		and player.is_on_wall()
+		and wall_transfer_timer <= 0.0
+		and is_equal_approx(player.velocity.y, -80.0)
+	)
+
+
 func _is_wall_slide_visual_state(player: CharacterBody2D) -> bool:
 	var wall_transfer_timer: float = float(player.get("wall_transfer_assist_timer"))
-	return not player.is_on_floor() and player.is_on_wall() and wall_transfer_timer <= 0.0
+	return not player.is_on_floor() and player.is_on_wall() and wall_transfer_timer <= 0.0 and not _is_wall_climb_visual_state(player)
 
 
 func _apply_wall_facing(player: CharacterBody2D) -> void:
