@@ -1,4 +1,7 @@
-[gd_scene load_steps=18 format=3 uid="uid://b3x4ydn1pkenx"]
+[gd_scene load_steps=20 format=3 uid="uid://b3x4ydn1pkenx"]
+
+[ext_resource type="Texture2D" path="res://assets/Cyberfield_MainMenu_Background_1280x720.png" id="menu_bg"]
+[ext_resource type="Script" path="res://scene/main_menu_alive.gd" id="menu_alive"]
 
 [ext_resource type="Script" path="res://scene/room_manager.gd" id="1_manager"]
 [ext_resource type="Script" path="res://scene/run_manager.gd" id="3_run"]
@@ -100,7 +103,29 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.01, 0.02, 0.05, 1)
+color = Color(0, 0, 0, 1)
+
+[node name="Background" type="TextureRect" parent="ModeSelect/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("menu_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Shade" type="ColorRect" parent="ModeSelect/Overlay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0.01, 0.025, 0.16)
 
 [node name="Center" type="CenterContainer" parent="ModeSelect/Overlay"]
 layout_mode = 1
@@ -112,28 +137,39 @@ grow_vertical = 2
 
 [node name="MainPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/MainPage"]
+visible = false
 layout_mode = 2
 text = "CYBERFIELD"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 52
 
 [node name="Play" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(360, 72)
 layout_mode = 2
 text = "JOGAR"
 
+[node name="Options" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(360, 64)
+layout_mode = 2
+text = "OPÇÕES"
+disabled = true
+tooltip_text = "Em breve"
+
 [node name="Quit" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(360, 64)
 layout_mode = 2
 text = "SAIR"
 
 [node name="PlayersPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
 visible = false
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/PlayersPage"]
 layout_mode = 2
@@ -165,8 +201,10 @@ text = "VOLTAR"
 
 [node name="DifficultyPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
 visible = false
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/DifficultyPage"]
 layout_mode = 2
@@ -201,8 +239,10 @@ text = "VOLTAR"
 
 [node name="ConfirmPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
 visible = false
+custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
 layout_mode = 2
