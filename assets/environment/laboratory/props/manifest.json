@@ -1,0 +1,75 @@
+{
+  "kit": "Cyberfield Laboratory Props Kit v1",
+  "source": "a_clean_png_sprite_sheet_game_art_asset_sheet_on.png",
+  "source_size": [
+    1536,
+    1024
+  ],
+  "source_mode": "RGBA",
+  "note": "Generated source contains RGBA but its visible dark backdrop is baked into RGB/alpha; these grouped source sheets preserve the approved artwork without destructive background removal. They are intended as source/reference crops, not falsely labeled transparent isolated props.",
+  "groups": [
+    {
+      "file": "lab_props_workshop_benches_v1.png",
+      "crop_xyxy": [
+        20,
+        20,
+        880,
+        225
+      ]
+    },
+    {
+      "file": "lab_props_servers_lockers_v1.png",
+      "crop_xyxy": [
+        875,
+        15,
+        1515,
+        350
+      ]
+    },
+    {
+      "file": "lab_props_tanks_machines_v1.png",
+      "crop_xyxy": [
+        20,
+        215,
+        965,
+        515
+      ]
+    },
+    {
+      "file": "lab_props_utility_furniture_v1.png",
+      "crop_xyxy": [
+        20,
+        500,
+        1515,
+        715
+      ]
+    },
+    {
+      "file": "lab_props_crates_industrial_v1.png",
+      "crop_xyxy": [
+        15,
+        690,
+        900,
+        845
+      ]
+    },
+    {
+      "file": "lab_props_pipes_cables_lights_v1.png",
+      "crop_xyxy": [
+        850,
+        690,
+        1525,
+        1015
+      ]
+    },
+    {
+      "file": "lab_props_small_clutter_v1.png",
+      "crop_xyxy": [
+        15,
+        805,
+        850,
+        1015
+      ]
+    }
+  ]
+}
