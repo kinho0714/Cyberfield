@@ -71,9 +71,9 @@ func _test_ui_and_visual_contracts() -> void:
 		await process_frame
 		var collision := actor.get_node("CollisionShape2D") as CollisionShape2D
 		assert(collision.shape != null)
-		assert(actor.has_node("TempPixelVisual"))
-		var visual := actor.get_node("TempPixelVisual") as TempPixelVisual
-		assert(visual.z_index == 2)
+		var visual_node_name := "PlayerCharacterVisual" if packed_scene == PLAYER_SCENE else "EnemyCharacterVisual"
+		assert(actor.has_node("TempPixelVisual") and actor.has_node(visual_node_name))
+		var visual := actor.get_node(visual_node_name) as CanvasItem
 		assert(visual.find_children("*", "CollisionObject2D", true, false).is_empty())
 		actor.free()
 	var pickup := WEAPON_PICKUP_SCRIPT.new() as WeaponPickup
@@ -87,31 +87,31 @@ func _test_ui_and_visual_contracts() -> void:
 
 
 func _test_player_color_variants() -> void:
-	var expected_variants: Array[StringName] = [&"original", &"orange", &"white", &"red"]
-	var expected_frames: Dictionary = {&"idle": 4, &"walk": 8, &"jump": 5, &"attack": 5, &"dash": 5, &"fall": 6, &"wall_slide": 6}
+	var expected_characters: Array[StringName] = [&"jhon", &"jackson", &"kai", &"spark"]
+	var expected_frames: Dictionary = {&"idle": 4, &"walk": 6, &"air": 4, &"dash": 4, &"ground_slam": 5, &"hurt": 2, &"downed": 3, &"revive": 5, &"wall_slide": 4, &"wall_climb": 4}
 	for participant_index in 4:
 		var player := PLAYER_SCENE.instantiate() as CharacterBody2D
 		player.set("participant_id", StringName("player_%d" % (participant_index + 1)))
 		root.add_child(player)
 		await process_frame
-		var visual := player.get_node("JhonIdleVisual") as JhonIdleVisual
-		assert(StringName(visual.get("_active_variant")) == expected_variants[participant_index])
-		assert(visual.scale.is_equal_approx(Vector2(1.333333, 1.333333)))
-		assert(visual.position.is_equal_approx(Vector2(0.0, -31.666655)))
+		var visual := player.get_node("PlayerCharacterVisual") as PlayerCharacterVisual
+		assert(StringName(visual.get("_active_character")) == expected_characters[participant_index])
+		assert(visual.scale.is_equal_approx(Vector2(1.5, 1.5)))
+		assert(visual.position.is_equal_approx(Vector2(0.0, -34.5)))
 		assert(visual.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST)
+		expected_frames[&"attack"] = 5 if participant_index == 0 else 6
 		for animation_value: Variant in expected_frames:
 			var animation_name: StringName = StringName(animation_value)
 			assert(visual.sprite_frames.has_animation(animation_name))
 			assert(visual.sprite_frames.get_frame_count(animation_name) == int(expected_frames[animation_name]))
-		assert(not visual.sprite_frames.get_animation_loop(&"fall"))
+		assert(not visual.sprite_frames.get_animation_loop(&"air"))
 		assert(visual.sprite_frames.get_animation_loop(&"wall_slide"))
 		var state_source := player.get_node("AnimatedSprite2D") as AnimatedSprite2D
 		state_source.animation = &"jump"
 		player.velocity = Vector2(0.0, -180.0)
 		visual._update_presentation()
-		assert(visual.visible and visual.animation == &"jump")
+		assert(visual.visible and visual.animation == &"air")
 		player.velocity.y = 180.0
 		visual._update_presentation()
-		assert(visual.visible and visual.animation == &"fall")
-		assert(not visual._is_wall_slide_visual_state(player))
+		assert(visual.visible and visual.animation == &"air")
 		player.free()

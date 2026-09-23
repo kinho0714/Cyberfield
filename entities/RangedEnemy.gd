@@ -135,6 +135,7 @@ func get_network_state() -> Dictionary:
 		"health": health,
 		"max_health": max_health,
 		"state": state,
+		"facing_left": visual.scale.x < 0.0,
 	}
 
 
@@ -147,12 +148,17 @@ func apply_network_state(network_state: Dictionary) -> void:
 	health = int(network_state.get("health", health))
 	max_health = int(network_state.get("max_health", max_health))
 	state = int(network_state.get("state", state))
+	var facing_left := bool(network_state.get("facing_left", visual.scale.x < 0.0))
+	visual.scale.x = -absf(visual.scale.x) if facing_left else absf(visual.scale.x)
 	if health < previous_health:
 		health_bar_visible_timer = 2.5
 	_update_health_label()
 
 
 func _physics_process(delta: float) -> void:
+	if state == State.DEAD:
+		velocity = Vector2.ZERO
+		return
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if (run_manager and not run_manager.run_active) or (room_manager and room_manager.is_transitioning):
@@ -484,16 +490,38 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 
 
 func _die() -> void:
+	if state == State.DEAD:
+		return
 	state = State.DEAD
+	is_attacking = false
+	is_hurt = false
 	velocity = Vector2.ZERO
 	aim_line.visible = false
 	melee_shape_cast.enabled = false
+	health_bar.visible = false
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		if run_manager.has_method("handle_enemy_drop"):
 			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position)
 		run_manager.register_enemy_death(run_room_id, persistent_id)
+	await get_tree().create_timer(0.30).timeout
 	queue_free()
+
+
+func get_visual_state() -> StringName:
+	if state == State.DEAD or health <= 0:
+		return &"death"
+	if state == State.HURT or is_hurt:
+		return &"hurt"
+	if not is_on_floor():
+		return &"air"
+	if state in [State.AIM, State.SHOOT, State.RECOVERY, State.MELEE_WINDUP, State.MELEE_IMPACT, State.MELEE_RECOVERY]:
+		return &"attack"
+	if absf(velocity.x) > 1.0:
+		return &"walk"
+	return &"idle"
 
 
 func _update_health_label() -> void:

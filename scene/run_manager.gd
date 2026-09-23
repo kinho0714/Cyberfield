@@ -57,6 +57,7 @@ var enemy_melee_damage := CombatStats.COMMON_ENEMY_BASE_DAMAGE
 var ranged_melee_damage := CombatStats.RANGED_MELEE_BASE_DAMAGE
 var ranged_projectile_damage := CombatStats.RANGED_PROJECTILE_BASE_DAMAGE
 var heavy_enemy_damage := CombatStats.HEAVY_ENEMY_BASE_DAMAGE
+var heavy_projectile_damage := CombatStats.HEAVY_PROJECTILE_BASE_DAMAGE
 var p2_joypad_device_id := -1
 var p2_joypad_name := ""
 var dirty_money := 0
@@ -590,6 +591,7 @@ func _apply_difficulty_stats() -> void:
 	ranged_melee_damage = CombatStats.scaled_damage(CombatStats.RANGED_MELEE_BASE_DAMAGE, difficulty)
 	ranged_projectile_damage = CombatStats.scaled_damage(CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, difficulty)
 	heavy_enemy_damage = CombatStats.scaled_damage(CombatStats.HEAVY_ENEMY_BASE_DAMAGE, difficulty)
+	heavy_projectile_damage = CombatStats.scaled_damage(CombatStats.HEAVY_PROJECTILE_BASE_DAMAGE, difficulty)
 
 
 func _configure_enemy_stats(enemy: Node) -> void:
@@ -601,10 +603,12 @@ func _configure_enemy_stats(enemy: Node) -> void:
 		var base_health := heavy_enemy_health if heavy else ranged_enemy_health if enemy.is_in_group("ranged_enemy") else enemy_health
 		configured_health = roundi(base_health * CombatStats.ELITE_HP_MULTIPLIER) if elite else base_health
 	enemy.configure_health(configured_health)
-	if enemy.is_in_group("ranged_enemy") and enemy.has_method("configure_damage"):
+	if heavy and enemy.has_method("configure_damage"):
+		enemy.configure_damage(heavy_enemy_damage, heavy_projectile_damage)
+	elif enemy.is_in_group("ranged_enemy") and enemy.has_method("configure_damage"):
 		enemy.configure_damage(ranged_melee_damage, ranged_projectile_damage)
 	elif enemy.has_method("configure_damage"):
-		enemy.configure_damage(heavy_enemy_damage if heavy else enemy_melee_damage)
+		enemy.configure_damage(enemy_melee_damage)
 
 
 func get_trap_event_composition(trap_id: StringName, available_spawns: int) -> Array[StringName]:

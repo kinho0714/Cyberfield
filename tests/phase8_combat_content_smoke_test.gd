@@ -44,6 +44,7 @@ func _test_heavy_stats_and_resistance() -> void:
 	assert(heavy.is_heavy() and not heavy.is_boss())
 	assert(heavy.max_health == CombatStats.scaled_health(CombatStats.HEAVY_ENEMY_BASE_HP, &"pro"))
 	assert(heavy.attack_damage == CombatStats.scaled_damage(CombatStats.HEAVY_ENEMY_BASE_DAMAGE, &"pro"))
+	assert(heavy.projectile_damage == CombatStats.scaled_damage(CombatStats.HEAVY_PROJECTILE_BASE_DAMAGE, &"pro"))
 	assert(heavy.attack_windup >= 0.5 and heavy.attack_recovery >= 0.45)
 	assert(is_equal_approx(heavy.knockback_resistance, CombatStats.HEAVY_KNOCKBACK_RESISTANCE))
 	heavy.take_damage(1, 1.0)
@@ -53,7 +54,7 @@ func _test_heavy_stats_and_resistance() -> void:
 	heavy.persistent_id = &"phase8_heavy_test"
 	heavy.run_room_id = &"initial"
 	heavy.take_damage(heavy.health)
-	await create_timer(0.12).timeout
+	await create_timer(0.32).timeout
 	await process_frame
 	assert(not is_instance_valid(heavy))
 	manager.free()

@@ -2,6 +2,7 @@ class_name LanSession
 extends Node
 
 const NETWORK_PROJECTILE_SCENE := preload("res://entities/ranged_projectile.tscn")
+const NETWORK_HEAVY_PROJECTILE_SCENE := preload("res://entities/heavy_projectile.tscn")
 const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
 
 signal lobby_changed
@@ -46,6 +47,9 @@ var _client_attribute_chest_id: StringName = &""
 var _next_projectile_id := 1
 var _client_projectiles: Dictionary = {}
 var _reported_layout_mismatch := false
+var world_epoch := 0
+var last_received_snapshot_epoch := -1
+@export var network_debug_enabled := false
 var last_discovery_sent := "NUNCA"
 var last_discovery_received := "NUNCA"
 var discovery_interfaces: Array[String] = []
@@ -137,6 +141,7 @@ func start_host_run(difficulty: StringName) -> void:
 	if meta != null:
 		for weapon_id: StringName in meta.get_run_weapon_pool():
 			serialized_weapon_pool.append(String(weapon_id))
+	var initial_epoch := advance_world_epoch_authoritative()
 	var config := {
 		"protocol": PROTOCOL_VERSION,
 		"seed": 0,
@@ -144,6 +149,7 @@ func start_host_run(difficulty: StringName) -> void:
 		"biome_id": "lower_city",
 		"player_count": get_player_count(),
 		"weapon_pool": serialized_weapon_pool,
+		"world_epoch": initial_epoch,
 	}
 	for peer_id: int in connected_peer_ids:
 		var peer_config: Dictionary = config.duplicate()
@@ -159,11 +165,31 @@ func broadcast_run_start(config: Dictionary) -> void:
 		_receive_run_start.rpc_id(peer_id, config)
 
 
-func broadcast_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int) -> void:
+func broadcast_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int, transition_epoch: int) -> void:
 	_reported_layout_mismatch = false
 	if role == Role.HOST:
 		for peer_id: int in connected_peer_ids:
-			_receive_stage_transition.rpc_id(peer_id, String(exit_id), String(destination_id), stage_seed)
+			_receive_stage_transition.rpc_id(peer_id, String(exit_id), String(destination_id), stage_seed, transition_epoch)
+
+
+func advance_world_epoch_authoritative() -> int:
+	if role != Role.HOST:
+		return world_epoch
+	world_epoch += 1
+	last_received_snapshot_epoch = world_epoch
+	return world_epoch
+
+
+func adopt_authoritative_world_epoch(authoritative_epoch: int) -> bool:
+	if role != Role.CLIENT or authoritative_epoch < world_epoch:
+		return false
+	world_epoch = authoritative_epoch
+	last_received_snapshot_epoch = -1
+	return true
+
+
+func is_snapshot_epoch_current(snapshot_epoch: int) -> bool:
+	return snapshot_epoch == world_epoch
 
 
 func request_remote_attribute_choice(participant_id: StringName, chest_id: StringName, options: Array[StringName]) -> void:
@@ -177,14 +203,20 @@ func request_remote_attribute_choice(participant_id: StringName, chest_id: Strin
 	_show_remote_attribute_choice.rpc_id(peer_id, String(chest_id), serialized_options)
 
 
-func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: StringName = &"player") -> int:
+func replicate_projectile_spawn(origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: StringName = &"player", projectile_type: StringName = &"ranged") -> int:
 	if role != Role.HOST:
 		return 0
 	var projectile_id := _next_projectile_id
 	_next_projectile_id += 1
 	for peer_id: int in connected_peer_ids:
-		_spawn_network_projectile.rpc_id(peer_id, projectile_id, origin, direction, speed, damage, String(target_group))
+		_spawn_network_projectile.rpc_id(peer_id, projectile_id, origin, direction, speed, damage, String(target_group), String(projectile_type))
 	return projectile_id
+
+
+func replicate_projectile_impact(projectile_id: int, impact_position: Vector2, projectile_type: StringName = &"ranged") -> void:
+	if role == Role.HOST and projectile_id > 0:
+		for peer_id: int in connected_peer_ids:
+			_impact_network_projectile.rpc_id(peer_id, projectile_id, impact_position, String(projectile_type))
 
 
 func replicate_projectile_despawn(projectile_id: int) -> void:
@@ -221,6 +253,8 @@ func shutdown() -> void:
 	_client_projectiles.clear()
 	_next_projectile_id = 1
 	_reported_layout_mismatch = false
+	world_epoch = 0
+	last_received_snapshot_epoch = -1
 	connection_message = ""
 	lobby_changed.emit()
 
@@ -313,13 +347,13 @@ func open_meta_terminal_for(participant_id: StringName) -> void:
 		_open_meta_terminal.rpc_id(peer_id)
 
 
-func broadcast_return_to_laboratory() -> void:
+func broadcast_return_to_laboratory(transition_epoch: int) -> void:
 	if role != Role.HOST:
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	var results: Dictionary = room_manager.run_manager.last_run_results.duplicate(true) if room_manager != null else {}
 	for peer_id: int in connected_peer_ids:
-		_apply_return_to_laboratory.rpc_id(peer_id, results)
+		_apply_return_to_laboratory.rpc_id(peer_id, results, transition_epoch)
 
 
 func request_weapon_pickup(pickup_id: StringName) -> void:
@@ -577,7 +611,9 @@ func _remote_action(participant_id: StringName, base_action: StringName) -> Stri
 
 func _broadcast_authoritative_snapshot() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
-	if room_manager == null or not room_manager.mode_selected:
+	if room_manager == null or not room_manager.mode_selected or room_manager.is_transitioning:
+		return
+	if not room_manager.validate_unique_player_participant_ids("authoritative snapshot"):
 		return
 	var players: Array[Dictionary] = []
 	for player in room_manager.get_players():
@@ -594,6 +630,7 @@ func _broadcast_authoritative_snapshot() -> void:
 		var generation_report: Dictionary = room_manager.current_room.get_generation_report()
 		layout_signature = String(generation_report.get("signature", ""))
 	var snapshot := {
+		"world_epoch": world_epoch,
 		"players": players,
 		"enemies": enemies,
 		"bandages": bandages,
@@ -620,8 +657,17 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null:
 		return
+	var snapshot_epoch := int(snapshot.get("world_epoch", -1))
+	if not is_snapshot_epoch_current(snapshot_epoch):
+		if network_debug_enabled:
+			print("LAN snapshot rejected: current_epoch=%d received_epoch=%d" % [world_epoch, snapshot_epoch])
+		return
+	last_received_snapshot_epoch = snapshot_epoch
 	var players_by_id: Dictionary = {}
 	for player in room_manager.get_players():
+		if players_by_id.has(player.participant_id):
+			push_error("Duplicate Player participant_id on snapshot client: %s" % player.participant_id)
+			return
 		players_by_id[player.participant_id] = player
 	var authoritative_player_ids: Dictionary = {}
 	var player_states: Array = snapshot.get("players", []) as Array
@@ -631,7 +677,7 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 		authoritative_player_ids[participant_id] = true
 		if players_by_id.has(participant_id):
 			var predicted_local := participant_id == local_participant_id
-			players_by_id[participant_id].apply_network_state(state, predicted_local)
+			players_by_id[participant_id].apply_network_state(state, predicted_local, snapshot_epoch)
 	for participant_value: Variant in players_by_id:
 		var participant_id := StringName(participant_value)
 		if not authoritative_player_ids.has(participant_id):
@@ -698,6 +744,7 @@ func _receive_run_config(config: Dictionary) -> void:
 	if role != Role.CLIENT or int(config.get("protocol", -1)) != PROTOCOL_VERSION:
 		return
 	local_participant_id = StringName(config.get("local_participant_id", local_participant_id))
+	adopt_authoritative_world_epoch(int(config.get("world_epoch", world_epoch)))
 	session_player_count = clampi(int(config.get("player_count", 2)), 1, MAX_PLAYERS)
 	_start_network_hub(config)
 
@@ -706,19 +753,22 @@ func _receive_run_config(config: Dictionary) -> void:
 func _receive_run_start(config: Dictionary) -> void:
 	if role != Role.CLIENT or int(config.get("protocol", -1)) != PROTOCOL_VERSION:
 		return
+	adopt_authoritative_world_epoch(int(config.get("world_epoch", world_epoch)))
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
 		room_manager.apply_lan_run_start(config)
 
 
 @rpc("authority", "call_remote", "reliable", 0)
-func _receive_stage_transition(exit_id: String, destination_id: String, stage_seed: int) -> void:
+func _receive_stage_transition(exit_id: String, destination_id: String, stage_seed: int, transition_epoch: int) -> void:
 	if role != Role.CLIENT:
 		return
 	_reported_layout_mismatch = false
+	if not adopt_authoritative_world_epoch(transition_epoch):
+		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
-		room_manager.apply_lan_stage_transition(StringName(exit_id), StringName(destination_id), stage_seed)
+		room_manager.apply_lan_stage_transition(StringName(exit_id), StringName(destination_id), stage_seed, transition_epoch)
 
 
 @rpc("authority", "call_remote", "reliable", 0)
@@ -740,18 +790,28 @@ func _show_remote_attribute_choice(chest_id: String, serialized_options: Array[S
 
 
 @rpc("authority", "call_remote", "reliable", 3)
-func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: String = "player") -> void:
+func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: Vector2, speed: float, damage: int, target_group: String = "player", projectile_type: String = "ranged") -> void:
 	if role != Role.CLIENT or _client_projectiles.has(projectile_id):
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager == null or room_manager.current_room == null:
 		return
-	var projectile := NETWORK_PROJECTILE_SCENE.instantiate()
+	var projectile_scene := NETWORK_HEAVY_PROJECTILE_SCENE if projectile_type == "heavy" else NETWORK_PROJECTILE_SCENE
+	var projectile := projectile_scene.instantiate()
 	projectile.network_id = projectile_id
 	projectile.network_visual_only = true
 	room_manager.current_room.add_child(projectile)
 	projectile.setup(origin, direction, null, speed, damage, StringName(target_group))
 	_client_projectiles[projectile_id] = projectile
+
+
+@rpc("authority", "call_remote", "reliable", 3)
+func _impact_network_projectile(projectile_id: int, impact_position: Vector2, _projectile_type: String = "ranged") -> void:
+	if role != Role.CLIENT or not _client_projectiles.has(projectile_id):
+		return
+	var projectile := _client_projectiles[projectile_id] as Node
+	if is_instance_valid(projectile) and projectile.has_method("show_network_impact"):
+		projectile.show_network_impact(impact_position)
 
 
 @rpc("authority", "call_remote", "reliable", 3)
@@ -926,8 +986,10 @@ func _request_return_to_laboratory() -> void:
 
 
 @rpc("authority", "call_remote", "reliable", 0)
-func _apply_return_to_laboratory(results: Dictionary) -> void:
+func _apply_return_to_laboratory(results: Dictionary, transition_epoch: int) -> void:
 	if role != Role.CLIENT:
+		return
+	if not adopt_authoritative_world_epoch(transition_epoch):
 		return
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:

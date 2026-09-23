@@ -20,6 +20,7 @@ enum EnemyRole { NORMAL, BOSS, ELITE, HEAVY }
 @export_range(0.1, 2.0, 0.05) var patrol_pause_min := 0.40
 @export_range(0.1, 2.0, 0.05) var patrol_pause_max := 1.20
 @export_range(16.0, 80.0, 1.0) var separation_distance := 30.0
+@export var target_detection_range := 100.0
 
 var run_room_id: StringName
 
@@ -54,6 +55,7 @@ var max_hp: int:
 var health_bar_visible_timer := 0.0
 var is_hurt = false
 var is_attacking = false
+var is_dead := false
 
 var knockback_timer = 0.0
 var attack_cooldown_timer := 0.0
@@ -177,6 +179,9 @@ func apply_network_state(state: Dictionary) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if is_dead:
+		velocity = Vector2.ZERO
+		return
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 
@@ -226,9 +231,11 @@ func _physics_process(delta: float) -> void:
 			)
 
 			if not in_attack_range and not is_attacking:
-				velocity.x = _safe_horizontal_velocity(direction, move_speed)
-
-				anim.play("walk")
+				if _try_special_attack(offset):
+					velocity.x = 0.0
+				else:
+					velocity.x = _safe_horizontal_velocity(direction, move_speed)
+					anim.play("walk")
 
 			else:
 				velocity.x = 0
@@ -343,14 +350,14 @@ func _select_active_player() -> void:
 
 		var distance := global_position.distance_to(candidate.global_position)
 
-		if distance <= TARGET_DETECTION_RANGE and distance < nearest_distance:
+		if distance <= target_detection_range and distance < nearest_distance:
 			nearest = candidate
 			nearest_distance = distance
 
 	if _is_valid_target(player):
 		var current_distance := global_position.distance_to(player.global_position)
 
-		if current_distance <= TARGET_DETECTION_RANGE and current_distance <= nearest_distance + TARGET_SWITCH_MARGIN:
+		if current_distance <= target_detection_range and current_distance <= nearest_distance + TARGET_SWITCH_MARGIN:
 			return
 
 	player = nearest
@@ -363,6 +370,10 @@ func _is_valid_target(candidate: Node) -> bool:
 		and not candidate.is_downed
 		and candidate.visible
 	)
+
+
+func _try_special_attack(_target_offset: Vector2) -> bool:
+	return false
 
 
 func attack() -> void:
@@ -423,7 +434,7 @@ func attack() -> void:
 
 
 func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multiplier: float = 1.0) -> void:
-	if is_hurt:
+	if is_hurt or is_dead:
 		return
 
 	health = maxi(health - amount, 0)
@@ -436,6 +447,9 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 	_update_health_label()
 
 	print("Enemy health: ", health)
+	if health <= 0:
+		_die()
+		return
 
 	if knockback_direction != 0.0:
 		var effective_knockback: float = knockback_multiplier * (1.0 - clampf(knockback_resistance, 0.0, 0.9))
@@ -452,15 +466,42 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 
 	is_hurt = false
 
-	if health <= 0:
-		var run_manager := get_tree().get_first_node_in_group("run_manager")
 
-		if run_manager:
-			if run_manager.has_method("handle_enemy_drop"):
-				run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position)
-			run_manager.register_enemy_death(run_room_id, persistent_id)
 
-		queue_free()
+func _die() -> void:
+	if is_dead:
+		return
+	is_dead = true
+	is_attacking = false
+	is_hurt = false
+	attack_generation += 1
+	attack_telegraph_active = false
+	velocity = Vector2.ZERO
+	health_bar.visible = false
+	attack_shape_cast.enabled = false
+	set_physics_process(false)
+	$CollisionShape2D.set_deferred("disabled", true)
+	var run_manager := get_tree().get_first_node_in_group("run_manager")
+	if run_manager:
+		if run_manager.has_method("handle_enemy_drop"):
+			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position)
+		run_manager.register_enemy_death(run_room_id, persistent_id)
+	await get_tree().create_timer(0.30).timeout
+	queue_free()
+
+
+func get_visual_state() -> StringName:
+	if is_dead or health <= 0:
+		return &"death"
+	if is_hurt:
+		return &"hurt"
+	if not is_on_floor():
+		return &"air"
+	if is_attacking:
+		return &"attack"
+	if absf(velocity.x) > 1.0:
+		return &"walk"
+	return &"idle"
 
 
 func _activate_boss_phase_two_if_needed() -> void:

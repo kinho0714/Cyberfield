@@ -32,7 +32,7 @@ func _run() -> void:
 		session.free()
 		quit(1)
 		return
-	if not session.has_method("replicate_projectile_spawn") or not session.has_method("replicate_projectile_despawn"):
+	if not session.has_method("replicate_projectile_spawn") or not session.has_method("replicate_projectile_impact") or not session.has_method("replicate_projectile_despawn"):
 		push_error("LAN_SESSION_SMOKE_TEST_FAILED: projectile replication API missing")
 		session.shutdown()
 		session.free()

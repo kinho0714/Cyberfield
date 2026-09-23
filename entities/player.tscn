@@ -7,7 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dyimv4ktw8mtv" path="res://sprites/1 - Penguin/Waddling (16 x 16).png" id="4_qly61"]
 [ext_resource type="Script" path="res://entities/temp_pixel_visual.gd" id="5_temp_visual"]
 [ext_resource type="Texture2D" path="res://assets/characters/jhon/jhon_a_idle_72_v1.png" id="6_jhon_idle"]
-[ext_resource type="Script" path="res://entities/jhon_idle_visual.gd" id="7_jhon_idle_visual"]
+[ext_resource type="Script" path="res://entities/player_character_visual.gd" id="7_jhon_idle_visual"]
 [ext_resource type="Texture2D" path="res://assets/characters/jhon/jhon_a_walk_72_v1.png" id="8_jhon_walk"]
 [ext_resource type="Texture2D" path="res://assets/characters/jhon/jhon_a_jump_72_v1.png" id="9_jhon_jump"]
 [ext_resource type="Texture2D" path="res://assets/characters/jhon/jhon_a_attack_72_v1.png" id="10_jhon_attack"]
@@ -373,9 +373,9 @@ script = ExtResource("5_temp_visual")
 character_kind = "player"
 source_visual_path = NodePath("../AnimatedSprite2D")
 
-[node name="JhonIdleVisual" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -31.666655)
-scale = Vector2(1.333333, 1.333333)
+[node name="PlayerCharacterVisual" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -34.5)
+scale = Vector2(1.5, 1.5)
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_jhon_idle")
 animation = &"idle"

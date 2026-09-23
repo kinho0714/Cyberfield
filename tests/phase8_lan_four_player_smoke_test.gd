@@ -57,11 +57,11 @@ func _run() -> void:
 	await manager.enter_lan_hub(hub_config, true)
 	assert(manager.current_is_hub and not manager.run_manager.run_active)
 	assert(manager.get_players().size() == LanSession.MAX_PLAYERS)
-	var expected_variants: Array[StringName] = [&"original", &"orange", &"white", &"red"]
+	var expected_variants: Array[StringName] = [&"jhon", &"jackson", &"kai", &"spark"]
 	for index in LanSession.MAX_PLAYERS:
 		assert(manager.get_players()[index].participant_id == StringName("player_%d" % (index + 1)))
-		var visual := manager.get_players()[index].get_node("JhonIdleVisual") as AnimatedSprite2D
-		assert(StringName(visual.get("_active_variant")) == expected_variants[index])
+		var visual := manager.get_players()[index].get_node("PlayerCharacterVisual") as AnimatedSprite2D
+		assert(StringName(visual.get("_active_character")) == expected_variants[index])
 
 	await manager._begin_run_from_hub(975310, true)
 	assert(manager.run_manager.run_active and manager.current_is_generated_biome)

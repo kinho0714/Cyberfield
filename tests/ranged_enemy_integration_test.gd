@@ -50,11 +50,13 @@ func _test_scene_contracts() -> void:
 	_check(is_equal_approx(ranged.melee_horizontal_range, 42.0), "Melee horizontal range must default to 42 px")
 	_check(not "retreat_active" in ranged, "Combat retreat state must be removed")
 	_check(ranged.get_node("MeleeShapeCast").enabled == false, "Melee ShapeCast must be disabled outside impact")
+	_check(ranged.has_node("EnemyCharacterVisual"), "RangedEnemy must expose the official animated presentation")
 	ranged.free()
 	var projectile := (load("res://entities/ranged_projectile.tscn") as PackedScene).instantiate()
 	_check(is_equal_approx(projectile.speed, 420.0), "Projectile speed must default to 420 px/s")
 	_check(projectile.damage == CombatStats.RANGED_PROJECTILE_BASE_DAMAGE, "Projectile damage must use centralized stats")
 	_check(projectile.maximum_lifetime > 0.0, "Projectile must have a finite lifetime")
+	_check(projectile.has_node("ProjectileVisual") and projectile.projectile_type == "ranged", "Projectile must use its official ranged presentation")
 	projectile.free()
 
 
@@ -69,6 +71,7 @@ func _test_hybrid_combat_contracts() -> void:
 	player.global_position = Vector2(130, 100)
 	await physics_frame
 	ranged.set_physics_process(false)
+	ranged.set_process(false)
 	player.set_physics_process(false)
 	ranged.player = player
 	var initial_health: int = player.health
@@ -118,6 +121,7 @@ func _test_five_melee_cycles() -> void:
 	player.global_position = Vector2(130, 100)
 	await physics_frame
 	ranged.set_physics_process(false)
+	ranged.set_process(false)
 	player.set_physics_process(false)
 	ranged.player = player
 	var delta := 1.0 / 60.0
@@ -206,6 +210,8 @@ func _test_projectile_dash_interaction() -> void:
 	for frame in 8:
 		await physics_frame
 	_check(player.health == initial_health, "Dash invulnerability must reject projectile damage")
+	_check(projectile.spent, "Projectile collision must enter visual impact without applying damage")
+	await create_timer(0.36).timeout
 	_check(not is_instance_valid(projectile), "Projectile must be destroyed after touching an invulnerable dashing Player")
 	player.free()
 

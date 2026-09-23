@@ -123,6 +123,12 @@ var network_remote_replica := false
 var network_target_position := Vector2.ZERO
 var network_target_velocity := Vector2.ZERO
 var network_correction_velocity := Vector2.ZERO
+var network_world_epoch := 0
+var network_pending_snap_position := Vector2.ZERO
+var network_pending_snap_velocity := Vector2.ZERO
+var network_has_pending_snap := false
+var network_visual_state: StringName = &""
+var network_visual_frame := 0
 
 
 func _ready() -> void:
@@ -143,10 +149,6 @@ func _process(delta: float) -> void:
 		var extrapolated_target := network_target_position + network_target_velocity * LanSession.SNAPSHOT_INTERVAL
 		global_position = global_position.lerp(extrapolated_target, interpolation_weight)
 		velocity = network_target_velocity
-	elif network_prediction_only and network_correction_velocity.length_squared() > 0.01:
-		var correction_step := network_correction_velocity * delta
-		global_position += correction_step
-		network_correction_velocity = network_correction_velocity.move_toward(Vector2.ZERO, 180.0 * delta)
 	if invulnerability_timer > 0.0:
 		invulnerability_timer = max(invulnerability_timer - delta, 0.0)
 
@@ -177,6 +179,8 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if network_prediction_only:
+		_apply_network_reconciliation(delta)
 	if is_downed:
 		velocity.x = move_toward(velocity.x, 0.0, SPEED)
 
@@ -359,6 +363,72 @@ func _physics_process(delta: float) -> void:
 		ground_slam_impact()
 		is_ground_slamming = false
 		down_tap_timer = 0.0
+
+
+func _apply_network_reconciliation(delta: float) -> void:
+	if network_has_pending_snap:
+		if _can_apply_network_snap(network_pending_snap_position):
+			global_position = network_pending_snap_position
+			velocity = network_pending_snap_velocity
+			network_correction_velocity = Vector2.ZERO
+			network_has_pending_snap = false
+			return
+		var blocked_offset := network_pending_snap_position - global_position
+		if blocked_offset.length_squared() > 0.01:
+			network_correction_velocity = blocked_offset.normalized() * minf(blocked_offset.length() * 2.5, SPEED)
+		network_has_pending_snap = false
+	if network_correction_velocity.length_squared() <= 0.01:
+		return
+	var correction_step := network_correction_velocity * delta
+	# move_and_collide keeps reconciliation inside the CharacterBody2D physics
+	# step and respects floors, walls and one-way platforms.
+	move_and_collide(correction_step, false, 0.08, true)
+	network_correction_velocity = network_correction_velocity.move_toward(Vector2.ZERO, 180.0 * delta)
+
+
+func _is_network_position_safe(target_position: Vector2) -> bool:
+	var collision_shape := get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if collision_shape == null or collision_shape.shape == null or not is_inside_tree():
+		return false
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = collision_shape.shape
+	query.transform = Transform2D(global_rotation, target_position + collision_shape.position.rotated(global_rotation))
+	query.collision_mask = collision_mask
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
+	query.exclude = [get_rid()]
+	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
+
+
+func _can_apply_network_snap(target_position: Vector2) -> bool:
+	if not _is_network_position_safe(target_position):
+		return false
+	var travel := target_position - global_position
+	return travel.length_squared() <= 0.01 or not test_move(global_transform, travel)
+
+
+func reset_network_presentation(authoritative_position: Vector2, authoritative_velocity: Vector2, world_epoch: int) -> void:
+	global_position = authoritative_position
+	velocity = authoritative_velocity
+	network_target_position = authoritative_position
+	network_target_velocity = authoritative_velocity
+	network_correction_velocity = Vector2.ZERO
+	network_pending_snap_position = authoritative_position
+	network_pending_snap_velocity = authoritative_velocity
+	network_has_pending_snap = false
+	network_world_epoch = world_epoch
+
+
+func get_network_debug_state() -> Dictionary:
+	return {
+		"participant_id": participant_id,
+		"local_predicted": network_prediction_only,
+		"remote_replica": network_remote_replica,
+		"world_epoch": network_world_epoch,
+		"position": global_position,
+		"target_position": network_target_position,
+		"correction_error": network_target_position - global_position,
+	}
 
 
 func _nearby_wall_normal(direction: float) -> Vector2:
@@ -715,6 +785,8 @@ func reset_for_new_run() -> void:
 	wall_transfer_assist_timer = 0.0
 	last_wall_jump_normal_x = 0.0
 	network_correction_velocity = Vector2.ZERO
+	network_visual_state = &""
+	network_visual_frame = 0
 	attack_shape_cast.enabled = true
 	ground_slam_shape_cast.enabled = true
 	var participant_colors: Array[Color] = [Color.WHITE, Color(0.45, 0.8, 1.0), Color(1.0, 0.65, 0.35), Color(0.7, 0.5, 1.0)]
@@ -802,6 +874,7 @@ func _can_start_attack() -> bool:
 
 
 func get_network_state() -> Dictionary:
+	var character_visual := get_node_or_null("PlayerCharacterVisual") as PlayerCharacterVisual
 	return {
 		"participant_id": participant_id,
 		"position": global_position,
@@ -813,6 +886,9 @@ func get_network_state() -> Dictionary:
 		"max_health": max_health,
 		"is_downed": is_downed,
 		"is_attacking": is_attacking,
+		"attack_generation": attack_generation,
+		"presentation_state": character_visual.get_presentation_state() if character_visual != null else &"idle",
+		"presentation_frame": character_visual.frame if character_visual != null else 0,
 		"intellect": intellect,
 		"health_attribute": health_attribute,
 		"strength": strength,
@@ -823,16 +899,22 @@ func get_network_state() -> Dictionary:
 	}
 
 
-func apply_network_state(state: Dictionary, predicted_local: bool = false) -> void:
+func apply_network_state(state: Dictionary, predicted_local: bool = false, snapshot_epoch: int = 0) -> void:
+	if snapshot_epoch < network_world_epoch:
+		return
+	if snapshot_epoch > network_world_epoch:
+		network_world_epoch = snapshot_epoch
 	var network_position: Vector2 = state.get("position", global_position)
 	var network_velocity: Vector2 = state.get("velocity", velocity)
 	if predicted_local:
 		var error_offset := network_position - global_position
 		var prediction_error := error_offset.length()
 		if prediction_error >= 192.0:
-			global_position = network_position
-			velocity = network_velocity
-			network_correction_velocity = Vector2.ZERO
+			# Defer large corrections to the physics step. The destination is checked
+			# against local static geometry before the authoritative snap is applied.
+			network_pending_snap_position = network_position
+			network_pending_snap_velocity = network_velocity
+			network_has_pending_snap = true
 		elif prediction_error >= 18.0:
 			# Correct material divergence over several physics frames. Small latency
 			# offsets are intentionally left to prediction instead of pulling the
@@ -853,6 +935,9 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false) -> vo
 	is_downed = bool(state.get("is_downed", is_downed))
 	if not predicted_local:
 		is_attacking = bool(state.get("is_attacking", is_attacking))
+		attack_generation = int(state.get("attack_generation", attack_generation))
+		network_visual_state = StringName(state.get("presentation_state", network_visual_state))
+		network_visual_frame = int(state.get("presentation_frame", network_visual_frame))
 	intellect = int(state.get("intellect", intellect))
 	health_attribute = int(state.get("health_attribute", health_attribute))
 	strength = int(state.get("strength", strength))

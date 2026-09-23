@@ -7,6 +7,7 @@
 script = ExtResource("2_heavy")
 enemy_role = 3
 move_speed = 64.0
+target_detection_range = 500.0
 attack_horizontal_range = 36.0
 attack_vertical_range = 46.0
 attack_windup = 0.58
@@ -17,3 +18,10 @@ knockback_resistance = 0.58
 patrol_radius = 72.0
 patrol_speed_ratio = 0.36
 separation_distance = 38.0
+
+[node name="EnemyCharacterVisual" parent="." index="2"]
+position = Vector2(0, -44)
+character_kind = "heavy"
+
+[node name="Muzzle" type="Marker2D" parent="." index="9"]
+position = Vector2(62, -20)

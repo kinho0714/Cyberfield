@@ -49,6 +49,8 @@ func _test_player_and_projectile_contracts() -> void:
 	var projectile := PROJECTILE_SCENE.instantiate()
 	_check("network_id" in projectile, "ranged projectile must expose a network id")
 	_check("network_visual_only" in projectile, "ranged projectile must support client visual replicas")
+	_check("projectile_type" in projectile and projectile.projectile_type == "ranged", "projectile must expose a backward-compatible visual type")
+	_check(projectile.has_method("show_network_impact"), "projectile must support authoritative visual impact replication")
 	projectile.free()
 
 

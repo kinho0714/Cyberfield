@@ -3,6 +3,9 @@ extends CharacterBody2D
 @export var speed := 420.0
 @export var damage := CombatStats.RANGED_PROJECTILE_BASE_DAMAGE
 @export var maximum_lifetime := 3.0
+@export_enum("ranged", "heavy") var projectile_type := "ranged"
+
+@onready var projectile_visual := $ProjectileVisual as ProjectileVisual
 
 var direction := Vector2.RIGHT
 var shooter: Node = null
@@ -68,12 +71,39 @@ func _physics_process(delta: float) -> void:
 	var collision := move_and_collide(direction * speed * delta)
 	if collision == null:
 		return
-	spent = true
 	var collider := collision.get_collider()
 	if collider is Node and collider.is_in_group(target_group) and (target_group != &"player" or not collider.is_downed):
 		var knockback_direction := signf(direction.x)
 		collider.take_damage(damage, knockback_direction)
+	_begin_impact(global_position)
+
+
+func _begin_impact(impact_position: Vector2) -> void:
+	if spent:
+		return
+	spent = true
+	global_position = impact_position
+	$CollisionShape2D.set_deferred("disabled", true)
+	if projectile_visual != null:
+		projectile_visual.show_impact()
+	if not network_visual_only and network_id > 0:
+		var lan_session := get_tree().get_first_node_in_group("lan_session")
+		if lan_session != null:
+			lan_session.replicate_projectile_impact(network_id, impact_position, StringName(projectile_type))
+	var impact_duration := projectile_visual.get_impact_duration() if projectile_visual != null else 0.0
+	if impact_duration > 0.0:
+		await get_tree().create_timer(impact_duration).timeout
 	_despawn_networked()
+
+
+func show_network_impact(impact_position: Vector2) -> void:
+	if spent:
+		return
+	spent = true
+	global_position = impact_position
+	$CollisionShape2D.set_deferred("disabled", true)
+	if projectile_visual != null:
+		projectile_visual.show_impact()
 
 
 func _despawn_networked() -> void:

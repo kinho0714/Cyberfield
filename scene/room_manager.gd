@@ -244,6 +244,7 @@ func _configure_client_player_prediction() -> void:
 			player.network_remote_replica = true
 			player.network_target_position = player.global_position
 			player.set_input_enabled(false)
+		player.reset_network_presentation(player.global_position, player.velocity, lan_session.world_epoch)
 
 
 func request_start_run_from_hub(portal: Area2D, interactor: Node2D) -> void:
@@ -260,6 +261,7 @@ func request_start_run_from_hub(portal: Area2D, interactor: Node2D) -> void:
 		config["seed"] = run_seed
 		config["difficulty"] = String(run_manager.difficulty)
 		config["player_count"] = get_players().size()
+		config["world_epoch"] = lan_session.advance_world_epoch_authoritative()
 		var serialized_weapon_pool: Array[String] = []
 		for weapon_id: StringName in run_manager.run_weapon_pool:
 			serialized_weapon_pool.append(String(weapon_id))
@@ -324,7 +326,8 @@ func request_biome_advance(exit_id: StringName, destination_id: StringName) -> v
 		return
 	var stage_seed: int = run_manager.get_stage_seed()
 	if lan_session.is_host():
-		lan_session.broadcast_stage_transition(exit_id, destination_id, stage_seed)
+		var transition_epoch := lan_session.advance_world_epoch_authoritative()
+		lan_session.broadcast_stage_transition(exit_id, destination_id, stage_seed, transition_epoch)
 	if not _load_current_stage(stage_seed):
 		push_error("Could not load placeholder stage for %s" % destination_id)
 		await _fade_to(0.0)
@@ -337,8 +340,10 @@ func request_biome_advance(exit_id: StringName, destination_id: StringName) -> v
 	is_transitioning = false
 
 
-func apply_lan_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int) -> void:
+func apply_lan_stage_transition(exit_id: StringName, destination_id: StringName, stage_seed: int, transition_epoch: int) -> void:
 	if is_transitioning or not lan_session.is_network_game():
+		return
+	if transition_epoch != lan_session.world_epoch:
 		return
 	is_transitioning = true
 	await _fade_to(1.0)
@@ -375,7 +380,8 @@ func return_to_laboratory() -> void:
 		lan_session.request_return_to_laboratory()
 		return
 	if lan_session.is_host():
-		lan_session.broadcast_return_to_laboratory()
+		var transition_epoch := lan_session.advance_world_epoch_authoritative()
+		lan_session.broadcast_return_to_laboratory(transition_epoch)
 	await _return_to_laboratory_local()
 
 
@@ -721,6 +727,7 @@ func perform_fast_travel_authoritative(origin_id: StringName, destination_id: St
 	for index in players.size():
 		players[index].global_position = destination.arrival_position + Vector2((index * 2 - players.size() + 1) * COOP_SPAWN_OFFSET, 0)
 		players[index].velocity = Vector2.ZERO
+		_reset_player_network_state(players[index])
 	gameplay_camera.position_smoothing_enabled = false
 	gameplay_camera.global_position = destination.arrival_position
 	get_tree().process_frame.connect(func() -> void: gameplay_camera.position_smoothing_enabled = true, CONNECT_ONE_SHOT)
@@ -786,6 +793,7 @@ func _create_network_players(player_count: int) -> void:
 
 func _create_player_count(player_count: int, joypad_device_id: int) -> void:
 	for candidate in get_players():
+		remove_child(candidate)
 		candidate.queue_free()
 	var created_players: Array[CharacterBody2D] = []
 	var colors: Array[Color] = [Color.WHITE, Color(0.45, 0.8, 1.0), Color(1.0, 0.65, 0.35), Color(0.7, 0.5, 1.0)]
@@ -811,6 +819,7 @@ func _position_players(entry_position: Vector2) -> void:
 		active_players[index].global_position = Vector2(clampf(entry_position.x + offset, 16.0, 1264.0), entry_position.y)
 		active_players[index].velocity = Vector2.ZERO
 		active_players[index].visible = true
+		_reset_player_network_state(active_players[index])
 
 
 func _position_players_in_hub(p1_position: Vector2, p2_position: Vector2) -> void:
@@ -821,6 +830,7 @@ func _position_players_in_hub(p1_position: Vector2, p2_position: Vector2) -> voi
 		candidate.global_position = base_position + Vector2(float(maxi(index - 1, 0)) * COOP_SPAWN_OFFSET * 2.0, 0.0)
 		candidate.velocity = Vector2.ZERO
 		candidate.visible = true
+		_reset_player_network_state(candidate)
 
 
 func _position_players_in_biome(start_position: Vector2) -> void:
@@ -830,6 +840,35 @@ func _position_players_in_biome(start_position: Vector2) -> void:
 		active_players[index].global_position = start_position + Vector2(offset, 0.0)
 		active_players[index].velocity = Vector2.ZERO
 		active_players[index].visible = true
+		_reset_player_network_state(active_players[index])
+
+
+func _reset_player_network_state(player: Node) -> void:
+	if player != null and player.has_method("reset_network_presentation"):
+		player.reset_network_presentation(player.global_position, player.velocity, lan_session.world_epoch)
+
+
+func get_duplicate_player_participant_ids() -> Array[StringName]:
+	return find_duplicate_participant_ids(get_players())
+
+
+func find_duplicate_participant_ids(players: Array) -> Array[StringName]:
+	var counts: Dictionary = {}
+	var duplicates: Array[StringName] = []
+	for player in players:
+		var id := StringName(player.participant_id)
+		counts[id] = int(counts.get(id, 0)) + 1
+		if int(counts[id]) == 2:
+			duplicates.append(id)
+	return duplicates
+
+
+func validate_unique_player_participant_ids(context: String = "runtime") -> bool:
+	var duplicates := get_duplicate_player_participant_ids()
+	if duplicates.is_empty():
+		return true
+	push_error("Duplicate Player participant_id in %s: %s" % [context, duplicates])
+	return false
 
 
 func _configure_camera_for_biome(bounds: Rect2, start_position: Vector2) -> void:

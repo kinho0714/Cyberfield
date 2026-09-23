@@ -85,3 +85,5 @@ func _test_laboratory_hub_geometry(lab: Node2D) -> void:
 	assert(lab.has_node("MidgroundStructure"))
 	assert(lab.has_node("GameplayStructureVisuals/Catwalk"))
 	assert(lab.has_node("Decoration"))
+	assert(lab.has_node("Props/UpperFloor"))
+	assert(lab.has_node("Props/LowerFloor"))

@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=40 format=3]
 
 [ext_resource type="Script" path="res://scene/interactables/run_portal.gd" id="1_portal"]
 [ext_resource type="Script" path="res://scene/laboratory_hub.gd" id="2_hub"]
@@ -18,6 +18,11 @@
 [ext_resource type="Texture2D" path="res://assets/environment/laboratory/structure/lab_supports.png" id="16_supports"]
 [ext_resource type="Texture2D" path="res://assets/environment/laboratory/structure/lab_vertical_beams.png" id="17_vertical_beams"]
 [ext_resource type="Texture2D" path="res://assets/environment/laboratory/structure/lab_neon_lights.png" id="18_neon_lights"]
+[ext_resource type="Texture2D" path="res://assets/environment/laboratory/props/lab_props_workshop_benches_v1.png" id="19_props_workshop"]
+[ext_resource type="Texture2D" path="res://assets/environment/laboratory/props/lab_props_servers_lockers_v1.png" id="20_props_servers"]
+[ext_resource type="Texture2D" path="res://assets/environment/laboratory/props/lab_props_tanks_machines_v1.png" id="21_props_tanks"]
+[ext_resource type="Texture2D" path="res://assets/environment/laboratory/props/lab_props_crates_industrial_v1.png" id="22_props_crates"]
+[ext_resource type="Texture2D" path="res://assets/environment/laboratory/props/lab_props_utility_furniture_v1.png" id="23_props_utility"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_floor"]
 size = Vector2(1280, 80)
@@ -45,6 +50,46 @@ filter_clip = true
 [sub_resource type="AtlasTexture" id="AtlasTexture_cyan_light"]
 atlas = ExtResource("18_neon_lights")
 region = Rect2(0, 0, 120, 30)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_upper_workshop"]
+atlas = ExtResource("19_props_workshop")
+region = Rect2(0, 0, 340, 205)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lower_workbench"]
+atlas = ExtResource("19_props_workshop")
+region = Rect2(340, 0, 330, 205)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_arsenal_locker"]
+atlas = ExtResource("20_props_servers")
+region = Rect2(370, 0, 135, 205)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_records_server"]
+atlas = ExtResource("20_props_servers")
+region = Rect2(0, 0, 130, 205)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_portal_machine"]
+atlas = ExtResource("20_props_servers")
+region = Rect2(90, 195, 120, 140)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_upgrade_tanks"]
+atlas = ExtResource("21_props_tanks")
+region = Rect2(0, 25, 240, 275)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_storage_crate"]
+atlas = ExtResource("22_props_crates")
+region = Rect2(0, 0, 135, 125)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_water_cooler"]
+atlas = ExtResource("23_props_utility")
+region = Rect2(640, 0, 100, 145)
 filter_clip = true
 
 [node name="LaboratoryHub" type="Node2D"]
@@ -214,6 +259,75 @@ modulate = Color(1, 0.86, 0.9, 0.88)
 position = Vector2(640, 431)
 texture_filter = 1
 texture = SubResource("AtlasTexture_cyan_light")
+
+[node name="Props" type="Node2D" parent="."]
+z_index = -2
+
+[node name="UpperFloor" type="Node2D" parent="Props"]
+
+[node name="Workshop" type="Node2D" parent="Props/UpperFloor"]
+
+[node name="Workbench" type="Sprite2D" parent="Props/UpperFloor/Workshop"]
+position = Vector2(250, 278.5)
+scale = Vector2(0.58, 0.58)
+texture_filter = 1
+texture = SubResource("AtlasTexture_upper_workshop")
+
+[node name="Arsenal" type="Node2D" parent="Props/UpperFloor"]
+
+[node name="EquipmentLocker" type="Sprite2D" parent="Props/UpperFloor/Arsenal"]
+position = Vector2(490, 278.5)
+scale = Vector2(0.58, 0.58)
+texture_filter = 1
+texture = SubResource("AtlasTexture_arsenal_locker")
+
+[node name="Upgrades" type="Node2D" parent="Props/UpperFloor"]
+
+[node name="TechnologyTanks" type="Sprite2D" parent="Props/UpperFloor/Upgrades"]
+position = Vector2(730, 280.25)
+scale = Vector2(0.42, 0.42)
+texture_filter = 1
+texture = SubResource("AtlasTexture_upgrade_tanks")
+
+[node name="Records" type="Node2D" parent="Props/UpperFloor"]
+
+[node name="DataServer" type="Sprite2D" parent="Props/UpperFloor/Records"]
+position = Vector2(970, 278.5)
+scale = Vector2(0.58, 0.58)
+texture_filter = 1
+texture = SubResource("AtlasTexture_records_server")
+
+[node name="LowerFloor" type="Node2D" parent="Props"]
+
+[node name="Workshop" type="Node2D" parent="Props/LowerFloor"]
+
+[node name="ComputerWorkbench" type="Sprite2D" parent="Props/LowerFloor/Workshop"]
+position = Vector2(430, 576.45)
+scale = Vector2(0.62, 0.62)
+texture_filter = 1
+texture = SubResource("AtlasTexture_lower_workbench")
+
+[node name="StorageCrate" type="Sprite2D" parent="Props/LowerFloor/Workshop"]
+position = Vector2(115, 611.875)
+scale = Vector2(0.45, 0.45)
+texture_filter = 1
+texture = SubResource("AtlasTexture_storage_crate")
+
+[node name="Utility" type="Node2D" parent="Props/LowerFloor"]
+
+[node name="WaterCooler" type="Sprite2D" parent="Props/LowerFloor/Utility"]
+position = Vector2(665, 600.125)
+scale = Vector2(0.55, 0.55)
+texture_filter = 1
+texture = SubResource("AtlasTexture_water_cooler")
+
+[node name="PortalSupport" type="Node2D" parent="Props/LowerFloor"]
+
+[node name="ContainmentMachine" type="Sprite2D" parent="Props/LowerFloor/PortalSupport"]
+position = Vector2(835, 592.4)
+scale = Vector2(0.68, 0.68)
+texture_filter = 1
+texture = SubResource("AtlasTexture_portal_machine")
 
 [node name="Title" type="Label" parent="."]
 offset_left = 430.0

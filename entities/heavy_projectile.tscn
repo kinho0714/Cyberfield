@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://entities/heavy_projectile.gd" id="1_heavy"]
+[ext_resource type="Script" path="res://entities/projectile_visual.gd" id="2_visual"]
+
+[sub_resource type="CircleShape2D" id="Circle"]
+radius = 7.0
+
+[node name="HeavyProjectile" type="CharacterBody2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_heavy")
+projectile_type = "heavy"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Circle")
+
+[node name="ProjectileVisual" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.45, 0.45)
+texture_filter = 1
+script = ExtResource("2_visual")
+projectile_type = "heavy"

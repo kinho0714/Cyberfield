@@ -1,0 +1,878 @@
+{
+  "package": "Ranged Enemy Rebuild v2 — Fase 1",
+  "source_of_truth": "14434.png",
+  "generation_used": false,
+  "old_assets_used": false,
+  "real_pose_counts": {
+    "idle": 4,
+    "walk_run": 6,
+    "attack_shoot": 6,
+    "jump_air_fall": 4,
+    "hurt": 2,
+    "death": 3,
+    "projectile_movement": 0,
+    "projectile_impact": 0
+  },
+  "total_real_character_frames": 25,
+  "total_real_projectile_frames": 0,
+  "label_divergences": [],
+  "restoration": "Controlled background/editorial removal only; source pixels preserved at 1:1; no upscale/downscale.",
+  "animations": {
+    "idle": {
+      "filename": "ranged_idle_v2.png",
+      "animation": "idle",
+      "frame_count": 4,
+      "sheet_width": 416,
+      "sheet_height": 136,
+      "cell_width": 104,
+      "cell_height": 136,
+      "baseline": 132,
+      "pivot": null,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            475,
+            126,
+            555,
+            248
+          ],
+          "output_cell": [
+            0,
+            0,
+            104,
+            136
+          ],
+          "opaque_bbox": [
+            14,
+            10,
+            92,
+            132
+          ],
+          "occupied_width": 78,
+          "occupied_height": 122,
+          "center_x": 53.0,
+          "center_y": 71.0,
+          "opaque_components": 10,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            568,
+            131,
+            650,
+            248
+          ],
+          "output_cell": [
+            104,
+            0,
+            104,
+            136
+          ],
+          "opaque_bbox": [
+            13,
+            17,
+            93,
+            132
+          ],
+          "occupied_width": 80,
+          "occupied_height": 115,
+          "center_x": 53.0,
+          "center_y": 74.5,
+          "opaque_components": 12,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 3,
+          "source_box": [
+            665,
+            131,
+            750,
+            248
+          ],
+          "output_cell": [
+            208,
+            0,
+            104,
+            136
+          ],
+          "opaque_bbox": [
+            9,
+            17,
+            94,
+            132
+          ],
+          "occupied_width": 85,
+          "occupied_height": 115,
+          "center_x": 51.5,
+          "center_y": 74.5,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 4,
+          "source_box": [
+            760,
+            131,
+            840,
+            248
+          ],
+          "output_cell": [
+            312,
+            0,
+            104,
+            136
+          ],
+          "opaque_bbox": [
+            12,
+            17,
+            92,
+            132
+          ],
+          "occupied_width": 80,
+          "occupied_height": 115,
+          "center_x": 52.0,
+          "center_y": 74.5,
+          "opaque_components": 7,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "d0dd47a2c890d17b7771efa374c98a504ae51b98a8a3025740f3bccbf5d8fa84",
+      "outliers": []
+    },
+    "walk_run": {
+      "filename": "ranged_walk_run_v2.png",
+      "animation": "walk_run",
+      "frame_count": 6,
+      "sheet_width": 816,
+      "sheet_height": 136,
+      "cell_width": 136,
+      "cell_height": 136,
+      "baseline": 132,
+      "pivot": null,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            910,
+            133,
+            1005,
+            250
+          ],
+          "output_cell": [
+            0,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            22,
+            17,
+            115,
+            130
+          ],
+          "occupied_width": 93,
+          "occupied_height": 113,
+          "center_x": 68.5,
+          "center_y": 73.5,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            1000,
+            134,
+            1100,
+            250
+          ],
+          "output_cell": [
+            136,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            18,
+            18,
+            118,
+            130
+          ],
+          "occupied_width": 100,
+          "occupied_height": 112,
+          "center_x": 68.0,
+          "center_y": 74.0,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 3,
+          "source_box": [
+            1090,
+            134,
+            1195,
+            250
+          ],
+          "output_cell": [
+            272,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            15,
+            18,
+            120,
+            131
+          ],
+          "occupied_width": 105,
+          "occupied_height": 113,
+          "center_x": 67.5,
+          "center_y": 74.5,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 4,
+          "source_box": [
+            1180,
+            135,
+            1290,
+            243
+          ],
+          "output_cell": [
+            408,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            13,
+            26,
+            123,
+            130
+          ],
+          "occupied_width": 110,
+          "occupied_height": 104,
+          "center_x": 68.0,
+          "center_y": 78.0,
+          "opaque_components": 11,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 5,
+          "source_box": [
+            1293,
+            134,
+            1390,
+            250
+          ],
+          "output_cell": [
+            544,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            21,
+            18,
+            116,
+            130
+          ],
+          "occupied_width": 95,
+          "occupied_height": 112,
+          "center_x": 68.5,
+          "center_y": 74.0,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 6,
+          "source_box": [
+            1380,
+            134,
+            1499,
+            250
+          ],
+          "output_cell": [
+            680,
+            0,
+            136,
+            136
+          ],
+          "opaque_bbox": [
+            8,
+            18,
+            125,
+            131
+          ],
+          "occupied_width": 117,
+          "occupied_height": 113,
+          "center_x": 66.5,
+          "center_y": 74.5,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "284d6849ec1f4e97921b97248b4653d7a824544129c911ebacabe9ad136d6fc0",
+      "outliers": []
+    },
+    "attack_shoot": {
+      "filename": "ranged_attack_shoot_v2.png",
+      "animation": "attack_shoot",
+      "frame_count": 6,
+      "sheet_width": 768,
+      "sheet_height": 136,
+      "cell_width": 128,
+      "cell_height": 136,
+      "baseline": 132,
+      "pivot": null,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            482,
+            345,
+            572,
+            477
+          ],
+          "output_cell": [
+            0,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            21,
+            0,
+            107,
+            132
+          ],
+          "occupied_width": 86,
+          "occupied_height": 132,
+          "center_x": 64.0,
+          "center_y": 66.0,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            570,
+            356,
+            670,
+            477
+          ],
+          "output_cell": [
+            128,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            16,
+            13,
+            114,
+            132
+          ],
+          "occupied_width": 98,
+          "occupied_height": 119,
+          "center_x": 65.0,
+          "center_y": 72.5,
+          "opaque_components": 9,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 3,
+          "source_box": [
+            662,
+            356,
+            765,
+            477
+          ],
+          "output_cell": [
+            256,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            14,
+            13,
+            115,
+            132
+          ],
+          "occupied_width": 101,
+          "occupied_height": 119,
+          "center_x": 64.5,
+          "center_y": 72.5,
+          "opaque_components": 10,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 4,
+          "source_box": [
+            757,
+            357,
+            865,
+            477
+          ],
+          "output_cell": [
+            384,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            12,
+            14,
+            118,
+            132
+          ],
+          "occupied_width": 106,
+          "occupied_height": 118,
+          "center_x": 65.0,
+          "center_y": 73.0,
+          "opaque_components": 11,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 5,
+          "source_box": [
+            851,
+            356,
+            960,
+            477
+          ],
+          "output_cell": [
+            512,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            11,
+            13,
+            118,
+            132
+          ],
+          "occupied_width": 107,
+          "occupied_height": 119,
+          "center_x": 64.5,
+          "center_y": 72.5,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 6,
+          "source_box": [
+            946,
+            356,
+            1030,
+            477
+          ],
+          "output_cell": [
+            640,
+            0,
+            128,
+            136
+          ],
+          "opaque_bbox": [
+            24,
+            13,
+            106,
+            132
+          ],
+          "occupied_width": 82,
+          "occupied_height": 119,
+          "center_x": 65.0,
+          "center_y": 72.5,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "75365ddb115eee799947a67b86d299ea06539d48a997807846f8b81025447f94",
+      "outliers": [
+        {
+          "frame": 1,
+          "metric": "edge_contact"
+        }
+      ]
+    },
+    "jump_air_fall": {
+      "filename": "ranged_jump_air_fall_v2.png",
+      "animation": "jump_air_fall",
+      "frame_count": 4,
+      "sheet_width": 480,
+      "sheet_height": 136,
+      "cell_width": 120,
+      "cell_height": 136,
+      "baseline": null,
+      "pivot": 68,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            1060,
+            350,
+            1160,
+            480
+          ],
+          "output_cell": [
+            0,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            10,
+            5,
+            108,
+            133
+          ],
+          "occupied_width": 98,
+          "occupied_height": 128,
+          "center_x": 59.0,
+          "center_y": 69.0,
+          "opaque_components": 11,
+          "baseline_or_pivot": 68,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            1188,
+            349,
+            1266,
+            460
+          ],
+          "output_cell": [
+            120,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            23,
+            15,
+            97,
+            122
+          ],
+          "occupied_width": 74,
+          "occupied_height": 107,
+          "center_x": 60.0,
+          "center_y": 68.5,
+          "opaque_components": 4,
+          "baseline_or_pivot": 68,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 3,
+          "source_box": [
+            1285,
+            349,
+            1375,
+            480
+          ],
+          "output_cell": [
+            240,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            17,
+            5,
+            105,
+            134
+          ],
+          "occupied_width": 88,
+          "occupied_height": 129,
+          "center_x": 61.0,
+          "center_y": 69.5,
+          "opaque_components": 5,
+          "baseline_or_pivot": 68,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 4,
+          "source_box": [
+            1395,
+            378,
+            1499,
+            480
+          ],
+          "output_cell": [
+            360,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            10,
+            19,
+            110,
+            119
+          ],
+          "occupied_width": 100,
+          "occupied_height": 100,
+          "center_x": 60.0,
+          "center_y": 69.0,
+          "opaque_components": 5,
+          "baseline_or_pivot": 68,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "f5fea729870238b48fec9783d6ffba65540f206f3fb03a68566f0aa9305c3fc8",
+      "outliers": []
+    },
+    "hurt": {
+      "filename": "ranged_hurt_v2.png",
+      "animation": "hurt",
+      "frame_count": 2,
+      "sheet_width": 240,
+      "sheet_height": 136,
+      "cell_width": 120,
+      "cell_height": 136,
+      "baseline": 132,
+      "pivot": null,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            534,
+            570,
+            627,
+            685
+          ],
+          "output_cell": [
+            0,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            15,
+            19,
+            104,
+            132
+          ],
+          "occupied_width": 89,
+          "occupied_height": 113,
+          "center_x": 59.5,
+          "center_y": 75.5,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            630,
+            576,
+            735,
+            685
+          ],
+          "output_cell": [
+            120,
+            0,
+            120,
+            136
+          ],
+          "opaque_bbox": [
+            8,
+            25,
+            112,
+            132
+          ],
+          "occupied_width": 104,
+          "occupied_height": 107,
+          "center_x": 60.0,
+          "center_y": 78.5,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "13c4a9c14714a5b7a230bc2428e3ebc44d4b97f35e4e3db79cfeba3bf1a6bb2a",
+      "outliers": []
+    },
+    "death": {
+      "filename": "ranged_death_v2.png",
+      "animation": "death",
+      "frame_count": 3,
+      "sheet_width": 672,
+      "sheet_height": 136,
+      "cell_width": 224,
+      "cell_height": 136,
+      "baseline": 132,
+      "pivot": null,
+      "source": "14434.png",
+      "status": "COMPLETED",
+      "frames": [
+        {
+          "index": 1,
+          "source_box": [
+            938,
+            581,
+            1040,
+            681
+          ],
+          "output_cell": [
+            0,
+            0,
+            224,
+            136
+          ],
+          "opaque_bbox": [
+            63,
+            34,
+            161,
+            130
+          ],
+          "occupied_width": 98,
+          "occupied_height": 96,
+          "center_x": 112.0,
+          "center_y": 82.0,
+          "opaque_components": 8,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 2,
+          "source_box": [
+            1087,
+            589,
+            1205,
+            685
+          ],
+          "output_cell": [
+            224,
+            0,
+            224,
+            136
+          ],
+          "opaque_bbox": [
+            55,
+            38,
+            171,
+            131
+          ],
+          "occupied_width": 116,
+          "occupied_height": 93,
+          "center_x": 113.0,
+          "center_y": 84.5,
+          "opaque_components": 12,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        },
+        {
+          "index": 3,
+          "source_box": [
+            1221,
+            639,
+            1432,
+            685
+          ],
+          "output_cell": [
+            448,
+            0,
+            224,
+            136
+          ],
+          "opaque_bbox": [
+            8,
+            88,
+            215,
+            131
+          ],
+          "occupied_width": 207,
+          "occupied_height": 43,
+          "center_x": 111.5,
+          "center_y": 109.5,
+          "opaque_components": 4,
+          "baseline_or_pivot": 132,
+          "validation_status": "PASS"
+        }
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "sha256": "cca38f508f771332184ebbae7bcde882f893801e7f9c774fe069a1c202ffdc0d",
+      "outliers": [
+        {
+          "frame": 3,
+          "metric": "height"
+        }
+      ]
+    }
+  },
+  "blocked": [
+    {
+      "animation": "projectile_movement",
+      "filename": "ranged_projectile_movement_v2.png",
+      "status": "BLOCKED",
+      "reason": "Nenhuma sequência de projétil Movement está presente na Concept Sheet Oficial 14434.png."
+    },
+    {
+      "animation": "projectile_impact",
+      "filename": "ranged_projectile_impact_v2.png",
+      "status": "BLOCKED",
+      "reason": "Nenhuma sequência de projétil Impact está presente na Concept Sheet Oficial 14434.png."
+    }
+  ]
+}
