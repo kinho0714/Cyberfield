@@ -69,7 +69,7 @@ func _assert_pause_settings_touch(pause: Node) -> void:
 	var overlay := pause.get_node("Overlay") as Control
 	var main_page := pause.get_node("Overlay/Center/MainPage") as Control
 	var settings_page := pause.get_node("Overlay/Center/SettingsPage") as Control
-	var slider := pause.get_node("Overlay/Center/SettingsPage/TouchScale") as HSlider
+	var slider := pause.get_node("Overlay/Center/SettingsPage/Scroll/Content/TouchScale") as HSlider
 	var back := pause.get_node("Overlay/Center/SettingsPage/Back") as Button
 	overlay.visible = true
 	pause.call("_show_settings")

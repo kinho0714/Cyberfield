@@ -62,7 +62,8 @@ func _test_host_flow() -> void:
 		var difficulty := lobby.get_node("Overlay/Center/HostPage/Difficulty") as OptionButton
 		var previous_selection := difficulty.selected
 		_touch(difficulty)
-		assert(difficulty.selected != previous_selection and not difficulty.get_popup().visible)
+		assert(difficulty.selected == previous_selection and difficulty.get_popup().visible)
+		difficulty.get_popup().hide()
 	if player_count == LanSession.MAX_PLAYERS and not run_requested:
 		run_requested = true
 		_touch(lobby.get_node("Overlay/Center/HostPage/Start") as Control)

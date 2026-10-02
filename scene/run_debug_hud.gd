@@ -25,6 +25,16 @@ extends CanvasLayer
 @onready var boss_health: ProgressBar = $GameplayHUD/BossPanel/VBox/Health
 @onready var run_timer: Label = $GameplayHUD/RunTimer
 
+const SESSION_SUMMARY_SECONDS := 7.0
+
+@onready var session_summary: PanelContainer = $SessionSummary
+@onready var session_summary_text: Label = $SessionSummary/Margin/VBox/Text
+@onready var session_summary_close: Button = $SessionSummary/Margin/VBox/Header/Close
+var summary_in_hub := false
+var summary_dismissed := false
+var summary_elapsed := 0.0
+var summary_fade: Tween
+
 var run_manager: Node
 var local_settings: LocalSettings
 
@@ -43,9 +53,81 @@ func _ready() -> void:
 	back_to_mode.text = "VOLTAR AO MENU"
 	get_parent().coop_waiting_changed.connect(func(value: bool) -> void: waiting_label.visible = value)
 	get_viewport().size_changed.connect(_apply_safe_area)
+	session_summary_close.pressed.connect(_dismiss_session_summary)
+	var summary_style := StyleBoxFlat.new()
+	summary_style.bg_color = Color(0.008, 0.02, 0.035, 0.94)
+	summary_style.border_color = Color("39dff2")
+	summary_style.set_border_width_all(1)
+	session_summary.add_theme_stylebox_override("panel", summary_style)
 	_apply_safe_area()
 	_apply_debug_visibility()
 	_refresh()
+
+
+func get_session_summary(compact_text: bool = false) -> String:
+	var mode: String = {&"solo": "Solo", &"coop": "Coop local", &"lan": "LAN"}.get(run_manager.game_mode, "—")
+	var state: String = "ATIVA" if run_manager.run_active else "INATIVA"
+	if run_manager.run_is_completed:
+		state = "CONCLUÍDA"
+	elif run_manager.run_is_lost:
+		state = "PERDIDA"
+	if compact_text:
+		return "%s · %s · %d jogador(es)\nRun: %s" % [mode, run_manager.get_difficulty_label(), run_manager.player_count, state]
+	return "Modo: %s\nDificuldade: %s\nJogadores: %d   ·   Run: %s" % [mode, run_manager.get_difficulty_label(), run_manager.player_count, state]
+
+
+func _update_session_summary(delta: float) -> void:
+	var in_hub: bool = visible and bool(get_parent().mode_selected) and bool(get_parent().current_is_hub) and run_manager.is_in_hub()
+	if not in_hub or bool(get_parent().is_transitioning):
+		if summary_fade != null:
+			summary_fade.kill()
+		session_summary.hide()
+		if summary_in_hub:
+			_apply_debug_visibility()
+		summary_in_hub = false
+		return
+	$Panel.hide() # Hub presentation is informational, never a second navigation menu.
+	if not summary_in_hub:
+		summary_in_hub = true
+		summary_dismissed = false
+		summary_elapsed = 0.0
+		session_summary.modulate.a = 1.0
+		session_summary_close.disabled = false
+	var pause_overlay: Control = get_parent().get_node("PauseMenu/Overlay") as Control
+	if pause_overlay.visible:
+		session_summary.hide()
+		return
+	if summary_dismissed:
+		return
+	session_summary_text.text = get_session_summary()
+	session_summary.show()
+	summary_elapsed += delta
+	if summary_elapsed >= SESSION_SUMMARY_SECONDS:
+		_dismiss_session_summary()
+
+
+func _dismiss_session_summary() -> void:
+	if summary_dismissed:
+		return
+	summary_dismissed = true
+	session_summary_close.disabled = true
+	if summary_fade != null:
+		summary_fade.kill()
+	summary_fade = create_tween()
+	summary_fade.tween_property(session_summary, "modulate:a", 0.0, 0.20)
+	summary_fade.tween_callback(session_summary.hide)
+
+
+func _input(event: InputEvent) -> void:
+	# Only X consumes touch. The panel and its content pass all other input through.
+	if not visible or not session_summary.visible or summary_dismissed:
+		return
+	if bool(get_parent().is_transitioning) or get_parent().get_node("PauseMenu/Overlay").visible:
+		return
+	if event is InputEventScreenTouch and event.pressed:
+		if session_summary_close.get_global_rect().has_point(event.position):
+			get_viewport().set_input_as_handled()
+			_dismiss_session_summary()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -55,7 +137,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _apply_debug_visibility() -> void:
-	$Panel.visible = local_settings.debug_hud_visible
+	$Panel.visible = local_settings.debug_hud_visible and not run_manager.is_in_hub()
 	room_title.visible = local_settings.debug_hud_visible
 	players_status.visible = local_settings.debug_hud_visible
 	for collider_visual in get_tree().get_nodes_in_group("procedural_debug_collider"):
@@ -89,6 +171,7 @@ func _apply_safe_area() -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_session_summary(_delta)
 	run_timer.text = run_manager.format_run_time()
 	var downed_player: Node = null
 	for player in get_tree().get_nodes_in_group("player"):

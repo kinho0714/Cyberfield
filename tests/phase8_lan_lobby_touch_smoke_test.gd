@@ -21,16 +21,18 @@ func _run() -> void:
 	var difficulty := lobby.get_node("Overlay/Center/HostPage/Difficulty") as OptionButton
 	var first_selection := difficulty.selected
 	_touch(lobby, difficulty)
-	assert(difficulty.selected != first_selection)
-	assert(not difficulty.get_popup().visible)
+	assert(difficulty.selected == first_selection)
+	assert(difficulty.get_popup().visible)
+	difficulty.get_popup().hide()
 
 	for peer_id in [21, 35, 49]:
 		session._on_peer_connected(peer_id)
 		await process_frame
 		var previous_selection := difficulty.selected
 		_touch(lobby, difficulty)
-		assert(difficulty.selected != previous_selection)
-		assert(not difficulty.get_popup().visible)
+		assert(difficulty.selected == previous_selection)
+		assert(difficulty.get_popup().visible)
+		difficulty.get_popup().hide()
 	assert(session.get_player_count() == 4)
 	assert(lobby.has_method("_handle_touch_pressed"))
 	session.shutdown()

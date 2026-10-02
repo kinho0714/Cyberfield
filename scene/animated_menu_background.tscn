@@ -1,0 +1,220 @@
+[gd_scene load_steps=29 format=3]
+
+[ext_resource type="Script" path="res://scene/animated_menu_background.gd" id="controller"]
+[ext_resource type="Shader" path="res://scene/menu_clouds.gdshader" id="cloud_shader"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/master/concept_master_v3_16x9.png" id="master"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lights/lights_cyan_v3.png" id="cyan"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lights/lights_magenta_v3.png" id="magenta"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lights/windows_warm_v3.png" id="windows"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lights/city_glow_v3.png" id="glow"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/atmosphere/atmosphere_haze_v3.png" id="haze"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_flash_v3.png" id="flash"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_large_01_v3.png" id="large1"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_large_02_v3.png" id="large2"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_large_03_v3.png" id="large3"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_short_01_v3.png" id="short1"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_short_02_v3.png" id="short2"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/lightning/lightning_short_03_v3.png" id="short3"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_back_a_v3.png" id="back_a"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_back_b_v3.png" id="back_b"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_back_lightmask_v3.png" id="back_lightmask"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_front_a_v3.png" id="front_a"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_front_b_v3.png" id="front_b"]
+[ext_resource type="Texture2D" path="res://assets/ui/menu/animated/v3/clouds/cloud_front_lightmask_v3.png" id="front_lightmask"]
+
+[sub_resource type="CanvasItemMaterial" id="additive"]
+blend_mode = 1
+
+[sub_resource type="ShaderMaterial" id="back_a"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = false
+shader_parameter/definition = 1.12
+shader_parameter/density_curve = 1.03
+
+[sub_resource type="ShaderMaterial" id="back_b"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = false
+shader_parameter/definition = 1.12
+shader_parameter/density_curve = 1.03
+
+[sub_resource type="ShaderMaterial" id="back_lightmask"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = true
+
+[sub_resource type="ShaderMaterial" id="front_a"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = false
+shader_parameter/definition = 1.65
+shader_parameter/density_curve = 1.35
+
+[sub_resource type="ShaderMaterial" id="front_b"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = false
+shader_parameter/definition = 1.65
+shader_parameter/density_curve = 1.35
+
+[sub_resource type="ShaderMaterial" id="front_lightmask"]
+shader = ExtResource("cloud_shader")
+shader_parameter/localized = true
+
+[node name="AnimatedMenuBackground" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+clip_contents = true
+script = ExtResource("controller")
+
+[node name="Backing" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.005, 0.01, 0.02, 1)
+
+[node name="Composition" type="Node2D" parent="."]
+texture_filter = 1
+
+[node name="BackgroundBase" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 1)
+texture = ExtResource("master")
+centered = false
+
+[node name="LightningFlash" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("flash")
+centered = false
+
+[node name="Large1" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("large1")
+centered = false
+
+[node name="Large2" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("large2")
+centered = false
+
+[node name="Large3" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("large3")
+centered = false
+
+[node name="Short1" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("short1")
+centered = false
+
+[node name="Short2" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("short2")
+centered = false
+
+[node name="Short3" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("short3")
+centered = false
+
+[node name="BackA" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.85)
+texture = ExtResource("back_a")
+centered = false
+material = SubResource("back_a")
+
+[node name="BackB" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.85)
+texture = ExtResource("back_b")
+centered = false
+material = SubResource("back_b")
+
+[node name="BackMask" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("back_lightmask")
+centered = false
+material = SubResource("back_lightmask")
+
+[node name="FrontA" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.98)
+texture = ExtResource("front_a")
+centered = false
+material = SubResource("front_a")
+
+[node name="FrontB" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.98)
+texture = ExtResource("front_b")
+centered = false
+material = SubResource("front_b")
+
+[node name="FrontMask" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0)
+texture = ExtResource("front_lightmask")
+centered = false
+material = SubResource("front_lightmask")
+
+[node name="Atmosphere" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.42)
+texture = ExtResource("haze")
+centered = false
+
+[node name="Cyan" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.28)
+texture = ExtResource("cyan")
+centered = false
+material = SubResource("additive")
+
+[node name="Magenta0" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.25)
+texture = ExtResource("magenta")
+centered = false
+material = SubResource("additive")
+position = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 832, 936)
+
+[node name="Magenta1" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.25)
+texture = ExtResource("magenta")
+centered = false
+material = SubResource("additive")
+position = Vector2(832, 0)
+region_enabled = true
+region_rect = Rect2(832, 0, 832, 936)
+
+[node name="Windows0" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.18)
+texture = ExtResource("windows")
+centered = false
+material = SubResource("additive")
+position = Vector2(0, 0)
+region_enabled = true
+region_rect = Rect2(0, 0, 555, 936)
+
+[node name="Windows1" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.18)
+texture = ExtResource("windows")
+centered = false
+material = SubResource("additive")
+position = Vector2(555, 0)
+region_enabled = true
+region_rect = Rect2(555, 0, 555, 936)
+
+[node name="Windows2" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.18)
+texture = ExtResource("windows")
+centered = false
+material = SubResource("additive")
+position = Vector2(1110, 0)
+region_enabled = true
+region_rect = Rect2(1110, 0, 554, 936)
+
+[node name="CityGlow" type="Sprite2D" parent="Composition"]
+modulate = Color(1, 1, 1, 0.09)
+texture = ExtResource("glow")
+centered = false
+material = SubResource("additive")
+
+[node name="Weather" type="Node2D" parent="Composition"]

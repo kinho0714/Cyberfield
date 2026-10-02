@@ -1,6 +1,5 @@
-[gd_scene load_steps=20 format=3 uid="uid://b3x4ydn1pkenx"]
+[gd_scene load_steps=21 format=3 uid="uid://b3x4ydn1pkenx"]
 
-[ext_resource type="Texture2D" path="res://assets/Cyberfield_MainMenu_Background_1280x720.png" id="menu_bg"]
 [ext_resource type="Script" path="res://scene/main_menu_alive.gd" id="menu_alive"]
 
 [ext_resource type="Script" path="res://scene/room_manager.gd" id="1_manager"]
@@ -20,6 +19,10 @@
 [ext_resource type="Script" path="res://scene/run_result_ui.gd" id="16_results"]
 [ext_resource type="Script" path="res://scene/meta_progression.gd" id="17_meta"]
 [ext_resource type="Script" path="res://scene/meta_lab_ui.gd" id="18_meta_ui"]
+
+[ext_resource type="PackedScene" path="res://scene/animated_menu_background.tscn" id="animated_menu"]
+
+[ext_resource type="Script" path="res://scene/menu_environment.gd" id="menu_environment"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_manager")
@@ -89,6 +92,12 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("14_full_map")
 
+[node name="MenuEnvironment" type="CanvasLayer" parent="."]
+layer = 89
+script = ExtResource("menu_environment")
+
+[node name="AnimatedMenuBackground" parent="MenuEnvironment" instance=ExtResource("animated_menu")]
+
 [node name="ModeSelect" type="CanvasLayer" parent="."]
 layer = 90
 script = ExtResource("5_mode")
@@ -103,171 +112,145 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0)
 
-[node name="Background" type="TextureRect" parent="ModeSelect/Overlay"]
+[node name="Center" type="MarginContainer" parent="ModeSelect/Overlay"]
 layout_mode = 1
-anchors_preset = 15
+anchor_left = 1.0
+anchor_top = 0.5
 anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-texture = ExtResource("menu_bg")
-expand_mode = 1
-stretch_mode = 6
-
-[node name="Shade" type="ColorRect" parent="ModeSelect/Overlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-color = Color(0, 0.01, 0.025, 0.16)
-
-[node name="Center" type="CenterContainer" parent="ModeSelect/Overlay"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
+anchor_bottom = 0.5
+offset_left = -388.0
+offset_right = -48.0
+grow_horizontal = 0
 grow_vertical = 2
 
 [node name="MainPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/MainPage"]
-visible = false
 layout_mode = 2
-text = "CYBERFIELD"
+text = "MENU PRINCIPAL"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 52
 
 [node name="Play" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
-custom_minimum_size = Vector2(360, 72)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "JOGAR"
 
 [node name="Options" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
-custom_minimum_size = Vector2(360, 64)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "OPÇÕES"
-disabled = true
-tooltip_text = "Em breve"
 
 [node name="Quit" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
-custom_minimum_size = Vector2(360, 64)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "SAIR"
 
 [node name="PlayersPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(340, 0)
 visible = false
-custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/PlayersPage"]
 layout_mode = 2
-text = "QUANTIDADE DE JOGADORES"
+text = "MODO DE JOGO"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 30
 
 [node name="Solo" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "1 JOGADOR"
+text = "SOLO"
 
 [node name="Coop" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "2 JOGADORES"
-
-[node name="Lan" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
-custom_minimum_size = Vector2(360, 54)
-layout_mode = 2
-text = "COOP LAN"
+text = "COOP"
 
 [node name="Back" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
-custom_minimum_size = Vector2(360, 48)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "VOLTAR"
 
 [node name="LanLobby" parent="." instance=ExtResource("11_lan_lobby")]
 
 [node name="DifficultyPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(400, 0)
 visible = false
-custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/DifficultyPage"]
 layout_mode = 2
-text = "SELECIONE A DIFICULDADE"
+text = "DIFICULDADE"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 30
 
 [node name="Normal" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "NORMAL"
 
 [node name="Hard" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "DIFÍCIL"
 
 [node name="Pro" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "PRO"
 
 [node name="InfernoPro" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
-custom_minimum_size = Vector2(360, 54)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "INFERNO DO PRO"
 
 [node name="Back" type="Button" parent="ModeSelect/Overlay/Center/DifficultyPage"]
-custom_minimum_size = Vector2(360, 48)
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "VOLTAR"
 
-[node name="ConfirmPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+[node name="CoopPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(440, 0)
 visible = false
-custom_minimum_size = Vector2(460, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 script = ExtResource("menu_alive")
 
-[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/CoopPage"]
 layout_mode = 2
-text = "CONFIRMAR PARTIDA"
+text = "TIPO DE COOP"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 30
 
-[node name="Selection" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
-layout_mode = 2
-text = "MODO: 1 JOGADOR\nDIFICULDADE: NORMAL"
-horizontal_alignment = 1
-
-[node name="Controller" type="Label" parent="ModeSelect/Overlay/Center/ConfirmPage"]
-custom_minimum_size = Vector2(440, 36)
+[node name="Controller" type="Label" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 36)
 layout_mode = 2
 text = "PLAYER 1: TECLADO E MOUSE"
 horizontal_alignment = 1
 
-[node name="Start" type="Button" parent="ModeSelect/Overlay/Center/ConfirmPage"]
-custom_minimum_size = Vector2(360, 54)
+[node name="Start" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "ENTRAR NO LABORATÓRIO"
+text = "MESMO DISPOSITIVO"
 
-[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/ConfirmPage"]
-custom_minimum_size = Vector2(360, 48)
+[node name="Lan" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "COOP POR REDE/LAN"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "VOLTAR"
 
@@ -418,6 +401,53 @@ text = "Reiniciar run"
 [node name="BackToMenu" type="Button" parent="RunDebugHUD/Panel/Margin/VBox"]
 text = "Voltar ao menu"
 
+[node name="SessionSummary" type="PanelContainer" parent="RunDebugHUD"]
+visible = false
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -230.0
+offset_top = 136.0
+offset_right = 230.0
+offset_bottom = 340.0
+mouse_filter = 2
+
+[node name="Margin" type="MarginContainer" parent="RunDebugHUD/SessionSummary"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="RunDebugHUD/SessionSummary/Margin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Header" type="HBoxContainer" parent="RunDebugHUD/SessionSummary/Margin/VBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Title" type="Label" parent="RunDebugHUD/SessionSummary/Margin/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 26
+theme_override_colors/font_color = Color(0.22, 0.87, 0.95, 1)
+text = "LABORATÓRIO"
+
+[node name="Close" type="Button" parent="RunDebugHUD/SessionSummary/Margin/VBox/Header"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+focus_mode = 0
+text = "X"
+theme_override_font_sizes/font_size = 24
+
+[node name="Text" type="Label" parent="RunDebugHUD/SessionSummary/Margin/VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 22
+text = ""
+
 [node name="RoomTitle" type="Label" parent="RunDebugHUD"]
 anchors_preset = 10
 anchor_right = 1.0
@@ -457,12 +487,14 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.82)
 
-[node name="Center" type="CenterContainer" parent="RunDebugHUD/EndOverlay"]
+[node name="Center" type="MarginContainer" parent="RunDebugHUD/EndOverlay"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
+offset_left = -388.0
+offset_right = -48.0
+grow_horizontal = 0
 grow_vertical = 2
 offset_left = 36.0
 offset_top = 24.0

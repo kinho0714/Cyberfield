@@ -15,6 +15,7 @@ signal close_requested
 @onready var difficulty: OptionButton = $Overlay/Center/HostPage/Difficulty
 @onready var join_button: Button = $Overlay/Center/SearchPage/Join
 var selected_room_key := ""
+var main_return_focus := "Create"
 
 
 func _ready() -> void:
@@ -43,7 +44,18 @@ func _ready() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if not visible or not (event is InputEventScreenTouch):
+	if not visible:
+		return
+	if difficulty.get_popup().visible:
+		return
+	if event.is_action_pressed(&"ui_cancel") and not event.is_echo():
+		if main_page.visible:
+			_close()
+		else:
+			_return_to_main()
+		get_viewport().set_input_as_handled()
+		return
+	if not (event is InputEventScreenTouch):
 		return
 	var touch_event := event as InputEventScreenTouch
 	if not touch_event.pressed:
@@ -53,6 +65,7 @@ func _input(event: InputEvent) -> void:
 
 
 func open() -> void:
+	main_return_focus = "Create"
 	visible = true
 	_return_to_main()
 
@@ -120,7 +133,7 @@ func _start_run() -> void:
 
 func _return_to_main() -> void:
 	lan_session.shutdown()
-	_show_page(main_page, $Overlay/Center/MainPage/Create)
+	_show_page(main_page, main_page.get_node(main_return_focus) as Control)
 	_refresh()
 
 
@@ -131,6 +144,10 @@ func _close() -> void:
 
 
 func _show_page(page: VBoxContainer, focus: Control) -> void:
+	var previous := get_viewport().gui_get_focus_owner()
+	if main_page.visible and previous != null and previous.get_parent() == main_page:
+		main_return_focus = String(previous.name)
+	get_viewport().gui_release_focus()
 	for candidate in [main_page, host_page, search_page, ip_page]:
 		candidate.visible = candidate == page
 	focus.grab_focus()
@@ -151,8 +168,7 @@ func _handle_touch_pressed(position: Vector2) -> bool:
 		return true
 	if host_page.visible:
 		if lan_session.is_host() and _touch_hits(difficulty, position):
-			difficulty.get_popup().hide()
-			difficulty.select(wrapi(difficulty.selected + 1, 0, difficulty.item_count))
+			difficulty.show_popup()
 		elif lan_session.is_host() and _touch_hits($Overlay/Center/HostPage/Start, position):
 			_start_run()
 		elif _touch_hits($Overlay/Center/HostPage/Back, position):
@@ -191,7 +207,12 @@ func _handle_touch_pressed(position: Vector2) -> bool:
 
 
 func _touch_hits(control: Control, position: Vector2) -> bool:
-	return control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(position)
+	if control == null or not control.is_visible_in_tree() or not control.get_global_rect().has_point(position):
+		return false
+	if control is BaseButton and control.disabled:
+		return false
+	control.grab_focus()
+	return true
 
 
 func _refresh() -> void:

@@ -1,0 +1,23 @@
+{
+  "source_uploaded_file": "24302.png",
+  "source_dimensions": [
+    1536,
+    864
+  ],
+  "normalized_crop_box": [
+    0,
+    0,
+    1536,
+    864
+  ],
+  "master_v2_dimensions": [
+    1536,
+    864
+  ],
+  "master_v2_exact_16_9": true,
+  "runtime_reference": [
+    1280,
+    720
+  ],
+  "notes": "No stretch used for master normalization. Runtime 1280x720 variant generated from exact 16:9 master."
+}

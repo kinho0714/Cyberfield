@@ -3,15 +3,21 @@ extends CanvasLayer
 @onready var overlay: ColorRect = $Overlay
 @onready var main_page: VBoxContainer = $Overlay/Center/MainPage
 @onready var settings_page: VBoxContainer = $Overlay/Center/SettingsPage
-@onready var zoom_option: OptionButton = $Overlay/Center/SettingsPage/CameraZoom
-@onready var touch_slider: HSlider = $Overlay/Center/SettingsPage/TouchScale
-@onready var touch_value: Label = $Overlay/Center/SettingsPage/TouchValue
-@onready var debug_toggle: CheckButton = $Overlay/Center/SettingsPage/DebugHud
+@onready var zoom_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/CameraZoom
+@onready var touch_slider: HSlider = $Overlay/Center/SettingsPage/Scroll/Content/TouchScale
+@onready var touch_value: Label = $Overlay/Center/SettingsPage/Scroll/Content/TouchValue
+@onready var debug_toggle: CheckButton = $Overlay/Center/SettingsPage/Scroll/Content/DebugHud
 @onready var local_settings: LocalSettings = get_parent().get_node("LocalSettings")
 
 var input_blocked_players: Array[Node] = []
 var tree_paused_by_menu := false
 var settings_slider_touch_index := -1
+var title_settings := false
+var active_touch_slider: HSlider
+var audio_sliders: Array[HSlider] = []
+const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Efeitos Sonoros", "Diálogos"]
+@onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
+@onready var settings_content: VBoxContainer = $Overlay/Center/SettingsPage/Scroll/Content
 
 
 func _ready() -> void:
@@ -23,17 +29,32 @@ func _ready() -> void:
 	$Overlay/Center/MainPage/Settings.pressed.connect(_show_settings)
 	$Overlay/Center/MainPage/Abandon.pressed.connect(_abandon_run)
 	$Overlay/Center/MainPage/MainMenu.pressed.connect(_return_to_main_menu)
-	$Overlay/Center/SettingsPage/Back.pressed.connect(_show_main)
+	$Overlay/Center/SettingsPage/Back.pressed.connect(_settings_back)
 	zoom_option.item_selected.connect(_set_camera_zoom)
 	touch_slider.value_changed.connect(_set_touch_scale)
 	debug_toggle.toggled.connect(_set_debug_hud)
 	for entry: Array in [["PRÓXIMO", &"close"], ["PADRÃO", &"default"], ["DISTANTE", &"distant"]]:
 		zoom_option.add_item(String(entry[0]))
 		zoom_option.set_item_metadata(zoom_option.item_count - 1, entry[1])
+	for bus: StringName in LocalSettings.AUDIO_BUSES:
+		var slider: HSlider = settings_content.get_node(String(bus) + "Volume") as HSlider
+		audio_sliders.append(slider)
+		slider.value_changed.connect(_set_audio_volume.bind(bus))
+	get_viewport().size_changed.connect(_fit_settings_scroll)
+	_fit_settings_scroll()
 	_load_controls()
 
 
+func _fit_settings_scroll() -> void:
+	# Title and Back stay outside the scroll region and remain reachable.
+	settings_scroll.custom_minimum_size.y = clampf(get_viewport().get_visible_rect().size.y - 240.0, 180.0, 440.0)
+
+
 func _input(event: InputEvent) -> void:
+	if not overlay.visible and not get_parent().mode_selected:
+		return
+	if overlay.visible and zoom_option.get_popup().visible:
+		return
 	if (event.is_action_pressed(&"pause_menu") or event.is_action_pressed(&"ui_cancel")) and not event.is_echo():
 		var inventory := get_tree().get_first_node_in_group("inventory_ui")
 		if inventory != null and inventory.overlay.visible:
@@ -45,7 +66,10 @@ func _input(event: InputEvent) -> void:
 			full_map.close_map()
 			get_viewport().set_input_as_handled()
 			return
-		toggle_menu()
+		if title_settings or (overlay.visible and settings_page.visible):
+			_settings_back()
+		else:
+			toggle_menu()
 		get_viewport().set_input_as_handled()
 		return
 	if not overlay.visible:
@@ -62,6 +86,25 @@ func _input(event: InputEvent) -> void:
 		if drag_event.index == settings_slider_touch_index:
 			_update_touch_slider(drag_event.position)
 			get_viewport().set_input_as_handled()
+
+
+func open_title_settings() -> void:
+	title_settings = true
+	_load_controls()
+	overlay.visible = true
+	_show_settings()
+
+
+func _settings_back() -> void:
+	if title_settings:
+		title_settings = false
+		settings_slider_touch_index = -1
+		get_viewport().gui_release_focus()
+		overlay.visible = false
+		get_parent().get_node("ModeSelect").return_from_options()
+	else:
+		_show_main()
+		$Overlay/Center/MainPage/Settings.grab_focus()
 
 
 func toggle_menu() -> void:
@@ -91,6 +134,7 @@ func open_menu() -> void:
 
 
 func close_menu() -> void:
+	get_viewport().gui_release_focus()
 	settings_slider_touch_index = -1
 	if tree_paused_by_menu:
 		get_tree().paused = false
@@ -116,6 +160,7 @@ func _block_local_gameplay_input() -> void:
 
 
 func _show_main() -> void:
+	$Overlay/Center/MainPage/SessionSummary.text = get_parent().get_node("RunDebugHUD").get_session_summary(true)
 	main_page.visible = true
 	settings_page.visible = false
 
@@ -130,18 +175,26 @@ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 	var position: Vector2 = event.position
 	if settings_page.visible:
 		if _touch_hits($Overlay/Center/SettingsPage/Back, position):
-			_show_main()
+			_settings_back()
 		elif _touch_hits(zoom_option, position):
-			_cycle_camera_zoom()
+			zoom_option.show_popup()
 		elif _touch_hits(debug_toggle, position):
 			var next_debug_value: bool = not debug_toggle.button_pressed
 			debug_toggle.set_pressed_no_signal(next_debug_value)
 			_set_debug_hud(next_debug_value)
-		elif _touch_hits(touch_slider, position):
-			settings_slider_touch_index = event.index
-			_update_touch_slider(position)
 		else:
-			return
+			var sliders: Array[HSlider] = [touch_slider]
+			sliders.append_array(audio_sliders)
+			var hit: bool = false
+			for slider: HSlider in sliders:
+				if _touch_hits(slider, position):
+					active_touch_slider = slider
+					settings_slider_touch_index = event.index
+					_update_touch_slider(position)
+					hit = true
+					break
+			if not hit:
+				return
 	else:
 		if _touch_hits($Overlay/Center/MainPage/Continue, position):
 			close_menu()
@@ -159,23 +212,24 @@ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 
 
 func _touch_hits(control: Control, position: Vector2) -> bool:
-	return control.is_visible_in_tree() and control.get_global_rect().has_point(position)
-
-
-func _cycle_camera_zoom() -> void:
-	if zoom_option.item_count <= 0:
-		return
-	var next_index: int = wrapi(zoom_option.selected + 1, 0, zoom_option.item_count)
-	zoom_option.select(next_index)
-	_set_camera_zoom(next_index)
+	if not control.is_visible_in_tree() or not control.get_global_rect().has_point(position):
+		return false
+	if settings_content.is_ancestor_of(control) and not settings_scroll.get_global_rect().has_point(position):
+		return false
+	if control is BaseButton and control.disabled:
+		return false
+	control.grab_focus()
+	return true
 
 
 func _update_touch_slider(position: Vector2) -> void:
-	var slider_rect: Rect2 = touch_slider.get_global_rect()
+	if active_touch_slider == null:
+		return
+	var slider_rect: Rect2 = active_touch_slider.get_global_rect()
 	if slider_rect.size.x <= 0.0:
 		return
 	var ratio: float = clampf((position.x - slider_rect.position.x) / slider_rect.size.x, 0.0, 1.0)
-	touch_slider.value = lerpf(touch_slider.min_value, touch_slider.max_value, ratio)
+	active_touch_slider.value = lerpf(active_touch_slider.min_value, active_touch_slider.max_value, ratio)
 
 
 func _open_inventory() -> void:
@@ -194,6 +248,11 @@ func _load_controls() -> void:
 	touch_slider.set_value_no_signal(local_settings.touch_control_scale * 100.0)
 	touch_value.text = "%d%%" % int(round(local_settings.touch_control_scale * 100.0))
 	debug_toggle.set_pressed_no_signal(local_settings.debug_hud_visible)
+	for index in audio_sliders.size():
+		var bus: StringName = LocalSettings.AUDIO_BUSES[index]
+		var percent: float = local_settings.get_audio_volume(bus) * 100.0
+		audio_sliders[index].set_value_no_signal(percent)
+		_update_audio_label(bus, percent)
 
 
 func _set_camera_zoom(index: int) -> void:
@@ -217,3 +276,13 @@ func _abandon_run() -> void:
 func _return_to_main_menu() -> void:
 	close_menu()
 	get_parent().return_to_main_menu()
+
+
+func _set_audio_volume(percent: float, bus: StringName) -> void:
+	local_settings.set_audio_volume(bus, percent / 100.0)
+	_update_audio_label(bus, percent)
+
+
+func _update_audio_label(bus: StringName, percent: float) -> void:
+	var label: Label = settings_content.get_node(String(bus) + "Label") as Label
+	label.text = "%s — %d%%" % [AUDIO_LABELS[LocalSettings.AUDIO_BUSES.find(bus)], int(round(percent))]
