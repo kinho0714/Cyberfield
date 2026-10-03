@@ -1,5 +1,8 @@
 extends Control
 
+const BASE_TEXTURE = preload("res://assets/ui/gameplay_hud/assets/mobile/joystick/joystick_base.png")
+const KNOB_TEXTURE = preload("res://assets/ui/gameplay_hud/assets/mobile/joystick/joystick_knob.png")
+
 @export var left_action: StringName = &"left"
 @export var right_action: StringName = &"right"
 @export var down_action: StringName = &"down"
@@ -38,10 +41,11 @@ func _gui_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	var center := size * 0.5
-	draw_circle(center, base_visual_radius, Color(0.055, 0.105, 0.18, 0.48))
-	draw_arc(center, base_visual_radius, 0.0, TAU, 64, Color(0.49, 0.91, 1.0, 0.72), 3.0, true)
-	draw_circle(center + knob_offset, knob_visual_radius, Color(0.18, 0.48, 0.62, 0.82))
-	draw_arc(center + knob_offset, knob_visual_radius, 0.0, TAU, 48, Color(0.65, 0.96, 1.0, 0.9), 3.0, true)
+	draw_texture_rect(BASE_TEXTURE,
+		Rect2(center - Vector2.ONE * base_visual_radius, Vector2.ONE * base_visual_radius * 2), false)
+	draw_texture_rect(KNOB_TEXTURE,
+		Rect2(center + knob_offset - Vector2.ONE * knob_visual_radius,
+			Vector2.ONE * knob_visual_radius * 2), false)
 
 
 func _update_from_local_position(local_position: Vector2) -> void:

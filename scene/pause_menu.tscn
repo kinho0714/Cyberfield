@@ -15,7 +15,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.01, 0.02, 0.05, 0.94)
+color = Color(0.01, 0.02, 0.05, 0.60)
 
 [node name="Center" type="MarginContainer" parent="Overlay"]
 layout_mode = 1
@@ -36,7 +36,7 @@ theme_override_constants/separation = 14
 
 [node name="Title" type="Label" parent="Overlay/Center/MainPage"]
 layout_mode = 2
-text = "PAUSE"
+text = "PAUSA"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 40
 
@@ -73,6 +73,7 @@ text = "MENU PRINCIPAL"
 [node name="SettingsPage" type="VBoxContainer" parent="Overlay/Center"]
 custom_minimum_size = Vector2(600, 0)
 script = ExtResource("menu_alive")
+options_legibility = true
 visible = false
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -96,6 +97,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("menu_alive")
 draw_frame = false
+options_legibility = true
 
 [node name="ZoomLabel" type="Label" parent="Overlay/Center/SettingsPage/Scroll/Content"]
 layout_mode = 2

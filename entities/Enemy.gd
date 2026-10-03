@@ -67,6 +67,7 @@ var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
 var network_target_position := Vector2.ZERO
+var network_presentation_state: StringName = &""
 var _fall_origin_y := 0.0
 var _was_on_floor := false
 
@@ -153,6 +154,7 @@ func get_network_state() -> Dictionary:
 		"animation": anim.animation,
 		"animation_frame": anim.frame,
 		"attack_telegraph_active": attack_telegraph_active,
+		"presentation_state": get_visual_state(),
 		"boss_phase_two_active": boss_phase_two_active,
 	}
 
@@ -160,6 +162,7 @@ func get_network_state() -> Dictionary:
 func apply_network_state(state: Dictionary) -> void:
 	var network_position: Vector2 = state.get("position", global_position)
 	var network_velocity: Vector2 = state.get("velocity", velocity)
+	network_presentation_state = StringName(state.get("presentation_state", &""))
 	var previous_health := health
 	network_target_position = network_position
 	velocity = network_velocity
@@ -491,6 +494,8 @@ func _die() -> void:
 
 
 func get_visual_state() -> StringName:
+	if not is_physics_processing() and not network_presentation_state.is_empty():
+		return network_presentation_state
 	if is_dead or health <= 0:
 		return &"death"
 	if is_hurt:

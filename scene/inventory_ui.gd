@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
+
 var overlay: ColorRect
 var slot_buttons: Array[Button] = []
 var _blocked_players: Array[Node] = []
@@ -13,14 +15,17 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	overlay = ColorRect.new()
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay.color = Color(0.005, 0.015, 0.035, 0.96)
+	overlay.color = Color(0.005, 0.015, 0.035, 0.60)
 	add_child(overlay)
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(center)
 	var panel := VBoxContainer.new()
 	panel.custom_minimum_size = Vector2(560, 320)
-	center.add_child(panel)
+	var frame := PanelContainer.new()
+	frame.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/inventory_panel", 18, 22))
+	center.add_child(frame)
+	frame.add_child(panel)
 	var title := Label.new()
 	title.text = "EQUIPAMENTOS DA RUN"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -30,12 +35,14 @@ func _ready() -> void:
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(540, 92)
 		button.pressed.connect(_select_slot.bind(index))
+		PANEL_PRESENTATION.style_inventory_slot(button)
 		panel.add_child(button)
 		slot_buttons.append(button)
 	_close_button = Button.new()
 	_close_button.text = "FECHAR"
 	_close_button.custom_minimum_size = Vector2(540, 54)
 	_close_button.pressed.connect(close_inventory)
+	PANEL_PRESENTATION.style_button(_close_button)
 	panel.add_child(_close_button)
 	overlay.visible = false
 
@@ -134,6 +141,7 @@ func _refresh() -> void:
 			continue
 		var data := WeaponCatalog.get_definition(weapon_id)
 		slot_buttons[index].disabled = false
+		PANEL_PRESENTATION.mark_equipped(slot_buttons[index], player.active_weapon_slot == index)
 		slot_buttons[index].text = "%s  SLOT %d   •   %s\n%s    DANO %d    RECARGA %.2fs    %s" % ["▶" if player.active_weapon_slot == index else " ", index + 1, data.name, String(data.type).to_upper(), data.damage, data.cooldown, String(data.rarity).to_upper()]
 
 

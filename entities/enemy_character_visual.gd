@@ -26,6 +26,7 @@ func _ready() -> void:
 	if _fallback_visual != null:
 		_fallback_visual.visible = false
 	_update_presentation()
+	_place_health_bar()
 
 
 func _process(_delta: float) -> void:
@@ -46,6 +47,9 @@ func _update_presentation() -> void:
 	if not visible:
 		return
 	_apply_facing()
+	# Telegraph tint formerly reached only the hidden legacy sprite.
+	if _facing_source is AnimatedSprite2D:
+		modulate = (_facing_source as AnimatedSprite2D).modulate
 	if state == &"air":
 		animation = state
 		pause()
@@ -134,3 +138,16 @@ func _air_frame(vertical_velocity: float) -> int:
 	if vertical_velocity < 220.0:
 		return 2
 	return 3
+
+
+func _place_health_bar() -> void:
+	var bar: ProgressBar = get_parent().get_node_or_null("HealthBar") as ProgressBar
+	if bar == null or sprite_frames == null:
+		return
+	# Use the official idle canvas and alignment, never legacy placeholder offsets.
+	var texture: Texture2D = sprite_frames.get_frame_texture(&"idle", 0)
+	var top: float = position.y + (offset.y - texture.get_height() * 0.5) * scale.y
+	bar.scale = Vector2.ONE
+	bar.position = Vector2(-26.0, top - 12.0)
+	bar.size = Vector2(52.0, 6.0)
+	bar.z_index = z_index + 1

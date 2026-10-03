@@ -16,6 +16,7 @@ projectile_type = "heavy"
 shape = SubResource("Circle")
 
 [node name="ProjectileVisual" type="AnimatedSprite2D" parent="."]
+z_index = 4
 scale = Vector2(0.45, 0.45)
 texture_filter = 1
 script = ExtResource("2_visual")

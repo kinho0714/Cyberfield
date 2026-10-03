@@ -1,5 +1,7 @@
 extends CanvasLayer
 
+const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
+
 @onready var overlay: ColorRect = $Overlay
 @onready var main_page: VBoxContainer = $Overlay/Center/MainPage
 @onready var settings_page: VBoxContainer = $Overlay/Center/SettingsPage
@@ -14,6 +16,11 @@ var tree_paused_by_menu := false
 var settings_slider_touch_index := -1
 var title_settings := false
 var active_touch_slider: HSlider
+var options_touch_index: int = -1
+var options_touch_origin: Vector2
+var options_scroll_origin: int = 0
+var options_gesture: int = 0 # 0 pending, 1 vertical scroll, 2 horizontal slider
+const OPTIONS_DRAG_THRESHOLD: float = 12.0
 var audio_sliders: Array[HSlider] = []
 const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Efeitos Sonoros", "Diálogos"]
 @onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
@@ -39,10 +46,12 @@ func _ready() -> void:
 	for bus: StringName in LocalSettings.AUDIO_BUSES:
 		var slider: HSlider = settings_content.get_node(String(bus) + "Volume") as HSlider
 		audio_sliders.append(slider)
+		_style_audio_slider(slider)
 		slider.value_changed.connect(_set_audio_volume.bind(bus))
 	get_viewport().size_changed.connect(_fit_settings_scroll)
 	_fit_settings_scroll()
 	_load_controls()
+	PANEL_PRESENTATION.apply_pause(main_page, settings_page, settings_content)
 
 
 func _fit_settings_scroll() -> void:
@@ -74,6 +83,9 @@ func _input(event: InputEvent) -> void:
 		return
 	if not overlay.visible:
 		return
+	if _handle_options_gesture(event):
+		get_viewport().set_input_as_handled()
+		return
 	if event is InputEventScreenTouch:
 		var touch_event := event as InputEventScreenTouch
 		if touch_event.pressed:
@@ -96,6 +108,7 @@ func open_title_settings() -> void:
 
 
 func _settings_back() -> void:
+	_cancel_options_gesture()
 	if title_settings:
 		title_settings = false
 		settings_slider_touch_index = -1
@@ -134,6 +147,7 @@ func open_menu() -> void:
 
 
 func close_menu() -> void:
+	_cancel_options_gesture()
 	get_viewport().gui_release_focus()
 	settings_slider_touch_index = -1
 	if tree_paused_by_menu:
@@ -160,12 +174,14 @@ func _block_local_gameplay_input() -> void:
 
 
 func _show_main() -> void:
+	_cancel_options_gesture()
 	$Overlay/Center/MainPage/SessionSummary.text = get_parent().get_node("RunDebugHUD").get_session_summary(true)
 	main_page.visible = true
 	settings_page.visible = false
 
 
 func _show_settings() -> void:
+	_cancel_options_gesture()
 	main_page.visible = false
 	settings_page.visible = true
 	zoom_option.grab_focus()
@@ -183,18 +199,7 @@ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 			debug_toggle.set_pressed_no_signal(next_debug_value)
 			_set_debug_hud(next_debug_value)
 		else:
-			var sliders: Array[HSlider] = [touch_slider]
-			sliders.append_array(audio_sliders)
-			var hit: bool = false
-			for slider: HSlider in sliders:
-				if _touch_hits(slider, position):
-					active_touch_slider = slider
-					settings_slider_touch_index = event.index
-					_update_touch_slider(position)
-					hit = true
-					break
-			if not hit:
-				return
+			return
 	else:
 		if _touch_hits($Overlay/Center/MainPage/Continue, position):
 			close_menu()
@@ -286,3 +291,68 @@ func _set_audio_volume(percent: float, bus: StringName) -> void:
 func _update_audio_label(bus: StringName, percent: float) -> void:
 	var label: Label = settings_content.get_node(String(bus) + "Label") as Label
 	label.text = "%s — %d%%" % [AUDIO_LABELS[LocalSettings.AUDIO_BUSES.find(bus)], int(round(percent))]
+
+
+func _handle_options_gesture(event: InputEvent) -> bool:
+	if not settings_page.is_visible_in_tree():
+		return false
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if options_touch_index >= 0:
+				return settings_scroll.get_global_rect().has_point(event.position)
+			if not settings_scroll.get_global_rect().has_point(event.position):
+				return false
+			options_touch_index = event.index
+			options_touch_origin = event.position
+			options_scroll_origin = settings_scroll.scroll_vertical
+			options_gesture = 0
+			active_touch_slider = null
+			var sliders: Array[HSlider] = [touch_slider]
+			sliders.append_array(audio_sliders)
+			for slider: HSlider in sliders:
+				if slider.is_visible_in_tree() and slider.get_global_rect().has_point(event.position):
+					active_touch_slider = slider
+					break
+			# Do not grab focus or mutate volume before the gesture is classified.
+			return true
+		if event.index != options_touch_index:
+			return false
+		if not event.canceled and options_gesture == 0 and settings_scroll.get_global_rect().has_point(event.position) and event.position.distance_to(options_touch_origin) < OPTIONS_DRAG_THRESHOLD:
+			if active_touch_slider != null:
+				active_touch_slider.grab_focus()
+				_update_touch_slider(event.position)
+			else:
+				# A completed tap keeps the existing native dropdown/toggle callbacks.
+				var tap: InputEventScreenTouch = InputEventScreenTouch.new()
+				tap.position = event.position
+				tap.index = event.index
+				tap.pressed = true
+				_handle_screen_touch_pressed(tap)
+		_cancel_options_gesture()
+		return true
+	if event is InputEventScreenDrag and event.index == options_touch_index:
+		var displacement: Vector2 = event.position - options_touch_origin
+		if options_gesture == 0:
+			if absf(displacement.y) >= OPTIONS_DRAG_THRESHOLD and absf(displacement.y) >= absf(displacement.x):
+				options_gesture = 1
+			elif active_touch_slider != null and absf(displacement.x) >= OPTIONS_DRAG_THRESHOLD and absf(displacement.x) > absf(displacement.y):
+				options_gesture = 2
+				active_touch_slider.grab_focus()
+		if options_gesture == 1:
+			# ScrollContainer clamps its native range. Same path handles up and down.
+			settings_scroll.scroll_vertical = options_scroll_origin - int(round(displacement.y))
+		elif options_gesture == 2:
+			_update_touch_slider(event.position)
+		return true
+	return false
+
+
+func _cancel_options_gesture() -> void:
+	options_touch_index = -1
+	options_gesture = 0
+	active_touch_slider = null
+	settings_slider_touch_index = -1
+
+
+func _style_audio_slider(slider: HSlider) -> void:
+	PANEL_PRESENTATION.style_slider(slider, Color("39dff2"))

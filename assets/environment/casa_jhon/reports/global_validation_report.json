@@ -1,0 +1,186 @@
+{
+  "status": "PASS",
+  "STAGE_0_INTEGRATION_READY": true,
+  "STAGE_1_STATUS": "DOCUMENTED_MODULAR_DELTA",
+  "STAGE_2_STATUS": "DOCUMENTED_MODULAR_DELTA",
+  "STAGE_3_STATUS": "DOCUMENTED_MODULAR_DELTA",
+  "SAME_HOUSE_CONTINUITY": true,
+  "errors": [],
+  "warnings": [
+    "Backgrounds are reference-only, not runtime-ready.",
+    "SPARK Project is reference-only/BLOCKED.",
+    "Foreground/atmosphere runtime extraction is BLOCKED by source resolution/detail.",
+    "Assembly references for Stages 1-3 are documentary enlargements of approved progression thumbnails and must not be used as runtime textures."
+  ],
+  "png_validation": [
+    {
+      "file": "assets/environment/casa_jhon_bg_far_stage0_v1.png",
+      "dimensions": [
+        302,
+        50
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "f2cec85b35cd8871e50c65d5bf5dddc30843b3b163c41f16b13db5a70a89d8ec"
+    },
+    {
+      "file": "assets/environment/casa_jhon_bg_mid_stage0_v1.png",
+      "dimensions": [
+        302,
+        50
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "4159c1f2ad9c9544106a7d9a363888c03a227e4ad33a430eef70f038094c1bca"
+    },
+    {
+      "file": "assets/environment/casa_jhon_bg_near_stage0_v1.png",
+      "dimensions": [
+        302,
+        62
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "0c215be9ce52db1c6c91614c02b034a9993c635f51b797f0e0d252d98ee48d9a"
+    },
+    {
+      "file": "assets/gameplay/casa_jhon_gameplay_interactives_stage0_v1.png",
+      "dimensions": [
+        344,
+        146
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "sha256": "d60373b959e9b4795cdd94e95a12fae0a69d564e40ec14df0a3a24509edf4933"
+    },
+    {
+      "file": "assets/props/casa_jhon_props_domestic_stage0_v1.png",
+      "dimensions": [
+        319,
+        146
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "sha256": "54b5bc040e96c946657206d505df1861f669e97c19988c601cc019dcd8a24b03"
+    },
+    {
+      "file": "assets/props/casa_jhon_props_technology_v1.png",
+      "dimensions": [
+        159,
+        291
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "sha256": "071bf89020defe1d57551a3f553ef825437bf97936ffdfe2d35dbfef50e7b0f6"
+    },
+    {
+      "file": "assets/props/casa_jhon_props_workshop_stage0_v1.png",
+      "dimensions": [
+        323,
+        146
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "sha256": "90b96dabdcb281be0d8381318c24e708212d46bf9a8e5cd20214f619e01a6c85"
+    },
+    {
+      "file": "assets/structural/casa_jhon_structural_base_stage0_v1.png",
+      "dimensions": [
+        488,
+        139
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        0,
+        255
+      ],
+      "sha256": "6375817831dee163ab15023147bb37e9cc1c13db07b982cc1d18bd7fabd74eb3"
+    },
+    {
+      "file": "references/casa_jhon_stage0_assembly_reference_v1.png",
+      "dimensions": [
+        2560,
+        768
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        120,
+        255
+      ],
+      "sha256": "95e0cf39034ff84eb6a89b751d6f479bb7d96f0abfed9442c409cda96ae6bdc4"
+    },
+    {
+      "file": "references/casa_jhon_stage1_assembly_reference_v1.png",
+      "dimensions": [
+        3072,
+        896
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "de460a4bfe48118903ab2cc5bde750521c97825fdb99c34096f7bb3c4a7e1a20"
+    },
+    {
+      "file": "references/casa_jhon_stage2_assembly_reference_v1.png",
+      "dimensions": [
+        3584,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "09e18500948eae4e227e924ac96e9ae68bc952230ca742fce03e4e8cbd084718"
+    },
+    {
+      "file": "references/casa_jhon_stage3_assembly_reference_v1.png",
+      "dimensions": [
+        4096,
+        1024
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "0a86a8ef953804c8f600f39ebb205f08894b6a5e99d19b7375ea5d25ccf0ad52"
+    },
+    {
+      "file": "references/spark_project_reference_stage0_v1.png",
+      "dimensions": [
+        123,
+        87
+      ],
+      "mode": "RGBA",
+      "alpha_minmax": [
+        255,
+        255
+      ],
+      "sha256": "6a6f5a62dc557e99a38e506b4111bfd89dc25ae248d3afdb8a3c0f6e6168b410"
+    }
+  ]
+}

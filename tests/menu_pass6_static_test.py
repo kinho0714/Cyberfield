@@ -66,7 +66,7 @@ class Pass6Contract(unittest.TestCase):
 
     def test_environment_tuning_and_cloud_masks(self):
         script = (ROOT / 'scene/animated_menu_background.gd').read_text()
-        self.assertIn('var rain_base_amount: int = 400', script)
+        self.assertIn('var rain_base_amount: int = 560', script)
         self.assertIn('int(rain_base_amount * 0.25)', script)
         self.assertIn('var cloud_back_speed: float = 7.0', script)
         self.assertIn('var cloud_front_speed: float = 11.5', script)

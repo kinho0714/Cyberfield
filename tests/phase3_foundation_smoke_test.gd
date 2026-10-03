@@ -36,8 +36,7 @@ func _run() -> void:
 func _test_camera_contracts() -> void:
 	_check(ROOM_MANAGER_SCRIPT.CAMERA_ZOOM_MIN > 0.0, "camera minimum zoom must be positive")
 	_check(ROOM_MANAGER_SCRIPT.CAMERA_ZOOM_MIN < ROOM_MANAGER_SCRIPT.CAMERA_ZOOM_MAX, "camera zoom bounds must be ordered")
-	_check(ROOM_MANAGER_SCRIPT.COOP_SAFE_DISTANCE < ROOM_MANAGER_SCRIPT.COOP_SOFT_LIMIT, "safe distance must precede soft limit")
-	_check(ROOM_MANAGER_SCRIPT.COOP_SOFT_LIMIT < ROOM_MANAGER_SCRIPT.COOP_HARD_LIMIT, "soft limit must precede hard limit")
+	_check(ROOM_MANAGER_SCRIPT.CAMERA_SEPARATION_START < ROOM_MANAGER_SCRIPT.CAMERA_SEPARATION_FULL_ZOOM, "camera separation range must remain ordered")
 
 
 func _test_player_and_projectile_contracts() -> void:

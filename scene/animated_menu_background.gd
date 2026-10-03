@@ -31,7 +31,7 @@ extends Control
 @export_range(0.2, 20.0, 0.1) var cloud_back_speed: float = 7.0
 @export_range(0.2, 20.0, 0.1) var cloud_front_speed: float = 11.5
 @export_group("Rain")
-@export_range(24, 420, 1) var rain_base_amount: int = 400
+@export_range(24, 560, 1) var rain_base_amount: int = 560
 @export_range(0.0, 0.25, 0.01) var rain_variation: float = 0.18
 @export_range(-25.0, -5.0, 1.0) var rain_angle: float = -16.0
 @export_range(200.0, 450.0, 10.0) var rain_speed: float = 300.0

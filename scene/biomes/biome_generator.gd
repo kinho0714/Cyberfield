@@ -1,6 +1,8 @@
 class_name BiomeGenerator
 extends Node2D
 
+const CITY_PRESENTATION := preload("res://scene/biomes/lower_city/lower_city_presentation.gd")
+
 const SOURCE_MODULE_SIZE := Vector2(960.0, 540.0)
 const CELL_SIZE := Vector2(840.0, 480.0)
 const FLOOR_TOP := 420.0
@@ -430,6 +432,11 @@ func _build_module(parent: Node2D, index: int) -> void:
 		background.color = Color(0.018, 0.045, 0.075, 1.0) if int(data.grid.y) == 0 else Color(0.025, 0.06, 0.09, 1.0)
 		background.z_index = -10
 		module.add_child(background)
+	if biome_definition.biome_id == &"lower_city":
+		var decoration := CITY_PRESENTATION.new()
+		decoration.kind = "module"
+		decoration.variant = absi(int(data.grid.x) * 7 + int(data.grid.y) * 13)
+		module.add_child(decoration)
 	_build_floor(module, data.required_connectors.has(&"down"))
 	_build_module_guard_rails(module, data.required_connectors)
 	var has_vertical_route: bool = data.required_connectors.has(&"up") or data.required_connectors.has(&"down")
@@ -486,6 +493,14 @@ func _add_static_rect(parent: Node2D, rectangle: Rect2, color: Color, one_way: b
 	visual.polygon = PackedVector2Array([Vector2(-half.x, -half.y), Vector2(half.x, -half.y), half, Vector2(-half.x, half.y)])
 	visual.color = color
 	body.add_child(visual)
+	if biome_definition != null and biome_definition.biome_id == &"lower_city" and color.a > 0:
+		var skin := CITY_PRESENTATION.new()
+		skin.surface = Rect2(-half, rectangle.size)
+		skin.kind = "platform" if one_way else ("wall" if rectangle.size.y > rectangle.size.x else "floor")
+		skin.variant = absi(roundi(body.global_position.x / 64.0))
+		body.add_child(skin)
+		# Keep the original visual node/index for existing safety/debug contracts.
+		visual.visible = false
 
 
 func _build_module_guard_rails(module: Node2D, connectors: Array) -> void:
@@ -513,6 +528,12 @@ func _add_guard_rail(parent: Node2D, local_position: Vector2) -> void:
 	debug_visual.add_to_group("procedural_debug_collider")
 	body.add_child(debug_visual)
 	parent.add_child(body)
+	if biome_definition != null and biome_definition.biome_id == &"lower_city":
+		var skin := CITY_PRESENTATION.new()
+		skin.kind = "wall"
+		skin.surface = Rect2(-GUARD_RAIL_WIDTH * 0.5, -GUARD_RAIL_HEIGHT * 0.5,
+			GUARD_RAIL_WIDTH, GUARD_RAIL_HEIGHT)
+		body.add_child(skin)
 
 
 func _create_module_sockets(module: Node2D, definition: BiomeModuleDefinition, module_index: int) -> void:
@@ -684,6 +705,12 @@ func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, dest
 	exit.destination_id = destination
 	add_child(exit)
 	exit.global_position = marker.global_position
+	if biome_definition.biome_id == &"lower_city":
+		var skin := CITY_PRESENTATION.new()
+		skin.kind = "exit"
+		exit.add_child(skin)
+		exit.get_node("Door").visible = false
+		exit.get_node("Frame").visible = false
 	(_content_modules.exit as Array).append(module_index)
 	_content_entries.append({"kind": &"exit", "content_id": exit_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
 	var exit_label := "A" if socket_order == 0 else "B"

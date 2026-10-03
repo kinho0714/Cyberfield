@@ -1,0 +1,115 @@
+{
+  "phase": "CYBERFIELD — CIDADE BAIXA — FASE 4 — BACKGROUNDS / PARALLAX",
+  "source_of_truth": "Concept Sheet Oficial — BIOMA 01 — CIDADE BAIXA; section 5 only",
+  "mockups_used": false,
+  "visual_generation_used": false,
+  "upscale_used": false,
+  "resampling_used": false,
+  "files": [
+    {
+      "filename": "cidade_baixa_background_far_v1.png",
+      "category": "background",
+      "depth": "FAR",
+      "source_box": [
+        20,
+        748,
+        513,
+        801
+      ],
+      "output_width": 493,
+      "output_height": 53,
+      "mode": "RGBA",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_usage": "OPAQUE_SOURCE_COMPONENT",
+      "scale": "1:1",
+      "resampling": "NONE",
+      "repeatability": "NON_REPEATABLE",
+      "recommended_parallax_motion_class": "VERY_SLOW",
+      "extraction_status": "COMPLETED",
+      "notes": "Finite faithful artwork strip from official Backgrounds/Parallax section. No seam, continuation, mirroring, cloning, or invented pixels. Opaque alpha is intentional for this filled source background component.",
+      "sha256": "8ff38d6f6d285eeb2cada74bc5b0da3852fd9903e7afb6a5eabfc0eaea0dbd9e",
+      "physical_reopen_validated": true
+    },
+    {
+      "filename": "cidade_baixa_background_mid_v1.png",
+      "category": "background",
+      "depth": "MID",
+      "source_box": [
+        20,
+        810,
+        513,
+        864
+      ],
+      "output_width": 493,
+      "output_height": 54,
+      "mode": "RGBA",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_usage": "OPAQUE_SOURCE_COMPONENT",
+      "scale": "1:1",
+      "resampling": "NONE",
+      "repeatability": "NON_REPEATABLE",
+      "recommended_parallax_motion_class": "SLOW_INTERMEDIATE",
+      "extraction_status": "COMPLETED",
+      "notes": "Finite faithful artwork strip from official Backgrounds/Parallax section. No seam, continuation, mirroring, cloning, or invented pixels. Opaque alpha is intentional for this filled source background component.",
+      "sha256": "3088dc5408cbc903c068b5626412ae614a9de59123b1b2d7a8304e9605465346",
+      "physical_reopen_validated": true
+    },
+    {
+      "filename": "cidade_baixa_background_near_v1.png",
+      "category": "background",
+      "depth": "NEAR",
+      "source_box": [
+        20,
+        873,
+        513,
+        947
+      ],
+      "output_width": 493,
+      "output_height": 74,
+      "mode": "RGBA",
+      "alpha_range": [
+        255,
+        255
+      ],
+      "alpha_usage": "OPAQUE_SOURCE_COMPONENT",
+      "scale": "1:1",
+      "resampling": "NONE",
+      "repeatability": "NON_REPEATABLE",
+      "recommended_parallax_motion_class": "NEAR_CAMERA",
+      "extraction_status": "COMPLETED",
+      "notes": "Finite faithful artwork strip from official Backgrounds/Parallax section. No seam, continuation, mirroring, cloning, or invented pixels. Opaque alpha is intentional for this filled source background component.",
+      "sha256": "b7887803bf242ee67fb0023d71c8781f5f1619d741fcc48584cb98987edeb727",
+      "physical_reopen_validated": true
+    }
+  ],
+  "summary": {
+    "total_files_produced": 3,
+    "FAR": 1,
+    "MID": 1,
+    "NEAR": 1,
+    "COMPLETED": 3,
+    "PARTIAL": 0,
+    "BLOCKED": 0
+  },
+  "quality_notes": [
+    "No horizontal continuity invented.",
+    "No artificial seamless edges.",
+    "All files NON_REPEATABLE because source edges do not validate seamless repetition.",
+    "No Section 7 mockup used."
+  ],
+  "not_produced": [
+    "foreground/atmosphere",
+    "structural",
+    "props",
+    "gameplay/interactives",
+    "map",
+    "Godot integration",
+    "other biomes"
+  ]
+}

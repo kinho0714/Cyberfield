@@ -1,0 +1,1643 @@
+{
+  "schema_version": 1,
+  "project": "Cyberfield",
+  "pass": "HUD/UI In-Game",
+  "logical_resolution": [
+    1280,
+    720
+  ],
+  "engine": "Godot 4.7.2 Stable",
+  "renderer": "GL Compatibility",
+  "platforms": [
+    "PC",
+    "Android"
+  ],
+  "source_of_truth": [
+    "REF01 MOBILE CONTROLS",
+    "REF02 HUD NORMAL",
+    "REF03 HUD LOW HP",
+    "REF04 PAUSE INVENTORY",
+    "REF05 SETTINGS"
+  ],
+  "rules": {
+    "concept_item_art_canonical": false,
+    "runtime_text_preferred": true,
+    "minimap_content_runtime": true,
+    "low_hp_overlay_separate": true
+  },
+  "assets": [
+    {
+      "asset_id": "hud_player_frame",
+      "display_name": "Player HUD frame",
+      "category": "shared/hud",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/hud/player_frame.png",
+      "region": null,
+      "width": 400,
+      "height": 112,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-left",
+      "recommended_position_1280x720": [
+        24,
+        20
+      ],
+      "z_order_hint": 20,
+      "dynamic_content": [
+        "player_portrait",
+        "hp_current",
+        "hp_max",
+        "hp_fill_ratio",
+        "heal_count",
+        "attribute_health",
+        "attribute_intelligence",
+        "attribute_strength",
+        "money"
+      ],
+      "states": [
+        "normal",
+        "low_hp"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "hud_hp_track",
+      "display_name": "HP track",
+      "category": "shared/hud",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/hud/hp_track.png",
+      "region": null,
+      "width": 286,
+      "height": 24,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-left",
+      "recommended_position_1280x720": null,
+      "z_order_hint": 21,
+      "dynamic_content": [
+        "hp_fill_ratio"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "hud_hp_fill",
+      "display_name": "HP fill mask/fill",
+      "category": "shared/hud",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/hud/hp_fill.png",
+      "region": null,
+      "width": 286,
+      "height": 24,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-left",
+      "recommended_position_1280x720": null,
+      "z_order_hint": 22,
+      "dynamic_content": [
+        "hp_fill_ratio"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "hud_portrait_frame",
+      "display_name": "Portrait frame",
+      "category": "shared/hud",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/hud/portrait_frame.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-left",
+      "recommended_position_1280x720": null,
+      "z_order_hint": 22,
+      "dynamic_content": [
+        "player_portrait"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "icon_heal",
+      "display_name": "Heal icon",
+      "category": "icons",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/icons/heal_icon.png",
+      "region": null,
+      "width": 48,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 23,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "icon_attr_health",
+      "display_name": "Icon Attr Health",
+      "category": "icons",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/icons/icon_attr_health.png",
+      "region": null,
+      "width": 48,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 23,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "icon_attr_intelligence",
+      "display_name": "Icon Attr Intelligence",
+      "category": "icons",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/icons/icon_attr_intelligence.png",
+      "region": null,
+      "width": 48,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 23,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "icon_attr_strength",
+      "display_name": "Icon Attr Strength",
+      "category": "icons",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/icons/icon_attr_strength.png",
+      "region": null,
+      "width": 48,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 23,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "icon_money",
+      "display_name": "Money icon",
+      "category": "icons",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/icons/money_icon.png",
+      "region": null,
+      "width": 48,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 23,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "minimap_frame",
+      "display_name": "Minimap frame",
+      "category": "shared/minimap",
+      "subsystem": "minimap",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/minimap/minimap_frame.png",
+      "region": null,
+      "width": 250,
+      "height": 105,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-right",
+      "recommended_position_1280x720": [
+        970,
+        20
+      ],
+      "z_order_hint": 20,
+      "dynamic_content": [
+        "minimap_runtime_texture"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "pause_button_frame",
+      "display_name": "Pause button frame",
+      "category": "shared/hud",
+      "subsystem": "hud",
+      "source_reference": "REF02 HUD NORMAL",
+      "file": "assets/shared/hud/pause_button_frame.png",
+      "region": null,
+      "width": 56,
+      "height": 56,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-right",
+      "recommended_position_1280x720": [
+        1210,
+        20
+      ],
+      "z_order_hint": 20,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_joystick_base",
+      "display_name": "Joystick base",
+      "category": "mobile/joystick",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/joystick/joystick_base.png",
+      "region": null,
+      "width": 210,
+      "height": 210,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "bottom-left",
+      "recommended_position_1280x720": [
+        32,
+        478
+      ],
+      "z_order_hint": 40,
+      "dynamic_content": [
+        "touch_position"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_joystick_knob",
+      "display_name": "Joystick knob",
+      "category": "mobile/joystick",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/joystick/joystick_knob.png",
+      "region": null,
+      "width": 82,
+      "height": 82,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [
+        "touch_position"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_action_frame_cyan",
+      "display_name": "Mobile action frame cyan",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/action_frame_cyan.png",
+      "region": null,
+      "width": 88,
+      "height": 88,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 40,
+      "dynamic_content": [],
+      "states": [
+        "normal",
+        "focused",
+        "pressed",
+        "disabled",
+        "cooldown"
+      ],
+      "notes": "Focused/pressed/disabled/cooldown should be Godot modulate/animation/mask unless explicit distinct art is later approved."
+    },
+    {
+      "asset_id": "mobile_action_frame_magenta",
+      "display_name": "Mobile action frame magenta",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/action_frame_magenta.png",
+      "region": null,
+      "width": 88,
+      "height": 88,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 40,
+      "dynamic_content": [],
+      "states": [
+        "normal",
+        "focused",
+        "pressed",
+        "disabled",
+        "cooldown"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_action_frame_red",
+      "display_name": "Mobile action frame red",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/action_frame_red.png",
+      "region": null,
+      "width": 88,
+      "height": 88,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 40,
+      "dynamic_content": [],
+      "states": [
+        "normal",
+        "focused",
+        "pressed",
+        "disabled",
+        "cooldown"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_use_icon",
+      "display_name": "Use Icon",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/use_icon.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_dash_icon",
+      "display_name": "Dash Icon",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/dash_icon.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_jump_icon",
+      "display_name": "Jump Icon",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/jump_icon.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_attack1_icon",
+      "display_name": "Attack1 Icon",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/attack1_icon.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "mobile_attack2_icon",
+      "display_name": "Attack2 Icon",
+      "category": "mobile/actions",
+      "subsystem": "mobile",
+      "source_reference": "REF01 MOBILE CONTROLS",
+      "file": "assets/mobile/actions/attack2_icon.png",
+      "region": null,
+      "width": 64,
+      "height": 64,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "mobile",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 41,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "pause_side_panel",
+      "display_name": "Pause side panel",
+      "category": "shared/pause",
+      "subsystem": "pause",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/pause/pause_side_panel.png",
+      "region": null,
+      "width": 280,
+      "height": 390,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "center-left",
+      "recommended_position_1280x720": [
+        48,
+        165
+      ],
+      "z_order_hint": 60,
+      "dynamic_content": [
+        "runtime_labels"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "pause_row_normal",
+      "display_name": "Pause row normal",
+      "category": "shared/pause",
+      "subsystem": "pause",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/pause/pause_row_normal.png",
+      "region": null,
+      "width": 240,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "pause_row_selected",
+      "display_name": "Pause row selected",
+      "category": "shared/pause",
+      "subsystem": "pause",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/pause/pause_row_selected.png",
+      "region": null,
+      "width": 240,
+      "height": 48,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "focused",
+        "selected"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "inventory_panel",
+      "display_name": "Inventory main panel",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/inventory_panel.png",
+      "region": null,
+      "width": 720,
+      "height": 420,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "center",
+      "recommended_position_1280x720": [
+        420,
+        145
+      ],
+      "z_order_hint": 60,
+      "dynamic_content": [
+        "inventory_item_icon",
+        "inventory_item_name",
+        "inventory_item_description",
+        "inventory_item_stats"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "inventory_tab_normal",
+      "display_name": "Inventory tab normal",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/tab_normal.png",
+      "region": null,
+      "width": 128,
+      "height": 40,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "inventory_tab_selected",
+      "display_name": "Inventory tab selected",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/tab_selected.png",
+      "region": null,
+      "width": 128,
+      "height": 40,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "selected"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "inventory_slot_empty",
+      "display_name": "Inventory slot empty",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/slot_empty.png",
+      "region": null,
+      "width": 112,
+      "height": 96,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [
+        "inventory_item_icon"
+      ],
+      "states": [
+        "empty"
+      ],
+      "notes": "No illustrated concept weapon/item has been canonized."
+    },
+    {
+      "asset_id": "inventory_slot_normal",
+      "display_name": "Inventory slot normal",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/slot_normal.png",
+      "region": null,
+      "width": 112,
+      "height": 96,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [
+        "inventory_item_icon"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": "No illustrated concept weapon/item has been canonized."
+    },
+    {
+      "asset_id": "inventory_slot_selected",
+      "display_name": "Inventory slot selected",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/slot_selected.png",
+      "region": null,
+      "width": 112,
+      "height": 96,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [
+        "inventory_item_icon"
+      ],
+      "states": [
+        "selected"
+      ],
+      "notes": "No illustrated concept weapon/item has been canonized."
+    },
+    {
+      "asset_id": "inventory_slot_disabled",
+      "display_name": "Inventory slot disabled",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/slot_disabled.png",
+      "region": null,
+      "width": 112,
+      "height": 96,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [
+        "inventory_item_icon"
+      ],
+      "states": [
+        "disabled"
+      ],
+      "notes": "No illustrated concept weapon/item has been canonized."
+    },
+    {
+      "asset_id": "inventory_detail_panel",
+      "display_name": "Inventory detail panel",
+      "category": "shared/inventory",
+      "subsystem": "inventory",
+      "source_reference": "REF04 PAUSE INVENTORY",
+      "file": "assets/shared/inventory/detail_panel.png",
+      "region": null,
+      "width": 320,
+      "height": 250,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "inventory_item_icon",
+        "inventory_item_name",
+        "inventory_item_description",
+        "inventory_item_stats"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_panel",
+      "display_name": "Settings main panel",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/settings_panel.png",
+      "region": null,
+      "width": 900,
+      "height": 430,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "center",
+      "recommended_position_1280x720": [
+        340,
+        155
+      ],
+      "z_order_hint": 60,
+      "dynamic_content": [
+        "settings_values",
+        "difficulty"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_tab_normal",
+      "display_name": "Settings tab normal",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/settings_tab_normal.png",
+      "region": null,
+      "width": 120,
+      "height": 40,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_tab_selected",
+      "display_name": "Settings tab selected",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/settings_tab_selected.png",
+      "region": null,
+      "width": 120,
+      "height": 40,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label"
+      ],
+      "states": [
+        "selected"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_option_row_normal",
+      "display_name": "Settings option row",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/option_row_normal.png",
+      "region": null,
+      "width": 500,
+      "height": 36,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label",
+        "settings_values"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_option_row_focused",
+      "display_name": "Settings focused row",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/option_row_focused.png",
+      "region": null,
+      "width": 500,
+      "height": 36,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        8,
+        8,
+        8,
+        8
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "runtime_label",
+        "settings_values"
+      ],
+      "states": [
+        "focused"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_slider_track",
+      "display_name": "Slider track",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/slider_track.png",
+      "region": null,
+      "width": 200,
+      "height": 16,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [
+        "slider_values"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_slider_fill",
+      "display_name": "Slider fill",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/slider_fill.png",
+      "region": null,
+      "width": 200,
+      "height": 16,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 63,
+      "dynamic_content": [
+        "slider_values"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_slider_handle",
+      "display_name": "Slider handle",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/slider_handle.png",
+      "region": null,
+      "width": 18,
+      "height": 26,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 64,
+      "dynamic_content": [
+        "slider_values"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_arrow_left",
+      "display_name": "Arrow Left",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/arrow_left.png",
+      "region": null,
+      "width": 20,
+      "height": 26,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "settings_arrow_right",
+      "display_name": "Arrow Right",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/arrow_right.png",
+      "region": null,
+      "width": 20,
+      "height": 26,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 62,
+      "dynamic_content": [],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "difficulty_card_normal",
+      "display_name": "Difficulty card normal",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/difficulty_card_normal.png",
+      "region": null,
+      "width": 310,
+      "height": 74,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "difficulty",
+        "runtime_label"
+      ],
+      "states": [
+        "normal"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "difficulty_card_selected",
+      "display_name": "Difficulty card selected",
+      "category": "shared/settings",
+      "subsystem": "settings",
+      "source_reference": "REF05 SETTINGS",
+      "file": "assets/shared/settings/difficulty_card_selected.png",
+      "region": null,
+      "width": 310,
+      "height": 74,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        10,
+        10,
+        10,
+        10
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": null,
+      "recommended_position_1280x720": null,
+      "z_order_hint": 61,
+      "dynamic_content": [
+        "difficulty",
+        "runtime_label"
+      ],
+      "states": [
+        "selected"
+      ],
+      "notes": ""
+    },
+    {
+      "asset_id": "low_hp_vignette",
+      "display_name": "Low HP vignette",
+      "category": "shared/hud/low_hp",
+      "subsystem": "low_hp",
+      "source_reference": "REF03 HUD LOW HP",
+      "file": "assets/shared/low_hp/low_hp_vignette.png",
+      "region": null,
+      "width": 1280,
+      "height": 720,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": false,
+      "nine_patch_margins": null,
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "full-rect",
+      "recommended_position_1280x720": [
+        0,
+        0
+      ],
+      "z_order_hint": 90,
+      "dynamic_content": [
+        "hp_fill_ratio"
+      ],
+      "states": [
+        "low_hp"
+      ],
+      "notes": "Godot controls visibility, opacity and any pulse animation."
+    },
+    {
+      "asset_id": "hud_player_frame_critical",
+      "display_name": "Critical HUD frame accent",
+      "category": "shared/hud/low_hp",
+      "subsystem": "low_hp",
+      "source_reference": "REF03 HUD LOW HP",
+      "file": "assets/shared/low_hp/player_frame_critical_accent.png",
+      "region": null,
+      "width": 400,
+      "height": 112,
+      "rgba": true,
+      "runtime_ready": true,
+      "reference_only": false,
+      "blocked": false,
+      "platform": "shared",
+      "scalable": true,
+      "nine_patch_margins": [
+        18,
+        18,
+        18,
+        18
+      ],
+      "recommended_origin": [
+        0,
+        0
+      ],
+      "recommended_anchor": "top-left",
+      "recommended_position_1280x720": [
+        24,
+        20
+      ],
+      "z_order_hint": 25,
+      "dynamic_content": [],
+      "states": [
+        "low_hp"
+      ],
+      "notes": ""
+    }
+  ]
+}

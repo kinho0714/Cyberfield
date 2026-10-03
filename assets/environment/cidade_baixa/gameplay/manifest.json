@@ -1,0 +1,475 @@
+{
+  "phase": "MARCHA — FASE 3: GAMEPLAY / INTERATIVOS DA CIDADE BAIXA",
+  "source_of_truth": "Concept Sheet Oficial — CYBERFIELD — BIOMA 01 — CIDADE BAIXA, seção 3. ELEMENTOS DE GAMEPLAY",
+  "frozen_previous_phases": {
+    "structural": "cidade_baixa_structural_tileset_v1.png — externally approved; untouched and not included",
+    "props": "cidade_baixa_props_v1.png — externally approved; untouched and not included"
+  },
+  "files": {
+    "cidade_baixa_gameplay_interactives_v1.png": {
+      "dimensions": [
+        768,
+        259
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "elements": 8,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    }
+  },
+  "elements": [
+    {
+      "logical_id": "biome_exit_01",
+      "type": "BIOME_EXIT",
+      "family": "biome_exit",
+      "variant": "standard",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 12,
+        "y": 12,
+        "width": 134,
+        "height": 121
+      },
+      "content_region": {
+        "x": 24,
+        "y": 24,
+        "width": 110,
+        "height": 97
+      },
+      "width": 110,
+      "height": 97,
+      "pivot_recommended": [
+        67,
+        109
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "biome_transition",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        122,
+        109
+      ],
+      "source_box": [
+        1010,
+        229,
+        1120,
+        326
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        122,
+        109
+      ],
+      "occupied_width": 110,
+      "occupied_height": 97,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "door_passage_01",
+      "type": "DOOR_PASSAGE",
+      "family": "door_passage",
+      "variant": "industrial",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 146,
+        "y": 12,
+        "width": 124,
+        "height": 119
+      },
+      "content_region": {
+        "x": 158,
+        "y": 24,
+        "width": 100,
+        "height": 95
+      },
+      "width": 100,
+      "height": 95,
+      "pivot_recommended": [
+        62,
+        107
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "passage",
+      "animation_possible": false,
+      "effect_separable": false,
+      "bbox": [
+        12,
+        12,
+        112,
+        107
+      ],
+      "source_box": [
+        1132,
+        231,
+        1232,
+        326
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        112,
+        107
+      ],
+      "occupied_width": 100,
+      "occupied_height": 95,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "teleporter_01",
+      "type": "TELEPORTER",
+      "family": "teleporter",
+      "variant": "cyan_energy",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 270,
+        "y": 12,
+        "width": 134,
+        "height": 124
+      },
+      "content_region": {
+        "x": 282,
+        "y": 24,
+        "width": 110,
+        "height": 100
+      },
+      "width": 110,
+      "height": 100,
+      "pivot_recommended": [
+        67,
+        112
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "teleport",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        122,
+        112
+      ],
+      "source_box": [
+        1242,
+        226,
+        1352,
+        326
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        122,
+        112
+      ],
+      "occupied_width": 110,
+      "occupied_height": 100,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "attribute_altar_01",
+      "type": "ATTRIBUTE_ALTAR",
+      "family": "attribute_altar",
+      "variant": "cyan_core",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 404,
+        "y": 12,
+        "width": 157,
+        "height": 121
+      },
+      "content_region": {
+        "x": 416,
+        "y": 24,
+        "width": 133,
+        "height": 97
+      },
+      "width": 133,
+      "height": 97,
+      "pivot_recommended": [
+        78,
+        109
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "attribute_reward",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        145,
+        109
+      ],
+      "source_box": [
+        1362,
+        229,
+        1495,
+        326
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        145,
+        109
+      ],
+      "occupied_width": 133,
+      "occupied_height": 97,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "loot_chest_01",
+      "type": "LOOT_CHEST",
+      "family": "loot_chest",
+      "variant": "industrial_cyan",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 561,
+        "y": 12,
+        "width": 133,
+        "height": 113
+      },
+      "content_region": {
+        "x": 573,
+        "y": 24,
+        "width": 109,
+        "height": 89
+      },
+      "width": 109,
+      "height": 89,
+      "pivot_recommended": [
+        66,
+        101
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "loot",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        121,
+        101
+      ],
+      "source_box": [
+        1010,
+        363,
+        1119,
+        452
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        121,
+        101
+      ],
+      "occupied_width": 109,
+      "occupied_height": 89,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "terminal_gameplay_01",
+      "type": "TERMINAL",
+      "family": "terminal",
+      "variant": "interactive_console",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 12,
+        "y": 136,
+        "width": 116,
+        "height": 111
+      },
+      "content_region": {
+        "x": 24,
+        "y": 148,
+        "width": 92,
+        "height": 87
+      },
+      "width": 92,
+      "height": 87,
+      "pivot_recommended": [
+        58,
+        99
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "terminal",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        104,
+        99
+      ],
+      "source_box": [
+        1133,
+        365,
+        1225,
+        452
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        104,
+        99
+      ],
+      "occupied_width": 92,
+      "occupied_height": 87,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "interaction_point_01",
+      "type": "INTERACTION_POINT",
+      "family": "interaction_point",
+      "variant": "cyan_screen",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 128,
+        "y": 136,
+        "width": 126,
+        "height": 111
+      },
+      "content_region": {
+        "x": 140,
+        "y": 148,
+        "width": 102,
+        "height": 87
+      },
+      "width": 102,
+      "height": 87,
+      "pivot_recommended": [
+        63,
+        99
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "interact",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        114,
+        99
+      ],
+      "source_box": [
+        1244,
+        365,
+        1346,
+        452
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        114,
+        99
+      ],
+      "occupied_width": 102,
+      "occupied_height": 87,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    },
+    {
+      "logical_id": "area_marker_01",
+      "type": "AREA_MARKER",
+      "family": "area_marker",
+      "variant": "magenta_crystal",
+      "file": "cidade_baixa_gameplay_interactives_v1.png",
+      "atlas_region": {
+        "x": 254,
+        "y": 136,
+        "width": 157,
+        "height": 111
+      },
+      "content_region": {
+        "x": 266,
+        "y": 148,
+        "width": 133,
+        "height": 87
+      },
+      "width": 133,
+      "height": 87,
+      "pivot_recommended": [
+        78,
+        99
+      ],
+      "alignment": "FLOOR_ALIGNED",
+      "interaction_hint": "important_area",
+      "animation_possible": true,
+      "effect_separable": true,
+      "bbox": [
+        12,
+        12,
+        145,
+        99
+      ],
+      "source_box": [
+        1362,
+        365,
+        1495,
+        452
+      ],
+      "source_scale": "1:1",
+      "observations": "Controlled extraction from official Gameplay panel only; no upscale/resampling. Luminous object-owned effects retained where present.",
+      "validated_bbox_in_region": [
+        12,
+        12,
+        145,
+        99
+      ],
+      "occupied_width": 133,
+      "occupied_height": 87,
+      "clipping_detected": false,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5"
+    }
+  ],
+  "blocked": [],
+  "not_produced": [
+    "background FAR",
+    "background MID",
+    "background NEAR",
+    "foreground/atmosfera",
+    "mapa",
+    "TileSet Resource",
+    "cenas Godot",
+    "scripts",
+    "integração",
+    "outros biomas"
+  ],
+  "validation": {
+    "physical_reopen": true,
+    "rgba": true,
+    "true_alpha": true,
+    "source_scale_1_to_1": true,
+    "upscale": false,
+    "resampling": false,
+    "atlas_region_overlap": false,
+    "padding_px": 12,
+    "clipping_audit": true,
+    "segmentation_geometry_audit": true,
+    "mockups_used_as_source": false
+  }
+}

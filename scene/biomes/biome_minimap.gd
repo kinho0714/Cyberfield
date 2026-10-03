@@ -1,5 +1,7 @@
 extends Control
 
+var official_frame: StyleBoxTexture
+
 const MAP_PADDING := 14.0
 @export var update_interval := 0.12
 
@@ -10,6 +12,10 @@ var _source_signature := ""
 
 
 func _ready() -> void:
+	official_frame = StyleBoxTexture.new()
+	official_frame.texture = preload("res://assets/ui/gameplay_hud/assets/shared/minimap/minimap_frame.png")
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		official_frame.set_texture_margin(side, 18.0)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	gui_input.connect(_on_gui_input)
 	visible = false
@@ -104,8 +110,7 @@ func _sync_discovered_from_state() -> void:
 func _draw() -> void:
 	if _graph.is_empty():
 		return
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.01, 0.025, 0.05, 0.84), true)
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.25, 0.75, 0.9, 0.7), false, 2.0)
+	draw_style_box(official_frame, Rect2(Vector2.ZERO, size))
 	var modules: Array = _graph.get("modules", []) as Array
 	if modules.is_empty():
 		return

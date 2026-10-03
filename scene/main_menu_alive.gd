@@ -7,6 +7,7 @@ const TRANSITION_TIME := 0.18
 
 @export var compact := false
 @export var draw_frame := true
+@export var options_legibility := false
 
 var selection_style: StyleBoxFlat
 var page_tween: Tween
@@ -33,7 +34,7 @@ func _ready() -> void:
 		if child is Label:
 			var label := child as Label
 			label.add_theme_font_size_override("font_size", 28 if child.name == &"Title" else 22)
-			label.add_theme_color_override("font_color", CYAN if child.name == &"Title" else Color("aabcca"))
+			label.add_theme_color_override("font_color", CYAN if child.name == &"Title" else (WHITE if options_legibility else Color("aabcca")))
 			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 			var label_margin := StyleBoxEmpty.new()
 			label_margin.content_margin_left = 26.0
@@ -79,8 +80,7 @@ func _ready() -> void:
 			surface.content_margin_right = 24.0
 			control.add_theme_stylebox_override("panel" if control is ItemList else "normal", surface)
 		if control is OptionButton:
-			control.get_popup().add_theme_font_size_override("font_size", 28)
-			control.get_popup().add_theme_constant_override("v_separation", 16)
+			_style_dropdown(control.get_popup())
 			control.get_popup().about_to_popup.connect(_popup_opening.bind(control))
 			control.get_popup().popup_hide.connect(_popup_closed)
 			control.get_popup().window_input.connect(_popup_window_input)
@@ -210,7 +210,7 @@ func _refresh() -> void:
 		selected = null
 	for child in get_children():
 		if child is BaseButton:
-			var text_color: Color = WHITE if child == selected else Color("92aabb")
+			var text_color: Color = WHITE if child == selected or options_legibility else Color("92aabb")
 			child.add_theme_color_override("font_color", text_color)
 			child.add_theme_color_override("font_hover_color", text_color)
 
@@ -259,7 +259,7 @@ func _draw_compact_frame() -> void:
 		Vector2(right, bottom - cut), Vector2(right - cut, bottom),
 		Vector2(left, bottom), Vector2(left, top + cut), Vector2(left + cut, top)
 	])
-	draw_colored_polygon(outline, Color(0.01, 0.035, 0.05, 0.10))
+	draw_colored_polygon(outline, Color(0.01, 0.035, 0.05, 0.82 if options_legibility else 0.10))
 	draw_polyline(outline, Color(0.22, 0.87, 0.95, 0.78), 1.0, true)
 	# Short rails/corner cuts give the frame structure without an opaque surface.
 	draw_line(Vector2(left + cut, top - 3.0), Vector2(left + 64.0, top - 3.0), CYAN, 1.0)
@@ -330,3 +330,31 @@ func _exit_tree() -> void:
 	Input.emulate_mouse_from_touch = previous_mouse_emulation
 	popup_mouse_override = false
 	awaiting_popup_release = false
+
+
+func _style_dropdown(popup: PopupMenu) -> void:
+	# Shared presentation only: keep native selection, modal signals and input intact.
+	var panel: StyleBoxFlat = StyleBoxFlat.new()
+	panel.bg_color = Color(0.01, 0.035, 0.05, 0.94)
+	panel.border_color = Color(CYAN, 0.8)
+	panel.set_border_width_all(1)
+	panel.set_corner_radius_all(3)
+	panel.content_margin_left = 12.0
+	panel.content_margin_right = 12.0
+	panel.content_margin_top = 8.0
+	panel.content_margin_bottom = 8.0
+	var hover: StyleBoxFlat = StyleBoxFlat.new()
+	hover.bg_color = Color(0.025, 0.25, 0.31, 0.65)
+	hover.border_color = CYAN
+	hover.border_width_left = 2
+	hover.content_margin_left = 8.0
+	hover.content_margin_right = 8.0
+	popup.add_theme_stylebox_override("panel", panel)
+	popup.add_theme_stylebox_override("hover", hover)
+	popup.add_theme_color_override("font_color", Color("bbccd9"))
+	popup.add_theme_color_override("font_hover_color", WHITE)
+	popup.add_theme_color_override("font_disabled_color", DIM)
+	popup.add_theme_color_override("font_accelerator_color", CYAN)
+	popup.add_theme_font_override("font", get_theme_font("font", "Button"))
+	popup.add_theme_font_size_override("font_size", 28)
+	popup.add_theme_constant_override("v_separation", 16)

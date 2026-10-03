@@ -95,10 +95,12 @@ func _update_presentation(delta: float = 0.0) -> void:
 	if not visible:
 		return
 	flip_h = _state_source.flip_h
-	if visual_state in [&"wall_slide", &"wall_climb"]:
+	if not bool(player.get("network_remote_replica")) and visual_state in [&"wall_slide", &"wall_climb"]:
 		_apply_wall_facing(player)
 	modulate = Color(1.0, 1.0, 1.0, _state_source.modulate.a)
-	if visual_state == &"air":
+	if bool(player.get("network_remote_replica")) and visual_state in [&"air", &"dash", &"attack", &"ground_slam"]:
+		_set_manual_frame(visual_state, clampi(int(player.get("network_visual_frame")), 0, sprite_frames.get_frame_count(visual_state) - 1))
+	elif visual_state == &"air":
 		animation = &"air"
 		pause()
 		var requested_air_frame := clampi(int(player.get("network_visual_frame")), 0, 3) if bool(player.get("network_remote_replica")) else _air_frame(player.velocity.y)
@@ -124,6 +126,11 @@ func _resolve_state(player: CharacterBody2D) -> StringName:
 		return remote_state
 	if bool(player.get("is_downed")):
 		return &"downed"
+	if bool(player.get("network_prediction_only")):
+		if bool(player.get("network_is_hurt")):
+			return &"hurt"
+		if bool(player.get("network_is_reviving")):
+			return &"revive"
 	if bool(player.get("is_hurt")):
 		return &"hurt"
 	if bool(player.get("is_ground_slamming")) or _ground_slam_impact_timer > 0.0:
@@ -220,7 +227,7 @@ func _advance_visual_timers(player: CharacterBody2D, delta: float) -> void:
 	var is_downed_now := bool(player.get("is_downed"))
 	var is_hurt_now := bool(player.get("is_hurt"))
 	var revive_target: Variant = player.get("_revive_target")
-	var is_reviving := revive_target is Node and is_instance_valid(revive_target)
+	var is_reviving: bool = (revive_target is Node and is_instance_valid(revive_target)) or (bool(player.get("network_prediction_only")) and bool(player.get("network_is_reviving")))
 	var is_ground_slamming_now := bool(player.get("is_ground_slamming"))
 	var is_dashing_now := float(player.get("dash_timer")) > 0.0
 	var is_attacking_now := bool(player.get("is_attacking"))

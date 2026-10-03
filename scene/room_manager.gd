@@ -5,15 +5,14 @@ signal coop_waiting_changed(visible: bool)
 const ROOM_BOUNDS := Rect2(0.0, 0.0, 1280.0, 720.0)
 const BOUNDARY_THICKNESS := 48.0
 const PLAYER_SCENE := preload("res://entities/player.tscn")
-const LABORATORY_HUB_SCENE := preload("res://scene/laboratory_hub.tscn")
+const LABORATORY_HUB_SCENE := preload("res://scene/casa_jhon_hub.tscn")
 const LOWER_CITY_BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_city_biome.tscn")
 const BOSS_STAGE_SCENE := preload("res://scene/biomes/boss_stage.tscn")
 const COOP_SPAWN_OFFSET := 22.0
 const EXIT_GROUP_DISTANCE := 96.0
 const TELEPORT_GROUP_DISTANCE := 128.0
-const COOP_SAFE_DISTANCE := 480.0
-const COOP_SOFT_LIMIT := 720.0
-const COOP_HARD_LIMIT := 1050.0
+const CAMERA_SEPARATION_START := 480.0
+const CAMERA_SEPARATION_FULL_ZOOM := 1050.0
 const CAMERA_ZOOM_MIN := 0.78
 const CAMERA_ZOOM_MAX := 1.22
 
@@ -54,6 +53,9 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if current_is_hub and not is_transitioning:
+		_update_hub_camera(delta)
+		return
 	if not current_is_generated_biome or is_transitioning:
 		return
 	var active_players := get_players().filter(func(player: Node) -> bool: return player.visible and not player.is_downed)
@@ -68,8 +70,31 @@ func _process(delta: float) -> void:
 	target.y = clampf(target.y, generated_biome_bounds.position.y + half_view.y, generated_biome_bounds.end.y - half_view.y)
 	gameplay_camera.global_position = target
 	_update_coop_camera(active_players, delta)
-	if active_players.size() >= 2 and (not lan_session.is_network_game() or lan_session.is_host()):
-		_apply_coop_distance_limits(active_players)
+
+
+func _update_hub_camera(delta: float) -> void:
+	if not is_instance_valid(current_room) or not current_room.has_method("get_hub_bounds"):
+		return
+	var players := get_players().filter(
+		func(player: Node) -> bool: return player.visible and not player.is_downed
+	)
+	if players.is_empty():
+		return
+	var bounds: Rect2 = current_room.get_hub_bounds()
+	_update_coop_camera(players, delta)
+	# Prevent the camera from exposing space outside the finite house, including
+	# wide Android viewports. This constraint applies only to the Hub camera.
+	var view_size := get_viewport_rect().size
+	var coverage_zoom := maxf(view_size.x / bounds.size.x, view_size.y / bounds.size.y)
+	gameplay_camera.zoom = Vector2.ONE * maxf(gameplay_camera.zoom.x, coverage_zoom)
+	var half_view := view_size * 0.5 / gameplay_camera.zoom.x
+	var target := Vector2.ZERO
+	for player in players:
+		target += player.global_position
+	target /= float(players.size())
+	target.x = clampf(target.x, bounds.position.x + half_view.x, bounds.end.x - half_view.x)
+	target.y = clampf(target.y, bounds.position.y + half_view.y, bounds.end.y - half_view.y)
+	gameplay_camera.global_position = target
 
 
 func _update_coop_camera(players: Array, delta: float) -> void:
@@ -77,30 +102,12 @@ func _update_coop_camera(players: Array, delta: float) -> void:
 	var desired_zoom := base_zoom
 	if players.size() >= 2:
 		var separation := _maximum_player_separation(players)
-		var separation_ratio := clampf((separation - COOP_SAFE_DISTANCE) / (COOP_HARD_LIMIT - COOP_SAFE_DISTANCE), 0.0, 1.0)
+		var separation_ratio := clampf((separation - CAMERA_SEPARATION_START) / (CAMERA_SEPARATION_FULL_ZOOM - CAMERA_SEPARATION_START), 0.0, 1.0)
 		desired_zoom = lerpf(base_zoom, CAMERA_ZOOM_MIN, separation_ratio)
 	desired_zoom = clampf(desired_zoom, CAMERA_ZOOM_MIN, CAMERA_ZOOM_MAX)
 	var current_zoom := gameplay_camera.zoom.x
 	var next_zoom := lerpf(current_zoom, desired_zoom, 1.0 - exp(-4.5 * delta))
 	gameplay_camera.zoom = Vector2.ONE * next_zoom
-
-
-func _apply_coop_distance_limits(players: Array) -> void:
-	for player_value: Variant in players:
-		var player := player_value as CharacterBody2D
-		var leader := _nearest_other_player(player, players)
-		if leader == null:
-			continue
-		var separation := player.global_position.distance_to(leader.global_position)
-		if separation > COOP_SOFT_LIMIT:
-			var strength := clampf((separation - COOP_SOFT_LIMIT) / (COOP_HARD_LIMIT - COOP_SOFT_LIMIT), 0.0, 1.0)
-			var away := (player.global_position - leader.global_position).normalized()
-			if player.velocity.dot(away) > 0.0:
-				player.velocity *= 1.0 - strength * 0.85
-		if separation > COOP_HARD_LIMIT:
-			player.global_position = _find_safe_tether_position(player, leader)
-			player.velocity = Vector2.ZERO
-
 
 func _maximum_player_separation(players: Array) -> float:
 	var maximum := 0.0
@@ -108,44 +115,6 @@ func _maximum_player_separation(players: Array) -> float:
 		for second_index in range(first_index + 1, players.size()):
 			maximum = maxf(maximum, players[first_index].global_position.distance_to(players[second_index].global_position))
 	return maximum
-
-
-func _nearest_other_player(player: CharacterBody2D, players: Array) -> CharacterBody2D:
-	var nearest: CharacterBody2D = null
-	var nearest_distance := INF
-	for candidate_value: Variant in players:
-		var candidate := candidate_value as CharacterBody2D
-		if candidate == player:
-			continue
-		var distance := player.global_position.distance_squared_to(candidate.global_position)
-		if distance < nearest_distance:
-			nearest = candidate
-			nearest_distance = distance
-	return nearest
-
-
-func _find_safe_tether_position(player: CharacterBody2D, leader: CharacterBody2D) -> Vector2:
-	var direction := signf(player.global_position.x - leader.global_position.x)
-	if direction == 0.0:
-		direction = -1.0
-	var candidates: Array[Vector2] = [
-		leader.global_position + Vector2(direction * 96.0, -40.0),
-		leader.global_position + Vector2(-direction * 96.0, -40.0),
-		leader.global_position + Vector2(direction * 144.0, -64.0),
-	]
-	var collision_shape := player.get_node_or_null("CollisionShape2D") as CollisionShape2D
-	if collision_shape == null or collision_shape.shape == null:
-		return candidates[0]
-	for candidate_value: Variant in candidates:
-		var candidate: Vector2 = candidate_value
-		var query := PhysicsShapeQueryParameters2D.new()
-		query.shape = collision_shape.shape
-		query.transform = Transform2D(0.0, candidate + collision_shape.position)
-		query.collision_mask = player.collision_mask
-		query.exclude = [player.get_rid(), leader.get_rid()]
-		if get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty():
-			return candidate
-	return leader.global_position + Vector2(0.0, -80.0)
 
 
 func start_game_mode(mode: StringName) -> void:
@@ -567,8 +536,10 @@ func _load_laboratory_hub() -> bool:
 	current_room = new_hub
 	current_is_hub = true
 	current_is_generated_biome = false
-	_reset_camera_for_room()
+	_configure_camera_for_biome(new_hub.get_hub_bounds(), p1_spawn.global_position)
 	_position_players_in_hub(p1_spawn.global_position, p2_spawn.global_position)
+	_update_hub_camera(0.0)
+	gameplay_camera.reset_smoothing()
 	return true
 
 

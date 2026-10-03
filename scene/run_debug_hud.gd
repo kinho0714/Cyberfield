@@ -1,5 +1,8 @@
 extends CanvasLayer
 
+const OFFICIAL_HUD = preload("res://ui/gameplay_hud_presentation.gd")
+var official_hud: Control
+
 @onready var status_label: Label = $Panel/Margin/VBox/Status
 @onready var restart_button: Button = $Panel/Margin/VBox/Restart
 @onready var room_title: Label = $RoomTitle
@@ -40,6 +43,9 @@ var local_settings: LocalSettings
 
 
 func _ready() -> void:
+	official_hud = OFFICIAL_HUD.new()
+	gameplay_hud.add_child(official_hud)
+	$GameplayHUD/PlayerPanel.hide()
 	run_manager = get_parent().get_node("RunManager")
 	local_settings = get_parent().get_node("LocalSettings")
 	run_manager.state_changed.connect(_refresh)
@@ -187,6 +193,7 @@ func _process(_delta: float) -> void:
 	var local_player := _get_local_player(players)
 	var partner_player := _get_partner_player(players, local_player)
 	gameplay_hud.visible = run_manager.is_gameplay_context_active() and local_player != null and not end_overlay.visible
+	official_hud.update_state(local_player, run_manager.dirty_money, gameplay_hud.visible and visible)
 	if end_overlay.visible:
 		revive_panel.visible = false
 		$Panel.visible = false
@@ -234,10 +241,8 @@ func _update_local_player_hud(player: Node) -> void:
 	local_health.max_value = player.max_health
 	local_health.value = player.health
 	local_health_text.text = "%d / %d" % [player.health, player.max_health]
-	var potion_segments := "■".repeat(player.heal_doses) + "□".repeat(player.max_heal_doses - player.heal_doses)
-	var slot_1 := WeaponCatalog.get_display_name(player.equipped_weapons[0])
-	var slot_2 := WeaponCatalog.get_display_name(player.equipped_weapons[1]) if not player.equipped_weapons[1].is_empty() else "VAZIO"
-	local_stats.text = "CURA %s    INT %d  SAÚDE %d  FORÇA %d    $%d\n%s S1 %s    %s S2 %s" % [potion_segments, player.intellect, player.health_attribute, player.strength, run_manager.dirty_money, "▶" if player.active_weapon_slot == 0 else " ", slot_1, "▶" if player.active_weapon_slot == 1 else " ", slot_2]
+	local_stats.text = "" # Replaced by icon/number presentation; no weapon names in top-left.
+
 
 
 func _update_partner_hud(player: Node) -> void:

@@ -35,8 +35,8 @@ class DropdownRainHotfix(unittest.TestCase):
     def test_rain_density(self):
         text = (ROOT / 'scene/animated_menu_background.gd').read_text()
         amount = int(re.search(r'rain_base_amount: int = (\d+)', text)[1])
-        self.assertEqual(amount, 400)
-        self.assertEqual(int(amount * .25), 100)
+        self.assertEqual(amount, 560)
+        self.assertEqual(int(amount * .25), 140)
         self.assertIn('CPUParticles2D.new()', text)
         self.assertIn('initial_velocity_min = speed * 0.82', text)
         self.assertIn('initial_velocity_max = speed * 1.18', text)

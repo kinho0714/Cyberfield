@@ -70,6 +70,7 @@ var patrol_direction := 1.0
 var patrol_pause_timer := 0.0
 var patrol_rng := RandomNumberGenerator.new()
 var network_target_position := Vector2.ZERO
+var network_presentation_state: StringName = &""
 var _fall_origin_y := 0.0
 var _was_on_floor := false
 
@@ -136,6 +137,9 @@ func get_network_state() -> Dictionary:
 		"max_health": max_health,
 		"state": state,
 		"facing_left": visual.scale.x < 0.0,
+		"presentation_state": get_visual_state(),
+		"aim_visible": aim_line.visible,
+		"aim_points": aim_line.points if aim_line.visible else PackedVector2Array(),
 	}
 
 
@@ -147,7 +151,13 @@ func apply_network_state(network_state: Dictionary) -> void:
 	velocity = network_velocity
 	health = int(network_state.get("health", health))
 	max_health = int(network_state.get("max_health", max_health))
+	network_presentation_state = StringName(network_state.get("presentation_state", &""))
 	state = int(network_state.get("state", state))
+	# Host supplies local-space endpoints, including muzzle and locked direction.
+	# They follow replica interpolation without client AI or target acquisition.
+	var points: PackedVector2Array = network_state.get("aim_points", PackedVector2Array())
+	aim_line.points = points
+	aim_line.visible = bool(network_state.get("aim_visible", false)) and points.size() == 2 and health > 0
 	var facing_left := bool(network_state.get("facing_left", visual.scale.x < 0.0))
 	visual.scale.x = -absf(visual.scale.x) if facing_left else absf(visual.scale.x)
 	if health < previous_health:
@@ -511,6 +521,8 @@ func _die() -> void:
 
 
 func get_visual_state() -> StringName:
+	if not is_physics_processing() and not network_presentation_state.is_empty():
+		return network_presentation_state
 	if state == State.DEAD or health <= 0:
 		return &"death"
 	if state == State.HURT or is_hurt:

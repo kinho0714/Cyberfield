@@ -129,6 +129,8 @@ var network_pending_snap_velocity := Vector2.ZERO
 var network_has_pending_snap := false
 var network_visual_state: StringName = &""
 var network_visual_frame := 0
+var network_is_reviving := false
+var network_is_hurt := false
 
 
 func _ready() -> void:
@@ -146,7 +148,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if network_remote_replica:
 		var interpolation_weight := 1.0 - exp(-12.0 * delta)
-		var extrapolated_target := network_target_position + network_target_velocity * LanSession.SNAPSHOT_INTERVAL
+		var extrapolated_target := network_target_position + network_target_velocity * (0.0 if is_downed else LanSession.SNAPSHOT_INTERVAL)
 		global_position = global_position.lerp(extrapolated_target, interpolation_weight)
 		velocity = network_target_velocity
 	if invulnerability_timer > 0.0:
@@ -179,6 +181,9 @@ func _process(delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+	# Replicas never simulate gravity/collisions against authoritative movement.
+	if network_remote_replica or (network_prediction_only and is_downed):
+		return
 	if network_prediction_only:
 		_apply_network_reconciliation(delta)
 	if is_downed:
@@ -417,6 +422,8 @@ func reset_network_presentation(authoritative_position: Vector2, authoritative_v
 	network_pending_snap_velocity = authoritative_velocity
 	network_has_pending_snap = false
 	network_world_epoch = world_epoch
+	network_is_reviving = false
+	network_is_hurt = false
 
 
 func get_network_debug_state() -> Dictionary:
@@ -885,6 +892,8 @@ func get_network_state() -> Dictionary:
 		"health": health,
 		"max_health": max_health,
 		"is_downed": is_downed,
+		"is_reviving": is_instance_valid(_revive_target) and _revive_target.is_downed,
+		"is_hurt": is_hurt,
 		"is_attacking": is_attacking,
 		"attack_generation": attack_generation,
 		"presentation_state": character_visual.get_presentation_state() if character_visual != null else &"idle",
@@ -906,7 +915,16 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false, snaps
 		network_world_epoch = snapshot_epoch
 	var network_position: Vector2 = state.get("position", global_position)
 	var network_velocity: Vector2 = state.get("velocity", velocity)
-	if predicted_local:
+	var incoming_downed: bool = bool(state.get("is_downed", is_downed))
+	# Downed and its exit use host position; active prediction keeps its thresholds.
+	if incoming_downed or is_downed:
+		global_position = network_position
+		velocity = network_velocity
+		network_target_position = network_position
+		network_target_velocity = network_velocity
+		network_has_pending_snap = false
+		network_correction_velocity = Vector2.ZERO
+	elif predicted_local:
 		var error_offset := network_position - global_position
 		var prediction_error := error_offset.length()
 		if prediction_error >= 192.0:
@@ -932,7 +950,16 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false, snaps
 			anim.frame = clampi(int(state.get("animation_frame", anim.frame)), 0, maxi(anim.sprite_frames.get_frame_count(network_animation) - 1, 0))
 	health = int(state.get("health", health))
 	max_health = int(state.get("max_health", max_health))
-	is_downed = bool(state.get("is_downed", is_downed))
+	is_downed = incoming_downed
+	network_is_reviving = bool(state.get("is_reviving", false))
+	network_is_hurt = bool(state.get("is_hurt", false))
+	if is_downed:
+		is_attacking = false
+		is_ground_slamming = false
+		dash_timer = 0.0
+		attack_input_buffer_timer = 0.0
+		attack_generation += 1
+		_end_dash()
 	if not predicted_local:
 		is_attacking = bool(state.get("is_attacking", is_attacking))
 		attack_generation = int(state.get("attack_generation", attack_generation))
@@ -1052,6 +1079,7 @@ func revive() -> void:
 		return
 
 	is_downed = false
+	velocity = Vector2.ZERO
 	health = maxi(1, ceili(max_health * revive_health_ratio))
 	_update_health_label()
 	revive_progress = 0.0

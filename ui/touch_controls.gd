@@ -20,6 +20,10 @@ var menu_blocked := false
 
 
 func _ready() -> void:
+	var pause_style := StyleBoxTexture.new()
+	pause_style.texture = preload("res://assets/ui/gameplay_hud/assets/shared/hud/pause_button_frame.png")
+	for state in ["normal", "hover", "pressed", "focus"]:
+		pause_button.add_theme_stylebox_override(state, pause_style)
 	# Keep this development overlay out of desktop builds that have no touch input.
 	visible = false
 	run_manager.state_changed.connect(_refresh_visibility)
