@@ -1,0 +1,58 @@
+﻿[
+    {
+        "path":  "scene/run_manager.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "scene/room_manager.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "scene/network/lan_session.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "scene/biomes/biome_generator.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "scene/biomes/biome_teleporter.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "scene/casa_jhon_hub.tscn",
+        "unchanged":  true
+    },
+    {
+        "path":  "entities/player.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "entities/Enemy.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "entities/HeavyEnemy.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "ui/touch_controls.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "ui/touch_controls.tscn",
+        "unchanged":  true
+    },
+    {
+        "path":  "ui/virtual_joystick.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "ui/mobile_action_button.gd",
+        "unchanged":  true
+    },
+    {
+        "path":  "project.godot",
+        "unchanged":  true
+    }
+]

@@ -117,7 +117,7 @@ func _select_room(index: int) -> void:
 		return
 	selected_room_key = room_key
 	join_button.disabled = false
-	search_status.text = "Selecionada: %s // %s:%d // %d/%d" % [String(room.get("name", "Sala")), String(room.get("address", "")), int(room.get("port", 0)), int(room.get("players", 0)), LanSession.MAX_PLAYERS]
+	search_status.text = tr("Selecionada: %s // %s:%d // %d/%d") % [String(room.get("name", "Sala")), String(room.get("address", "")), int(room.get("port", 0)), int(room.get("players", 0)), LanSession.MAX_PLAYERS]
 
 
 func _join_ip() -> void:
@@ -220,11 +220,18 @@ func _refresh() -> void:
 	var player_count := lan_session.get_player_count()
 	var peer_id := multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() and multiplayer.multiplayer_peer.get_connection_status() != MultiplayerPeer.CONNECTION_DISCONNECTED else 0
 	var host_only_note := "\nDEBUG: o host pode iniciar 1/%d." % LanSession.MAX_PLAYERS if lan_session.role == LanSession.Role.HOST and player_count == 1 else ""
-	host_status.text = "%s // PEER %d\nJOGADORES: %d/%d\n%s%s\n%s" % [role_text, peer_id, player_count, LanSession.MAX_PLAYERS, lan_session.connection_message, host_only_note, lan_session.get_discovery_diagnostics()]
+	host_status.text = tr("%s // PEER %d\nJOGADORES: %d/%d\n%s%s\n%s") % [role_text, peer_id, player_count, LanSession.MAX_PLAYERS, tr(lan_session.connection_message), host_only_note, lan_session.get_discovery_diagnostics()]
 	$Overlay/Center/HostPage/Start.visible = lan_session.role == LanSession.Role.HOST
 	difficulty.disabled = lan_session.role != LanSession.Role.HOST
-	search_status.text = lan_session.connection_message
-	ip_status.text = lan_session.connection_message
+	search_status.text = tr(lan_session.connection_message)
+	ip_status.text = tr(lan_session.connection_message)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh()
+		if room_list.item_count > 0:
+			_refresh_rooms()
 
 
 func _refresh_rooms() -> void:

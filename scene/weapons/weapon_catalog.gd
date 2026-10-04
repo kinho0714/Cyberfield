@@ -13,4 +13,10 @@ static func get_definition(weapon_id: StringName) -> Dictionary:
 
 
 static func get_display_name(weapon_id: StringName) -> String:
-	return String(get_definition(weapon_id).get("name", "ARMA"))
+	var key := String(ContentRegistry.weapon(weapon_id).get("display_name_key", ""))
+	var localized := TranslationServer.translate(key)
+	return String(localized) if not key.is_empty() and localized != key else String(get_definition(weapon_id).get("name", "ARMA"))
+
+
+static func get_visual_texture(weapon_id: StringName, slot: String, fallback: Texture2D = null) -> Texture2D:
+	return ContentRegistry.texture(ContentRegistry.weapon(weapon_id), slot, fallback)

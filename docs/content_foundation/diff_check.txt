@@ -1,0 +1,4 @@
+exit=0
+warning: in the working copy of 'scene/biomes/biome_generator.gd', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'scene/biomes/lower_city/lower_city_presentation.gd', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'ui/gameplay_hud_presentation.gd', CRLF will be replaced by LF the next time Git touches it

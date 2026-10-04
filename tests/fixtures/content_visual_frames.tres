@@ -1,0 +1,16 @@
+[gd_resource type="SpriteFrames" load_steps=2 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png" id="2"]
+
+[resource]
+animations = [{
+"name": &"idle", "speed": 99.0, "loop": false,
+"frames": [{"duration": 1.0, "texture": ExtResource("2")}, {"duration": 1.0, "texture": ExtResource("2")}, {"duration": 1.0, "texture": ExtResource("2")}, {"duration": 1.0, "texture": ExtResource("2")}]
+}, {
+"name": &"air", "speed": 99.0, "loop": false,
+"frames": [{"duration": 1.0, "texture": ExtResource("2")}]
+}, {
+"name": &"hurt", "speed": 99.0, "loop": false,
+"frames": [{"duration": 1.0, "texture": null}, {"duration": 1.0, "texture": null}]
+}]
+

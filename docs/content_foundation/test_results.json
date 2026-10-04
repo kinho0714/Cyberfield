@@ -1,0 +1,120 @@
+[
+  {
+    "test": "editor_parser",
+    "exit": 0,
+    "markers": [],
+    "issues": []
+  },
+  {
+    "test": "content_visual_foundation_smoke_test",
+    "exit": 0,
+    "markers": [
+      "CONTENT_VISUAL_FOUNDATION_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "content_visual_generation_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE8_MULTI_SEED_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "official_visual_integration_smoke_test",
+    "exit": 0,
+    "markers": [
+      "OFFICIAL_VISUAL_INTEGRATION_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "common_ranged_v2_1_presentation_smoke_test",
+    "exit": 0,
+    "markers": [
+      "COMMON_RANGED_V2_1_PRESENTATION_SMOKE_TEST_PASSED"
+    ],
+    "issues": []
+  },
+  {
+    "test": "player_visual_presentation_hotfix_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PLAYER_VISUAL_PRESENTATION_HOTFIX_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "ranged_enemy_rebuild_v2_smoke_test",
+    "exit": 0,
+    "markers": [
+      "RANGED_ENEMY_REBUILD_V2_SMOKE_TEST_PASSED"
+    ],
+    "issues": []
+  },
+  {
+    "test": "phase8_combat_content_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE8_COMBAT_CONTENT_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "casa_jhon_stage0_smoke_test",
+    "exit": 0,
+    "markers": [
+      "CASA_JHON_STAGE0_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "visual_pass3_smoke_test",
+    "exit": 0,
+    "markers": [
+      "VISUAL_PASS3_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "phase8_final_consolidation_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE8_FINAL_CONSOLIDATION_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "phase6_lan_contract_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE6_LAN_CONTRACT_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "phase8_lan_lobby_touch_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE8_LAN_LOBBY_TOUCH_SMOKE_TEST_PASSED"
+    ],
+    "issues": []
+  },
+  {
+    "test": "android_touch_hud_modal_hotfix_smoke_test",
+    "exit": 0,
+    "markers": [
+      "ANDROID_TOUCH_HUD_MODAL_HOTFIX_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  },
+  {
+    "test": "phase4_stats_hud_smoke_test",
+    "exit": 0,
+    "markers": [
+      "PHASE4_STATS_HUD_SMOKE_TEST_OK"
+    ],
+    "issues": []
+  }
+]

@@ -1,0 +1,8 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PHASE8_MULTI_SEED normal avg_enemies=14.15 avg_ranged=3.00 avg_heavy=0.10 traps=1 valid_events=1 encounters=232 invalid=0 spawn_failures=0 duplicate_events=0 micro_ledges=0 invalid_clearances=0
+PHASE8_MULTI_SEED pro avg_enemies=24.25 avg_ranged=9.70 avg_heavy=0.20 traps=1 valid_events=1 encounters=246 invalid=0 spawn_failures=0 duplicate_events=0 micro_ledges=0 invalid_clearances=0
+PHASE8_MULTI_SEED inferno_pro avg_enemies=31.45 avg_ranged=17.00 avg_heavy=0.45 traps=1 valid_events=1 encounters=246 invalid=0 spawn_failures=0 duplicate_events=0 micro_ledges=0 invalid_clearances=0
+PHASE8_MULTI_SEED_SMOKE_TEST_OK

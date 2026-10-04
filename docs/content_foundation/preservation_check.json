@@ -1,0 +1,23 @@
+{
+  "preexisting_files_checked": 268,
+  "preexisting_changed_only_in_authorized_adapters": [
+    "scene/casa_jhon_presentation.gd",
+    "scene/biomes/lower_city/lower_city_presentation.gd",
+    "scene/inventory_ui.gd",
+    "scene/main_menu_alive.gd",
+    "ui/gameplay_hud_presentation.gd",
+    "ui/menu_panel_presentation.gd"
+  ],
+  "protected_HEAD_identical": [
+    "entities/Enemy.gd",
+    "entities/HeavyEnemy.gd",
+    "entities/player.gd",
+    "scene/run_manager.gd",
+    "scene/room_manager.gd",
+    "scene/network/lan_session.gd",
+    "scene/meta_progression.gd",
+    "export_presets.cfg",
+    "project.godot"
+  ],
+  "missing_files": []
+}

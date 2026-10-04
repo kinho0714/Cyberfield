@@ -1,0 +1,162 @@
+﻿[
+    {
+        "path":  "assets\\environment\\casa_jhon\\assets\\gameplay\\casa_jhon_gameplay_interactives_stage0_v1.png",
+        "width":  344,
+        "height":  146,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  2752,
+        "partialAlpha":  0,
+        "opaque":  47472,
+        "opaqueLightPixels":  375,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     344,
+                                     146
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\casa_jhon\\assets\\props\\casa_jhon_props_domestic_stage0_v1.png",
+        "width":  319,
+        "height":  146,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  15097,
+        "partialAlpha":  0,
+        "opaque":  31477,
+        "opaqueLightPixels":  8027,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     319,
+                                     146
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\casa_jhon\\assets\\props\\casa_jhon_props_workshop_stage0_v1.png",
+        "width":  323,
+        "height":  146,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  18328,
+        "partialAlpha":  0,
+        "opaque":  28830,
+        "opaqueLightPixels":  7013,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     323,
+                                     146
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\casa_jhon\\assets\\structural\\casa_jhon_structural_base_stage0_v1.png",
+        "width":  488,
+        "height":  139,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  21229,
+        "partialAlpha":  0,
+        "opaque":  46603,
+        "opaqueLightPixels":  7263,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     488,
+                                     139
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\backgrounds\\cidade_baixa_background_far_v1.png",
+        "width":  493,
+        "height":  53,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  0,
+        "partialAlpha":  0,
+        "opaque":  26129,
+        "opaqueLightPixels":  71,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     493,
+                                     53
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\backgrounds\\cidade_baixa_background_mid_v1.png",
+        "width":  493,
+        "height":  54,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  0,
+        "partialAlpha":  0,
+        "opaque":  26622,
+        "opaqueLightPixels":  376,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     493,
+                                     54
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\backgrounds\\cidade_baixa_background_near_v1.png",
+        "width":  493,
+        "height":  74,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  0,
+        "partialAlpha":  0,
+        "opaque":  36482,
+        "opaqueLightPixels":  407,
+        "nontransparentBounds":  [
+                                     0,
+                                     0,
+                                     493,
+                                     74
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\gameplay\\cidade_baixa_gameplay_interactives_v1.png",
+        "width":  768,
+        "height":  259,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  121850,
+        "partialAlpha":  74900,
+        "opaque":  2162,
+        "opaqueLightPixels":  623,
+        "nontransparentBounds":  [
+                                     24,
+                                     24,
+                                     682,
+                                     235
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\props\\cidade_baixa_props_v1.png",
+        "width":  768,
+        "height":  360,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  200414,
+        "partialAlpha":  71165,
+        "opaque":  4901,
+        "opaqueLightPixels":  1532,
+        "nontransparentBounds":  [
+                                     16,
+                                     16,
+                                     756,
+                                     344
+                                 ]
+    },
+    {
+        "path":  "assets\\environment\\cidade_baixa\\structural\\structural\\cidade_baixa_structural_tileset_v1.png",
+        "width":  768,
+        "height":  640,
+        "pixelFormat":  "Format32bppArgb",
+        "transparent":  383631,
+        "partialAlpha":  100722,
+        "opaque":  7167,
+        "opaqueLightPixels":  367,
+        "nontransparentBounds":  [
+                                     4,
+                                     19,
+                                     747,
+                                     636
+                                 ]
+    }
+]

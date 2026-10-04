@@ -6,6 +6,7 @@ const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
 @onready var main_page: VBoxContainer = $Overlay/Center/MainPage
 @onready var settings_page: VBoxContainer = $Overlay/Center/SettingsPage
 @onready var zoom_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/CameraZoom
+@onready var language_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/LanguageOption
 @onready var touch_slider: HSlider = $Overlay/Center/SettingsPage/Scroll/Content/TouchScale
 @onready var touch_value: Label = $Overlay/Center/SettingsPage/Scroll/Content/TouchValue
 @onready var debug_toggle: CheckButton = $Overlay/Center/SettingsPage/Scroll/Content/DebugHud
@@ -22,6 +23,8 @@ var options_scroll_origin: int = 0
 var options_gesture: int = 0 # 0 pending, 1 vertical scroll, 2 horizontal slider
 const OPTIONS_DRAG_THRESHOLD: float = 12.0
 var audio_sliders: Array[HSlider] = []
+var category_buttons: Array[Button] = []
+var selected_category: int = 0
 const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Efeitos Sonoros", "Diálogos"]
 @onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
 @onready var settings_content: VBoxContainer = $Overlay/Center/SettingsPage/Scroll/Content
@@ -38,6 +41,10 @@ func _ready() -> void:
 	$Overlay/Center/MainPage/MainMenu.pressed.connect(_return_to_main_menu)
 	$Overlay/Center/SettingsPage/Back.pressed.connect(_settings_back)
 	zoom_option.item_selected.connect(_set_camera_zoom)
+	language_option.add_item("Português (Brasil)")
+	language_option.add_item("English")
+	language_option.item_selected.connect(func(index: int) -> void:
+		local_settings.set_language("pt_BR" if index == 0 else "en"))
 	touch_slider.value_changed.connect(_set_touch_scale)
 	debug_toggle.toggled.connect(_set_debug_hud)
 	for entry: Array in [["PRÓXIMO", &"close"], ["PADRÃO", &"default"], ["DISTANTE", &"distant"]]:
@@ -52,17 +59,20 @@ func _ready() -> void:
 	_fit_settings_scroll()
 	_load_controls()
 	PANEL_PRESENTATION.apply_pause(main_page, settings_page, settings_content)
+	_build_categories()
+	get_viewport().size_changed.connect(_layout_panels)
+	call_deferred("_layout_panels")
 
 
 func _fit_settings_scroll() -> void:
 	# Title and Back stay outside the scroll region and remain reachable.
-	settings_scroll.custom_minimum_size.y = clampf(get_viewport().get_visible_rect().size.y - 240.0, 180.0, 440.0)
+	settings_scroll.custom_minimum_size.y = clampf(get_viewport().get_visible_rect().size.y - 360.0, 160.0, 320.0)
 
 
 func _input(event: InputEvent) -> void:
 	if not overlay.visible and not get_parent().mode_selected:
 		return
-	if overlay.visible and zoom_option.get_popup().visible:
+	if overlay.visible and (zoom_option.get_popup().visible or language_option.get_popup().visible):
 		return
 	if (event.is_action_pressed(&"pause_menu") or event.is_action_pressed(&"ui_cancel")) and not event.is_echo():
 		var inventory := get_tree().get_first_node_in_group("inventory_ui")
@@ -182,18 +192,31 @@ func _show_main() -> void:
 
 func _show_settings() -> void:
 	_cancel_options_gesture()
-	main_page.visible = false
+	main_page.visible = not title_settings
 	settings_page.visible = true
+	_select_category(0)
+	call_deferred("_layout_panels")
 	zoom_option.grab_focus()
 
 
 func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 	var position: Vector2 = event.position
+	# Sidebar stays usable while Settings is open. Calls the original actions.
+	if settings_page.visible and main_page.visible:
+		var actions: Dictionary = {"Continue": close_menu, "Inventory": _open_inventory,
+			"Settings": _show_settings, "Abandon": _abandon_run, "MainMenu": _return_to_main_menu}
+		for key: String in actions:
+			if _touch_hits(main_page.get_node(key) as Control, position):
+				actions[key].call()
+				get_viewport().set_input_as_handled()
+				return
 	if settings_page.visible:
 		if _touch_hits($Overlay/Center/SettingsPage/Back, position):
 			_settings_back()
 		elif _touch_hits(zoom_option, position):
 			zoom_option.show_popup()
+		elif _touch_hits(language_option, position):
+			language_option.show_popup()
 		elif _touch_hits(debug_toggle, position):
 			var next_debug_value: bool = not debug_toggle.button_pressed
 			debug_toggle.set_pressed_no_signal(next_debug_value)
@@ -246,6 +269,7 @@ func _open_inventory() -> void:
 
 
 func _load_controls() -> void:
+	language_option.select(0 if local_settings.language == "pt_BR" else 1)
 	for index in zoom_option.item_count:
 		if StringName(zoom_option.get_item_metadata(index)) == local_settings.camera_zoom_preference:
 			zoom_option.select(index)
@@ -290,7 +314,16 @@ func _set_audio_volume(percent: float, bus: StringName) -> void:
 
 func _update_audio_label(bus: StringName, percent: float) -> void:
 	var label: Label = settings_content.get_node(String(bus) + "Label") as Label
-	label.text = "%s — %d%%" % [AUDIO_LABELS[LocalSettings.AUDIO_BUSES.find(bus)], int(round(percent))]
+	label.text = "%s — %d%%" % [tr(AUDIO_LABELS[LocalSettings.AUDIO_BUSES.find(bus)]), int(round(percent))]
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		language_option.select(0 if local_settings.language == "pt_BR" else 1)
+		$Overlay/Center/MainPage/SessionSummary.text = get_parent().get_node("RunDebugHUD").get_session_summary(true)
+		for bus: StringName in LocalSettings.AUDIO_BUSES:
+			_update_audio_label(bus, local_settings.get_audio_volume(bus) * 100.0)
+		call_deferred("_layout_panels")
 
 
 func _handle_options_gesture(event: InputEvent) -> bool:
@@ -356,3 +389,62 @@ func _cancel_options_gesture() -> void:
 
 func _style_audio_slider(slider: HSlider) -> void:
 	PANEL_PRESENTATION.style_slider(slider, Color("39dff2"))
+
+
+func _build_categories() -> void:
+	var tabs := HBoxContainer.new()
+	tabs.name = "Categories"
+	tabs.add_theme_constant_override("separation", 8)
+	settings_page.add_child(tabs)
+	settings_page.move_child(tabs, 1)
+	var labels: Array[String] = ["JOGO", "CONTROLES", "ÁUDIO"]
+	for index in labels.size():
+		var button := Button.new()
+		button.text = labels[index]
+		button.custom_minimum_size = Vector2(136, 48)
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_select_category.bind(index))
+		button.gui_input.connect(_category_touch.bind(button, index))
+		button.add_theme_font_size_override("font_size", 18)
+		PANEL_PRESENTATION.style_button(button)
+		tabs.add_child(button)
+		category_buttons.append(button)
+	_select_category(0)
+
+
+func _category_touch(event: InputEvent, button: Button, index: int) -> void:
+	if event is InputEventScreenTouch and event.pressed:
+		_select_category(index)
+		button.grab_focus()
+		button.accept_event()
+
+
+func _select_category(index: int) -> void:
+	_cancel_options_gesture()
+	selected_category = index
+	var groups: Array = [["ZoomLabel", "CameraZoom", "DebugHud", "LanguageLabel", "LanguageOption"],
+		["TouchLabel", "TouchScale", "TouchValue"],
+		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
+	for child in settings_content.get_children():
+		if child is Control:
+			child.visible = String(child.name) in groups[index]
+	for tab in category_buttons.size():
+		var path: String = "settings/settings_tab_selected" if tab == index else "settings/settings_tab_normal"
+		PANEL_PRESENTATION.set_button_normal(category_buttons[tab], PANEL_PRESENTATION.style(path, 8, 8))
+		for state in ["hover", "pressed"]:
+			category_buttons[tab].add_theme_stylebox_override(state, PANEL_PRESENTATION.style("settings/settings_tab_selected", 8, 8))
+	settings_scroll.scroll_vertical = 0
+
+
+func _layout_panels() -> void:
+	# Responsive composition, independent of the old right-anchored menu container.
+	var screen: Vector2 = get_viewport().get_visible_rect().size
+	var center := $Overlay/Center as Control
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	PANEL_PRESENTATION.clear_minimum_widths(main_page)
+	PANEL_PRESENTATION.clear_minimum_widths(settings_page)
+	main_page.position = Vector2(40, maxf(28, (screen.y - main_page.get_combined_minimum_size().y) * 0.5))
+	main_page.size = Vector2(248, main_page.get_combined_minimum_size().y)
+	var left: float = 344 if not title_settings else maxf(32, (screen.x - 880) * 0.5)
+	settings_page.position = Vector2(left, maxf(28, (screen.y - settings_page.get_combined_minimum_size().y) * 0.5))
+	settings_page.size = Vector2(maxf(560, screen.x - left - 40), settings_page.get_combined_minimum_size().y)

@@ -15,6 +15,8 @@ const CAMERA_ZOOM_VALUES := {
 var camera_zoom_preference: StringName = &"default"
 var touch_control_scale := 1.0
 var debug_hud_visible := false
+var language := "pt_BR"
+const LOCALIZATION = preload("res://ui/localization.gd")
 const AUDIO_BUSES: Array[StringName] = [&"Master", &"Music", &"SFX", &"Dialogue"]
 var audio_volumes: Dictionary = {&"Master": 1.0, &"Music": 1.0, &"SFX": 1.0, &"Dialogue": 1.0}
 
@@ -32,6 +34,10 @@ func load_settings() -> void:
 		camera_zoom_preference = &"default"
 	touch_control_scale = clampf(float(config.get_value("mobile", "control_scale", 1.0)), 0.8, 1.5)
 	debug_hud_visible = bool(config.get_value("debug", "hud_visible", false))
+	language = String(config.get_value("ui", "language", "pt_BR"))
+	if language not in ["pt_BR", "en"]:
+		language = "pt_BR"
+	LOCALIZATION.initialize(language)
 	for bus: StringName in AUDIO_BUSES:
 		var saved: Variant = config.get_value("audio", String(bus), 1.0)
 		var volume: float = float(saved) if saved is float or saved is int else 1.0
@@ -48,6 +54,7 @@ func save_settings() -> void:
 	config.set_value("camera", "zoom", String(camera_zoom_preference))
 	config.set_value("mobile", "control_scale", touch_control_scale)
 	config.set_value("debug", "hud_visible", debug_hud_visible)
+	config.set_value("ui", "language", language)
 	var error := config.save(settings_path)
 	if error != OK:
 		push_warning("Could not save local settings: %d" % error)
@@ -57,6 +64,15 @@ func set_camera_zoom_preference(value: StringName) -> void:
 	if not CAMERA_ZOOM_VALUES.has(value):
 		return
 	camera_zoom_preference = value
+	save_settings()
+	settings_changed.emit()
+
+
+func set_language(value: String) -> void:
+	if value not in ["pt_BR", "en"] or value == language:
+		return
+	language = value
+	TranslationServer.set_locale(language)
 	save_settings()
 	settings_changed.emit()
 

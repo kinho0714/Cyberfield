@@ -2,7 +2,7 @@ extends Control
 
 var official_frame: StyleBoxTexture
 
-const MAP_PADDING := 14.0
+const MAP_PADDING := 20.0
 @export var update_interval := 0.12
 
 var _graph: Dictionary = {}
@@ -111,6 +111,7 @@ func _draw() -> void:
 	if _graph.is_empty():
 		return
 	draw_style_box(official_frame, Rect2(Vector2.ZERO, size))
+	draw_rect(Rect2(Vector2(12, 12), size - Vector2(24, 24)), Color(0.015, 0.035, 0.06, 0.78))
 	var modules: Array = _graph.get("modules", []) as Array
 	if modules.is_empty():
 		return

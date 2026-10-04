@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="BiomeModuleDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_module_definition.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+module_id = &"corridor"
+display_name = "CORREDOR"
+connectors = Array[StringName]([&"left", &"right"])
+platform_rects = Array[Rect2]([Rect2(300, 360, 220, 22)])
+enemy_sockets = Array[Vector2]([Vector2(300, 450), Vector2(650, 450)])
+loot_sockets = Array[Vector2]([Vector2(480, 330)])
+attribute_sockets = Array[Vector2]([Vector2(720, 445)])
+exit_sockets = Array[Vector2]([Vector2(820, 425)])

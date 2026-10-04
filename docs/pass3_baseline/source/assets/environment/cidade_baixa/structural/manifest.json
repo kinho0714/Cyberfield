@@ -1,0 +1,1921 @@
+{
+  "package": "CYBERFIELD — BIOMA 01 — CIDADE BAIXA — TECHNICAL v1",
+  "status": "PARTIAL_PHASE_1_STRUCTURAL",
+  "source_of_truth": "Concept Sheet Oficial — Cidade Baixa",
+  "grid_base": [
+    64,
+    64
+  ],
+  "production": {
+    "source_only": true,
+    "upscale": false,
+    "resampling": false
+  },
+  "files": {
+    "structural/cidade_baixa_structural_tileset_v1.png": {
+      "dimensions": [
+        768,
+        640
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "regions": 38,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    }
+  },
+  "elements": [
+    {
+      "name": "floor_standard_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "standard",
+      "region": {
+        "x": 0,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        18,
+        224,
+        85,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        30,
+        19,
+        97,
+        60
+      ],
+      "occupied_width": 67,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_standard_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "standard_b",
+      "region": {
+        "x": 128,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        84,
+        224,
+        150,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        31,
+        19,
+        97,
+        60
+      ],
+      "occupied_width": 66,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_damaged_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "damaged",
+      "region": {
+        "x": 256,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        159,
+        224,
+        230,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        28,
+        19,
+        99,
+        60
+      ],
+      "occupied_width": 71,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_damaged_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "damaged_b",
+      "region": {
+        "x": 384,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        229,
+        224,
+        294,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        31,
+        19,
+        96,
+        60
+      ],
+      "occupied_width": 65,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_edge_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "edge",
+      "region": {
+        "x": 512,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L"
+      ],
+      "source_box": [
+        306,
+        224,
+        407,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        13,
+        19,
+        114,
+        60
+      ],
+      "occupied_width": 101,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_termination_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "termination",
+      "region": {
+        "x": 640,
+        "y": 0,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L"
+      ],
+      "source_box": [
+        421,
+        224,
+        507,
+        265
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        21,
+        19,
+        107,
+        60
+      ],
+      "occupied_width": 86,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_standard_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "standard",
+      "region": {
+        "x": 0,
+        "y": 64,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        18,
+        289,
+        86,
+        334
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        30,
+        9,
+        98,
+        54
+      ],
+      "occupied_width": 68,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_standard_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "standard_b",
+      "region": {
+        "x": 128,
+        "y": 64,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        84,
+        289,
+        150,
+        334
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        31,
+        9,
+        97,
+        54
+      ],
+      "occupied_width": 66,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_damaged_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "damaged",
+      "region": {
+        "x": 256,
+        "y": 64,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        159,
+        289,
+        230,
+        334
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        28,
+        9,
+        99,
+        54
+      ],
+      "occupied_width": 71,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_damaged_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "damaged_b",
+      "region": {
+        "x": 384,
+        "y": 64,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        229,
+        289,
+        294,
+        334
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        31,
+        9,
+        96,
+        54
+      ],
+      "occupied_width": 65,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_corner_inner_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "inner_corner",
+      "region": {
+        "x": 512,
+        "y": 64,
+        "width": 64,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        1,
+        1
+      ],
+      "pivot_recommended": [
+        32,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "R",
+        "D"
+      ],
+      "source_box": [
+        307,
+        290,
+        359,
+        335
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        6,
+        9,
+        58,
+        54
+      ],
+      "occupied_width": 52,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_corner_outer_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "outer_corner",
+      "region": {
+        "x": 576,
+        "y": 64,
+        "width": 64,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        1,
+        1
+      ],
+      "pivot_recommended": [
+        32,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "D"
+      ],
+      "source_box": [
+        369,
+        290,
+        417,
+        335
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        8,
+        9,
+        56,
+        54
+      ],
+      "occupied_width": 48,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "ceiling_standard_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "ceiling",
+      "variant": "standard",
+      "region": {
+        "x": 0,
+        "y": 128,
+        "width": 192,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        3,
+        1
+      ],
+      "pivot_recommended": [
+        96,
+        32
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        18,
+        356,
+        151,
+        400
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        29,
+        4,
+        162,
+        48
+      ],
+      "occupied_width": 133,
+      "occupied_height": 44,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "ceiling_corner_inner_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "ceiling",
+      "variant": "inner_corner",
+      "region": {
+        "x": 192,
+        "y": 128,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "D"
+      ],
+      "source_box": [
+        160,
+        356,
+        250,
+        400
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        19,
+        4,
+        109,
+        48
+      ],
+      "occupied_width": 90,
+      "occupied_height": 44,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "ceiling_corner_outer_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "ceiling",
+      "variant": "outer_corner",
+      "region": {
+        "x": 320,
+        "y": 128,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "D"
+      ],
+      "source_box": [
+        260,
+        356,
+        354,
+        400
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        17,
+        4,
+        111,
+        48
+      ],
+      "occupied_width": 94,
+      "occupied_height": 44,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "material_transition_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "transition",
+      "variant": "concrete_metal",
+      "region": {
+        "x": 448,
+        "y": 128,
+        "width": 192,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        3,
+        1
+      ],
+      "pivot_recommended": [
+        96,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        367,
+        356,
+        507,
+        400
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        26,
+        10,
+        166,
+        54
+      ],
+      "occupied_width": 140,
+      "occupied_height": 44,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "platform_standard_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "platform",
+      "variant": "standard",
+      "region": {
+        "x": 0,
+        "y": 192,
+        "width": 192,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        3,
+        1
+      ],
+      "pivot_recommended": [
+        96,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "ONE_WAY_PLATFORM",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        18,
+        429,
+        173,
+        468
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        18,
+        21,
+        173,
+        60
+      ],
+      "occupied_width": 155,
+      "occupied_height": 39,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "platform_thin_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "platform",
+      "variant": "thin",
+      "region": {
+        "x": 192,
+        "y": 192,
+        "width": 192,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        3,
+        1
+      ],
+      "pivot_recommended": [
+        96,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "ONE_WAY_PLATFORM",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        184,
+        430,
+        308,
+        465
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        35,
+        47,
+        157,
+        60
+      ],
+      "occupied_width": 122,
+      "occupied_height": 13,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "metal_walkway_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "walkway",
+      "variant": "metal",
+      "region": {
+        "x": 384,
+        "y": 192,
+        "width": 256,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        4,
+        1
+      ],
+      "pivot_recommended": [
+        128,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "ONE_WAY_PLATFORM",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        320,
+        426,
+        506,
+        469
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        35,
+        22,
+        221,
+        60
+      ],
+      "occupied_width": 186,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "pillar_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "structure",
+      "variant": "pillar",
+      "region": {
+        "x": 640,
+        "y": 192,
+        "width": 128,
+        "height": 128
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        2
+      ],
+      "pivot_recommended": [
+        64,
+        124
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        24,
+        495,
+        84,
+        555
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        34,
+        64,
+        94,
+        124
+      ],
+      "occupied_width": 60,
+      "occupied_height": 60,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "beam_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "structure",
+      "variant": "beam",
+      "region": {
+        "x": 0,
+        "y": 320,
+        "width": 128,
+        "height": 128
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        2
+      ],
+      "pivot_recommended": [
+        64,
+        64
+      ],
+      "alignment": "free",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        102,
+        495,
+        214,
+        555
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        14,
+        35,
+        114,
+        93
+      ],
+      "occupied_width": 100,
+      "occupied_height": 58,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "support_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "structure",
+      "variant": "support",
+      "region": {
+        "x": 128,
+        "y": 320,
+        "width": 128,
+        "height": 128
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        2
+      ],
+      "pivot_recommended": [
+        64,
+        124
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        226,
+        493,
+        305,
+        555
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        40,
+        62,
+        87,
+        124
+      ],
+      "occupied_width": 47,
+      "occupied_height": 62,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "vertical_structure_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "structure",
+      "variant": "vertical",
+      "region": {
+        "x": 256,
+        "y": 320,
+        "width": 128,
+        "height": 128
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        2
+      ],
+      "pivot_recommended": [
+        64,
+        124
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        323,
+        492,
+        414,
+        555
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        18,
+        61,
+        109,
+        124
+      ],
+      "occupied_width": 91,
+      "occupied_height": 63,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "ladder_visual_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "ladder",
+      "region": {
+        "x": 384,
+        "y": 320,
+        "width": 128,
+        "height": 128
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        2
+      ],
+      "pivot_recommended": [
+        64,
+        124
+      ],
+      "alignment": "floor",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        424,
+        492,
+        506,
+        555
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        25,
+        61,
+        103,
+        124
+      ],
+      "occupied_width": 78,
+      "occupied_height": 63,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "stairs_visual_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "stairs",
+      "region": {
+        "x": 512,
+        "y": 320,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        19,
+        594,
+        115,
+        632
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        16,
+        30,
+        112,
+        60
+      ],
+      "occupied_width": 96,
+      "occupied_height": 30,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "pipe_horizontal_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "pipe",
+      "variant": "horizontal",
+      "region": {
+        "x": 0,
+        "y": 448,
+        "width": 192,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        3,
+        1
+      ],
+      "pivot_recommended": [
+        96,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        129,
+        591,
+        282,
+        632
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        23,
+        11,
+        168,
+        52
+      ],
+      "occupied_width": 145,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "pipe_vertical_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "pipe",
+      "variant": "vertical",
+      "region": {
+        "x": 192,
+        "y": 448,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        299,
+        590,
+        396,
+        632
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        18,
+        18,
+        110,
+        60
+      ],
+      "occupied_width": 92,
+      "occupied_height": 42,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "shaft_vertical_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "shaft",
+      "region": {
+        "x": 320,
+        "y": 448,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "U",
+        "D"
+      ],
+      "source_box": [
+        411,
+        590,
+        506,
+        632
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        16,
+        18,
+        111,
+        60
+      ],
+      "occupied_width": 95,
+      "occupied_height": 42,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "climb_surface_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "climb_surface",
+      "region": {
+        "x": 448,
+        "y": 448,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        18,
+        658,
+        95,
+        699
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        25,
+        11,
+        102,
+        52
+      ],
+      "occupied_width": 77,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "climb_surface_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "climb_surface_b",
+      "region": {
+        "x": 576,
+        "y": 448,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        96,
+        658,
+        174,
+        699
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        25,
+        11,
+        103,
+        52
+      ],
+      "occupied_width": 78,
+      "occupied_height": 41,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_slide_edge_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "wall_slide_edge",
+      "region": {
+        "x": 0,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        301,
+        657,
+        378,
+        700
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        25,
+        10,
+        102,
+        53
+      ],
+      "occupied_width": 77,
+      "occupied_height": 43,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_climb_edge_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "navigation",
+      "variant": "wall_climb_edge",
+      "region": {
+        "x": 128,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "CLIMBABLE_VISUAL",
+      "repeatable": false,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        380,
+        657,
+        448,
+        700
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        30,
+        11,
+        98,
+        53
+      ],
+      "occupied_width": 68,
+      "occupied_height": 42,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_variant_cracked_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "cracked",
+      "region": {
+        "x": 256,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        1018,
+        474,
+        1078,
+        510
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        34,
+        24,
+        94,
+        60
+      ],
+      "occupied_width": 60,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "floor_variant_cracked_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "floor",
+      "variant": "cracked_b",
+      "region": {
+        "x": 384,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        1079,
+        474,
+        1139,
+        510
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        34,
+        24,
+        94,
+        60
+      ],
+      "occupied_width": 60,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_variant_graffiti_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "graffiti",
+      "region": {
+        "x": 512,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        1275,
+        474,
+        1336,
+        510
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        33,
+        14,
+        94,
+        50
+      ],
+      "occupied_width": 61,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "wall_variant_graffiti_02",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "wall",
+      "variant": "graffiti_b",
+      "region": {
+        "x": 640,
+        "y": 512,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "SOLID",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R",
+        "U",
+        "D"
+      ],
+      "source_box": [
+        1337,
+        474,
+        1397,
+        510
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        34,
+        14,
+        94,
+        50
+      ],
+      "occupied_width": 60,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "platform_variant_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "platform",
+      "variant": "industrial_b",
+      "region": {
+        "x": 0,
+        "y": 576,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        60
+      ],
+      "alignment": "floor",
+      "collision_hint": "ONE_WAY_PLATFORM",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        1018,
+        535,
+        1138,
+        566
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        4,
+        38,
+        124,
+        60
+      ],
+      "occupied_width": 120,
+      "occupied_height": 22,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    },
+    {
+      "name": "pipe_variant_01",
+      "file": "structural/cidade_baixa_structural_tileset_v1.png",
+      "category": "structural",
+      "family": "pipe",
+      "variant": "industrial_b",
+      "region": {
+        "x": 128,
+        "y": 576,
+        "width": 128,
+        "height": 64
+      },
+      "grid": [
+        64,
+        64
+      ],
+      "size_cells": [
+        2,
+        1
+      ],
+      "pivot_recommended": [
+        64,
+        32
+      ],
+      "alignment": "free",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "visual_connectors_expected": [
+        "L",
+        "R"
+      ],
+      "source_box": [
+        1018,
+        592,
+        1120,
+        624
+      ],
+      "observations": "Official sheet extraction at 1:1 source scale; no resampling/upscale; transparent padding only.",
+      "content_bbox_in_region": [
+        13,
+        16,
+        115,
+        48
+      ],
+      "occupied_width": 102,
+      "occupied_height": 32,
+      "clipping_detected": false,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c"
+    }
+  ],
+  "blocked": [],
+  "remaining_not_produced": [
+    "props",
+    "gameplay",
+    "backgrounds",
+    "foreground"
+  ],
+  "notes": [
+    "Mockups were not used as asset source.",
+    "Stopped after STRUCTURAL per requested quality-first fallback.",
+    "Connector expectations are documentation only; no collision or Godot resource is baked."
+  ]
+}

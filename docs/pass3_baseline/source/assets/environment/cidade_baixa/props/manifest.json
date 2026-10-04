@@ -1,0 +1,3564 @@
+{
+  "phase": "MARCHA — FASE 2: PROPS MODULARES DA CIDADE BAIXA",
+  "source_of_truth": "Concept Sheet Oficial — CYBERFIELD — BIOMA 01 — CIDADE BAIXA, seção 2. PROPS MODULARES (Sprite2D)",
+  "structural_reference": {
+    "status": "previously externally approved; not included or modified"
+  },
+  "files": {
+    "cidade_baixa_props_v1.png": {
+      "dimensions": [
+        768,
+        360
+      ],
+      "mode": "RGBA",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "elements": 66,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    }
+  },
+  "families_completed": [
+    "barrels",
+    "cables_wiring",
+    "concrete_blocks",
+    "crates_containers",
+    "electrical_boxes",
+    "generators",
+    "graffiti_symbols",
+    "grates_fences",
+    "machines_workshops",
+    "maintenance_access",
+    "neon_luminaires",
+    "pallets_debris",
+    "pipes",
+    "poles_lamps",
+    "signs_ads",
+    "terminals_computers",
+    "transformers",
+    "trash_debris",
+    "valves",
+    "ventilation",
+    "workbenches"
+  ],
+  "elements": [
+    {
+      "id": "crate_wood_01",
+      "category": "props",
+      "family": "crates_containers",
+      "variant": "wood_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 8,
+        "width": 51,
+        "height": 47
+      },
+      "content_region": {
+        "x": 16,
+        "y": 16,
+        "width": 35,
+        "height": 31
+      },
+      "dimensions": [
+        35,
+        31
+      ],
+      "pivot_recommended": [
+        25,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "source_box": [
+        530,
+        232,
+        565,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "occupied_width": 35,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "crate_wood_02",
+      "category": "props",
+      "family": "crates_containers",
+      "variant": "wood_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 59,
+        "y": 8,
+        "width": 51,
+        "height": 47
+      },
+      "content_region": {
+        "x": 67,
+        "y": 16,
+        "width": 35,
+        "height": 31
+      },
+      "dimensions": [
+        35,
+        31
+      ],
+      "pivot_recommended": [
+        25,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "source_box": [
+        565,
+        232,
+        600,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "occupied_width": 35,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "crate_wood_03",
+      "category": "props",
+      "family": "crates_containers",
+      "variant": "wood_c",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 110,
+        "y": 8,
+        "width": 53,
+        "height": 47
+      },
+      "content_region": {
+        "x": 118,
+        "y": 16,
+        "width": 37,
+        "height": 31
+      },
+      "dimensions": [
+        37,
+        31
+      ],
+      "pivot_recommended": [
+        26,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        45,
+        39
+      ],
+      "source_box": [
+        600,
+        232,
+        637,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        45,
+        39
+      ],
+      "occupied_width": 37,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "container_green_01",
+      "category": "props",
+      "family": "crates_containers",
+      "variant": "green",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 163,
+        "y": 8,
+        "width": 58,
+        "height": 47
+      },
+      "content_region": {
+        "x": 171,
+        "y": 16,
+        "width": 42,
+        "height": 31
+      },
+      "dimensions": [
+        42,
+        31
+      ],
+      "pivot_recommended": [
+        29,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        50,
+        39
+      ],
+      "source_box": [
+        638,
+        232,
+        680,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        50,
+        39
+      ],
+      "occupied_width": 42,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "barrel_metal_01",
+      "category": "props",
+      "family": "barrels",
+      "variant": "gray",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 221,
+        "y": 8,
+        "width": 45,
+        "height": 51
+      },
+      "content_region": {
+        "x": 229,
+        "y": 16,
+        "width": 29,
+        "height": 35
+      },
+      "dimensions": [
+        29,
+        35
+      ],
+      "pivot_recommended": [
+        22,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        37,
+        43
+      ],
+      "source_box": [
+        696,
+        228,
+        725,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        37,
+        43
+      ],
+      "occupied_width": 29,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "barrel_rust_01",
+      "category": "props",
+      "family": "barrels",
+      "variant": "rust",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 266,
+        "y": 8,
+        "width": 45,
+        "height": 51
+      },
+      "content_region": {
+        "x": 274,
+        "y": 16,
+        "width": 29,
+        "height": 35
+      },
+      "dimensions": [
+        29,
+        35
+      ],
+      "pivot_recommended": [
+        22,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        37,
+        43
+      ],
+      "source_box": [
+        731,
+        228,
+        761,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        37,
+        43
+      ],
+      "occupied_width": 29,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "barrel_blue_01",
+      "category": "props",
+      "family": "barrels",
+      "variant": "blue",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 311,
+        "y": 8,
+        "width": 47,
+        "height": 51
+      },
+      "content_region": {
+        "x": 319,
+        "y": 16,
+        "width": 31,
+        "height": 35
+      },
+      "dimensions": [
+        31,
+        35
+      ],
+      "pivot_recommended": [
+        23,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        39,
+        43
+      ],
+      "source_box": [
+        768,
+        228,
+        799,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        39,
+        43
+      ],
+      "occupied_width": 31,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "barrel_hazard_01",
+      "category": "props",
+      "family": "barrels",
+      "variant": "hazard",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 358,
+        "y": 8,
+        "width": 48,
+        "height": 51
+      },
+      "content_region": {
+        "x": 366,
+        "y": 16,
+        "width": 32,
+        "height": 35
+      },
+      "dimensions": [
+        32,
+        35
+      ],
+      "pivot_recommended": [
+        24,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        43
+      ],
+      "source_box": [
+        807,
+        228,
+        839,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        43
+      ],
+      "occupied_width": 32,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "trash_bag_01",
+      "category": "props",
+      "family": "trash_debris",
+      "variant": "bag_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 406,
+        "y": 8,
+        "width": 52,
+        "height": 45
+      },
+      "content_region": {
+        "x": 414,
+        "y": 16,
+        "width": 36,
+        "height": 29
+      },
+      "dimensions": [
+        36,
+        29
+      ],
+      "pivot_recommended": [
+        26,
+        37
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        44,
+        37
+      ],
+      "source_box": [
+        856,
+        234,
+        892,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        44,
+        37
+      ],
+      "occupied_width": 36,
+      "occupied_height": 29,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "trash_bag_02",
+      "category": "props",
+      "family": "trash_debris",
+      "variant": "bag_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 458,
+        "y": 8,
+        "width": 51,
+        "height": 45
+      },
+      "content_region": {
+        "x": 466,
+        "y": 16,
+        "width": 35,
+        "height": 29
+      },
+      "dimensions": [
+        35,
+        29
+      ],
+      "pivot_recommended": [
+        25,
+        37
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        37
+      ],
+      "source_box": [
+        892,
+        234,
+        927,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        37
+      ],
+      "occupied_width": 35,
+      "occupied_height": 29,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "debris_pile_01",
+      "category": "props",
+      "family": "trash_debris",
+      "variant": "rubble_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 509,
+        "y": 8,
+        "width": 48,
+        "height": 40
+      },
+      "content_region": {
+        "x": 517,
+        "y": 16,
+        "width": 32,
+        "height": 24
+      },
+      "dimensions": [
+        32,
+        24
+      ],
+      "pivot_recommended": [
+        24,
+        32
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        32
+      ],
+      "source_box": [
+        928,
+        235,
+        960,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        32
+      ],
+      "occupied_width": 32,
+      "occupied_height": 24,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "debris_pile_02",
+      "category": "props",
+      "family": "trash_debris",
+      "variant": "rubble_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 557,
+        "y": 8,
+        "width": 50,
+        "height": 44
+      },
+      "content_region": {
+        "x": 565,
+        "y": 16,
+        "width": 34,
+        "height": 28
+      },
+      "dimensions": [
+        34,
+        28
+      ],
+      "pivot_recommended": [
+        25,
+        36
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        42,
+        36
+      ],
+      "source_box": [
+        958,
+        235,
+        992,
+        263
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        42,
+        36
+      ],
+      "occupied_width": 34,
+      "occupied_height": 28,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "pallet_01",
+      "category": "props",
+      "family": "pallets_debris",
+      "variant": "wood",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 607,
+        "y": 8,
+        "width": 68,
+        "height": 46
+      },
+      "content_region": {
+        "x": 615,
+        "y": 16,
+        "width": 52,
+        "height": 30
+      },
+      "dimensions": [
+        52,
+        30
+      ],
+      "pivot_recommended": [
+        34,
+        38
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        60,
+        38
+      ],
+      "source_box": [
+        530,
+        297,
+        582,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        60,
+        38
+      ],
+      "occupied_width": 52,
+      "occupied_height": 30,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "debris_metal_01",
+      "category": "props",
+      "family": "pallets_debris",
+      "variant": "metal_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 675,
+        "y": 8,
+        "width": 63,
+        "height": 45
+      },
+      "content_region": {
+        "x": 683,
+        "y": 16,
+        "width": 47,
+        "height": 29
+      },
+      "dimensions": [
+        47,
+        29
+      ],
+      "pivot_recommended": [
+        31,
+        37
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        55,
+        37
+      ],
+      "source_box": [
+        588,
+        298,
+        635,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        55,
+        37
+      ],
+      "occupied_width": 47,
+      "occupied_height": 29,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "debris_metal_02",
+      "category": "props",
+      "family": "pallets_debris",
+      "variant": "metal_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 59,
+        "width": 63,
+        "height": 45
+      },
+      "content_region": {
+        "x": 16,
+        "y": 67,
+        "width": 47,
+        "height": 29
+      },
+      "dimensions": [
+        47,
+        29
+      ],
+      "pivot_recommended": [
+        31,
+        37
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        55,
+        37
+      ],
+      "source_box": [
+        633,
+        298,
+        680,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        55,
+        37
+      ],
+      "occupied_width": 47,
+      "occupied_height": 29,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "fence_short_01",
+      "category": "props",
+      "family": "grates_fences",
+      "variant": "grate",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 71,
+        "y": 59,
+        "width": 64,
+        "height": 45
+      },
+      "content_region": {
+        "x": 79,
+        "y": 67,
+        "width": 48,
+        "height": 29
+      },
+      "dimensions": [
+        48,
+        29
+      ],
+      "pivot_recommended": [
+        32,
+        37
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        56,
+        37
+      ],
+      "source_box": [
+        696,
+        297,
+        744,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        56,
+        37
+      ],
+      "occupied_width": 48,
+      "occupied_height": 29,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "fence_chain_01",
+      "category": "props",
+      "family": "grates_fences",
+      "variant": "chain_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 135,
+        "y": 59,
+        "width": 65,
+        "height": 47
+      },
+      "content_region": {
+        "x": 143,
+        "y": 67,
+        "width": 49,
+        "height": 31
+      },
+      "dimensions": [
+        49,
+        31
+      ],
+      "pivot_recommended": [
+        32,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        57,
+        39
+      ],
+      "source_box": [
+        750,
+        296,
+        799,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        57,
+        39
+      ],
+      "occupied_width": 49,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "fence_chain_02",
+      "category": "props",
+      "family": "grates_fences",
+      "variant": "chain_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 200,
+        "y": 59,
+        "width": 58,
+        "height": 47
+      },
+      "content_region": {
+        "x": 208,
+        "y": 67,
+        "width": 42,
+        "height": 31
+      },
+      "dimensions": [
+        42,
+        31
+      ],
+      "pivot_recommended": [
+        29,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        50,
+        39
+      ],
+      "source_box": [
+        798,
+        296,
+        842,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        50,
+        39
+      ],
+      "occupied_width": 42,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "concrete_block_01",
+      "category": "props",
+      "family": "concrete_blocks",
+      "variant": "block",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 258,
+        "y": 59,
+        "width": 74,
+        "height": 44
+      },
+      "content_region": {
+        "x": 266,
+        "y": 67,
+        "width": 58,
+        "height": 28
+      },
+      "dimensions": [
+        58,
+        28
+      ],
+      "pivot_recommended": [
+        37,
+        36
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        66,
+        36
+      ],
+      "source_box": [
+        856,
+        299,
+        914,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        66,
+        36
+      ],
+      "occupied_width": 58,
+      "occupied_height": 28,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "concrete_barricade_01",
+      "category": "props",
+      "family": "concrete_blocks",
+      "variant": "barricade",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 332,
+        "y": 59,
+        "width": 86,
+        "height": 43
+      },
+      "content_region": {
+        "x": 340,
+        "y": 67,
+        "width": 70,
+        "height": 27
+      },
+      "dimensions": [
+        70,
+        27
+      ],
+      "pivot_recommended": [
+        43,
+        35
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        78,
+        35
+      ],
+      "source_box": [
+        920,
+        299,
+        990,
+        327
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        78,
+        35
+      ],
+      "occupied_width": 70,
+      "occupied_height": 27,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "pipe_unit_01",
+      "category": "props",
+      "family": "pipes",
+      "variant": "pump",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 418,
+        "y": 59,
+        "width": 56,
+        "height": 44
+      },
+      "content_region": {
+        "x": 426,
+        "y": 67,
+        "width": 40,
+        "height": 28
+      },
+      "dimensions": [
+        40,
+        28
+      ],
+      "pivot_recommended": [
+        28,
+        36
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        48,
+        36
+      ],
+      "source_box": [
+        530,
+        365,
+        570,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        48,
+        36
+      ],
+      "occupied_width": 40,
+      "occupied_height": 28,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "pipe_vertical_prop_01",
+      "category": "props",
+      "family": "pipes",
+      "variant": "vertical",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 474,
+        "y": 59,
+        "width": 47,
+        "height": 49
+      },
+      "content_region": {
+        "x": 482,
+        "y": 67,
+        "width": 31,
+        "height": 33
+      },
+      "dimensions": [
+        31,
+        33
+      ],
+      "pivot_recommended": [
+        23,
+        41
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        39,
+        41
+      ],
+      "source_box": [
+        574,
+        359,
+        605,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        39,
+        41
+      ],
+      "occupied_width": 31,
+      "occupied_height": 33,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "pipe_elbow_01",
+      "category": "props",
+      "family": "pipes",
+      "variant": "elbow",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 521,
+        "y": 59,
+        "width": 47,
+        "height": 47
+      },
+      "content_region": {
+        "x": 529,
+        "y": 67,
+        "width": 31,
+        "height": 31
+      },
+      "dimensions": [
+        31,
+        31
+      ],
+      "pivot_recommended": [
+        23,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        39,
+        39
+      ],
+      "source_box": [
+        610,
+        361,
+        641,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        39,
+        39
+      ],
+      "occupied_width": 31,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "pipe_unit_02",
+      "category": "props",
+      "family": "pipes",
+      "variant": "unit_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 568,
+        "y": 59,
+        "width": 49,
+        "height": 44
+      },
+      "content_region": {
+        "x": 576,
+        "y": 67,
+        "width": 33,
+        "height": 28
+      },
+      "dimensions": [
+        33,
+        28
+      ],
+      "pivot_recommended": [
+        24,
+        36
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        41,
+        36
+      ],
+      "source_box": [
+        646,
+        364,
+        680,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        41,
+        36
+      ],
+      "occupied_width": 33,
+      "occupied_height": 28,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "valve_small_01",
+      "category": "props",
+      "family": "valves",
+      "variant": "small",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 617,
+        "y": 59,
+        "width": 48,
+        "height": 46
+      },
+      "content_region": {
+        "x": 625,
+        "y": 67,
+        "width": 32,
+        "height": 30
+      },
+      "dimensions": [
+        32,
+        30
+      ],
+      "pivot_recommended": [
+        24,
+        38
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        38
+      ],
+      "source_box": [
+        696,
+        362,
+        729,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        38
+      ],
+      "occupied_width": 32,
+      "occupied_height": 30,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "valve_red_01",
+      "category": "props",
+      "family": "valves",
+      "variant": "red_handle",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 665,
+        "y": 59,
+        "width": 48,
+        "height": 48
+      },
+      "content_region": {
+        "x": 673,
+        "y": 67,
+        "width": 32,
+        "height": 32
+      },
+      "dimensions": [
+        32,
+        32
+      ],
+      "pivot_recommended": [
+        24,
+        40
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        40
+      ],
+      "source_box": [
+        731,
+        361,
+        765,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        40
+      ],
+      "occupied_width": 32,
+      "occupied_height": 32,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "valve_wheel_01",
+      "category": "props",
+      "family": "valves",
+      "variant": "wheel_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 713,
+        "y": 59,
+        "width": 51,
+        "height": 47
+      },
+      "content_region": {
+        "x": 721,
+        "y": 67,
+        "width": 35,
+        "height": 31
+      },
+      "dimensions": [
+        35,
+        31
+      ],
+      "pivot_recommended": [
+        25,
+        39
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "source_box": [
+        768,
+        361,
+        803,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        39
+      ],
+      "occupied_width": 35,
+      "occupied_height": 31,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "valve_wheel_02",
+      "category": "props",
+      "family": "valves",
+      "variant": "wheel_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 108,
+        "width": 51,
+        "height": 51
+      },
+      "content_region": {
+        "x": 16,
+        "y": 116,
+        "width": 35,
+        "height": 35
+      },
+      "dimensions": [
+        35,
+        35
+      ],
+      "pivot_recommended": [
+        25,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        43
+      ],
+      "source_box": [
+        804,
+        357,
+        840,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        43
+      ],
+      "occupied_width": 35,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "vent_unit_01",
+      "category": "props",
+      "family": "ventilation",
+      "variant": "industrial",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 59,
+        "y": 108,
+        "width": 57,
+        "height": 52
+      },
+      "content_region": {
+        "x": 67,
+        "y": 116,
+        "width": 41,
+        "height": 36
+      },
+      "dimensions": [
+        41,
+        36
+      ],
+      "pivot_recommended": [
+        28,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        49,
+        44
+      ],
+      "source_box": [
+        856,
+        357,
+        897,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        49,
+        44
+      ],
+      "occupied_width": 41,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "vent_fan_01",
+      "category": "props",
+      "family": "ventilation",
+      "variant": "fan_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 116,
+        "y": 108,
+        "width": 62,
+        "height": 52
+      },
+      "content_region": {
+        "x": 124,
+        "y": 116,
+        "width": 46,
+        "height": 36
+      },
+      "dimensions": [
+        46,
+        36
+      ],
+      "pivot_recommended": [
+        31,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        54,
+        44
+      ],
+      "source_box": [
+        900,
+        357,
+        946,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        54,
+        44
+      ],
+      "occupied_width": 46,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "vent_fan_02",
+      "category": "props",
+      "family": "ventilation",
+      "variant": "fan_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 178,
+        "y": 108,
+        "width": 60,
+        "height": 52
+      },
+      "content_region": {
+        "x": 186,
+        "y": 116,
+        "width": 44,
+        "height": 36
+      },
+      "dimensions": [
+        44,
+        36
+      ],
+      "pivot_recommended": [
+        30,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        44
+      ],
+      "source_box": [
+        948,
+        357,
+        992,
+        393
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        44
+      ],
+      "occupied_width": 44,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "generator_green_01",
+      "category": "props",
+      "family": "generators",
+      "variant": "green",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 238,
+        "y": 108,
+        "width": 68,
+        "height": 52
+      },
+      "content_region": {
+        "x": 246,
+        "y": 116,
+        "width": 52,
+        "height": 36
+      },
+      "dimensions": [
+        52,
+        36
+      ],
+      "pivot_recommended": [
+        34,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        60,
+        44
+      ],
+      "source_box": [
+        530,
+        427,
+        582,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        60,
+        44
+      ],
+      "occupied_width": 52,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "generator_dark_01",
+      "category": "props",
+      "family": "generators",
+      "variant": "dark",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 306,
+        "y": 108,
+        "width": 62,
+        "height": 51
+      },
+      "content_region": {
+        "x": 314,
+        "y": 116,
+        "width": 46,
+        "height": 35
+      },
+      "dimensions": [
+        46,
+        35
+      ],
+      "pivot_recommended": [
+        31,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        54,
+        43
+      ],
+      "source_box": [
+        584,
+        428,
+        630,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        54,
+        43
+      ],
+      "occupied_width": 46,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "generator_orange_01",
+      "category": "props",
+      "family": "generators",
+      "variant": "orange",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 368,
+        "y": 108,
+        "width": 64,
+        "height": 53
+      },
+      "content_region": {
+        "x": 376,
+        "y": 116,
+        "width": 48,
+        "height": 37
+      },
+      "dimensions": [
+        48,
+        37
+      ],
+      "pivot_recommended": [
+        32,
+        45
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        56,
+        45
+      ],
+      "source_box": [
+        632,
+        426,
+        680,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        56,
+        45
+      ],
+      "occupied_width": 48,
+      "occupied_height": 37,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "electrical_box_01",
+      "category": "props",
+      "family": "electrical_boxes",
+      "variant": "narrow",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 432,
+        "y": 108,
+        "width": 49,
+        "height": 54
+      },
+      "content_region": {
+        "x": 440,
+        "y": 116,
+        "width": 33,
+        "height": 38
+      },
+      "dimensions": [
+        33,
+        38
+      ],
+      "pivot_recommended": [
+        24,
+        46
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        41,
+        46
+      ],
+      "source_box": [
+        696,
+        425,
+        729,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        41,
+        46
+      ],
+      "occupied_width": 33,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "electrical_box_02",
+      "category": "props",
+      "family": "electrical_boxes",
+      "variant": "panel",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 481,
+        "y": 108,
+        "width": 60,
+        "height": 54
+      },
+      "content_region": {
+        "x": 489,
+        "y": 116,
+        "width": 44,
+        "height": 38
+      },
+      "dimensions": [
+        44,
+        38
+      ],
+      "pivot_recommended": [
+        30,
+        46
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        46
+      ],
+      "source_box": [
+        734,
+        425,
+        778,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        46
+      ],
+      "occupied_width": 44,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "electrical_box_03",
+      "category": "props",
+      "family": "electrical_boxes",
+      "variant": "narrow_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 541,
+        "y": 108,
+        "width": 49,
+        "height": 54
+      },
+      "content_region": {
+        "x": 549,
+        "y": 116,
+        "width": 33,
+        "height": 38
+      },
+      "dimensions": [
+        33,
+        38
+      ],
+      "pivot_recommended": [
+        24,
+        46
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        41,
+        46
+      ],
+      "source_box": [
+        783,
+        425,
+        816,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        41,
+        46
+      ],
+      "occupied_width": 33,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "transformer_01",
+      "category": "props",
+      "family": "transformers",
+      "variant": "coil_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 590,
+        "y": 108,
+        "width": 60,
+        "height": 54
+      },
+      "content_region": {
+        "x": 598,
+        "y": 116,
+        "width": 44,
+        "height": 38
+      },
+      "dimensions": [
+        44,
+        38
+      ],
+      "pivot_recommended": [
+        30,
+        46
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        46
+      ],
+      "source_box": [
+        856,
+        425,
+        900,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        46
+      ],
+      "occupied_width": 44,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "transformer_02",
+      "category": "props",
+      "family": "transformers",
+      "variant": "coil_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 650,
+        "y": 108,
+        "width": 61,
+        "height": 54
+      },
+      "content_region": {
+        "x": 658,
+        "y": 116,
+        "width": 45,
+        "height": 38
+      },
+      "dimensions": [
+        45,
+        38
+      ],
+      "pivot_recommended": [
+        30,
+        46
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        53,
+        46
+      ],
+      "source_box": [
+        902,
+        425,
+        947,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        53,
+        46
+      ],
+      "occupied_width": 45,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "transformer_03",
+      "category": "props",
+      "family": "transformers",
+      "variant": "coil_c",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 162,
+        "width": 59,
+        "height": 55
+      },
+      "content_region": {
+        "x": 16,
+        "y": 170,
+        "width": 43,
+        "height": 39
+      },
+      "dimensions": [
+        43,
+        39
+      ],
+      "pivot_recommended": [
+        29,
+        47
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        51,
+        47
+      ],
+      "source_box": [
+        949,
+        424,
+        992,
+        463
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        51,
+        47
+      ],
+      "occupied_width": 43,
+      "occupied_height": 39,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "cable_bundle_01",
+      "category": "props",
+      "family": "cables_wiring",
+      "variant": "hanging",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 67,
+        "y": 162,
+        "width": 158,
+        "height": 54
+      },
+      "content_region": {
+        "x": 75,
+        "y": 170,
+        "width": 142,
+        "height": 38
+      },
+      "dimensions": [
+        142,
+        38
+      ],
+      "pivot_recommended": [
+        79,
+        27
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        150,
+        46
+      ],
+      "source_box": [
+        530,
+        497,
+        680,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        150,
+        46
+      ],
+      "occupied_width": 142,
+      "occupied_height": 38,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "utility_pole_01",
+      "category": "props",
+      "family": "poles_lamps",
+      "variant": "pole",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 225,
+        "y": 162,
+        "width": 49,
+        "height": 59
+      },
+      "content_region": {
+        "x": 233,
+        "y": 170,
+        "width": 33,
+        "height": 43
+      },
+      "dimensions": [
+        33,
+        43
+      ],
+      "pivot_recommended": [
+        24,
+        51
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        41,
+        51
+      ],
+      "source_box": [
+        696,
+        492,
+        731,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        41,
+        51
+      ],
+      "occupied_width": 33,
+      "occupied_height": 43,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "industrial_lamp_01",
+      "category": "props",
+      "family": "poles_lamps",
+      "variant": "lamp_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 274,
+        "y": 162,
+        "width": 48,
+        "height": 55
+      },
+      "content_region": {
+        "x": 282,
+        "y": 170,
+        "width": 32,
+        "height": 39
+      },
+      "dimensions": [
+        32,
+        39
+      ],
+      "pivot_recommended": [
+        24,
+        27
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        47
+      ],
+      "source_box": [
+        739,
+        496,
+        782,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        47
+      ],
+      "occupied_width": 32,
+      "occupied_height": 39,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "industrial_lamp_02",
+      "category": "props",
+      "family": "poles_lamps",
+      "variant": "lamp_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 322,
+        "y": 162,
+        "width": 50,
+        "height": 55
+      },
+      "content_region": {
+        "x": 330,
+        "y": 170,
+        "width": 34,
+        "height": 39
+      },
+      "dimensions": [
+        34,
+        39
+      ],
+      "pivot_recommended": [
+        25,
+        27
+      ],
+      "alignment": "ceiling",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        42,
+        47
+      ],
+      "source_box": [
+        787,
+        496,
+        839,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        42,
+        47
+      ],
+      "occupied_width": 34,
+      "occupied_height": 39,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "neon_magenta_01",
+      "category": "props",
+      "family": "neon_luminaires",
+      "variant": "magenta",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 372,
+        "y": 162,
+        "width": 36,
+        "height": 56
+      },
+      "content_region": {
+        "x": 380,
+        "y": 170,
+        "width": 20,
+        "height": 40
+      },
+      "dimensions": [
+        20,
+        40
+      ],
+      "pivot_recommended": [
+        18,
+        28
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        28,
+        48
+      ],
+      "source_box": [
+        856,
+        495,
+        884,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        28,
+        48
+      ],
+      "occupied_width": 20,
+      "occupied_height": 40,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "neon_cyan_01",
+      "category": "props",
+      "family": "neon_luminaires",
+      "variant": "cyan",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 408,
+        "y": 162,
+        "width": 43,
+        "height": 56
+      },
+      "content_region": {
+        "x": 416,
+        "y": 170,
+        "width": 27,
+        "height": 40
+      },
+      "dimensions": [
+        27,
+        40
+      ],
+      "pivot_recommended": [
+        21,
+        28
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        35,
+        48
+      ],
+      "source_box": [
+        887,
+        493,
+        914,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        35,
+        48
+      ],
+      "occupied_width": 27,
+      "occupied_height": 40,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "neon_green_01",
+      "category": "props",
+      "family": "neon_luminaires",
+      "variant": "green",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 451,
+        "y": 162,
+        "width": 47,
+        "height": 56
+      },
+      "content_region": {
+        "x": 459,
+        "y": 170,
+        "width": 31,
+        "height": 40
+      },
+      "dimensions": [
+        31,
+        40
+      ],
+      "pivot_recommended": [
+        23,
+        28
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        39,
+        48
+      ],
+      "source_box": [
+        919,
+        493,
+        950,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        39,
+        48
+      ],
+      "occupied_width": 31,
+      "occupied_height": 40,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "lamp_warm_01",
+      "category": "props",
+      "family": "neon_luminaires",
+      "variant": "warm",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 498,
+        "y": 162,
+        "width": 47,
+        "height": 55
+      },
+      "content_region": {
+        "x": 506,
+        "y": 170,
+        "width": 31,
+        "height": 39
+      },
+      "dimensions": [
+        31,
+        39
+      ],
+      "pivot_recommended": [
+        23,
+        27
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        39,
+        47
+      ],
+      "source_box": [
+        958,
+        491,
+        989,
+        535
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        39,
+        47
+      ],
+      "occupied_width": 31,
+      "occupied_height": 39,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "sign_rust_01",
+      "category": "props",
+      "family": "signs_ads",
+      "variant": "rust",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 545,
+        "y": 162,
+        "width": 48,
+        "height": 49
+      },
+      "content_region": {
+        "x": 553,
+        "y": 170,
+        "width": 32,
+        "height": 33
+      },
+      "dimensions": [
+        32,
+        33
+      ],
+      "pivot_recommended": [
+        24,
+        24
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        40,
+        41
+      ],
+      "source_box": [
+        530,
+        589,
+        562,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        40,
+        41
+      ],
+      "occupied_width": 32,
+      "occupied_height": 33,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "sign_don_future_01",
+      "category": "props",
+      "family": "signs_ads",
+      "variant": "don_future",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 593,
+        "y": 162,
+        "width": 58,
+        "height": 51
+      },
+      "content_region": {
+        "x": 601,
+        "y": 170,
+        "width": 42,
+        "height": 35
+      },
+      "dimensions": [
+        42,
+        35
+      ],
+      "pivot_recommended": [
+        29,
+        25
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        50,
+        43
+      ],
+      "source_box": [
+        566,
+        587,
+        608,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        50,
+        43
+      ],
+      "occupied_width": 42,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "sign_neon_01",
+      "category": "props",
+      "family": "signs_ads",
+      "variant": "neon",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 651,
+        "y": 162,
+        "width": 84,
+        "height": 50
+      },
+      "content_region": {
+        "x": 659,
+        "y": 170,
+        "width": 68,
+        "height": 34
+      },
+      "dimensions": [
+        68,
+        34
+      ],
+      "pivot_recommended": [
+        42,
+        25
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        76,
+        42
+      ],
+      "source_box": [
+        612,
+        588,
+        680,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        76,
+        42
+      ],
+      "occupied_width": 68,
+      "occupied_height": 34,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "graffiti_don_future_01",
+      "category": "props",
+      "family": "graffiti_symbols",
+      "variant": "don_future",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 221,
+        "width": 70,
+        "height": 52
+      },
+      "content_region": {
+        "x": 16,
+        "y": 229,
+        "width": 54,
+        "height": 36
+      },
+      "dimensions": [
+        54,
+        36
+      ],
+      "pivot_recommended": [
+        35,
+        26
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        62,
+        44
+      ],
+      "source_box": [
+        696,
+        586,
+        750,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        62,
+        44
+      ],
+      "occupied_width": 54,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "graffiti_anarchy_01",
+      "category": "props",
+      "family": "graffiti_symbols",
+      "variant": "anarchy",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 78,
+        "y": 221,
+        "width": 60,
+        "height": 52
+      },
+      "content_region": {
+        "x": 86,
+        "y": 229,
+        "width": 44,
+        "height": 36
+      },
+      "dimensions": [
+        44,
+        36
+      ],
+      "pivot_recommended": [
+        30,
+        26
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        44
+      ],
+      "source_box": [
+        752,
+        586,
+        796,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        44
+      ],
+      "occupied_width": 44,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "graffiti_skull_01",
+      "category": "props",
+      "family": "graffiti_symbols",
+      "variant": "skull",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 138,
+        "y": 221,
+        "width": 51,
+        "height": 51
+      },
+      "content_region": {
+        "x": 146,
+        "y": 229,
+        "width": 35,
+        "height": 35
+      },
+      "dimensions": [
+        35,
+        35
+      ],
+      "pivot_recommended": [
+        25,
+        25
+      ],
+      "alignment": "wall",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        43,
+        43
+      ],
+      "source_box": [
+        797,
+        586,
+        840,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        43,
+        43
+      ],
+      "occupied_width": 35,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "terminal_01",
+      "category": "props",
+      "family": "terminals_computers",
+      "variant": "terminal",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 189,
+        "y": 221,
+        "width": 50,
+        "height": 56
+      },
+      "content_region": {
+        "x": 197,
+        "y": 229,
+        "width": 34,
+        "height": 40
+      },
+      "dimensions": [
+        34,
+        40
+      ],
+      "pivot_recommended": [
+        25,
+        48
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        42,
+        48
+      ],
+      "source_box": [
+        856,
+        582,
+        890,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        42,
+        48
+      ],
+      "occupied_width": 34,
+      "occupied_height": 40,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "computer_01",
+      "category": "props",
+      "family": "terminals_computers",
+      "variant": "computer_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 239,
+        "y": 221,
+        "width": 53,
+        "height": 51
+      },
+      "content_region": {
+        "x": 247,
+        "y": 229,
+        "width": 37,
+        "height": 35
+      },
+      "dimensions": [
+        37,
+        35
+      ],
+      "pivot_recommended": [
+        26,
+        43
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        45,
+        43
+      ],
+      "source_box": [
+        893,
+        586,
+        930,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        45,
+        43
+      ],
+      "occupied_width": 37,
+      "occupied_height": 35,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "computer_02",
+      "category": "props",
+      "family": "terminals_computers",
+      "variant": "computer_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 292,
+        "y": 221,
+        "width": 50,
+        "height": 52
+      },
+      "content_region": {
+        "x": 300,
+        "y": 229,
+        "width": 34,
+        "height": 36
+      },
+      "dimensions": [
+        34,
+        36
+      ],
+      "pivot_recommended": [
+        25,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        42,
+        44
+      ],
+      "source_box": [
+        934,
+        586,
+        968,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        42,
+        44
+      ],
+      "occupied_width": 34,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "computer_03",
+      "category": "props",
+      "family": "terminals_computers",
+      "variant": "computer_c",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 342,
+        "y": 221,
+        "width": 40,
+        "height": 52
+      },
+      "content_region": {
+        "x": 350,
+        "y": 229,
+        "width": 24,
+        "height": 36
+      },
+      "dimensions": [
+        24,
+        36
+      ],
+      "pivot_recommended": [
+        20,
+        44
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        32,
+        44
+      ],
+      "source_box": [
+        970,
+        585,
+        994,
+        622
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        32,
+        44
+      ],
+      "occupied_width": 24,
+      "occupied_height": 36,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "machine_workshop_01",
+      "category": "props",
+      "family": "machines_workshops",
+      "variant": "machine_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 382,
+        "y": 221,
+        "width": 68,
+        "height": 65
+      },
+      "content_region": {
+        "x": 390,
+        "y": 229,
+        "width": 52,
+        "height": 49
+      },
+      "dimensions": [
+        52,
+        49
+      ],
+      "pivot_recommended": [
+        34,
+        57
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        60,
+        57
+      ],
+      "source_box": [
+        530,
+        650,
+        582,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        60,
+        57
+      ],
+      "occupied_width": 52,
+      "occupied_height": 49,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "machine_workshop_02",
+      "category": "props",
+      "family": "machines_workshops",
+      "variant": "machine_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 450,
+        "y": 221,
+        "width": 60,
+        "height": 60
+      },
+      "content_region": {
+        "x": 458,
+        "y": 229,
+        "width": 44,
+        "height": 44
+      },
+      "dimensions": [
+        44,
+        44
+      ],
+      "pivot_recommended": [
+        30,
+        52
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        52
+      ],
+      "source_box": [
+        584,
+        653,
+        628,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        52
+      ],
+      "occupied_width": 44,
+      "occupied_height": 44,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "machine_workshop_03",
+      "category": "props",
+      "family": "machines_workshops",
+      "variant": "machine_c",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 510,
+        "y": 221,
+        "width": 66,
+        "height": 63
+      },
+      "content_region": {
+        "x": 518,
+        "y": 229,
+        "width": 50,
+        "height": 47
+      },
+      "dimensions": [
+        50,
+        47
+      ],
+      "pivot_recommended": [
+        33,
+        55
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        58,
+        55
+      ],
+      "source_box": [
+        630,
+        652,
+        680,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        58,
+        55
+      ],
+      "occupied_width": 50,
+      "occupied_height": 47,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "workbench_01",
+      "category": "props",
+      "family": "workbenches",
+      "variant": "bench_a",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 576,
+        "y": 221,
+        "width": 85,
+        "height": 61
+      },
+      "content_region": {
+        "x": 584,
+        "y": 229,
+        "width": 69,
+        "height": 45
+      },
+      "dimensions": [
+        69,
+        45
+      ],
+      "pivot_recommended": [
+        42,
+        53
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        77,
+        53
+      ],
+      "source_box": [
+        696,
+        654,
+        765,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        77,
+        53
+      ],
+      "occupied_width": 69,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "workbench_02",
+      "category": "props",
+      "family": "workbenches",
+      "variant": "bench_b",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 661,
+        "y": 221,
+        "width": 88,
+        "height": 61
+      },
+      "content_region": {
+        "x": 669,
+        "y": 229,
+        "width": 72,
+        "height": 45
+      },
+      "dimensions": [
+        72,
+        45
+      ],
+      "pivot_recommended": [
+        44,
+        53
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        80,
+        53
+      ],
+      "source_box": [
+        768,
+        654,
+        840,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        80,
+        53
+      ],
+      "occupied_width": 72,
+      "occupied_height": 45,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "maintenance_door_01",
+      "category": "props",
+      "family": "maintenance_access",
+      "variant": "door",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 8,
+        "y": 286,
+        "width": 60,
+        "height": 66
+      },
+      "content_region": {
+        "x": 16,
+        "y": 294,
+        "width": 44,
+        "height": 50
+      },
+      "dimensions": [
+        44,
+        50
+      ],
+      "pivot_recommended": [
+        30,
+        58
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        52,
+        58
+      ],
+      "source_box": [
+        856,
+        649,
+        900,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        52,
+        58
+      ],
+      "occupied_width": 44,
+      "occupied_height": 50,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "maintenance_hatch_01",
+      "category": "props",
+      "family": "maintenance_access",
+      "variant": "hatch",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 68,
+        "y": 286,
+        "width": 61,
+        "height": 64
+      },
+      "content_region": {
+        "x": 76,
+        "y": 294,
+        "width": 45,
+        "height": 48
+      },
+      "dimensions": [
+        45,
+        48
+      ],
+      "pivot_recommended": [
+        30,
+        56
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        53,
+        56
+      ],
+      "source_box": [
+        902,
+        651,
+        947,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        53,
+        56
+      ],
+      "occupied_width": 45,
+      "occupied_height": 48,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    },
+    {
+      "id": "maintenance_ladder_01",
+      "category": "props",
+      "family": "maintenance_access",
+      "variant": "ladder",
+      "file": "cidade_baixa_props_v1.png",
+      "region": {
+        "x": 129,
+        "y": 286,
+        "width": 58,
+        "height": 66
+      },
+      "content_region": {
+        "x": 137,
+        "y": 294,
+        "width": 42,
+        "height": 50
+      },
+      "dimensions": [
+        42,
+        50
+      ],
+      "pivot_recommended": [
+        29,
+        58
+      ],
+      "alignment": "floor",
+      "collision_hint": "DECORATION_ONLY",
+      "repeatable": true,
+      "bbox": [
+        8,
+        8,
+        50,
+        58
+      ],
+      "source_box": [
+        950,
+        649,
+        992,
+        699
+      ],
+      "observations": "1:1 controlled extraction from official Props panel; no upscale/resampling; 8px transparent atlas padding.",
+      "validated_bbox_in_region": [
+        8,
+        8,
+        50,
+        58
+      ],
+      "occupied_width": 42,
+      "occupied_height": 50,
+      "clipping_detected": false,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b"
+    }
+  ],
+  "blocked": [],
+  "not_produced": [
+    "gameplay/interativos",
+    "background FAR/MID/NEAR",
+    "foreground/atmosfera",
+    "mapa",
+    "Godot TileSet Resource",
+    "cenas Godot",
+    "integração",
+    "outros biomas"
+  ],
+  "validation": {
+    "physical_reopen": true,
+    "source_scale_1_to_1": true,
+    "upscale": false,
+    "resampling": false,
+    "atlas_region_overlap": false,
+    "byte_integrity_checked": true
+  }
+}

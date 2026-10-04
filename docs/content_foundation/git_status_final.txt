@@ -1,0 +1,85 @@
+ M assets/ui/menu_panels/GODOT_INTEGRATION_README.txt
+ M assets/ui/menu_panels/used_assets.json
+ M entities/RangedEnemy.gd
+ M entities/enemy_character_visual.gd
+ M entities/player_character_visual.gd
+ M entities/projectile_visual.gd
+ M scene/biomes/biome_definition.gd
+ M scene/biomes/biome_generator.gd
+ M scene/biomes/biome_minimap.gd
+ M scene/biomes/lower_city/lower_city_presentation.gd
+ M scene/casa_jhon_hub.gd
+ M scene/inventory_ui.gd
+ M scene/local_settings.gd
+ M scene/main.tscn
+ M scene/main_menu_alive.gd
+ M scene/mode_select.gd
+ M scene/network/lan_lobby.gd
+ M scene/pause_menu.gd
+ M scene/pause_menu.tscn
+ M scene/run_debug_hud.gd
+ M scene/weapons/weapon_catalog.gd
+ M scene/weapons/weapon_definition.gd
+ M scene/weapons/weapon_pickup.gd
+ M tests/cidade_baixa_presentation_static_test.py
+ M tests/gameplay_hud_presentation_static_test.py
+ M tests/menu_panels_presentation_static_test.py
+ M ui/gameplay_hud_presentation.gd
+ M ui/menu_panel_presentation.gd
+ M ui/touch_controls.gd
+ M ui/touch_controls.tscn
+?? assets/localization/
+?? assets/ui/menu_panels/assets/shared/inventory/detail_panel.png
+?? assets/ui/menu_panels/assets/shared/inventory/tab_normal.png
+?? assets/ui/menu_panels/assets/shared/inventory/tab_selected.png
+?? assets/ui/menu_panels/assets/shared/settings/settings_tab_normal.png
+?? assets/ui/menu_panels/assets/shared/settings/settings_tab_selected.png
+?? content/
+?? cyberfield_visual_integration_pass2.patch
+?? docs/CONTENT_VISUAL_ARCHITECTURE.md
+?? docs/CONTENT_VISUAL_FOUNDATION_REPORT.md
+?? docs/PASS3_ENVIRONMENT_ASSET_AUDIT.md
+?? docs/PASS3_FINAL_REPORT.md
+?? docs/VISUAL_ASSET_IMPORT_CONTRACT.md
+?? docs/audit_pass3_regions.ps1
+?? docs/build_pass3_translations.ps1
+?? docs/content_foundation/
+?? docs/pass3_android_touch_hud_modal_hotfix_smoke_test.log
+?? docs/pass3_asset_metrics.json
+?? docs/pass3_baseline/
+?? docs/pass3_capture.log
+?? docs/pass3_captures/
+?? docs/pass3_casa_smoke.log
+?? docs/pass3_changed_from_baseline.json
+?? docs/pass3_editor_validation.log
+?? docs/pass3_execution_inventory.json
+?? docs/pass3_frozen_contracts.json
+?? docs/pass3_new_smoke.log
+?? docs/pass3_official_visual_integration_smoke_test.log
+?? docs/pass3_parse_current.log
+?? docs/pass3_parse_results.json
+?? docs/pass3_pass6_dropdown_modal_smoke_test.log
+?? docs/pass3_pass6_hotfix2_scroll_smoke_test.log
+?? docs/pass3_phase4_stats_hud_smoke_test.log
+?? docs/pass3_phase8_final_consolidation_smoke_test.log
+?? docs/pass3_phase8_lan_lobby_touch_smoke_test.log
+?? docs/pass3_phase8_multi_seed_smoke_test.log
+?? docs/pass3_ranged_enemy_rebuild_v2_smoke_test.log
+?? docs/pass3_region_metrics.json
+?? docs/pass3_scroll_baseline.log
+?? docs/pass3_seed_baseline.log
+?? docs/pass3_testdata/
+?? docs/pass3_translation_diagnostic.log
+?? scene/casa_jhon_presentation.gd
+?? scene/run_backpack.gd
+?? tests/content_visual_foundation_smoke_test.gd
+?? tests/content_visual_generation_smoke_test.gd
+?? tests/fixtures/
+?? tests/pass3_translation_diagnostic.gd
+?? tests/visual_asset_manifest_test.py
+?? tests/visual_integration_pass2_static_test.py
+?? tests/visual_pass3_capture.gd
+?? tests/visual_pass3_smoke_test.gd
+?? tools/
+?? ui/localization.gd
+?? ui/mobile_presentation_feedback.gd

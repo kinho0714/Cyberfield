@@ -71,15 +71,15 @@ func _ready() -> void:
 
 
 func get_session_summary(compact_text: bool = false) -> String:
-	var mode: String = {&"solo": "Solo", &"coop": "Coop local", &"lan": "LAN"}.get(run_manager.game_mode, "—")
+	var mode: String = tr({&"solo": "Solo", &"coop": "Coop local", &"lan": "LAN"}.get(run_manager.game_mode, "—"))
 	var state: String = "ATIVA" if run_manager.run_active else "INATIVA"
 	if run_manager.run_is_completed:
 		state = "CONCLUÍDA"
 	elif run_manager.run_is_lost:
 		state = "PERDIDA"
 	if compact_text:
-		return "%s · %s · %d jogador(es)\nRun: %s" % [mode, run_manager.get_difficulty_label(), run_manager.player_count, state]
-	return "Modo: %s\nDificuldade: %s\nJogadores: %d   ·   Run: %s" % [mode, run_manager.get_difficulty_label(), run_manager.player_count, state]
+		return tr("%s · %s · %d jogador(es)\nRun: %s") % [mode, tr(run_manager.get_difficulty_label()), run_manager.player_count, tr(state)]
+	return tr("Modo: %s\nDificuldade: %s\nJogadores: %d   ·   Run: %s") % [mode, tr(run_manager.get_difficulty_label()), run_manager.player_count, tr(state)]
 
 
 func _update_session_summary(delta: float) -> void:
@@ -237,7 +237,7 @@ func _get_partner_player(players: Array[Node], local_player: Node) -> Node:
 
 
 func _update_local_player_hud(player: Node) -> void:
-	local_name.text = "%s%s" % [String(player.participant_id).replace("player_", "P"), " — CAÍDO" if player.is_downed else ""]
+	local_name.text = "%s%s" % [String(player.participant_id).replace("player_", "P"), " — " + tr("CAÍDO") if player.is_downed else ""]
 	local_health.max_value = player.max_health
 	local_health.value = player.health
 	local_health_text.text = "%d / %d" % [player.health, player.max_health]
@@ -264,7 +264,7 @@ func _update_boss_hud() -> void:
 	boss_panel.visible = active_boss != null and run_manager.run_active
 	if active_boss == null:
 		return
-	boss_name.text = "GUARDIÃO PROVISÓRIO" + (" // FASE 2" if bool(active_boss.get("boss_phase_two_active")) else "")
+	boss_name.text = tr("GUARDIÃO PROVISÓRIO") + (" // " + tr("FASE 2") if bool(active_boss.get("boss_phase_two_active")) else "")
 	boss_health.max_value = active_boss.max_health
 	boss_health.value = active_boss.health
 
@@ -276,7 +276,7 @@ func _refresh() -> void:
 	restart_button.disabled = run_manager.is_in_hub()
 	if run_manager.is_in_hub():
 		status_label.text = "Laboratório\nRun: INATIVA\nModo: %s\nDificuldade preparada: %s\nJogadores: %d" % [mode_label, run_manager.get_difficulty_label(), run_manager.player_count]
-		room_title.text = "LABORATÓRIO // HUB"
+		room_title.text = tr("LABORATÓRIO // HUB")
 		end_overlay.visible = false
 		return
 	if not run_manager.current_biome_id.is_empty():
@@ -288,7 +288,7 @@ func _refresh() -> void:
 			"Run: %s\nModo: %s\nDificuldade: %s\nDinheiro Sujo: $%d\nSTAGE: %d/6\nBIOMA: %s\nSEED: %d\nMÓDULOS: %d\nInimigos vivos: %d%s%s%s"
 			% [status, mode_label, run_manager.get_difficulty_label(), run_manager.dirty_money, mini(run_manager.stage_index + 1, 6), run_manager.current_biome_name, run_manager.seed_value, run_manager.generated_module_count, run_manager.get_alive_enemy_count(), fallback_text, exit_text, network_text]
 		)
-		room_title.text = "BIOMA // %s" % run_manager.current_biome_name
+		room_title.text = tr("BIOMA // %s") % tr(run_manager.current_biome_name)
 		end_overlay.visible = run_manager.run_is_completed or run_manager.run_is_lost
 		if run_manager.run_is_lost:
 			end_title.text = _build_run_summary(false)
@@ -302,7 +302,7 @@ func _refresh() -> void:
 		"Run: %s\nModo: %s\nDificuldade: %s\nJogadores: %d\nDinheiro Sujo: $%d\nSala: %d/%d\nTipo: %s\nInimigos vivos: %d\nChefes vivos: %d\nConcluídas: %d%s"
 		% [status, mode_label, run_manager.get_difficulty_label(), run_manager.player_count, run_manager.dirty_money, run_manager.current_room_index + 1, run_manager.RUN_SEQUENCE.size(), run_manager.get_current_room_type(), run_manager.get_alive_enemy_count(), run_manager.get_alive_boss_count(), run_manager.get_completed_room_count(), completed]
 	)
-	room_title.text = "SALA %02d // %s" % [run_manager.current_room_index + 1, run_manager.get_current_room_type().to_upper()]
+	room_title.text = tr("SALA %02d // %s") % [run_manager.current_room_index + 1, tr(run_manager.get_current_room_type().to_upper())]
 	end_overlay.visible = run_manager.run_is_completed or run_manager.run_is_lost
 	if run_manager.run_is_lost:
 		end_title.text = "RUN PERDIDA"
@@ -317,14 +317,19 @@ func _build_run_summary(completed: bool = true) -> String:
 	var route_parts: PackedStringArray = []
 	for stage: Dictionary in run_manager.stage_history:
 		route_parts.append(String(stage.get("exit_id", "?")).to_upper())
-	var route_text := " → ".join(route_parts) if not route_parts.is_empty() else "DIRETA"
+	var route_text := " → ".join(route_parts) if not route_parts.is_empty() else tr("DIRETA")
 	var summary: PackedStringArray = [
-		"RUN CONCLUÍDA" if completed else "RUN PERDIDA",
-		"TEMPO: %s // DIFICULDADE: %s" % [run_manager.format_run_time(float(run_manager.last_run_results.get("elapsed_time", run_manager.run_elapsed_time))), run_manager.get_difficulty_label()],
-		"DINHEIRO OBTIDO: $%d // RESTANTE: $%d" % [run_manager.total_money_earned, run_manager.dirty_money],
-		"STAGES: %d/6 // ROTA: %s" % [mini(run_manager.stage_index + 1, 6), route_text],
+		tr("RUN CONCLUÍDA") if completed else tr("RUN PERDIDA"),
+		tr("TEMPO: %s // DIFICULDADE: %s") % [run_manager.format_run_time(float(run_manager.last_run_results.get("elapsed_time", run_manager.run_elapsed_time))), tr(run_manager.get_difficulty_label())],
+		tr("DINHEIRO OBTIDO: $%d // RESTANTE: $%d") % [run_manager.total_money_earned, run_manager.dirty_money],
+		tr("STAGES: %d/6 // ROTA: %s") % [mini(run_manager.stage_index + 1, 6), route_text],
 	]
 	for player in get_parent().get_players():
-		var weapons := "%s / %s" % [WeaponCatalog.get_display_name(player.equipped_weapons[0]), WeaponCatalog.get_display_name(player.equipped_weapons[1]) if not player.equipped_weapons[1].is_empty() else "VAZIO"]
-		summary.append("%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s" % [String(player.participant_id).replace("player_", "P"), player.intellect, player.health_attribute, player.strength, weapons])
+		var weapons := "%s / %s" % [tr(WeaponCatalog.get_display_name(player.equipped_weapons[0])), tr(WeaponCatalog.get_display_name(player.equipped_weapons[1])) if not player.equipped_weapons[1].is_empty() else tr("VAZIO")]
+		summary.append(tr("%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s") % [String(player.participant_id).replace("player_", "P"), player.intellect, player.health_attribute, player.strength, weapons])
 	return "\n".join(summary)
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh()

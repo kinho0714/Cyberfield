@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2582)
+PROPERTIES [{ "name": "RefCounted", "class_name": &"", "type": 0, "hint": 0, "hint_string": "RefCounted", "usage": 128 }, { "name": "Resource", "class_name": &"", "type": 0, "hint": 0, "hint_string": "Resource", "usage": 128 }, { "name": "Resource", "class_name": &"", "type": 0, "hint": 0, "hint_string": "resource_", "usage": 64 }, { "name": "resource_local_to_scene", "class_name": &"", "type": 1, "hint": 0, "hint_string": "", "usage": 6 }, { "name": "resource_path", "class_name": &"", "type": 4, "hint": 0, "hint_string": "", "usage": 4 }, { "name": "resource_name", "class_name": &"", "type": 4, "hint": 0, "hint_string": "", "usage": 6 }, { "name": "resource_scene_unique_id", "class_name": &"", "type": 4, "hint": 0, "hint_string": "", "usage": 0 }, { "name": "Translation", "class_name": &"", "type": 0, "hint": 0, "hint_string": "Translation", "usage": 128 }, { "name": "messages", "class_name": &"", "type": 27, "hint": 0, "hint_string": "", "usage": 10 }, { "name": "locale", "class_name": &"", "type": 4, "hint": 32, "hint_string": "", "usage": 6 }, { "name": "plural_rules_override", "class_name": &"", "type": 4, "hint": 0, "hint_string": "", "usage": 6 }, { "name": "script", "class_name": &"Script", "type": 24, "hint": 17, "hint_string": "Script", "usage": 1048590 }]
+LOCALE pt_BR COUNT 88 COMMON COMUM
+TRANSLATED COMUM

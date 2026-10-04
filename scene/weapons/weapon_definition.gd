@@ -6,6 +6,8 @@ enum Rarity { COMMON, UNCOMMON, RARE }
 
 @export var weapon_id: StringName
 @export var display_name := "ARMA"
+@export var display_name_key: StringName
+@export var visual_profile_id: StringName
 @export var weapon_type := WeaponType.MELEE
 @export var base_damage := 40
 @export var cooldown := 0.2

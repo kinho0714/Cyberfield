@@ -1,0 +1,26 @@
+ M assets/ui/menu_panels/GODOT_INTEGRATION_README.txt
+ M assets/ui/menu_panels/used_assets.json
+ M scene/biomes/lower_city/lower_city_presentation.gd
+ M scene/casa_jhon_hub.gd
+ M scene/inventory_ui.gd
+ M scene/main.tscn
+ M scene/pause_menu.gd
+ M scene/pause_menu.tscn
+ M tests/cidade_baixa_presentation_static_test.py
+ M tests/gameplay_hud_presentation_static_test.py
+ M tests/menu_panels_presentation_static_test.py
+ M ui/gameplay_hud_presentation.gd
+ M ui/menu_panel_presentation.gd
+ M ui/touch_controls.gd
+ M ui/touch_controls.tscn
+?? assets/ui/menu_panels/assets/shared/inventory/detail_panel.png
+?? assets/ui/menu_panels/assets/shared/inventory/tab_normal.png
+?? assets/ui/menu_panels/assets/shared/inventory/tab_selected.png
+?? assets/ui/menu_panels/assets/shared/settings/settings_tab_normal.png
+?? assets/ui/menu_panels/assets/shared/settings/settings_tab_selected.png
+?? cyberfield_visual_integration_pass2.patch
+?? docs/pass3_baseline/branch.txt
+?? docs/pass3_baseline/head.txt
+?? scene/casa_jhon_presentation.gd
+?? tests/visual_integration_pass2_static_test.py
+?? ui/mobile_presentation_feedback.gd

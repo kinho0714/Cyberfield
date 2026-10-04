@@ -4,11 +4,16 @@ extends AnimatedSprite2D
 @export_enum("common", "ranged", "heavy") var character_kind := "common"
 @export var facing_source_path: NodePath
 @export var fallback_visual_path: NodePath
+@export var content_biome_id: StringName = &"biome_01"
+@export var content_variant_id: StringName
+@export var content_visual_profile_id: StringName
 
 @onready var _facing_source := get_node_or_null(facing_source_path) as Node2D
 @onready var _fallback_visual := get_node_or_null(fallback_visual_path) as CanvasItem
 
 var _last_state: StringName = &""
+var _content_profile: ContentVisualProfile
+var _legacy_offset := Vector2.ZERO
 
 const COMMON_V2_GROUND_OFFSET := Vector2(0.0, -7.0)
 const COMMON_V2_AIR_OFFSET := Vector2.ZERO
@@ -22,7 +27,18 @@ const RANGED_V2_ATTACK_FPS := 7.0
 
 
 func _ready() -> void:
+	_legacy_offset = offset
 	sprite_frames = VisualSpriteFactory.build_sprite_frames(_build_definitions())
+	var variant := ContentRegistry.enemy_variant(content_biome_id, StringName(character_kind), content_variant_id)
+	_content_profile = ContentRegistry.entry_profile(variant)
+	var enemy := get_parent()
+	if enemy.has_method("is_boss") and bool(enemy.call("is_boss")):
+		# Existing prototype boss shares melee AI, not the biome melee identity.
+		_content_profile = ContentRegistry.profile(&"boss_existing")
+	if not content_visual_profile_id.is_empty():
+		_content_profile = ContentRegistry.profile(content_visual_profile_id)
+	if _content_profile != null:
+		sprite_frames = _content_profile.merge_frames(sprite_frames)
 	if _fallback_visual != null:
 		_fallback_visual.visible = false
 	_update_presentation()
@@ -57,6 +73,8 @@ func _update_presentation() -> void:
 	elif animation != state or (_is_looping(state) and not is_playing()):
 		play(state)
 	_apply_alignment(state)
+	if _content_profile != null:
+		offset = _content_profile.alignment(state, offset)
 	_last_state = state
 
 
@@ -108,6 +126,7 @@ func _build_ranged_v2_definitions() -> Dictionary:
 
 
 func _apply_alignment(state: StringName) -> void:
+	offset = _legacy_offset
 	if character_kind == "common":
 		offset = COMMON_V2_AIR_OFFSET if state == &"air" else COMMON_V2_GROUND_OFFSET
 		offset.x += _frame_x_offset(COMMON_V2_FRAME_X_OFFSETS, state, frame)
@@ -142,10 +161,12 @@ func _air_frame(vertical_velocity: float) -> int:
 
 func _place_health_bar() -> void:
 	var bar: ProgressBar = get_parent().get_node_or_null("HealthBar") as ProgressBar
-	if bar == null or sprite_frames == null:
+	if bar == null or sprite_frames == null or not sprite_frames.has_animation(&"idle") or sprite_frames.get_frame_count(&"idle") == 0:
 		return
 	# Use the official idle canvas and alignment, never legacy placeholder offsets.
 	var texture: Texture2D = sprite_frames.get_frame_texture(&"idle", 0)
+	if texture == null:
+		return
 	var top: float = position.y + (offset.y - texture.get_height() * 0.5) * scale.y
 	bar.scale = Vector2.ONE
 	bar.position = Vector2(-26.0, top - 12.0)

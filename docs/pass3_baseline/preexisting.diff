@@ -1,0 +1,1005 @@
+diff --git a/assets/ui/menu_panels/GODOT_INTEGRATION_README.txt b/assets/ui/menu_panels/GODOT_INTEGRATION_README.txt
+index 3694089..f55c4f6 100644
+--- a/assets/ui/menu_panels/GODOT_INTEGRATION_README.txt
++++ b/assets/ui/menu_panels/GODOT_INTEGRATION_README.txt
+@@ -1,23 +1,18 @@
+-Checkpoint 4 — Pause / inventory / settings presentation
++Visual Integration Pass 2 — Pause / inventory / settings presentation
+ Source: cyberfield_hud_ui_complete_integration_bundle_v1.zip
+ Source SHA-256: 584b0b31883dc2111a50f60a309af7479d68af50c03aec17c0663d6e0be0f12f
+-13 unmodified runtime-ready PNGs; used_assets.json records official metadata/hashes.
+-NinePatchRect and StyleBoxTexture use the exact manifest slice margins.
++18 unmodified runtime-ready PNGs; used_assets.json records official metadata/hashes.
++NinePatchRect and StyleBoxTexture retain manifest slice margins.
+ 
+-Existing right-side Pause/Settings layout, scroll, popup and callbacks remain.
+-Settings keeps its approved single scrolling list rather than adding category tabs
+-or fake video settings. Camera zoom, mobile scale, debug and all four audio buses
+-retain their backend and input contracts. Slider styles are signal-driven.
+-Inventory presents only the two actual equipped weapon slots and WeaponCatalog
+-values. Activating a slot still uses the existing explicit equip action; merely
+-focusing it does not equip anything. No gadgets, concept items or empty future
+-slots. Details remain inside existing cards; no fictitious status/run tabs.
+-Panel decorations are behind contents and ignore input. A Node2D holder excludes
+-Pause/Settings decoration from VBox layout. No new per-frame processing.
+-All menus retain original anchor/layout contracts instead of enforcing concept
+-screenshot dimensions. Inventory receives a 22px panel inset. Fullscreen dimming
+-is 0.60, while official panel textures provide localized contrast.
++Pause uses a left action rail. Settings occupies the right content panel, with
++JOGO / CONTROLES / ÁUDIO tabs filtering existing controls. No fake video settings.
++Title-screen settings uses the same panel centered without the Pause rail.
++Camera, touch scale, debug, audio persistence and popup/gesture backends remain.
++Inventory retains two real equipped slots, with separate read-only preview and
++STATUS / RUN summaries sourced from existing player/run data. Explicit activation
++still equips; focus/hover only previews. No concept weapons, gadgets or new slots.
++Decorations ignore input. Layout adapts to viewport size at resize, not per frame.
+ 
+-Physical Godot 4.7.2/Android validation remains required: navigate every page,
+-return focus/input, test LAN local-only modal behavior, scroll all audio controls,
+-open/select/close camera dropdown, drag sliders horizontally and scroll vertically.
++Physical Godot 4.7.2/Android validation is required: every page, long names,
++focus return, LAN local modal behavior, all audio controls, repeated dropdown
++selection, horizontal slider drag versus vertical scroll, and wide-screen layout.
+diff --git a/assets/ui/menu_panels/used_assets.json b/assets/ui/menu_panels/used_assets.json
+index 76463de..50aba04 100644
+--- a/assets/ui/menu_panels/used_assets.json
++++ b/assets/ui/menu_panels/used_assets.json
+@@ -503,5 +503,198 @@
+     ],
+     "notes": "",
+     "sha256": "9d20daa82df0ef8550c20fb91b46b8d411b120ba17d71d9f83b1bde0d1389063"
++  },
++  {
++    "asset_id": "inventory_tab_normal",
++    "display_name": "Inventory tab normal",
++    "category": "shared/inventory",
++    "subsystem": "inventory",
++    "source_reference": "REF04 PAUSE INVENTORY",
++    "file": "assets/shared/inventory/tab_normal.png",
++    "region": null,
++    "width": 128,
++    "height": 40,
++    "rgba": true,
++    "runtime_ready": true,
++    "reference_only": false,
++    "blocked": false,
++    "platform": "shared",
++    "scalable": true,
++    "nine_patch_margins": [
++      8,
++      8,
++      8,
++      8
++    ],
++    "recommended_origin": [
++      0,
++      0
++    ],
++    "recommended_anchor": null,
++    "recommended_position_1280x720": null,
++    "z_order_hint": 61,
++    "dynamic_content": [
++      "runtime_label"
++    ],
++    "states": [
++      "normal"
++    ],
++    "notes": "",
++    "sha256": "af3bf33271e80ec5495c89e161ba71e59269a37d39e39571c74433c46ef644a8"
++  },
++  {
++    "asset_id": "inventory_tab_selected",
++    "display_name": "Inventory tab selected",
++    "category": "shared/inventory",
++    "subsystem": "inventory",
++    "source_reference": "REF04 PAUSE INVENTORY",
++    "file": "assets/shared/inventory/tab_selected.png",
++    "region": null,
++    "width": 128,
++    "height": 40,
++    "rgba": true,
++    "runtime_ready": true,
++    "reference_only": false,
++    "blocked": false,
++    "platform": "shared",
++    "scalable": true,
++    "nine_patch_margins": [
++      8,
++      8,
++      8,
++      8
++    ],
++    "recommended_origin": [
++      0,
++      0
++    ],
++    "recommended_anchor": null,
++    "recommended_position_1280x720": null,
++    "z_order_hint": 61,
++    "dynamic_content": [
++      "runtime_label"
++    ],
++    "states": [
++      "selected"
++    ],
++    "notes": "",
++    "sha256": "e23d32ed51cf0a790a996e6677a35e34c8b0476679c749ada87ba33fe1266d11"
++  },
++  {
++    "asset_id": "inventory_detail_panel",
++    "display_name": "Inventory detail panel",
++    "category": "shared/inventory",
++    "subsystem": "inventory",
++    "source_reference": "REF04 PAUSE INVENTORY",
++    "file": "assets/shared/inventory/detail_panel.png",
++    "region": null,
++    "width": 320,
++    "height": 250,
++    "rgba": true,
++    "runtime_ready": true,
++    "reference_only": false,
++    "blocked": false,
++    "platform": "shared",
++    "scalable": true,
++    "nine_patch_margins": [
++      16,
++      16,
++      16,
++      16
++    ],
++    "recommended_origin": [
++      0,
++      0
++    ],
++    "recommended_anchor": null,
++    "recommended_position_1280x720": null,
++    "z_order_hint": 61,
++    "dynamic_content": [
++      "inventory_item_icon",
++      "inventory_item_name",
++      "inventory_item_description",
++      "inventory_item_stats"
++    ],
++    "states": [
++      "normal"
++    ],
++    "notes": "",
++    "sha256": "e9fee1ad0f23487b800dcfcb84b916462fae2d09df3546d16ffc820005180b3f"
++  },
++  {
++    "asset_id": "settings_tab_normal",
++    "display_name": "Settings tab normal",
++    "category": "shared/settings",
++    "subsystem": "settings",
++    "source_reference": "REF05 SETTINGS",
++    "file": "assets/shared/settings/settings_tab_normal.png",
++    "region": null,
++    "width": 120,
++    "height": 40,
++    "rgba": true,
++    "runtime_ready": true,
++    "reference_only": false,
++    "blocked": false,
++    "platform": "shared",
++    "scalable": true,
++    "nine_patch_margins": [
++      8,
++      8,
++      8,
++      8
++    ],
++    "recommended_origin": [
++      0,
++      0
++    ],
++    "recommended_anchor": null,
++    "recommended_position_1280x720": null,
++    "z_order_hint": 61,
++    "dynamic_content": [
++      "runtime_label"
++    ],
++    "states": [
++      "normal"
++    ],
++    "notes": "",
++    "sha256": "c67bca73dff05c7bb00768a56199a75bec69cb98f5001bb7e8bf625ada7185b5"
++  },
++  {
++    "asset_id": "settings_tab_selected",
++    "display_name": "Settings tab selected",
++    "category": "shared/settings",
++    "subsystem": "settings",
++    "source_reference": "REF05 SETTINGS",
++    "file": "assets/shared/settings/settings_tab_selected.png",
++    "region": null,
++    "width": 120,
++    "height": 40,
++    "rgba": true,
++    "runtime_ready": true,
++    "reference_only": false,
++    "blocked": false,
++    "platform": "shared",
++    "scalable": true,
++    "nine_patch_margins": [
++      8,
++      8,
++      8,
++      8
++    ],
++    "recommended_origin": [
++      0,
++      0
++    ],
++    "recommended_anchor": null,
++    "recommended_position_1280x720": null,
++    "z_order_hint": 61,
++    "dynamic_content": [
++      "runtime_label"
++    ],
++    "states": [
++      "selected"
++    ],
++    "notes": "",
++    "sha256": "678df1c573105f186caec5e479b04e8b922ac973c4db88f539449d6902e04e8d"
+   }
+ ]
+diff --git a/scene/biomes/lower_city/lower_city_presentation.gd b/scene/biomes/lower_city/lower_city_presentation.gd
+index 4605942..caaffd5 100644
+--- a/scene/biomes/lower_city/lower_city_presentation.gd
++++ b/scene/biomes/lower_city/lower_city_presentation.gd
+@@ -25,20 +25,12 @@ var variant := 0
+ 
+ func _ready() -> void:
+ 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+-	z_index = -2
++	z_index = -8 if kind == "module" else -2
+ 
+ 
+ func _draw() -> void:
+ 	if kind == "module":
+-		# Finite non-repeatable strips, never stretched into fullscreen scenery.
+-		draw_texture(FAR, Vector2(170, 70), Color(0.7, 0.7, 0.7))
+-		draw_texture(MID, Vector2(170, 123), Color(0.7, 0.7, 0.7))
+-		draw_texture(NEAR, Vector2(170, 177), Color(0.7, 0.7, 0.7))
+-		var ids := ["crate_wood_01", "crate_wood_02", "crate_wood_03", "container_green_01"]
+-		for index in 2:
+-			var region: Rect2 = REGIONS[ids[(variant + index) % ids.size()]]
+-			var origin := Vector2(90 + index * 640, 420 - region.size.y)
+-			draw_texture_rect_region(PROPS, Rect2(origin, region.size), region)
++		_draw_district_module()
+ 		return
+ 	if kind == "exit":
+ 		var region: Rect2 = REGIONS["biome_exit_01"]
+@@ -63,3 +55,45 @@ func _draw() -> void:
+ 				Rect2(region.position, extent))
+ 			x += region.size.x
+ 		y += region.size.y
++
++
++func _surface_region(region: Rect2, area: Rect2, tint: Color) -> void:
++	var y := area.position.y
++	while y < area.end.y:
++		var x := area.position.x
++		while x < area.end.x:
++			var extent := Vector2(minf(region.size.x, area.end.x - x), minf(region.size.y, area.end.y - y))
++			draw_texture_rect_region(STRUCTURE, Rect2(Vector2(x, y), extent), Rect2(region.position, extent), tint)
++			x += region.size.x
++		y += region.size.y
++
++
++func _draw_district_module() -> void:
++	# Back architecture is darker than solid traversal geometry; openings stay clear.
++	var tone := Color(0.36, 0.44, 0.53) if variant % 2 == 0 else Color(0.43, 0.37, 0.43)
++	_surface_region(Rect2(30, 73, 68, 45), Rect2(24, 40, 792, 380), tone)
++	# A bounded city vista, with FAR/MID/NEAR overlapping in depth, at native size.
++	draw_rect(Rect2(169, 85, 495, 153), Color("071321"))
++	draw_texture(FAR, Vector2(170, 86), Color(0.42, 0.52, 0.65))
++	draw_texture(MID, Vector2(170, 122), Color(0.58, 0.65, 0.76))
++	draw_texture(NEAR, Vector2(170, 164), Color(0.74, 0.78, 0.85))
++	_surface_region(Rect2(29, 132, 133, 18), Rect2(24, 26, 792, 18), Color("68757e"))
++	for x in [32, 784]:
++		_surface_region(Rect2(674, 256, 20, 60), Rect2(x, 46, 20, 374), Color("5b6570"))
++	# Services run along the upper back wall, never over actors/telegraphs.
++	_surface_region(Rect2(23, 459, 145, 41), Rect2(80, 250, 664, 24), Color("78808a"))
++	var neon := Color("37aebc") if variant % 3 != 1 else Color("b4457c")
++	draw_rect(Rect2(228, 244, 166, 3), neon)
++	draw_polyline(PackedVector2Array([Vector2(78, 52), Vector2(150, 71), Vector2(340, 64), Vector2(510, 75), Vector2(764, 49)]), Color("0d1621"), 3)
++	# Recessed base trim visually anchors the facade; it adds no collision.
++	_surface_region(Rect2(159, 73, 66, 45), Rect2(24, 390, 792, 30), Color("293841"))
++	# Deterministic small industrial clusters: floor ends, not central shaft/exit.
++	var crates := [Rect2(16, 16, 35, 31), Rect2(67, 16, 35, 31), Rect2(171, 16, 42, 31)]
++	for index in 2:
++		var region: Rect2 = crates[(variant + index) % crates.size()]
++		var x: float = 92 + index * 608
++		draw_texture_rect_region(PROPS, Rect2(Vector2(x, 420 - region.size.y), region.size), region)
++		var barrel := Rect2(229, 16, 29, 35)
++		draw_texture_rect_region(PROPS, Rect2(x + 42, 385, 29, 35), barrel)
++	var machine := Rect2(390, 229, 52, 49) if variant % 2 == 0 else Rect2(458, 229, 44, 44)
++	draw_texture_rect_region(PROPS, Rect2(Vector2(56, 310), machine.size), machine, Color(0.75, 0.8, 0.9))
+diff --git a/scene/casa_jhon_hub.gd b/scene/casa_jhon_hub.gd
+index e8d1a32..df0cbf6 100644
+--- a/scene/casa_jhon_hub.gd
++++ b/scene/casa_jhon_hub.gd
+@@ -8,3 +8,9 @@ const BOUNDS := Rect2(0.0, 0.0, 2560.0, 768.0)
+ 
+ func get_hub_bounds() -> Rect2:
+ 	return BOUNDS
++
++
++func _ready() -> void:
++	# Keep authored anchors/geometry and archival instances, replace presentation only.
++	$Environment.hide()
++	add_child(preload("res://scene/casa_jhon_presentation.gd").new())
+diff --git a/scene/inventory_ui.gd b/scene/inventory_ui.gd
+index 04f5022..89875c1 100644
+--- a/scene/inventory_ui.gd
++++ b/scene/inventory_ui.gd
+@@ -9,41 +9,96 @@ var _tree_paused := false
+ var _return_to_pause := false
+ var _close_button: Button
+ 
++var _sidebar: PanelContainer
++var _inventory_frame: PanelContainer
++var _sidebar_buttons: Array[Button] = []
++var _tabs: Array[Button] = []
++var _equipment: HBoxContainer
++var _summary: Label
++var _details: Label
++var _preview_index: int = 0
++
+ 
+ func _ready() -> void:
+ 	add_to_group("inventory_ui")
+ 	process_mode = Node.PROCESS_MODE_ALWAYS
+ 	overlay = ColorRect.new()
+ 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+-	overlay.color = Color(0.005, 0.015, 0.035, 0.60)
++	overlay.color = Color(0.005, 0.015, 0.035, 0.66)
+ 	add_child(overlay)
+-	var center := CenterContainer.new()
+-	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+-	overlay.add_child(center)
++	_sidebar = PanelContainer.new()
++	_sidebar.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("pause/pause_side_panel", 18, 18))
++	overlay.add_child(_sidebar)
++	var navigation := VBoxContainer.new()
++	navigation.add_theme_constant_override("separation", 10)
++	_sidebar.add_child(navigation)
++	_add_label(navigation, "PAUSA", 28)
++	var actions: Array[String] = ["CONTINUAR", "INVENTÁRIO", "CONFIGURAÇÕES", "ABANDONAR RUN", "MENU PRINCIPAL"]
++	for index in actions.size():
++		var button := Button.new()
++		button.text = actions[index]
++		button.custom_minimum_size = Vector2(220, 56)
++		button.add_theme_font_size_override("font_size", 18)
++		PANEL_PRESENTATION.style_button(button)
++		button.pressed.connect(_sidebar_action.bind(index))
++		navigation.add_child(button)
++		_sidebar_buttons.append(button)
++	_inventory_frame = PanelContainer.new()
++	_inventory_frame.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/inventory_panel", 18, 22))
++	overlay.add_child(_inventory_frame)
+ 	var panel := VBoxContainer.new()
+-	panel.custom_minimum_size = Vector2(560, 320)
+-	var frame := PanelContainer.new()
+-	frame.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/inventory_panel", 18, 22))
+-	center.add_child(frame)
+-	frame.add_child(panel)
+-	var title := Label.new()
+-	title.text = "EQUIPAMENTOS DA RUN"
+-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+-	title.add_theme_font_size_override("font_size", 30)
+-	panel.add_child(title)
++	panel.add_theme_constant_override("separation", 16)
++	_inventory_frame.add_child(panel)
++	var header := HBoxContainer.new()
++	panel.add_child(header)
++	var title: Label = _add_label(header, "INVENTÁRIO", 28)
++	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
++	var labels: Array[String] = ["EQUIPAMENTOS", "STATUS", "RUN"]
++	for index in labels.size():
++		var tab := Button.new()
++		tab.text = labels[index]
++		tab.custom_minimum_size = Vector2(104, 48)
++		tab.add_theme_font_size_override("font_size", 15)
++		tab.pressed.connect(_show_inventory_tab.bind(index))
++		tab.gui_input.connect(_tab_touch.bind(tab, index))
++		header.add_child(tab)
++		_tabs.append(tab)
++	_equipment = HBoxContainer.new()
++	_equipment.add_theme_constant_override("separation", 22)
++	panel.add_child(_equipment)
++	var cards := VBoxContainer.new()
++	cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
++	cards.add_theme_constant_override("separation", 16)
++	_equipment.add_child(cards)
+ 	for index in 2:
+ 		var button := Button.new()
+-		button.custom_minimum_size = Vector2(540, 92)
++		button.custom_minimum_size = Vector2(200, 128)
+ 		button.pressed.connect(_select_slot.bind(index))
++		button.focus_entered.connect(_preview_slot.bind(index))
++		button.mouse_entered.connect(_preview_slot.bind(index))
+ 		PANEL_PRESENTATION.style_inventory_slot(button)
+-		panel.add_child(button)
++		cards.add_child(button)
+ 		slot_buttons.append(button)
++	var detail_panel := PanelContainer.new()
++	detail_panel.custom_minimum_size = Vector2(320, 272)
++	detail_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
++	detail_panel.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/detail_panel", 16, 18))
++	_equipment.add_child(detail_panel)
++	_details = _add_label(detail_panel, "", 20)
++	_details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
++	_details.custom_minimum_size = Vector2(280, 0)
++	_summary = _add_label(panel, "", 22)
++	_summary.custom_minimum_size = Vector2(0, 272)
++	_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+ 	_close_button = Button.new()
+-	_close_button.text = "FECHAR"
+-	_close_button.custom_minimum_size = Vector2(540, 54)
++	_close_button.text = "VOLTAR"
++	_close_button.custom_minimum_size = Vector2(0, 52)
+ 	_close_button.pressed.connect(close_inventory)
+ 	PANEL_PRESENTATION.style_button(_close_button)
+ 	panel.add_child(_close_button)
++	get_viewport().size_changed.connect(_layout_inventory)
++	_layout_inventory()
++	_show_inventory_tab(0)
+ 	overlay.visible = false
+ 
+ 
+@@ -56,6 +111,11 @@ func _input(event: InputEvent) -> void:
+ 		get_viewport().set_input_as_handled()
+ 	elif overlay.visible and event is InputEventScreenTouch and event.pressed:
+ 		var touch_event := event as InputEventScreenTouch
++		for index in _sidebar_buttons.size():
++			if _touch_hits(_sidebar_buttons[index], touch_event.position):
++				_sidebar_action(index)
++				get_viewport().set_input_as_handled()
++				return
+ 		if _touch_hits(_close_button, touch_event.position):
+ 			close_inventory()
+ 			get_viewport().set_input_as_handled()
+@@ -94,6 +154,7 @@ func open_inventory() -> void:
+ 		_tree_paused = true
+ 	room_manager.get_node("TouchControls").set_menu_blocked(true)
+ 	overlay.visible = true
++	_show_inventory_tab(0)
+ 	_refresh()
+ 	slot_buttons[0].grab_focus()
+ 
+@@ -142,7 +203,9 @@ func _refresh() -> void:
+ 		var data := WeaponCatalog.get_definition(weapon_id)
+ 		slot_buttons[index].disabled = false
+ 		PANEL_PRESENTATION.mark_equipped(slot_buttons[index], player.active_weapon_slot == index)
+-		slot_buttons[index].text = "%s  SLOT %d   •   %s\n%s    DANO %d    RECARGA %.2fs    %s" % ["▶" if player.active_weapon_slot == index else " ", index + 1, data.name, String(data.type).to_upper(), data.damage, data.cooldown, String(data.rarity).to_upper()]
++		slot_buttons[index].text = "%sSLOT %d\n%s\n%s" % ["▶ " if player.active_weapon_slot == index else "", index + 1, data.name, String(data.type).to_upper()]
++	_preview_slot(_preview_index)
++
+ 
+ 
+ func _local_player() -> Node:
+@@ -166,3 +229,74 @@ func _block_local_players(room_manager: Node) -> void:
+ 
+ func _touch_hits(control: Control, position: Vector2) -> bool:
+ 	return control != null and control.is_visible_in_tree() and control.get_global_rect().has_point(position)
++
++
++func _add_label(parent: Node, text: String, font_size: int) -> Label:
++	var label := Label.new()
++	label.text = text
++	label.add_theme_font_size_override("font_size", font_size)
++	label.add_theme_color_override("font_color", Color("e5f4ff"))
++	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
++	parent.add_child(label)
++	return label
++
++
++func _layout_inventory() -> void:
++	var screen: Vector2 = get_viewport().get_visible_rect().size
++	_sidebar.position = Vector2(32, maxf(24, (screen.y - 402) * 0.5))
++	_sidebar.size = Vector2(256, 402)
++	_inventory_frame.position = Vector2(332, maxf(24, (screen.y - 464) * 0.5))
++	_inventory_frame.size = Vector2(maxf(740, screen.x - 364), 464)
++
++
++func _preview_slot(index: int) -> void:
++	_preview_index = index
++	var player := _local_player()
++	if player == null or player.equipped_weapons[index].is_empty():
++		_details.text = "SLOT %d\n\nVAZIO" % (index + 1)
++		return
++	var data := WeaponCatalog.get_definition(player.equipped_weapons[index])
++	_details.text = "%s\n%s\n\nDANO  %d\nRECARGA  %.2fs\nTIPO  %s\n\n%s" % [data.name, String(data.rarity).to_upper(), data.damage, data.cooldown, String(data.type).to_upper(), "EQUIPADO" if player.active_weapon_slot == index else "Ative o slot para equipar."]
++
++
++func _show_inventory_tab(index: int) -> void:
++	_equipment.visible = index == 0
++	_summary.visible = index != 0
++	for n in _tabs.size():
++		_tabs[n].add_theme_stylebox_override("normal", PANEL_PRESENTATION.style("inventory/tab_selected" if n == index else "inventory/tab_normal", 8, 8))
++		for state in ["hover", "focus", "pressed"]:
++			_tabs[n].add_theme_stylebox_override(state, PANEL_PRESENTATION.style("inventory/tab_selected", 8, 8))
++	var player := _local_player()
++	if index == 1 and player != null:
++		_summary.text = "STATUS\n\nVIDA  %d / %d\nSAÚDE  %d\nINTELIGÊNCIA  %d\nFORÇA  %d\nDOSES  %d / %d" % [player.health, player.max_health, player.health_attribute, player.intellect, player.strength, player.heal_doses, player.max_heal_doses]
++	elif index == 2:
++		var hud := get_parent().get_node_or_null("RunDebugHUD")
++		var run := get_parent().get_node_or_null("RunManager")
++		_summary.text = "RUN\n\n" + (hud.get_session_summary() if hud != null else "")
++		if run != null:
++			_summary.text += "\nTEMPO  %s\nDINHEIRO  %d" % [run.format_run_time(), run.dirty_money]
++
++
++func _tab_touch(event: InputEvent, button: Button, index: int) -> void:
++	if event is InputEventScreenTouch and event.pressed:
++		_show_inventory_tab(index)
++		button.grab_focus()
++		button.accept_event()
++
++
++func _sidebar_action(index: int) -> void:
++	if index == 1:
++		_show_inventory_tab(0)
++		return
++	_return_to_pause = false
++	close_inventory()
++	var pause := get_tree().get_first_node_in_group("pause_menu")
++	if pause == null:
++		return
++	if index == 2:
++		pause.open_menu()
++		pause._show_settings()
++	elif index == 3:
++		pause._abandon_run()
++	elif index == 4:
++		pause._return_to_main_menu()
+diff --git a/scene/main.tscn b/scene/main.tscn
+index e319cfa..1f35501 100644
+--- a/scene/main.tscn
++++ b/scene/main.tscn
+@@ -72,10 +72,10 @@ layout_mode = 3
+ anchors_preset = 1
+ anchor_left = 1.0
+ anchor_right = 1.0
+-offset_left = -294.0
+-offset_top = 74.0
+-offset_right = -18.0
+-offset_bottom = 224.0
++offset_left = -364.0
++offset_top = 20.0
++offset_right = -96.0
++offset_bottom = 142.0
+ grow_horizontal = 0
+ mouse_filter = 2
+ script = ExtResource("9_minimap")
+diff --git a/scene/pause_menu.gd b/scene/pause_menu.gd
+index 4523543..cb2d8ad 100644
+--- a/scene/pause_menu.gd
++++ b/scene/pause_menu.gd
+@@ -22,6 +22,8 @@ var options_scroll_origin: int = 0
+ var options_gesture: int = 0 # 0 pending, 1 vertical scroll, 2 horizontal slider
+ const OPTIONS_DRAG_THRESHOLD: float = 12.0
+ var audio_sliders: Array[HSlider] = []
++var category_buttons: Array[Button] = []
++var selected_category: int = 0
+ const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Efeitos Sonoros", "Diálogos"]
+ @onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
+ @onready var settings_content: VBoxContainer = $Overlay/Center/SettingsPage/Scroll/Content
+@@ -52,11 +54,14 @@ func _ready() -> void:
+ 	_fit_settings_scroll()
+ 	_load_controls()
+ 	PANEL_PRESENTATION.apply_pause(main_page, settings_page, settings_content)
++	_build_categories()
++	get_viewport().size_changed.connect(_layout_panels)
++	call_deferred("_layout_panels")
+ 
+ 
+ func _fit_settings_scroll() -> void:
+ 	# Title and Back stay outside the scroll region and remain reachable.
+-	settings_scroll.custom_minimum_size.y = clampf(get_viewport().get_visible_rect().size.y - 240.0, 180.0, 440.0)
++	settings_scroll.custom_minimum_size.y = clampf(get_viewport().get_visible_rect().size.y - 360.0, 160.0, 320.0)
+ 
+ 
+ func _input(event: InputEvent) -> void:
+@@ -182,13 +187,24 @@ func _show_main() -> void:
+ 
+ func _show_settings() -> void:
+ 	_cancel_options_gesture()
+-	main_page.visible = false
++	main_page.visible = not title_settings
+ 	settings_page.visible = true
++	_select_category(0)
++	call_deferred("_layout_panels")
+ 	zoom_option.grab_focus()
+ 
+ 
+ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
+ 	var position: Vector2 = event.position
++	# Sidebar stays usable while Settings is open. Calls the original actions.
++	if settings_page.visible and main_page.visible:
++		var actions: Dictionary = {"Continue": close_menu, "Inventory": _open_inventory,
++			"Settings": _show_settings, "Abandon": _abandon_run, "MainMenu": _return_to_main_menu}
++		for key: String in actions:
++			if _touch_hits(main_page.get_node(key) as Control, position):
++				actions[key].call()
++				get_viewport().set_input_as_handled()
++				return
+ 	if settings_page.visible:
+ 		if _touch_hits($Overlay/Center/SettingsPage/Back, position):
+ 			_settings_back()
+@@ -356,3 +372,61 @@ func _cancel_options_gesture() -> void:
+ 
+ func _style_audio_slider(slider: HSlider) -> void:
+ 	PANEL_PRESENTATION.style_slider(slider, Color("39dff2"))
++
++
++func _build_categories() -> void:
++	var tabs := HBoxContainer.new()
++	tabs.name = "Categories"
++	tabs.add_theme_constant_override("separation", 8)
++	settings_page.add_child(tabs)
++	settings_page.move_child(tabs, 1)
++	var labels: Array[String] = ["JOGO", "CONTROLES", "ÁUDIO"]
++	for index in labels.size():
++		var button := Button.new()
++		button.text = labels[index]
++		button.custom_minimum_size = Vector2(136, 48)
++		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
++		button.pressed.connect(_select_category.bind(index))
++		button.gui_input.connect(_category_touch.bind(button, index))
++		button.add_theme_font_size_override("font_size", 18)
++		tabs.add_child(button)
++		category_buttons.append(button)
++	_select_category(0)
++
++
++func _category_touch(event: InputEvent, button: Button, index: int) -> void:
++	if event is InputEventScreenTouch and event.pressed:
++		_select_category(index)
++		button.grab_focus()
++		button.accept_event()
++
++
++func _select_category(index: int) -> void:
++	_cancel_options_gesture()
++	selected_category = index
++	var groups: Array = [["ZoomLabel", "CameraZoom", "DebugHud"],
++		["TouchLabel", "TouchScale", "TouchValue"],
++		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
++	for child in settings_content.get_children():
++		if child is Control:
++			child.visible = String(child.name) in groups[index]
++	for tab in category_buttons.size():
++		var path: String = "settings/settings_tab_selected" if tab == index else "settings/settings_tab_normal"
++		category_buttons[tab].add_theme_stylebox_override("normal", PANEL_PRESENTATION.style(path, 8, 8))
++		for state in ["hover", "pressed", "focus"]:
++			category_buttons[tab].add_theme_stylebox_override(state, PANEL_PRESENTATION.style("settings/settings_tab_selected", 8, 8))
++	settings_scroll.scroll_vertical = 0
++
++
++func _layout_panels() -> void:
++	# Responsive composition, independent of the old right-anchored menu container.
++	var screen: Vector2 = get_viewport().get_visible_rect().size
++	var center := $Overlay/Center as Control
++	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
++	PANEL_PRESENTATION.clear_minimum_widths(main_page)
++	PANEL_PRESENTATION.clear_minimum_widths(settings_page)
++	main_page.position = Vector2(40, maxf(28, (screen.y - main_page.get_combined_minimum_size().y) * 0.5))
++	main_page.size = Vector2(248, main_page.get_combined_minimum_size().y)
++	var left: float = 344 if not title_settings else maxf(32, (screen.x - 880) * 0.5)
++	settings_page.position = Vector2(left, maxf(28, (screen.y - settings_page.get_combined_minimum_size().y) * 0.5))
++	settings_page.size = Vector2(maxf(560, screen.x - left - 40), settings_page.get_combined_minimum_size().y)
+diff --git a/scene/pause_menu.tscn b/scene/pause_menu.tscn
+index a1bbcdd..7733aef 100644
+--- a/scene/pause_menu.tscn
++++ b/scene/pause_menu.tscn
+@@ -17,7 +17,7 @@ grow_horizontal = 2
+ grow_vertical = 2
+ color = Color(0.01, 0.02, 0.05, 0.60)
+ 
+-[node name="Center" type="MarginContainer" parent="Overlay"]
++[node name="Center" type="Control" parent="Overlay"]
+ layout_mode = 1
+ anchor_left = 1.0
+ anchor_top = 0.5
+diff --git a/tests/cidade_baixa_presentation_static_test.py b/tests/cidade_baixa_presentation_static_test.py
+index 5f894f0..6869c19 100644
+--- a/tests/cidade_baixa_presentation_static_test.py
++++ b/tests/cidade_baixa_presentation_static_test.py
+@@ -54,7 +54,7 @@ class CidadePresentation(unittest.TestCase):
+         self.assertIn('TEXTURE_FILTER_NEAREST', text)
+         self.assertIn('minf(region.size.x, surface.end.x - x)', text)
+         self.assertIn('minf(region.size.y, surface.end.y - y)', text)
+-        self.assertIn('z_index = -2', text)
++        self.assertIn('z_index = -8 if kind == "module" else -2', text)
+         # Finite backgrounds retain their exact source dimensions/non-repeatability.
+         data = json.loads((ASSETS / 'backgrounds/manifest.json').read_text())
+         for entry in data['files']:
+diff --git a/tests/gameplay_hud_presentation_static_test.py b/tests/gameplay_hud_presentation_static_test.py
+index b7c102b..195dfbd 100644
+--- a/tests/gameplay_hud_presentation_static_test.py
++++ b/tests/gameplay_hud_presentation_static_test.py
+@@ -63,7 +63,7 @@ class HudPresentation(unittest.TestCase):
+         self.assertIn('layer.layer = 39', text)
+         self.assertIn('_vignette.mouse_filter = Control.MOUSE_FILTER_IGNORE', text)
+         self.assertIn('_vignette.visible = hud_visible and _critical', text)
+-        self.assertIn('_vignette.modulate.a = 0.22', text)
++        self.assertIn('_vignette.modulate.a = 0.30', text)
+         for key in ['health', 'max_health', 'heal_doses', 'max_heal_doses', 'health_attribute', 'intellect', 'strength']:
+             self.assertIn('player.' + key, text)
+         for forbidden in ['Input.', 'func _process', 'func _physics_process', 'equipped_weapons']:
+diff --git a/tests/menu_panels_presentation_static_test.py b/tests/menu_panels_presentation_static_test.py
+index e9b8e94..16bdf7f 100644
+--- a/tests/menu_panels_presentation_static_test.py
++++ b/tests/menu_panels_presentation_static_test.py
+@@ -10,8 +10,8 @@ from PIL import Image
+ from godot_parser import GDScene
+ from gdtoolkit.parser import parser
+ ROOT = Path(__file__).resolve().parents[1]
+-FROZEN = {'scene/pause_menu.gd::_fit_settings_scroll': '39786094aa32a21bbea5edf0eeb942f4d800cc97ba207226bcb64b12f4c09af6', 'scene/pause_menu.gd::_input': '69fb54e9988826eb626eae2315871b54fa1a2189763617b20bfb96a1162c8ec5', 'scene/pause_menu.gd::open_title_settings': 'f893a280076b2fedaaa66f9214d012aacfd18876936ef30c337b27b28b66852f', 'scene/pause_menu.gd::_settings_back': 'e74c81d22dcc4e5a21a412be949357746cee65dae42a18e9ce894ac6912926ec', 'scene/pause_menu.gd::toggle_menu': 'ac17f25a76d00e4f01410cc1583f68c8b35d752376acad15f3965ec09bafff69', 'scene/pause_menu.gd::open_menu': '6d1c987cae48f8dc3b6957e025dd5f24d2edcb4f2db4f099b30f3ecc84f70f6f', 'scene/pause_menu.gd::close_menu': '339164a4d9c066e53be9b7573a9041be0c0eca79565954fe1863fddd6d55c87f', 'scene/pause_menu.gd::_block_local_gameplay_input': '39b541075aea553d0f909cab661ea197751b8559c908aacefce416d1f4d3047d', 'scene/pause_menu.gd::_show_main': '81ccbe28ee715064c1771241680e4e6a636b0ecdb57ca43873b5b66aff1dbffc', 'scene/pause_menu.gd::_show_settings': 'ad323898466620286ad455eb6f3ec1ff6645e2719b330446e78c02c0bd054228', 'scene/pause_menu.gd::_handle_screen_touch_pressed': '8c43178eb020d441be317e814f8a2a271bf85ac12026baade81c26455282fae3', 'scene/pause_menu.gd::_touch_hits': 'ee94949cd1df9d18c9bfa85f2139f66fa04a82787020dd14793c053a954c1687', 'scene/pause_menu.gd::_update_touch_slider': '5ebdfc18d31771902663f5b77faa15e67d03f9a20ea513173596577836686355', 'scene/pause_menu.gd::_open_inventory': '3569e357d67295cc8a652544520f84f4bfa230160f45c4fb7aedc80763c9edf6', 'scene/pause_menu.gd::_load_controls': 'f2c866aad0167738ebded95437bf758493ef413b5162b2c211c9db78e1f6e490', 'scene/pause_menu.gd::_set_camera_zoom': '04b74ba0cf6ab0cccd17b47263bbdf3da78fc9366a73de1a4c41ed9e0a7edb9a', 'scene/pause_menu.gd::_set_touch_scale': '8e1c0ae8b517e0be126a897f76976cb55d2ab7fd0e7cfcfc745c6c8b85cefd86', 'scene/pause_menu.gd::_set_debug_hud': '91384ef767e4f9f41032e1a54b373a873fb49affdad39feb9b81b3ae2dbe41f1', 'scene/pause_menu.gd::_abandon_run': '22fb3977d59807bbd366882d0964f87ff07f9473ed0f7c2f9820b5995a0857ff', 'scene/pause_menu.gd::_return_to_main_menu': '1e86d52eec23982787c2a270c97f20bbe705bd6505363a54696c39701a1f39c4', 'scene/pause_menu.gd::_set_audio_volume': '7cbd31d6cb994db774a2b9d7efaa81879acaf6f24a09af0ebe92dd3be4621f6a', 'scene/pause_menu.gd::_update_audio_label': '31c701f6640dd2f1f952f557741af597e2190696922d8f90f3f3cf163e9aad8d', 'scene/pause_menu.gd::_handle_options_gesture': '811e6b602224aa1da3bebc981246dfd560fda5ff01c5ee6372d04fa4bda9daa8', 'scene/pause_menu.gd::_cancel_options_gesture': '123caa00ae68d732d8b06c78f6863156a9186f68afd96646027a37d6753281a1', 'scene/inventory_ui.gd::_input': 'ed985b2f234df314e4ca4019eecb9ef6b734875daad367805d3681a03684e9a1', 'scene/inventory_ui.gd::toggle_inventory': '5c8af5f16ad6ea5b697335370c0cc722636989ae9cea66cc705b863e83b8673e', 'scene/inventory_ui.gd::open_inventory': 'e369ab02ba1d3b5223f48cb64ccad3228f89d51fb4e789544c33b5cd06b2798d', 'scene/inventory_ui.gd::open_from_pause': '12f3ceb50219de939790f0ad5a1296e85fdc702f3c5532a99240c8ea11111ea4', 'scene/inventory_ui.gd::close_inventory': 'c91c6672a5f52ba69f26c2cd3e0a8e371a11a4d766237e696e04b709df9401a9', 'scene/inventory_ui.gd::_select_slot': '19ab8671f1eb60ab59abe5f111f752c969ba81d3e2b95bb048f20065177b8c70', 'scene/inventory_ui.gd::_local_player': '5a10179bf48a8d34678cfc79bdac43cda4bd46a75ad805c7b9f9fd989a8e4daf', 'scene/inventory_ui.gd::_block_local_players': '66b33464c958db8fa7c86e6303d3d4a7266319167cf9eacc113a45a83b88bd81', 'scene/inventory_ui.gd::_touch_hits': 'c7dc54d7c44d14d5d0e01517ed198bb6f8fec2d5d47a069d139a2565d21dd959'}
+-FILES = {'scene/main_menu_alive.gd': '33f8191a493e3449cae566bebef4d64d84a266b46ebaf4823b60feb083aaee65', 'scene/local_settings.gd': '47ea84edb9eff905c1307b8c8426ff1ab09e6ff9496ae9f9aedd7986ce878715', 'default_bus_layout.tres': 'e9f119bb07e2895d130c9d07d7ad2d05bd4dcf5c67362e08b07814e329e540b4', 'project.godot': '7cb9a081bd12d7d1588559fdba081625810c27facd09b2d56ad3782bc7809254', 'scene/network/lan_session.gd': '2d9cf22ed8d0482bbbae70fbefbefa2151a77aeb66c6598e8e29ffdbb0331e8c', 'ui/touch_controls.gd': '0d06c5076b1074f99a5f4033ae00c484d57d624b62cd8674aa2b1967dfd16f3e', 'ui/mobile_action_button.gd': 'e42037a4cf1ae87ea8f7655d8a4f784fe9136d4e8ee32f89ae8bbeaeb3d20f32', 'scene/run_manager.gd': 'e27b4b12ef20221d055292778d26c50ef084af5b584e4f04da327e5df84f16de', 'scene/room_manager.gd': '99ed152a231c8caa47209805fe1f8b60a2e0a3f4ccfddde48914b19855a753d1'}
++FROZEN = {'scene/pause_menu.gd::_input': '69fb54e9988826eb626eae2315871b54fa1a2189763617b20bfb96a1162c8ec5', 'scene/pause_menu.gd::open_title_settings': 'f893a280076b2fedaaa66f9214d012aacfd18876936ef30c337b27b28b66852f', 'scene/pause_menu.gd::_settings_back': 'e74c81d22dcc4e5a21a412be949357746cee65dae42a18e9ce894ac6912926ec', 'scene/pause_menu.gd::toggle_menu': 'ac17f25a76d00e4f01410cc1583f68c8b35d752376acad15f3965ec09bafff69', 'scene/pause_menu.gd::open_menu': '6d1c987cae48f8dc3b6957e025dd5f24d2edcb4f2db4f099b30f3ecc84f70f6f', 'scene/pause_menu.gd::close_menu': '339164a4d9c066e53be9b7573a9041be0c0eca79565954fe1863fddd6d55c87f', 'scene/pause_menu.gd::_block_local_gameplay_input': '39b541075aea553d0f909cab661ea197751b8559c908aacefce416d1f4d3047d', 'scene/pause_menu.gd::_show_main': '81ccbe28ee715064c1771241680e4e6a636b0ecdb57ca43873b5b66aff1dbffc', 'scene/pause_menu.gd::_touch_hits': 'ee94949cd1df9d18c9bfa85f2139f66fa04a82787020dd14793c053a954c1687', 'scene/pause_menu.gd::_update_touch_slider': '5ebdfc18d31771902663f5b77faa15e67d03f9a20ea513173596577836686355', 'scene/pause_menu.gd::_open_inventory': '3569e357d67295cc8a652544520f84f4bfa230160f45c4fb7aedc80763c9edf6', 'scene/pause_menu.gd::_load_controls': 'f2c866aad0167738ebded95437bf758493ef413b5162b2c211c9db78e1f6e490', 'scene/pause_menu.gd::_set_camera_zoom': '04b74ba0cf6ab0cccd17b47263bbdf3da78fc9366a73de1a4c41ed9e0a7edb9a', 'scene/pause_menu.gd::_set_touch_scale': '8e1c0ae8b517e0be126a897f76976cb55d2ab7fd0e7cfcfc745c6c8b85cefd86', 'scene/pause_menu.gd::_set_debug_hud': '91384ef767e4f9f41032e1a54b373a873fb49affdad39feb9b81b3ae2dbe41f1', 'scene/pause_menu.gd::_abandon_run': '22fb3977d59807bbd366882d0964f87ff07f9473ed0f7c2f9820b5995a0857ff', 'scene/pause_menu.gd::_return_to_main_menu': '1e86d52eec23982787c2a270c97f20bbe705bd6505363a54696c39701a1f39c4', 'scene/pause_menu.gd::_set_audio_volume': '7cbd31d6cb994db774a2b9d7efaa81879acaf6f24a09af0ebe92dd3be4621f6a', 'scene/pause_menu.gd::_update_audio_label': '31c701f6640dd2f1f952f557741af597e2190696922d8f90f3f3cf163e9aad8d', 'scene/pause_menu.gd::_handle_options_gesture': '811e6b602224aa1da3bebc981246dfd560fda5ff01c5ee6372d04fa4bda9daa8', 'scene/pause_menu.gd::_cancel_options_gesture': '123caa00ae68d732d8b06c78f6863156a9186f68afd96646027a37d6753281a1', 'scene/inventory_ui.gd::toggle_inventory': '5c8af5f16ad6ea5b697335370c0cc722636989ae9cea66cc705b863e83b8673e', 'scene/inventory_ui.gd::open_from_pause': '12f3ceb50219de939790f0ad5a1296e85fdc702f3c5532a99240c8ea11111ea4', 'scene/inventory_ui.gd::close_inventory': 'c91c6672a5f52ba69f26c2cd3e0a8e371a11a4d766237e696e04b709df9401a9', 'scene/inventory_ui.gd::_select_slot': '19ab8671f1eb60ab59abe5f111f752c969ba81d3e2b95bb048f20065177b8c70', 'scene/inventory_ui.gd::_local_player': '5a10179bf48a8d34678cfc79bdac43cda4bd46a75ad805c7b9f9fd989a8e4daf', 'scene/inventory_ui.gd::_block_local_players': '66b33464c958db8fa7c86e6303d3d4a7266319167cf9eacc113a45a83b88bd81', 'scene/inventory_ui.gd::_touch_hits': 'c7dc54d7c44d14d5d0e01517ed198bb6f8fec2d5d47a069d139a2565d21dd959'}
++FILES = {'scene/main_menu_alive.gd': '33f8191a493e3449cae566bebef4d64d84a266b46ebaf4823b60feb083aaee65', 'scene/local_settings.gd': '47ea84edb9eff905c1307b8c8426ff1ab09e6ff9496ae9f9aedd7986ce878715', 'default_bus_layout.tres': 'e9f119bb07e2895d130c9d07d7ad2d05bd4dcf5c67362e08b07814e329e540b4', 'project.godot': '7cb9a081bd12d7d1588559fdba081625810c27facd09b2d56ad3782bc7809254', 'scene/network/lan_session.gd': '2d9cf22ed8d0482bbbae70fbefbefa2151a77aeb66c6598e8e29ffdbb0331e8c', 'ui/mobile_action_button.gd': 'e42037a4cf1ae87ea8f7655d8a4f784fe9136d4e8ee32f89ae8bbeaeb3d20f32', 'scene/run_manager.gd': 'e27b4b12ef20221d055292778d26c50ef084af5b584e4f04da327e5df84f16de', 'scene/room_manager.gd': '99ed152a231c8caa47209805fe1f8b60a2e0a3f4ccfddde48914b19855a753d1'}
+ 
+ class MenuPanels(unittest.TestCase):
+     def test_existing_input_callbacks_and_backend(self):
+@@ -26,7 +26,7 @@ class MenuPanels(unittest.TestCase):
+         base = ROOT/'assets/ui/menu_panels'
+         selected = json.loads((base/'used_assets.json').read_text())
+         official = {a['asset_id']:a for a in json.loads((base/'official_manifest.json').read_text())['assets']}
+-        self.assertEqual(len(selected), 13)
++        self.assertEqual(len(selected), 18)
+         for a in selected:
+             self.assertTrue(a['runtime_ready'])
+             self.assertFalse(a['reference_only'] or a['blocked'])
+diff --git a/ui/gameplay_hud_presentation.gd b/ui/gameplay_hud_presentation.gd
+index 03d5dfa..92568cc 100644
+--- a/ui/gameplay_hud_presentation.gd
++++ b/ui/gameplay_hud_presentation.gd
+@@ -31,8 +31,8 @@ func _ready() -> void:
+ 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+ 	position = Vector2(24, 20)
+ 	size = Vector2(400, 112)
+-	_participant = _label(Vector2(86, 0), Vector2(280, 22), Color.WHITE)
+-	_hp_text = _label(Vector2(86, 22), Vector2(286, 24), Color.WHITE)
++	_participant = _label(Vector2(0, -16), Vector2(70, 20), Color.WHITE)
++	_hp_text = _label(Vector2(86, 12), Vector2(286, 24), Color.WHITE)
+ 	_hp_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+ 	var colors := [Color.CYAN, Color.LIGHT_GREEN, Color.MEDIUM_PURPLE,
+ 		Color.SALMON, Color.GOLD]
+@@ -48,7 +48,7 @@ func _ready() -> void:
+ 	_vignette.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+ 	layer.add_child(_vignette)
+ 	_vignette.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+-	_vignette.modulate.a = 0.22
++	_vignette.modulate.a = 0.30
+ 	_vignette.visible = false
+ 
+ 
+@@ -58,7 +58,7 @@ func _label(at: Vector2, extent: Vector2, color: Color) -> Label:
+ 	label.size = extent
+ 	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+ 	label.add_theme_color_override("font_color", color)
+-	label.add_theme_font_size_override("font_size", 16)
++	label.add_theme_font_size_override("font_size", 18)
+ 	add_child(label)
+ 	return label
+ 
+@@ -74,7 +74,12 @@ func update_state(player: Node, money: int, hud_visible: bool) -> void:
+ 	if visual != null and visual.sprite_frames != _portrait_frames:
+ 		_portrait_frames = visual.sprite_frames
+ 		if _portrait_frames != null and _portrait_frames.has_animation(&"idle"):
+-			_portrait = _portrait_frames.get_frame_texture(&"idle", 0)
++			var body: Texture2D = _portrait_frames.get_frame_texture(&"idle", 0)
++			var face := AtlasTexture.new()
++			face.atlas = body
++			face.region = Rect2(body.get_width() * 0.24, body.get_height() * 0.04,
++				body.get_width() * 0.52, body.get_height() * 0.44)
++			_portrait = face
+ 		queue_redraw()
+ 	if state != _values:
+ 		_values = state
+@@ -103,13 +108,13 @@ func _draw() -> void:
+ 		var extent := native * factor
+ 		draw_texture_rect(_portrait, Rect2(Vector2(48, 42) - extent * 0.5, extent), false)
+ 	draw_texture(HUD_PORTRAIT_FRAME, Vector2(16, 12))
+-	draw_texture(HUD_HP_TRACK, Vector2(86, 22))
++	draw_texture(HUD_HP_TRACK, Vector2(86, 12))
+ 	var extent := Vector2(286 * _ratio, 24)
+ 	if extent.x > 0.0:
+-		draw_texture_rect_region(HUD_HP_FILL, Rect2(Vector2(86, 22), extent),
++		draw_texture_rect_region(HUD_HP_FILL, Rect2(Vector2(86, 12), extent),
+ 			Rect2(Vector2.ZERO, extent), Color(1, 0.3, 0.3) if _critical else Color.WHITE)
+ 	for index in mini(_capacity, 8):
+-		draw_rect(Rect2(86 + index * 22, 53, 18, 5),
++		draw_rect(Rect2(86 + index * 36, 46, 30, 8),
+ 			Color.CYAN if index < _doses else Color(0.15, 0.25, 0.3))
+ 	var icons := [ICON_HEAL, ICON_ATTR_HEALTH, ICON_ATTR_INTELLIGENCE,
+ 		ICON_ATTR_STRENGTH, ICON_MONEY]
+diff --git a/ui/menu_panel_presentation.gd b/ui/menu_panel_presentation.gd
+index c184a59..1091b18 100644
+--- a/ui/menu_panel_presentation.gd
++++ b/ui/menu_panel_presentation.gd
+@@ -86,6 +86,7 @@ static func apply_pause(main: Control, settings: Control, content: Control) -> v
+ 	for child in main.get_children():
+ 		if child is Button:
+ 			style_button(child)
++			child.add_theme_font_size_override("font_size", 18)
+ 	for danger in ["Abandon", "MainMenu"]:
+ 		var button := main.get_node(danger) as Button
+ 		button.add_theme_color_override("font_color", Color("ff9999"))
+@@ -96,3 +97,10 @@ static func apply_pause(main: Control, settings: Control, content: Control) -> v
+ 			child.add_theme_stylebox_override("normal", style("settings/option_row_normal", 8, 12))
+ 			for state in ["hover", "focus", "pressed"]:
+ 				child.add_theme_stylebox_override(state, style("settings/option_row_focused", 8, 12))
++
++
++static func clear_minimum_widths(root: Control) -> void:
++	root.custom_minimum_size.x = 0
++	for child in root.get_children():
++		if child is Control:
++			clear_minimum_widths(child)
+diff --git a/ui/touch_controls.gd b/ui/touch_controls.gd
+index c197c76..b2a6921 100644
+--- a/ui/touch_controls.gd
++++ b/ui/touch_controls.gd
+@@ -24,6 +24,7 @@ func _ready() -> void:
+ 	pause_style.texture = preload("res://assets/ui/gameplay_hud/assets/shared/hud/pause_button_frame.png")
+ 	for state in ["normal", "hover", "pressed", "focus"]:
+ 		pause_button.add_theme_stylebox_override(state, pause_style)
++	add_child(preload("res://ui/mobile_presentation_feedback.gd").new())
+ 	# Keep this development overlay out of desktop builds that have no touch input.
+ 	visible = false
+ 	run_manager.state_changed.connect(_refresh_visibility)
+diff --git a/ui/touch_controls.tscn b/ui/touch_controls.tscn
+index 76024b0..788c83e 100644
+--- a/ui/touch_controls.tscn
++++ b/ui/touch_controls.tscn
+@@ -65,14 +65,14 @@ texture = ExtResource("frame_red")
+ 
+ [node name="Label" type="Label" parent="SafeArea/LeftCluster/Heal"]
+ offset_left = -42.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 42.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "CURAR"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="VirtualJoystick" type="Control" parent="SafeArea/LeftCluster"]
+ layout_mode = 0
+@@ -106,14 +106,14 @@ texture = ExtResource("frame_cyan")
+ 
+ [node name="Label" type="Label" parent="SafeArea/RightCluster/Dash"]
+ offset_left = -48.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 48.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "DASH"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="Jump" type="Node2D" parent="SafeArea/RightCluster"]
+ position = Vector2(185, 275)
+@@ -126,14 +126,14 @@ texture = ExtResource("frame_cyan")
+ 
+ [node name="Label" type="Label" parent="SafeArea/RightCluster/Jump"]
+ offset_left = -54.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 54.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "PULO"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="Attack1" type="Node2D" parent="SafeArea/RightCluster"]
+ position = Vector2(320, 275)
+@@ -142,18 +142,18 @@ action = "attack_slot_1"
+ touch_radius = 56.0
+ 
+ [node name="Visual" type="Sprite2D" parent="SafeArea/RightCluster/Attack1"]
+-texture = ExtResource("frame_magenta")
++texture = ExtResource("frame_red")
+ 
+ [node name="Label" type="Label" parent="SafeArea/RightCluster/Attack1"]
+ offset_left = -54.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 54.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "ATQ 1"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="Attack2" type="Node2D" parent="SafeArea/RightCluster"]
+ position = Vector2(320, 145)
+@@ -166,14 +166,14 @@ texture = ExtResource("frame_magenta")
+ 
+ [node name="Label" type="Label" parent="SafeArea/RightCluster/Attack2"]
+ offset_left = -50.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 50.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "ATQ 2"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="Interact" type="Node2D" parent="SafeArea/RightCluster"]
+ position = Vector2(70, 35)
+@@ -187,41 +187,41 @@ texture = ExtResource("frame_cyan")
+ 
+ [node name="Label" type="Label" parent="SafeArea/RightCluster/Interact"]
+ offset_left = -40.0
+-offset_top = 14.0
++offset_top = 46.0
+ offset_right = 40.0
+-offset_bottom = 36.0
++offset_bottom = 66.0
+ mouse_filter = 2
+ text = "USAR"
+ horizontal_alignment = 1
+ vertical_alignment = 1
+-theme_override_font_sizes/font_size = 12
++theme_override_font_sizes/font_size = 16
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/LeftCluster/Heal"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Heal")
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/RightCluster/Dash"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Dash")
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/RightCluster/Jump"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Jump")
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/RightCluster/Attack1"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Attack1")
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/RightCluster/Attack2"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Attack2")
+ 
+ [node name="Icon" type="Sprite2D" parent="SafeArea/RightCluster/Interact"]
+ position = Vector2(0, -8)
+-scale = Vector2(0.5, 0.5)
++scale = Vector2(0.75, 0.75)
+ texture = ExtResource("icon_Interact")

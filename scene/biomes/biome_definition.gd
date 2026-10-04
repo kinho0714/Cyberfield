@@ -3,6 +3,7 @@ extends Resource
 
 @export var biome_id: StringName
 @export var display_name := "Biome"
+@export var display_name_key: StringName
 @export var module_pool: Array[Resource] = []
 @export_range(1, 100, 1) var min_modules := 15
 @export_range(1, 100, 1) var max_modules := 25

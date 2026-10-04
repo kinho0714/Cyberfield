@@ -1,0 +1,77 @@
+﻿[
+    {
+        "path":  "scene/casa_jhon_presentation.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "entities/RangedEnemy.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/biomes/biome_minimap.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/biomes/lower_city/lower_city_presentation.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/inventory_ui.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/local_settings.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/main_menu_alive.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/mode_select.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/network/lan_lobby.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/pause_menu.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/run_debug_hud.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "ui/gameplay_hud_presentation.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "ui/menu_panel_presentation.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "scene/run_backpack.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    },
+    {
+        "path":  "ui/localization.gd",
+        "exit":  0,
+        "scriptErrors":  0
+    }
+]

@@ -1,0 +1,57 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://entities/Enemy.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scene/interactables/room_exit.tscn" id="2"]
+
+[sub_resource type="RectangleShape2D" id="floor"]
+size = Vector2(1280, 40)
+
+[node name="CyberfieldBoss01" type="Node2D"]
+
+[node name="Background" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
+color = Color(0.08, 0.01, 0.08, 1)
+
+[node name="Title" type="Label" parent="."]
+position = Vector2(36, 28)
+text = "CHEFE // PROVISÓRIO"
+theme_override_font_sizes/font_size = 24
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(640, 700)
+
+[node name="Visual" type="Polygon2D" parent="Floor"]
+polygon = PackedVector2Array(-640, -20, 640, -20, 640, 20, -640, 20)
+color = Color(0.45, 0.05, 0.45, 1)
+
+[node name="Collision" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("floor")
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="start" type="Marker2D" parent="Gameplay" groups=["room_entry"]]
+position = Vector2(100, 665)
+
+[node name="ExtraEnemy01" type="Marker2D" parent="Gameplay" groups=["enemy_extra_spawn"]]
+position = Vector2(420, 665)
+
+[node name="ExtraEnemy02" type="Marker2D" parent="Gameplay" groups=["enemy_extra_spawn"]]
+position = Vector2(940, 665)
+
+[node name="InfernoBossA" type="Marker2D" parent="Gameplay" groups=["inferno_boss_spawn"]]
+position = Vector2(560, 665)
+
+[node name="InfernoBossB" type="Marker2D" parent="Gameplay" groups=["inferno_boss_spawn"]]
+position = Vector2(800, 665)
+
+[node name="BossPrototype" parent="Gameplay" instance=ExtResource("1")]
+position = Vector2(680, 665)
+persistent_id = &"boss01_enemy_01"
+enemy_role = 1
+visual_scale = 1.6
+
+[node name="Exit" parent="Gameplay" instance=ExtResource("2")]
+position = Vector2(1180, 638)
+target_room_path = "res://scene/levels/cyberfield_run_complete.tscn"
+target_entry_id = &"start"
+requires_current_room_completed = true

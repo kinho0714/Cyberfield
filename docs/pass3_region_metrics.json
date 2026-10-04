@@ -1,0 +1,682 @@
+﻿[
+    {
+        "path":  "assets/environment/cidade_baixa/gameplay/cidade_baixa_gameplay_interactives_v1.png",
+        "purpose":  "biome_exit_01",
+        "region":  [
+                       24,
+                       24,
+                       110,
+                       97
+                   ],
+        "classification":  "B",
+        "transparent":  830,
+        "partialAlpha":  9565,
+        "opaqueLightPixels":  24,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          110,
+                                          97
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "crate_wood_01",
+        "region":  [
+                       16,
+                       16,
+                       35,
+                       31
+                   ],
+        "classification":  "B",
+        "transparent":  73,
+        "partialAlpha":  960,
+        "opaqueLightPixels":  10,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          35,
+                                          31
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "crate_wood_02",
+        "region":  [
+                       67,
+                       16,
+                       35,
+                       31
+                   ],
+        "classification":  "B",
+        "transparent":  36,
+        "partialAlpha":  998,
+        "opaqueLightPixels":  6,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          35,
+                                          31
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "crate_wood_03",
+        "region":  [
+                       118,
+                       16,
+                       37,
+                       31
+                   ],
+        "classification":  "B",
+        "transparent":  115,
+        "partialAlpha":  967,
+        "opaqueLightPixels":  9,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          37,
+                                          31
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "container_green_01",
+        "region":  [
+                       171,
+                       16,
+                       42,
+                       31
+                   ],
+        "classification":  "B",
+        "transparent":  87,
+        "partialAlpha":  1152,
+        "opaqueLightPixels":  11,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          42,
+                                          31
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "city_prop",
+        "region":  [
+                       229,
+                       16,
+                       29,
+                       35
+                   ],
+        "classification":  "B",
+        "transparent":  87,
+        "partialAlpha":  882,
+        "opaqueLightPixels":  1,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          29,
+                                          35
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "city_prop",
+        "region":  [
+                       390,
+                       229,
+                       52,
+                       49
+                   ],
+        "classification":  "B",
+        "transparent":  502,
+        "partialAlpha":  1889,
+        "opaqueLightPixels":  66,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          52,
+                                          49
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "purpose":  "city_prop",
+        "region":  [
+                       458,
+                       229,
+                       44,
+                       44
+                   ],
+        "classification":  "B",
+        "transparent":  700,
+        "partialAlpha":  1172,
+        "opaqueLightPixels":  29,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          44,
+                                          44
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "city_architecture",
+        "region":  [
+                       23,
+                       459,
+                       145,
+                       41
+                   ],
+        "classification":  "B",
+        "transparent":  2086,
+        "partialAlpha":  3634,
+        "opaqueLightPixels":  20,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          145,
+                                          41
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "city_architecture",
+        "region":  [
+                       29,
+                       132,
+                       133,
+                       18
+                   ],
+        "classification":  "B",
+        "transparent":  680,
+        "partialAlpha":  1615,
+        "opaqueLightPixels":  1,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          133,
+                                          18
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "floor_standard_01",
+        "region":  [
+                       30,
+                       19,
+                       67,
+                       41
+                   ],
+        "classification":  "B",
+        "transparent":  53,
+        "partialAlpha":  2443,
+        "opaqueLightPixels":  0,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          67,
+                                          41
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "wall_standard_01",
+        "region":  [
+                       30,
+                       73,
+                       68,
+                       45
+                   ],
+        "classification":  "B",
+        "transparent":  66,
+        "partialAlpha":  2752,
+        "opaqueLightPixels":  0,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          68,
+                                          45
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "floor_standard_02",
+        "region":  [
+                       159,
+                       19,
+                       66,
+                       41
+                   ],
+        "classification":  "B",
+        "transparent":  18,
+        "partialAlpha":  2385,
+        "opaqueLightPixels":  0,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          66,
+                                          41
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "city_architecture",
+        "region":  [
+                       159,
+                       73,
+                       66,
+                       45
+                   ],
+        "classification":  "B",
+        "transparent":  271,
+        "partialAlpha":  2502,
+        "opaqueLightPixels":  7,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          66,
+                                          45
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "platform_thin_01",
+        "region":  [
+                       227,
+                       239,
+                       122,
+                       13
+                   ],
+        "classification":  "B",
+        "transparent":  364,
+        "partialAlpha":  1147,
+        "opaqueLightPixels":  10,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          122,
+                                          13
+                                      ]
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "purpose":  "city_architecture",
+        "region":  [
+                       674,
+                       256,
+                       20,
+                       60
+                   ],
+        "classification":  "B",
+        "transparent":  177,
+        "partialAlpha":  961,
+        "opaqueLightPixels":  6,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          20,
+                                          60
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       0,
+                       0,
+                       75,
+                       58
+                   ],
+        "classification":  "B",
+        "transparent":  1374,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  762,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          1,
+                                          75,
+                                          58
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       0,
+                       74,
+                       58,
+                       72
+                   ],
+        "classification":  "B",
+        "transparent":  1231,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  385,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          58,
+                                          72
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       60,
+                       74,
+                       58,
+                       72
+                   ],
+        "classification":  "B",
+        "transparent":  1124,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  571,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          58,
+                                          72
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       80,
+                       0,
+                       54,
+                       58
+                   ],
+        "classification":  "B",
+        "transparent":  1001,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  337,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          2,
+                                          54,
+                                          58
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       120,
+                       74,
+                       78,
+                       72
+                   ],
+        "classification":  "B",
+        "transparent":  1980,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  897,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          78,
+                                          72
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       140,
+                       0,
+                       55,
+                       58
+                   ],
+        "classification":  "B",
+        "transparent":  1220,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  560,
+        "nontransparentBoundsLocal":  [
+                                          1,
+                                          0,
+                                          55,
+                                          58
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       199,
+                       74,
+                       57,
+                       72
+                   ],
+        "classification":  "B",
+        "transparent":  1060,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  904,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          57,
+                                          72
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       233,
+                       0,
+                       39,
+                       58
+                   ],
+        "classification":  "B",
+        "transparent":  222,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  688,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          39,
+                                          58
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       258,
+                       74,
+                       61,
+                       72
+                   ],
+        "classification":  "B",
+        "transparent":  253,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  1107,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          61,
+                                          72
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_tile",
+        "region":  [
+                       0,
+                       0,
+                       51,
+                       61
+                   ],
+        "classification":  "A",
+        "transparent":  262,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  351,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          51,
+                                          61
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       0,
+                       69,
+                       45,
+                       70
+                   ],
+        "classification":  "B",
+        "transparent":  401,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  725,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          45,
+                                          70
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_tile",
+        "region":  [
+                       107,
+                       0,
+                       50,
+                       61
+                   ],
+        "classification":  "A",
+        "transparent":  324,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  370,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          50,
+                                          61
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       158,
+                       69,
+                       46,
+                       70
+                   ],
+        "classification":  "B",
+        "transparent":  1251,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  177,
+        "nontransparentBoundsLocal":  [
+                                          7,
+                                          4,
+                                          46,
+                                          70
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_tile",
+        "region":  [
+                       218,
+                       0,
+                       69,
+                       24
+                   ],
+        "classification":  "A",
+        "transparent":  125,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  69,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          69,
+                                          24
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_column",
+        "region":  [
+                       258,
+                       69,
+                       12,
+                       70
+                   ],
+        "classification":  "B",
+        "transparent":  495,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  93,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          12,
+                                          70
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       390,
+                       69,
+                       20,
+                       70
+                   ],
+        "classification":  "B",
+        "transparent":  191,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  316,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          1,
+                                          20,
+                                          70
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_workshop_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       0,
+                       0,
+                       132,
+                       40
+                   ],
+        "classification":  "B",
+        "transparent":  341,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  745,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          132,
+                                          40
+                                      ]
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_workshop_stage0_v1.png",
+        "purpose":  "house_prop",
+        "region":  [
+                       140,
+                       0,
+                       76,
+                       40
+                   ],
+        "classification":  "B",
+        "transparent":  1025,
+        "partialAlpha":  0,
+        "opaqueLightPixels":  816,
+        "nontransparentBoundsLocal":  [
+                                          0,
+                                          0,
+                                          75,
+                                          40
+                                      ]
+    }
+]

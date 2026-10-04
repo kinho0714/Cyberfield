@@ -1,0 +1,357 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/content_catalog.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+aliases = {
+  "lower_city": "biome_01"
+}
+biomes = {
+  "biome_01": {
+    "id": "biome_01",
+    "display_name_key": "BIOME_01_NAME",
+    "display_name_fallback": "CIDADE BAIXA",
+    "description_key": "BIOME_01_DESCRIPTION",
+    "definition_path": "res://scene/biomes/lower_city/lower_city.tres",
+    "scene_path": "res://scene/biomes/lower_city/lower_city_biome.tscn",
+    "fallback_biome_id": "",
+    "visual_profile_id": "biome_01",
+    "enemy_roster": {
+      "melee": "enemy_b01_melee_01",
+      "ranged": "enemy_b01_ranged_01",
+      "heavy": "enemy_b01_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  },
+  "biome_02": {
+    "id": "biome_02",
+    "display_name_key": "BIOME_02_NAME",
+    "display_name_fallback": "Biome 02",
+    "description_key": "BIOME_02_DESCRIPTION",
+    "definition_path": "",
+    "scene_path": "",
+    "fallback_biome_id": "biome_01",
+    "visual_profile_id": "biome_02",
+    "enemy_roster": {
+      "melee": "enemy_b02_melee_01",
+      "ranged": "enemy_b02_ranged_01",
+      "heavy": "enemy_b02_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  },
+  "biome_03": {
+    "id": "biome_03",
+    "display_name_key": "BIOME_03_NAME",
+    "display_name_fallback": "Biome 03",
+    "description_key": "BIOME_03_DESCRIPTION",
+    "definition_path": "",
+    "scene_path": "",
+    "fallback_biome_id": "biome_01",
+    "visual_profile_id": "biome_03",
+    "enemy_roster": {
+      "melee": "enemy_b03_melee_01",
+      "ranged": "enemy_b03_ranged_01",
+      "heavy": "enemy_b03_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  },
+  "biome_04": {
+    "id": "biome_04",
+    "display_name_key": "BIOME_04_NAME",
+    "display_name_fallback": "Biome 04",
+    "description_key": "BIOME_04_DESCRIPTION",
+    "definition_path": "",
+    "scene_path": "",
+    "fallback_biome_id": "biome_01",
+    "visual_profile_id": "biome_04",
+    "enemy_roster": {
+      "melee": "enemy_b04_melee_01",
+      "ranged": "enemy_b04_ranged_01",
+      "heavy": "enemy_b04_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  },
+  "biome_05": {
+    "id": "biome_05",
+    "display_name_key": "BIOME_05_NAME",
+    "display_name_fallback": "Biome 05",
+    "description_key": "BIOME_05_DESCRIPTION",
+    "definition_path": "",
+    "scene_path": "",
+    "fallback_biome_id": "biome_01",
+    "visual_profile_id": "biome_05",
+    "enemy_roster": {
+      "melee": "enemy_b05_melee_01",
+      "ranged": "enemy_b05_ranged_01",
+      "heavy": "enemy_b05_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  },
+  "biome_06": {
+    "id": "biome_06",
+    "display_name_key": "BIOME_06_NAME",
+    "display_name_fallback": "Biome 06",
+    "description_key": "BIOME_06_DESCRIPTION",
+    "definition_path": "",
+    "scene_path": "",
+    "fallback_biome_id": "biome_01",
+    "visual_profile_id": "biome_06",
+    "enemy_roster": {
+      "melee": "enemy_b06_melee_01",
+      "ranged": "enemy_b06_ranged_01",
+      "heavy": "enemy_b06_heavy_01"
+    },
+    "presentation_adapter_id": "lower_city",
+    "boss_roster": []
+  }
+}
+enemy_variants = {
+  "enemy_b01_melee_01": {
+    "id": "enemy_b01_melee_01",
+    "biome_id": "biome_01",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B01_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b01_melee_01"
+  },
+  "enemy_b01_ranged_01": {
+    "id": "enemy_b01_ranged_01",
+    "biome_id": "biome_01",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B01_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b01_ranged_01"
+  },
+  "enemy_b01_heavy_01": {
+    "id": "enemy_b01_heavy_01",
+    "biome_id": "biome_01",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B01_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b01_heavy_01"
+  },
+  "enemy_b02_melee_01": {
+    "id": "enemy_b02_melee_01",
+    "biome_id": "biome_02",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B02_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b02_melee_01"
+  },
+  "enemy_b02_ranged_01": {
+    "id": "enemy_b02_ranged_01",
+    "biome_id": "biome_02",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B02_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b02_ranged_01"
+  },
+  "enemy_b02_heavy_01": {
+    "id": "enemy_b02_heavy_01",
+    "biome_id": "biome_02",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B02_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b02_heavy_01"
+  },
+  "enemy_b03_melee_01": {
+    "id": "enemy_b03_melee_01",
+    "biome_id": "biome_03",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B03_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b03_melee_01"
+  },
+  "enemy_b03_ranged_01": {
+    "id": "enemy_b03_ranged_01",
+    "biome_id": "biome_03",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B03_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b03_ranged_01"
+  },
+  "enemy_b03_heavy_01": {
+    "id": "enemy_b03_heavy_01",
+    "biome_id": "biome_03",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B03_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b03_heavy_01"
+  },
+  "enemy_b04_melee_01": {
+    "id": "enemy_b04_melee_01",
+    "biome_id": "biome_04",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B04_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b04_melee_01"
+  },
+  "enemy_b04_ranged_01": {
+    "id": "enemy_b04_ranged_01",
+    "biome_id": "biome_04",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B04_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b04_ranged_01"
+  },
+  "enemy_b04_heavy_01": {
+    "id": "enemy_b04_heavy_01",
+    "biome_id": "biome_04",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B04_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b04_heavy_01"
+  },
+  "enemy_b05_melee_01": {
+    "id": "enemy_b05_melee_01",
+    "biome_id": "biome_05",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B05_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b05_melee_01"
+  },
+  "enemy_b05_ranged_01": {
+    "id": "enemy_b05_ranged_01",
+    "biome_id": "biome_05",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B05_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b05_ranged_01"
+  },
+  "enemy_b05_heavy_01": {
+    "id": "enemy_b05_heavy_01",
+    "biome_id": "biome_05",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B05_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b05_heavy_01"
+  },
+  "enemy_b06_melee_01": {
+    "id": "enemy_b06_melee_01",
+    "biome_id": "biome_06",
+    "archetype": "melee",
+    "display_name_key": "ENEMY_B06_MELEE_01_NAME",
+    "visual_profile_id": "enemy_b06_melee_01"
+  },
+  "enemy_b06_ranged_01": {
+    "id": "enemy_b06_ranged_01",
+    "biome_id": "biome_06",
+    "archetype": "ranged",
+    "display_name_key": "ENEMY_B06_RANGED_01_NAME",
+    "visual_profile_id": "enemy_b06_ranged_01"
+  },
+  "enemy_b06_heavy_01": {
+    "id": "enemy_b06_heavy_01",
+    "biome_id": "biome_06",
+    "archetype": "heavy",
+    "display_name_key": "ENEMY_B06_HEAVY_01_NAME",
+    "visual_profile_id": "enemy_b06_heavy_01"
+  }
+}
+characters = {
+  "player_jhon": {
+    "id": "player_jhon",
+    "display_name_key": "PLAYER_JHON_NAME",
+    "visual_profile_id": "player_jhon",
+    "legacy_id": "jhon"
+  },
+  "player_kai": {
+    "id": "player_kai",
+    "display_name_key": "PLAYER_KAI_NAME",
+    "visual_profile_id": "player_kai",
+    "legacy_id": "kai"
+  },
+  "player_jackson": {
+    "id": "player_jackson",
+    "display_name_key": "PLAYER_JACKSON_NAME",
+    "visual_profile_id": "player_jackson",
+    "legacy_id": "jackson"
+  },
+  "player_spark": {
+    "id": "player_spark",
+    "display_name_key": "PLAYER_SPARK_NAME",
+    "visual_profile_id": "player_spark",
+    "legacy_id": "spark"
+  }
+}
+weapons = {
+  "scrap_blade": {
+    "id": "scrap_blade",
+    "display_name_key": "WEAPON_SCRAP_BLADE_NAME",
+    "visual_profile_id": "scrap_blade"
+  },
+  "breaker_maul": {
+    "id": "breaker_maul",
+    "display_name_key": "WEAPON_BREAKER_MAUL_NAME",
+    "visual_profile_id": "breaker_maul"
+  },
+  "arc_emitter": {
+    "id": "arc_emitter",
+    "display_name_key": "WEAPON_ARC_EMITTER_NAME",
+    "visual_profile_id": "arc_emitter"
+  }
+}
+hub_stages = {
+  "hub_stage_00": {
+    "id": "hub_stage_00",
+    "display_name_key": "HUB_STAGE_00_NAME",
+    "visual_profile_id": "hub_stage_00",
+    "fallback_stage_id": ""
+  },
+  "hub_stage_01": {
+    "id": "hub_stage_01",
+    "display_name_key": "HUB_STAGE_01_NAME",
+    "visual_profile_id": "hub_stage_01",
+    "fallback_stage_id": "hub_stage_00"
+  },
+  "hub_stage_02": {
+    "id": "hub_stage_02",
+    "display_name_key": "HUB_STAGE_02_NAME",
+    "visual_profile_id": "hub_stage_02",
+    "fallback_stage_id": "hub_stage_00"
+  },
+  "hub_stage_03": {
+    "id": "hub_stage_03",
+    "display_name_key": "HUB_STAGE_03_NAME",
+    "visual_profile_id": "hub_stage_03",
+    "fallback_stage_id": "hub_stage_00"
+  }
+}
+ui_profiles = {
+  "ui_default": {
+    "id": "ui_default",
+    "visual_profile_id": "ui_default"
+  }
+}
+visual_profiles = {
+  "biome_01": "",
+  "biome_02": "",
+  "biome_03": "",
+  "biome_04": "",
+  "biome_05": "",
+  "biome_06": "",
+  "enemy_b01_melee_01": "",
+  "enemy_b01_ranged_01": "",
+  "enemy_b01_heavy_01": "",
+  "enemy_b02_melee_01": "",
+  "enemy_b02_ranged_01": "",
+  "enemy_b02_heavy_01": "",
+  "enemy_b03_melee_01": "",
+  "enemy_b03_ranged_01": "",
+  "enemy_b03_heavy_01": "",
+  "enemy_b04_melee_01": "",
+  "enemy_b04_ranged_01": "",
+  "enemy_b04_heavy_01": "",
+  "enemy_b05_melee_01": "",
+  "enemy_b05_ranged_01": "",
+  "enemy_b05_heavy_01": "",
+  "enemy_b06_melee_01": "",
+  "enemy_b06_ranged_01": "",
+  "enemy_b06_heavy_01": "",
+  "player_jhon": "",
+  "player_kai": "",
+  "player_jackson": "",
+  "player_spark": "",
+  "scrap_blade": "",
+  "breaker_maul": "",
+  "arc_emitter": "",
+  "hub_stage_00": "",
+  "hub_stage_01": "",
+  "hub_stage_02": "",
+  "hub_stage_03": "",
+  "ui_default": "",
+  "projectile_ranged": "",
+  "projectile_heavy": "",
+  "boss_existing": ""
+}

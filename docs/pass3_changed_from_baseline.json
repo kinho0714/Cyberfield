@@ -1,0 +1,58 @@
+﻿[
+    {
+        "path":  "scene/casa_jhon_presentation.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "entities/RangedEnemy.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/biomes/biome_minimap.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/biomes/lower_city/lower_city_presentation.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/inventory_ui.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/local_settings.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/main_menu_alive.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/mode_select.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/network/lan_lobby.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/pause_menu.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/pause_menu.tscn",
+        "state":  "modified"
+    },
+    {
+        "path":  "scene/run_debug_hud.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "ui/gameplay_hud_presentation.gd",
+        "state":  "modified"
+    },
+    {
+        "path":  "ui/menu_panel_presentation.gd",
+        "state":  "modified"
+    }
+]

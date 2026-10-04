@@ -1,0 +1,2897 @@
+[
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/detail_panel.png",
+        "size":  1048,
+        "sha256":  "E9FEE1AD0F23487B800DCFCB84B916462FAE2D09DF3546D16FFC820005180B3F"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/tab_normal.png",
+        "size":  281,
+        "sha256":  "AF3BF33271E80EC5495C89E161BA71E59269A37D39E39571C74433C46EF644A8"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/tab_selected.png",
+        "size":  282,
+        "sha256":  "E23D32ED51CF0A790A996E6677A35E34C8B0476679C749ADA87BA33FE1266D11"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/settings_tab_normal.png",
+        "size":  273,
+        "sha256":  "C67BCA73DFF05C7BB00768A56199A75BEC69CB98F5001BB7E8BF625ADA7185B5"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/settings_tab_selected.png",
+        "size":  272,
+        "sha256":  "678DF1C573105F186CAEC5E479B04E8B922AC973C4DB88F539449D6902E04E8D"
+    },
+    {
+        "path":  "cyberfield_visual_integration_pass2.patch",
+        "size":  62156,
+        "sha256":  "6EBE5D56B40894A8F471176F64077838E21F6918AEA9E878362B3454D7CC646B"
+    },
+    {
+        "path":  "docs/pass3_baseline/branch.txt",
+        "size":  38,
+        "sha256":  "3A2B4D839CE50566C3EF4028E8970E498F1F92934A824854C466B9337CC6E962"
+    },
+    {
+        "path":  "docs/pass3_baseline/head.txt",
+        "size":  42,
+        "sha256":  "05DA44F33FBA6A0910B0E4F1BE73D94B87773B06DB65E5C13E22EB8C38EFB522"
+    },
+    {
+        "path":  "docs/pass3_baseline/preexisting.diff",
+        "size":  48430,
+        "sha256":  "BA2A4128F29E778CD32FCA5FD9D75FCBC270658AEB6AAD97C6810912657B8E4A"
+    },
+    {
+        "path":  "docs/pass3_baseline/status.txt",
+        "size":  1136,
+        "sha256":  "30E6C9D48BC800F482440CD5E93979CA8F55EFF80357601FFE63960CBC70AFA3"
+    },
+    {
+        "path":  "scene/casa_jhon_presentation.gd",
+        "size":  4265,
+        "sha256":  "EA27B7EDB4047C81251C38BBBE61921828201B4049325A6B38D91A358DD9FF8B"
+    },
+    {
+        "path":  "tests/visual_integration_pass2_static_test.py",
+        "size":  4713,
+        "sha256":  "75E97C4F2DFC35D3AB1169B56AC0E3BBA5F54EC3348996DCFDD0738D5A626D7C"
+    },
+    {
+        "path":  "ui/mobile_presentation_feedback.gd",
+        "size":  751,
+        "sha256":  "100186AFF93BECD4F69E1270E95558740B9A63BEE175C01A7F36253C6173E445"
+    },
+    {
+        "path":  ".editorconfig",
+        "size":  33,
+        "sha256":  "3B2C749C8A940905A08F727D8BE9017C9568A12421C0AEE7E37E9543B3751B1B"
+    },
+    {
+        "path":  ".gitattributes",
+        "size":  80,
+        "sha256":  "21B01A606C9F85F18BB9230245F00AB104DF7409CBB2FE9423F6751CA72BA754"
+    },
+    {
+        "path":  ".gitignore",
+        "size":  95,
+        "sha256":  "53CAADA2FDC6BABDC4D253FCE22924E4F01C55D6F8408D38614FF1095B9B5115"
+    },
+    {
+        "path":  ".vscode/settings.json",
+        "size":  98,
+        "sha256":  "5AF7F59B1995F56FF950BD4354486D16995FE9DA6D97E27D60959CB1FDF3B2C1"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_attack_melee_v1.png",
+        "size":  16710,
+        "sha256":  "046E5DA89DD38E053F1ABC8EBEC24EC9B9C1203A20E62640B00BB22C976D882B"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_death_v1.png",
+        "size":  38512,
+        "sha256":  "4C75BEF7D96813476FCAC1D236622F4F9DAE10CC1C1ECAF60F8D3060EA75FBF3"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_hurt_v1.png",
+        "size":  10401,
+        "sha256":  "2BE6406788E993AAB95BC77A889F421254BEC70C0A1667D45C08F2FA90AF36A6"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_idle_v1.png",
+        "size":  56070,
+        "sha256":  "08675CFA8F0ED59549E64435F53ABA2C2C51EF2E6AEDBD87C91826181A19B952"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_jump_air_fall_v1.png",
+        "size":  12869,
+        "sha256":  "6DB424655332ABDE2C26EA48D015D700C930DD8280C5DE5F36999C543713F6E9"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/common/common_walk_run_v1.png",
+        "size":  19554,
+        "sha256":  "6891C76935C7EFC5EB8849C5DADBCD39A2C844D39272E0B900D86F738D0066F3"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_attack_shoot_v1.png",
+        "size":  111612,
+        "sha256":  "F602A607BE2813928C16AE35EB9A4A0D73AEAADA828FF23B83EA870636F86850"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_death_v1.png",
+        "size":  40192,
+        "sha256":  "2A985A47ED667DD7EF74FF632D041E3F2F3429B29ED756AF3D82E280BD1A20C8"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_hurt_v1.png",
+        "size":  9917,
+        "sha256":  "98CAD6943E23534A75874AC290D5EC3A8C13CE44BA3280B808D39F2E3D04AD36"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_idle_v1.png",
+        "size":  37832,
+        "sha256":  "945F7CDC5A26A74B69EA49F3AF829F9CF46011D971CC5EE2E8B3D7F4D619EA2F"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_jump_air_fall_v1.png",
+        "size":  36106,
+        "sha256":  "9EB34C060CE783ED8B977F3DA8DDC91D1C8AE1066711FEC46C8E77DA30040975"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/heavy_walk_run_v1.png",
+        "size":  59751,
+        "sha256":  "184FC907E6D0F0D62639616895B9E7AD52E38544D6DCEE631E6E4366E9D844B4"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/projectile/heavy_projectile_impact_v1.png",
+        "size":  30966,
+        "sha256":  "216E15C42672ED26E960BE57C18A7ED46D0AB74D5A939E6B168019C7AFA57625"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/heavy/projectile/heavy_projectile_movement_v1.png",
+        "size":  8244,
+        "sha256":  "E166D80B6D84D7304A4B2AA496772FF38AB845D0078A43CF43517869E54AB1A8"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/projectile/ranged_projectile_impact_v1.png",
+        "size":  100498,
+        "sha256":  "714FFEDAD21B3757935DA35C56744F817BB1CE2F9E47298C5D44C44FC03060C1"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/projectile/ranged_projectile_movement_v1.png",
+        "size":  51478,
+        "sha256":  "0CB7E2DB1A87A6DC8269FDA96F2ED6B304A49D3F0B95A89DE550A3950E522944"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_attack_shoot_v1.png",
+        "size":  33387,
+        "sha256":  "5624282AEFAE747BBD96428A2E158C3A11B271409475F437946BD37CD911D991"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_death_v1.png",
+        "size":  54235,
+        "sha256":  "C47AC8E9CDC999AA11F084A69362D540770CE076F45B4CCB3FF77E4D9B311C6E"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_hurt_v1.png",
+        "size":  26236,
+        "sha256":  "FA3767E00A2078F5B52DE36190040041D04501653AF0A728761115553763613D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_idle_v1.png",
+        "size":  2738,
+        "sha256":  "9240B57899464D40727710C6EB83836026D66C10EC4F337C76A80D500F06432D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_jump_air_fall_v1.png",
+        "size":  7200,
+        "sha256":  "57F53046CE6CD8AE831B6BB7DCB680B1D294BC715F29A027A4CC31A8D0AF7D00"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/enemies/ranged/ranged_walk_run_v1.png",
+        "size":  4625,
+        "sha256":  "FA766E6A0D70204DCB10E1F8794E5077B139065D42EA8818637DE81A3325A8BC"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_attack_combo_v1.png",
+        "size":  49603,
+        "sha256":  "B00C55E953CB31DB7F5BEDA5B1BBD878DFC16C677F98A27F30F5EC6ED1C81636"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_dash_v1.png",
+        "size":  34636,
+        "sha256":  "3EEDF62CB164C708F4AAFD784FAA6B5BC3181492946F03525F8AEE76BC70CD00"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_downed_death_v1.png",
+        "size":  29368,
+        "sha256":  "0A4A40F0A77D6E8FAC5875AF0A0AA7BF6F9D54D7AEB075FAB4BB45FDCE1A8AB1"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_ground_slam_v1.png",
+        "size":  44089,
+        "sha256":  "E612AFF043AE418A879AFEC0D9B06319B0BA7767AC36CE5EF37A694AE3D9117D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_hurt_v1.png",
+        "size":  16788,
+        "sha256":  "82E3A2354520C40DC458CFEA7A34B95BFC102D37FB2E6990005615982A3AD136"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_idle_v1.png",
+        "size":  22922,
+        "sha256":  "22763DE9DE81E60C29CEA1902C958E2767DAACD604037492EF652C0BA316527D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_jump_air_fall_v1.png",
+        "size":  20769,
+        "sha256":  "545622A9E3BE4CE79552E4AEED8FBDE7D27D3BCABD132AC13E47D5D7563C39CE"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_revive_ally_v1.png",
+        "size":  40900,
+        "sha256":  "69B51149B73CEB16B0DCD200B6E14681E16BF1DE100916CAF6201431F48F2C11"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_walk_run_v1.png",
+        "size":  34662,
+        "sha256":  "2079F4A00B136E1C734ADB0DC9DE5640023F049450DB483654B69FE234D70CE8"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_wall_climb_v1.png",
+        "size":  18461,
+        "sha256":  "D37AFFB57FC9F5867BD696EA87ACF4D3AEBEFEB22E18AF6CE841F3E4FAE474E9"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jackson/jackson_wall_slide_v1.png",
+        "size":  17130,
+        "sha256":  "CE64EF199D8288293B6BE7283B92915BAF96154BF7BF6E697E77830F1F25F744"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_attack_combo_v2.png",
+        "size":  41893,
+        "sha256":  "93EB9BA3603CD3D954B01FF554760C3793A2E6388F3D6877B83F6A58934FE760"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_dash_v2.png",
+        "size":  37948,
+        "sha256":  "0EEC83A76B812E588AFEDE0674EB241AC21AF6FFAB63EEF0E579F968662B0BF7"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_downed_death_v2.png",
+        "size":  25991,
+        "sha256":  "8E1A9F7A7606FDA1518841E3208F6E3294AD5BB02899798C2962CFFABEB5F786"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_ground_slam_v2.png",
+        "size":  41775,
+        "sha256":  "859F3A5B2D3F62A7DB71E9E118A03FF92498E75EB18E12CF01779EC3D550DEBA"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_hurt_v2.png",
+        "size":  14961,
+        "sha256":  "ACD1C7FB4979E24E8FC5643965BA108A93F215335C2D50A5EAEC535C700DF6E1"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_idle_v2.png",
+        "size":  22334,
+        "sha256":  "99F87FDABB92EF1FF6044C6DA1EF30187869B754296DFD8A63CCA92809D63178"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_jump_air_fall_v2.png",
+        "size":  22625,
+        "sha256":  "5B947613355B4C858D7C6A795C5B2A0998FF738DB55ECAA52BE18458CB2EAB5E"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_revive_ally_v1.png",
+        "size":  40636,
+        "sha256":  "76FF2429DC7B11896FBD6361DE44356DD53F0C6B885BE862EA33D1FDDF2AB77D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_walk_run_v2.png",
+        "size":  34857,
+        "sha256":  "FC99E92D1AFDB05D1EB6414C9859C594CBD7C20C2EFC7741B8997EA9CB475751"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_wall_climb_v2.png",
+        "size":  17967,
+        "sha256":  "9013752873071A90286A715EF7B4693B3DFE8DBAB73C0DC5B69ADC3399ED295D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/jhon/jhon_v2_wall_slide_v2.png",
+        "size":  10607,
+        "sha256":  "FDD628CB3F2DC9BC39C21E5105DA4A8874637F8E8406336401B4065E9AB9A2F8"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_attack_combo_v1.png",
+        "size":  47806,
+        "sha256":  "725E8882A9389451DD94BE5AB2D960EE02EFB99C0137DC67E90F13B26C92C285"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_dash_v1.png",
+        "size":  36243,
+        "sha256":  "D6C0CEE0B4ADABBF28A4B184FE9343FF07DBA0F901E47A754D620B4D31BD8EB3"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_downed_death_v1.png",
+        "size":  29019,
+        "sha256":  "08EA241A8C0F8BFA65F88CC78A0698A681DFF42AFBD4B384852A98F71CE6F18F"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_ground_slam_v1.png",
+        "size":  43593,
+        "sha256":  "1A70F5155B6699C4EF3AF7E2C39A80601208F0775F4013A50D097C9762A3B774"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_hurt_v1.png",
+        "size":  15241,
+        "sha256":  "252FCDD89B556510975438055F1FE92F9AB6F95A3B5FB71FB1B759391870C01A"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_idle_v1.png",
+        "size":  21477,
+        "sha256":  "343006036080C16E9A4360CA27C0D68581F977543207FA680BD37D8A7FBEE40D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_jump_air_fall_v1.png",
+        "size":  28425,
+        "sha256":  "F5B41ADCDDB310FF7C66AB4276EA51B98FD5CF2013B9E87E6FC43D6E6758372C"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_revive_ally_v1.png",
+        "size":  46629,
+        "sha256":  "A2EB05566D2F06C83D49F636DD97522995F196D725D798BDB07C42C4906BFF59"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_walk_run_v1.png",
+        "size":  32633,
+        "sha256":  "4A2772B69041A386FF41659FF9EB7FA311E6F72EBC4D8D728D9976DEA4E251E9"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_wall_climb_v1.png",
+        "size":  16646,
+        "sha256":  "C49DBC0566B906FC83526D51C82C7AAA3D1352A0823B56A317C97C4AFE04151D"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/kai/kai_wall_slide_v1.png",
+        "size":  15265,
+        "sha256":  "0D4371991593FC4C3A33D0189C74EAAF2405341CAFFE1BB95A4BADF32B4C92F3"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_attack_combo_v1.png",
+        "size":  46891,
+        "sha256":  "CA998B96FF7739F093021ED59DEF4A0437C27F06C9368348E1A1380C4C81CF26"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_dash_v1.png",
+        "size":  37656,
+        "sha256":  "21D1BE3821240FAE472B2DBA26BE41CD37DD433D35597C0A32453ECFF76E504F"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_downed_death_v1.png",
+        "size":  35145,
+        "sha256":  "CD37A8EFEE675ED63829784E9E30102D3378AED37447956FB184185E7D6D4AAB"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_ground_slam_v1.png",
+        "size":  42357,
+        "sha256":  "1B920C306653D0B0E788F837C35C5C4E5DDE61E4440927CD64FAE361BF8E65BF"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_hurt_v1.png",
+        "size":  15743,
+        "sha256":  "780A1C426DFE183027F1969D666B668B5DBDEFD5B3788AB1149014DF12893D08"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_idle_v1.png",
+        "size":  24658,
+        "sha256":  "1AF5C0F2E40196C73397143AE5189943FB2B98973584832D834E8B28862D21C2"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_jump_air_fall_v1.png",
+        "size":  27727,
+        "sha256":  "1A70415F434673ACBDB533C1EB1D2A340C8830752E780A57827E762AB508D50B"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_revive_ally_v1.png",
+        "size":  39554,
+        "sha256":  "40B8EA8423A5792095427570F8D0280EE324EC4A9B3D4D895FDDFDF558AD9964"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_walk_run_v1.png",
+        "size":  35779,
+        "sha256":  "D72A21E4EA7825F5F6B0738A08F9DE316EF2715C92D347CB6895CA6390AA62BA"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_wall_climb_v1.png",
+        "size":  19566,
+        "sha256":  "A8730D23BF8B162F90A3E56DF0BCB9A593068BA9AC33D4EF9B5510A09B8C33A2"
+    },
+    {
+        "path":  "Cyberfield_Visual_Integration_v1/players/spark/spark_wall_slide_v1.png",
+        "size":  18286,
+        "sha256":  "EE0C2A4784105759B35C2F845865951D2F2567BB88DC863AB16E5441364924B3"
+    },
+    {
+        "path":  "assets/Cyberfield_MainMenu_Background_1280x720.png",
+        "size":  1169134,
+        "sha256":  "96AFB1DFFCF8E3EDA4ECF77BB4ACA7FAF0EC26E5810C5E77B4C22845A9BA3C55"
+    },
+    {
+        "path":  "assets/characters/jhon/jhon_a_attack_72_v1.png",
+        "size":  48183,
+        "sha256":  "F7F56C33D22C1FC6BCB7B58549165425C42B6B0DEB02119AF9C0EE0E29EEA081"
+    },
+    {
+        "path":  "assets/characters/jhon/jhon_a_dash_72_v1.png",
+        "size":  49172,
+        "sha256":  "0452F9E60DC5CCBAFFF3CD35D354822FA04D44E47FB0D17B651BB9B7052B2258"
+    },
+    {
+        "path":  "assets/characters/jhon/jhon_a_idle_72_v1.png",
+        "size":  19308,
+        "sha256":  "D5E791B884EC8809F433400ED5801009AFAC157000C1F7F3E4550843536D1B00"
+    },
+    {
+        "path":  "assets/characters/jhon/jhon_a_jump_72_v1.png",
+        "size":  25784,
+        "sha256":  "6E3355856D0662C94085B1C67166B4207EF0A9012ACC6FE3AA69E8FD08BB25B2"
+    },
+    {
+        "path":  "assets/characters/jhon/jhon_a_walk_72_v1.png",
+        "size":  40844,
+        "sha256":  "ABB73039EF3DCD09F9386BBD72693D79D1A2130942D6862A160C15C08EE7F404"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_a_fall_72_v1.png",
+        "size":  28698,
+        "sha256":  "C1B5342E8815DE3974887DE7F4EB18AD55CD006CD3E623D1C40EDB8FA12AD1A4"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_a_wall_climb_72_v1.png",
+        "size":  15881,
+        "sha256":  "E0239CE4114C74EC6375AB9512F7CDB6AD0C0EB9C7AB86B9070BA57635FBCC81"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_a_wall_slide_72_v1.png",
+        "size":  20889,
+        "sha256":  "48A2F44D2965B2BC1F269F8DF3A0ED5FDD77F1C955AD0E6B478BD800E2DACA85"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_attack_72_v1.png",
+        "size":  33544,
+        "sha256":  "89EDD16BA9C864C5F8767C96EED79A27F74F88AB04BD5C48E47A553B88804BAF"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_dash_72_v1.png",
+        "size":  34673,
+        "sha256":  "914BDD603CB19ADEE8E683DE794802D86A4EA4FB0F97627896731F836DC59390"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_fall_72_v1.png",
+        "size":  23514,
+        "sha256":  "8D963EA40E3BD9165C8230F3BFE16D25E822A7CC188E5D688229D3920B546E5E"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_idle_72_v1.png",
+        "size":  14074,
+        "sha256":  "F9DE94D8859A57451F680C8426D8D5242FB79DC9AC349D40A1BA36EE7AE6E7E8"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_jump_72_v1.png",
+        "size":  26336,
+        "sha256":  "E636C74EEB9205CF99A2E63A202AB649759730A10D13721BA6C5B7B14DF566BF"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_walk_72_v1.png",
+        "size":  24935,
+        "sha256":  "1F2245534E086F80942DDCA45D3932817FA78F9F83699124818C534A58442D24"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_wall_climb_72_v1.png",
+        "size":  15978,
+        "sha256":  "23C3EC60DE78D03E54FC1D8CE35545EEBB20DABAE6EA7F243BC3274CDD147BAF"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_orange_wall_slide_72_v1.png",
+        "size":  20452,
+        "sha256":  "390568704BE9AD7C02DA6E80DA10639FA55DCA6311BABB11252B19082A85D725"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_attack_72_v1.png",
+        "size":  34044,
+        "sha256":  "341C5E3C898F5BB0D6DF2E8B7F5D676F1E817A63D547130BB655A45F2E5D9723"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_dash_72_v1.png",
+        "size":  35563,
+        "sha256":  "FADEBE79F0BA6779DFCB84F39575A136FC8CCD2F78C0ECF1971798A2385C89E7"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_fall_72_v1.png",
+        "size":  29053,
+        "sha256":  "F1E05BF120E0985C645C4370B77CD8AA0909FB4F71E5ECEFB99A4ACC57CE5511"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_idle_72_v1.png",
+        "size":  14286,
+        "sha256":  "31FEE67DC79103C973D3DB4DCCC0ECF7FA22001052912CB9648DA921B6D04383"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_jump_72_v1.png",
+        "size":  26987,
+        "sha256":  "4C71CC17459EF949F0C54C5D4320A6C663D3C6BAFDAE3373E1A77DB2B5E85CAF"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_walk_72_v1.png",
+        "size":  28845,
+        "sha256":  "64BB3452417CBAA5BFF038C6650D2D436443B3C91A56F19F3BC693681DA1CE0C"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_wall_climb_72_v1.png",
+        "size":  15777,
+        "sha256":  "F272D0A9E8B76667C5C24FE96F7BD92CE7A43FC1659671685158928A8107F303"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_red_wall_slide_72_v1.png",
+        "size":  31244,
+        "sha256":  "85E3C44589F00E6401C2EB26B588BCBF73B71EB41E516D814C191805F3FF55F1"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_attack_72_v1.png",
+        "size":  32821,
+        "sha256":  "B28EE8477840CA41CA459C2809481F1F30BEAA26429BC1751FD7E065224E0308"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_dash_72_v1.png",
+        "size":  33523,
+        "sha256":  "C3492C5F13B228E7299123EE2F77154F236887E2526048CA85C857D6CA855EBD"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_fall_72_v1.png",
+        "size":  32875,
+        "sha256":  "19C84EA47BFDA55C4B3B421C9AAF39012C1C4ABF8D15F02077800B8F6F2C02CD"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_idle_72_v1.png",
+        "size":  13745,
+        "sha256":  "5FAB6B51E12608A0EA9BD023BE8C0F5672D56FF3550106A2F3CD9C6EA6634D4B"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_jump_72_v1.png",
+        "size":  24773,
+        "sha256":  "A02069E1693F2DE41E2B4E337EC6C9605DB5C7C26E6D6073DFA462EF27984DAE"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_walk_72_v1.png",
+        "size":  23296,
+        "sha256":  "4D333456DD9BCFB2F73663723B1744DE729A84EADD9CD9E5CE108E08813563D5"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_wall_climb_72_v1.png",
+        "size":  17649,
+        "sha256":  "425EB7D5D6C8B14033CFBDDF351AC2B9A3913CEA50EFE99FE34CE65F4957D9C0"
+    },
+    {
+        "path":  "assets/characters/jhon/variants/jhon_white_wall_slide_72_v1.png",
+        "size":  30471,
+        "sha256":  "3AB3C0135AA5B08A0748E9DBD480542136A122A8DAEC3076ADDA5B68A36C09C6"
+    },
+    {
+        "path":  "assets/enemies/common/common_attack_melee_v1.png",
+        "size":  16710,
+        "sha256":  "046E5DA89DD38E053F1ABC8EBEC24EC9B9C1203A20E62640B00BB22C976D882B"
+    },
+    {
+        "path":  "assets/enemies/common/common_death_v1.png",
+        "size":  38512,
+        "sha256":  "4C75BEF7D96813476FCAC1D236622F4F9DAE10CC1C1ECAF60F8D3060EA75FBF3"
+    },
+    {
+        "path":  "assets/enemies/common/common_hurt_v1.png",
+        "size":  10401,
+        "sha256":  "2BE6406788E993AAB95BC77A889F421254BEC70C0A1667D45C08F2FA90AF36A6"
+    },
+    {
+        "path":  "assets/enemies/common/common_idle_v1.png",
+        "size":  56070,
+        "sha256":  "08675CFA8F0ED59549E64435F53ABA2C2C51EF2E6AEDBD87C91826181A19B952"
+    },
+    {
+        "path":  "assets/enemies/common/common_jump_air_fall_v1.png",
+        "size":  12869,
+        "sha256":  "6DB424655332ABDE2C26EA48D015D700C930DD8280C5DE5F36999C543713F6E9"
+    },
+    {
+        "path":  "assets/enemies/common/common_walk_run_v1.png",
+        "size":  19554,
+        "sha256":  "6891C76935C7EFC5EB8849C5DADBCD39A2C844D39272E0B900D86F738D0066F3"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_attack_v2.png",
+        "size":  71094,
+        "sha256":  "7E4383965BDB0E0FC48BBCC2B7A70A2D3DD39538CB2E7050E19938AD637FF376"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_death_v2.png",
+        "size":  50075,
+        "sha256":  "C11C9DAD130A029CE406797DCD2F6C529317D17EFAAF1FB4484787131920E167"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_hurt_v2.png",
+        "size":  28638,
+        "sha256":  "8BBA5569FA532FAF9729B9463D991FAD24EA6204D6A328598FC7A7862E76118A"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_idle_v2.png",
+        "size":  50754,
+        "sha256":  "5375ACC7C96428E3F589B47023F047B45CAF424A9DDE116E37A4F50EACF922A4"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_jump_air_fall_v2.png",
+        "size":  38981,
+        "sha256":  "EA8DC96B402DD9B971EA1C5FA654047EA4DE701D6115299E669631D3A60765BE"
+    },
+    {
+        "path":  "assets/enemies/common/v2/common_walk_run_v2.png",
+        "size":  79034,
+        "sha256":  "2AAC02E262ABE807DE975C180388772C3A1B33343E80B4F1C2B84B82CDE7C16D"
+    },
+    {
+        "path":  "assets/enemies/common/v2/manifest.json",
+        "size":  15410,
+        "sha256":  "D9CC01E396C519250BE60266E13CB0348BBB350D56E52053E76067402945A00A"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_attack_shoot_v1.png",
+        "size":  111612,
+        "sha256":  "F602A607BE2813928C16AE35EB9A4A0D73AEAADA828FF23B83EA870636F86850"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_death_v1.png",
+        "size":  40192,
+        "sha256":  "2A985A47ED667DD7EF74FF632D041E3F2F3429B29ED756AF3D82E280BD1A20C8"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_hurt_v1.png",
+        "size":  9917,
+        "sha256":  "98CAD6943E23534A75874AC290D5EC3A8C13CE44BA3280B808D39F2E3D04AD36"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_idle_v1.png",
+        "size":  37832,
+        "sha256":  "945F7CDC5A26A74B69EA49F3AF829F9CF46011D971CC5EE2E8B3D7F4D619EA2F"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_jump_air_fall_v1.png",
+        "size":  36106,
+        "sha256":  "9EB34C060CE783ED8B977F3DA8DDC91D1C8AE1066711FEC46C8E77DA30040975"
+    },
+    {
+        "path":  "assets/enemies/heavy/heavy_walk_run_v1.png",
+        "size":  59751,
+        "sha256":  "184FC907E6D0F0D62639616895B9E7AD52E38544D6DCEE631E6E4366E9D844B4"
+    },
+    {
+        "path":  "assets/enemies/heavy/projectile/heavy_projectile_impact_v1.png",
+        "size":  30966,
+        "sha256":  "216E15C42672ED26E960BE57C18A7ED46D0AB74D5A939E6B168019C7AFA57625"
+    },
+    {
+        "path":  "assets/enemies/heavy/projectile/heavy_projectile_movement_v1.png",
+        "size":  8244,
+        "sha256":  "E166D80B6D84D7304A4B2AA496772FF38AB845D0078A43CF43517869E54AB1A8"
+    },
+    {
+        "path":  "assets/enemies/ranged/projectile/ranged_projectile_impact_v1.png",
+        "size":  100498,
+        "sha256":  "714FFEDAD21B3757935DA35C56744F817BB1CE2F9E47298C5D44C44FC03060C1"
+    },
+    {
+        "path":  "assets/enemies/ranged/projectile/ranged_projectile_movement_v1.png",
+        "size":  51478,
+        "sha256":  "0CB7E2DB1A87A6DC8269FDA96F2ED6B304A49D3F0B95A89DE550A3950E522944"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_attack_shoot_v1.png",
+        "size":  33387,
+        "sha256":  "5624282AEFAE747BBD96428A2E158C3A11B271409475F437946BD37CD911D991"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_death_v1.png",
+        "size":  54235,
+        "sha256":  "C47AC8E9CDC999AA11F084A69362D540770CE076F45B4CCB3FF77E4D9B311C6E"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_hurt_v1.png",
+        "size":  26236,
+        "sha256":  "FA3767E00A2078F5B52DE36190040041D04501653AF0A728761115553763613D"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_idle_v1.png",
+        "size":  2738,
+        "sha256":  "9240B57899464D40727710C6EB83836026D66C10EC4F337C76A80D500F06432D"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_jump_air_fall_v1.png",
+        "size":  7200,
+        "sha256":  "57F53046CE6CD8AE831B6BB7DCB680B1D294BC715F29A027A4CC31A8D0AF7D00"
+    },
+    {
+        "path":  "assets/enemies/ranged/ranged_walk_run_v1.png",
+        "size":  4625,
+        "sha256":  "FA766E6A0D70204DCB10E1F8794E5077B139065D42EA8818637DE81A3325A8BC"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/manifest.json",
+        "size":  19215,
+        "sha256":  "67E8C6E52AA6F5B1002D9FFB9E118BBEB22DED965D3B7245DDC038F104B1C363"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_attack_shoot_v2.png",
+        "size":  65025,
+        "sha256":  "75365DDB115EEE799947A67B86D299EA06539D48A997807846F8B81025447F94"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_death_v2.png",
+        "size":  33529,
+        "sha256":  "CCA38F508F771332184EBBAE7BCDE882F893801E7F9C774FE069A1C202FFDC0D"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_hurt_v2.png",
+        "size":  22561,
+        "sha256":  "13C4A9C14714A5B7A230BC2428E3EBC44D4B97F35E4E3DB79CFEBA3BF1A6BB2A"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_idle_v2.png",
+        "size":  41516,
+        "sha256":  "D0DD47A2C890D17B7771EFA374C98A504AE51B98A8A3025740F3BCCBF5D8FA84"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_jump_air_fall_v2.png",
+        "size":  43104,
+        "sha256":  "F5FEA729870238B48FEC9783D6FFBA65540F206F3FB03A68566F0AA9305C3FC8"
+    },
+    {
+        "path":  "assets/enemies/ranged/v2/ranged_walk_run_v2.png",
+        "size":  64909,
+        "sha256":  "284D6849EC1F4E97921B97248B4653D7A824544129C911EBACABE9AD136D6FC0"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/GODOT_INTEGRATION_README.txt",
+        "size":  2150,
+        "sha256":  "E090BA545FAD37938488204587CD0EB69F55FA91635A16D1D27D4EF7E4CC3C66"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/gameplay/casa_jhon_gameplay_interactives_stage0_v1.png",
+        "size":  103404,
+        "sha256":  "D60373B959E9B4795CDD94E95A12FAE0A69D564E40EC14DF0A3A24509EDF4933"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+        "size":  94978,
+        "sha256":  "54B5BC040E96C946657206D505DF1861F669E97C19988C601CC019DCD8A24B03"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/props/casa_jhon_props_workshop_stage0_v1.png",
+        "size":  84738,
+        "sha256":  "90B96DABDCB281BE0D8381318C24E708212D46BF9A8E5CD20214F619E01A6C85"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+        "size":  112458,
+        "sha256":  "6375817831DEE163AB15023147BB37E9CC1C13DB07B982CC1D18BD7FABD74EB3"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/deltas/delta_stage1.json",
+        "size":  41174,
+        "sha256":  "9231D2028207553022F8ABAEE7A3D8EF1668F0EF1DF208D91232B9C28A1C835A"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/deltas/delta_stage2.json",
+        "size":  48099,
+        "sha256":  "F3877051AA6301B10B3ACBFD282227033F07007BEE8476DE29866C80F7969FFD"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/deltas/delta_stage3.json",
+        "size":  6303,
+        "sha256":  "23112AEA72D93FDD00B341E3F2043EFABD06684EFBC2860CC6341988DFF9423D"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/layouts/stage0_layout.json",
+        "size":  32023,
+        "sha256":  "3435A63DCE3AE51F6CD4A26CEA1DC9EA6CB6B6A5979BBE05E4D8623F2A851E6E"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/layouts/stage1_layout.json",
+        "size":  38194,
+        "sha256":  "D13591657ECE33BAE85EC221100EA00487C3A653F43970634C1907031F8913B8"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/layouts/stage2_layout.json",
+        "size":  44332,
+        "sha256":  "085CF395F44436D20B6AD926744DF310DEC21D23092E1B6FD19062051A4A8893"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/layouts/stage3_layout.json",
+        "size":  50471,
+        "sha256":  "C222EA926E79B081B3466BDAE7E1B76B5F1F3C16B622513BE372BA85EBA81C8A"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/manifests/casa_jhon_master_manifest_v1.json",
+        "size":  37919,
+        "sha256":  "3478D701FB1F55A83AEBEFD488ACCF7A4F1F860C6C920AAF5B731A5BCA87E596"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/reports/global_validation_report.json",
+        "size":  4556,
+        "sha256":  "7682DA1722D5E8BCBF2D529380398832603FA50EDB4BF971A92583FF16BB1541"
+    },
+    {
+        "path":  "assets/environment/casa_jhon/reports/global_validation_report.txt",
+        "size":  431,
+        "sha256":  "7DF8E5343A7B930616DB336BDBC12D213E6ECC198E7C07DFF036354C72A2F373"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_far_v1.png",
+        "size":  52206,
+        "sha256":  "8FF38D6F6D285EEB2CADA74BC5B0DA3852FD9903E7AFB6A5EABFC0EAEA0DBD9E"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_mid_v1.png",
+        "size":  49955,
+        "sha256":  "3088DC5408CBC903C068B5626412AE614A9DE59123B1B2D7A8304E9605465346"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_near_v1.png",
+        "size":  72649,
+        "sha256":  "B7887803BF242EE67FB0023D71C8781F5F1619D741FCC48584CB98987EDEB727"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/backgrounds/manifest.json",
+        "size":  3633,
+        "sha256":  "DC4A8A7D7500C26510AEA8733FB9F1E5EF312468D0222FD8D334E1CD3B2ED0AC"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/gameplay/cidade_baixa_gameplay_interactives_v1.png",
+        "size":  197144,
+        "sha256":  "C8A32C0DB38C297B28997259E72DC18F2800AC7EB10BAD68AE52EE3FCEF58BA5"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/gameplay/manifest.json",
+        "size":  11672,
+        "sha256":  "9B569E90B51A710531D1825D78DACA268A94C60E8230AEBE2A143C8E32EA6CCF"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+        "size":  293072,
+        "sha256":  "4896CF8B3922DC290267D22A3C875C1A97D3E839D12CB5BC5B8F241BF563776B"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/props/manifest.json",
+        "size":  77445,
+        "sha256":  "F276959D7DCE7CFA47E435393EA74F034D87C3A55EEF2CBB7451981C24BE8FF2"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/manifest.json",
+        "size":  43071,
+        "sha256":  "B0A8BCB0C0A5DB9FDBD7496549F0F413D49FC719EB1D2D55980D346F5FD5596E"
+    },
+    {
+        "path":  "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+        "size":  364933,
+        "sha256":  "80F1268501B759D3AFC5C155DA4557BCA61562C5C34D41217AF2991C43CF9A5C"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_crates_industrial_v1.png",
+        "size":  228723,
+        "sha256":  "78EBC7E1701241B7A4BC7A7F53AF6223E7044853C6BCD8732BD40ADB50CF9D8E"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_pipes_cables_lights_v1.png",
+        "size":  319531,
+        "sha256":  "1811108B1052455C40BEB4C5304306261FE456F8F5F5B015B8405E112AC95B51"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_servers_lockers_v1.png",
+        "size":  365969,
+        "sha256":  "8CD0DFE18A383EA5385E0B0122FEDBECF83882A2A257B10A7D820B3CB2BE0100"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_small_clutter_v1.png",
+        "size":  305366,
+        "sha256":  "9EC3851523E8606FE2B9A7B50D2C6DDA220EC4E212E025E0F87D21F73C005091"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_tanks_machines_v1.png",
+        "size":  463541,
+        "sha256":  "DFC470D8DA44866EA3F088EE667000307312EAEBC0665A6088A3A27890BEBF73"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_utility_furniture_v1.png",
+        "size":  502624,
+        "sha256":  "1E50A6C10F8D01DA72B87C484E7225D9CDCF4FBB6DAC4B83C30734B7AB52C167"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/lab_props_workshop_benches_v1.png",
+        "size":  292156,
+        "sha256":  "B0DCD199EB6466240EB32DB537432CE596DCB97365F4E54CE3A34F563D2E14DC"
+    },
+    {
+        "path":  "assets/environment/laboratory/props/manifest.json",
+        "size":  1498,
+        "sha256":  "1F00F545AB1E0CB787FEB1BDCDAD096748D1BF924DB97687ECBD0E297898C93B"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/Cyberfield_Lab_Structural_Atlas_v1.png",
+        "size":  2790314,
+        "sha256":  "D480B1CE6156A6D45073B10E5E9A0B417609D0381DEF8E2EF1608941543E81F4"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_cables.png",
+        "size":  205253,
+        "sha256":  "9B399CDE3F9B240FD20BB009ABA18113DEA4088659D6596FA278AD1D310091D4"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_catwalk_long_a.png",
+        "size":  23664,
+        "sha256":  "6A9C384221599416A1BBF7283E3C52CFCF6A9B4368897BFB6FEE4EC83D13B9FB"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_catwalk_long_b.png",
+        "size":  19824,
+        "sha256":  "4B3767033AB0CC9F45F48EA83322060270D24AE62EFA4D1964ADB7E9AC72A84D"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_catwalk_long_c.png",
+        "size":  20841,
+        "sha256":  "A68496B9795F3828C6F905C70D52236126D88FD97EFC46591306D026D0D0E06A"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_door_a.png",
+        "size":  65272,
+        "sha256":  "A5C5DF79359567F65A68220148D99800CEF328878C8869BAD3E0ECA6C8145D90"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_floor_large_a.png",
+        "size":  50759,
+        "sha256":  "CCC06682E878EE07642D832962820260274AC9EC4C7F1726E1DA09F9E11E8E45"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_floor_large_b.png",
+        "size":  31634,
+        "sha256":  "046FE02DEA8612FB253847CC4FF14B83BBC6A448587F346DF7BEFB401110747A"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_ladder.png",
+        "size":  12830,
+        "sha256":  "62E82114A879CB07488C41DE0852E6156FAB2CF47CCEEE40511EE145953FA91B"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_neon_lights.png",
+        "size":  120770,
+        "sha256":  "FF8F40F261F89F24622AD6421E34B886E3EC273F92F892737E13BB72C6A1CC8D"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_pipes_red.png",
+        "size":  181648,
+        "sha256":  "7972B9D8C2E1935C25FC66DC1802C2386B13B1CB62509B53E6B14BB5F3930CF5"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_platform_a.png",
+        "size":  20515,
+        "sha256":  "5541CD8A50E5C39AD4A9A517F046A67D51A05C59F90072FD6105CC8BBB4C9434"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_platform_b.png",
+        "size":  15270,
+        "sha256":  "3EE91E406A80F02B467AAB5DF4E84A63E38FA3587EA48C7DCA344117F4931990"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_railings.png",
+        "size":  69046,
+        "sha256":  "C5636B543ED7D8DC06805D7C098EFFC63740E51AABC1C1CF75CF1FA4F79DEFCA"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_stairs.png",
+        "size":  73622,
+        "sha256":  "7CA28E7170727565C78F0D90EF4F7FE0C71D7C2FBF7897BEB203EF47586AFBF6"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_supports.png",
+        "size":  80800,
+        "sha256":  "5B0630AB399590EA7BB49456F11DE70D140677A425300D2BB6858F08AF858571"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_vents_panels.png",
+        "size":  222874,
+        "sha256":  "54C080C6D2B675659CAFE78AFCC269F65781C4AA6D75793532877C6CE3486158"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_vertical_beams.png",
+        "size":  213488,
+        "sha256":  "4697FBF47B158DC316F7A5957972FADD7592BC17E7DCED65453A8034E42B9C60"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_wall_fans.png",
+        "size":  44336,
+        "sha256":  "D2722FA601B58EA80175725BD0291931FB5CEF40B639F941831B67771469B6DA"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_wall_panel_a.png",
+        "size":  53703,
+        "sha256":  "7C244551E229D6DB4CE1955F0BEC226C14263FBC7364FB60A5A22288ACF34C03"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_wall_panel_b.png",
+        "size":  25353,
+        "sha256":  "0CADA76E31DDA4DFE2ECAEEB39229866DA40E346DE6BF680333355A036D9018E"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/lab_windows.png",
+        "size":  96028,
+        "sha256":  "A2FB81EE71E79B242CD1652B471E5C677CB4429CD072507193D00C093D26047A"
+    },
+    {
+        "path":  "assets/environment/laboratory/structure/manifest.json",
+        "size":  4485,
+        "sha256":  "31E53F2F31FDCC65B67701BC27F247B9B208BFD8707EB6038784448B1804DC9F"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_attack_combo_v1.png",
+        "size":  49603,
+        "sha256":  "B00C55E953CB31DB7F5BEDA5B1BBD878DFC16C677F98A27F30F5EC6ED1C81636"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_dash_v1.png",
+        "size":  34636,
+        "sha256":  "3EEDF62CB164C708F4AAFD784FAA6B5BC3181492946F03525F8AEE76BC70CD00"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_downed_death_v1.png",
+        "size":  29368,
+        "sha256":  "0A4A40F0A77D6E8FAC5875AF0A0AA7BF6F9D54D7AEB075FAB4BB45FDCE1A8AB1"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_ground_slam_v1.png",
+        "size":  44089,
+        "sha256":  "E612AFF043AE418A879AFEC0D9B06319B0BA7767AC36CE5EF37A694AE3D9117D"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_hurt_v1.png",
+        "size":  16788,
+        "sha256":  "82E3A2354520C40DC458CFEA7A34B95BFC102D37FB2E6990005615982A3AD136"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_idle_v1.png",
+        "size":  22922,
+        "sha256":  "22763DE9DE81E60C29CEA1902C958E2767DAACD604037492EF652C0BA316527D"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_jump_air_fall_v1.png",
+        "size":  20769,
+        "sha256":  "545622A9E3BE4CE79552E4AEED8FBDE7D27D3BCABD132AC13E47D5D7563C39CE"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_revive_ally_v1.png",
+        "size":  40900,
+        "sha256":  "69B51149B73CEB16B0DCD200B6E14681E16BF1DE100916CAF6201431F48F2C11"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_walk_run_v1.png",
+        "size":  34662,
+        "sha256":  "2079F4A00B136E1C734ADB0DC9DE5640023F049450DB483654B69FE234D70CE8"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_wall_climb_v1.png",
+        "size":  18461,
+        "sha256":  "D37AFFB57FC9F5867BD696EA87ACF4D3AEBEFEB22E18AF6CE841F3E4FAE474E9"
+    },
+    {
+        "path":  "assets/players/jackson/jackson_wall_slide_v1.png",
+        "size":  17130,
+        "sha256":  "CE64EF199D8288293B6BE7283B92915BAF96154BF7BF6E697E77830F1F25F744"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_attack_combo_v2.png",
+        "size":  41893,
+        "sha256":  "93EB9BA3603CD3D954B01FF554760C3793A2E6388F3D6877B83F6A58934FE760"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_dash_v2.png",
+        "size":  37948,
+        "sha256":  "0EEC83A76B812E588AFEDE0674EB241AC21AF6FFAB63EEF0E579F968662B0BF7"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_downed_death_v2.png",
+        "size":  25991,
+        "sha256":  "8E1A9F7A7606FDA1518841E3208F6E3294AD5BB02899798C2962CFFABEB5F786"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_ground_slam_v2.png",
+        "size":  41775,
+        "sha256":  "859F3A5B2D3F62A7DB71E9E118A03FF92498E75EB18E12CF01779EC3D550DEBA"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_hurt_v2.png",
+        "size":  14961,
+        "sha256":  "ACD1C7FB4979E24E8FC5643965BA108A93F215335C2D50A5EAEC535C700DF6E1"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_idle_v2.png",
+        "size":  22334,
+        "sha256":  "99F87FDABB92EF1FF6044C6DA1EF30187869B754296DFD8A63CCA92809D63178"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_jump_air_fall_v2.png",
+        "size":  22625,
+        "sha256":  "5B947613355B4C858D7C6A795C5B2A0998FF738DB55ECAA52BE18458CB2EAB5E"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_revive_ally_v1.png",
+        "size":  40636,
+        "sha256":  "76FF2429DC7B11896FBD6361DE44356DD53F0C6B885BE862EA33D1FDDF2AB77D"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_walk_run_v2.png",
+        "size":  34857,
+        "sha256":  "FC99E92D1AFDB05D1EB6414C9859C594CBD7C20C2EFC7741B8997EA9CB475751"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_wall_climb_v2.png",
+        "size":  17967,
+        "sha256":  "9013752873071A90286A715EF7B4693B3DFE8DBAB73C0DC5B69ADC3399ED295D"
+    },
+    {
+        "path":  "assets/players/jhon/jhon_v2_wall_slide_v2.png",
+        "size":  10607,
+        "sha256":  "FDD628CB3F2DC9BC39C21E5105DA4A8874637F8E8406336401B4065E9AB9A2F8"
+    },
+    {
+        "path":  "assets/players/kai/kai_attack_combo_v1.png",
+        "size":  47806,
+        "sha256":  "725E8882A9389451DD94BE5AB2D960EE02EFB99C0137DC67E90F13B26C92C285"
+    },
+    {
+        "path":  "assets/players/kai/kai_dash_v1.png",
+        "size":  36243,
+        "sha256":  "D6C0CEE0B4ADABBF28A4B184FE9343FF07DBA0F901E47A754D620B4D31BD8EB3"
+    },
+    {
+        "path":  "assets/players/kai/kai_downed_death_v1.png",
+        "size":  29019,
+        "sha256":  "08EA241A8C0F8BFA65F88CC78A0698A681DFF42AFBD4B384852A98F71CE6F18F"
+    },
+    {
+        "path":  "assets/players/kai/kai_ground_slam_v1.png",
+        "size":  43593,
+        "sha256":  "1A70F5155B6699C4EF3AF7E2C39A80601208F0775F4013A50D097C9762A3B774"
+    },
+    {
+        "path":  "assets/players/kai/kai_hurt_v1.png",
+        "size":  15241,
+        "sha256":  "252FCDD89B556510975438055F1FE92F9AB6F95A3B5FB71FB1B759391870C01A"
+    },
+    {
+        "path":  "assets/players/kai/kai_idle_v1.png",
+        "size":  21477,
+        "sha256":  "343006036080C16E9A4360CA27C0D68581F977543207FA680BD37D8A7FBEE40D"
+    },
+    {
+        "path":  "assets/players/kai/kai_jump_air_fall_v1.png",
+        "size":  28425,
+        "sha256":  "F5B41ADCDDB310FF7C66AB4276EA51B98FD5CF2013B9E87E6FC43D6E6758372C"
+    },
+    {
+        "path":  "assets/players/kai/kai_revive_ally_v1.png",
+        "size":  46629,
+        "sha256":  "A2EB05566D2F06C83D49F636DD97522995F196D725D798BDB07C42C4906BFF59"
+    },
+    {
+        "path":  "assets/players/kai/kai_walk_run_v1.png",
+        "size":  32633,
+        "sha256":  "4A2772B69041A386FF41659FF9EB7FA311E6F72EBC4D8D728D9976DEA4E251E9"
+    },
+    {
+        "path":  "assets/players/kai/kai_wall_climb_v1.png",
+        "size":  16646,
+        "sha256":  "C49DBC0566B906FC83526D51C82C7AAA3D1352A0823B56A317C97C4AFE04151D"
+    },
+    {
+        "path":  "assets/players/kai/kai_wall_slide_v1.png",
+        "size":  15265,
+        "sha256":  "0D4371991593FC4C3A33D0189C74EAAF2405341CAFFE1BB95A4BADF32B4C92F3"
+    },
+    {
+        "path":  "assets/players/spark/spark_attack_combo_v1.png",
+        "size":  46891,
+        "sha256":  "CA998B96FF7739F093021ED59DEF4A0437C27F06C9368348E1A1380C4C81CF26"
+    },
+    {
+        "path":  "assets/players/spark/spark_dash_v1.png",
+        "size":  37656,
+        "sha256":  "21D1BE3821240FAE472B2DBA26BE41CD37DD433D35597C0A32453ECFF76E504F"
+    },
+    {
+        "path":  "assets/players/spark/spark_downed_death_v1.png",
+        "size":  35145,
+        "sha256":  "CD37A8EFEE675ED63829784E9E30102D3378AED37447956FB184185E7D6D4AAB"
+    },
+    {
+        "path":  "assets/players/spark/spark_ground_slam_v1.png",
+        "size":  42357,
+        "sha256":  "1B920C306653D0B0E788F837C35C5C4E5DDE61E4440927CD64FAE361BF8E65BF"
+    },
+    {
+        "path":  "assets/players/spark/spark_hurt_v1.png",
+        "size":  15743,
+        "sha256":  "780A1C426DFE183027F1969D666B668B5DBDEFD5B3788AB1149014DF12893D08"
+    },
+    {
+        "path":  "assets/players/spark/spark_idle_v1.png",
+        "size":  24658,
+        "sha256":  "1AF5C0F2E40196C73397143AE5189943FB2B98973584832D834E8B28862D21C2"
+    },
+    {
+        "path":  "assets/players/spark/spark_jump_air_fall_v1.png",
+        "size":  27727,
+        "sha256":  "1A70415F434673ACBDB533C1EB1D2A340C8830752E780A57827E762AB508D50B"
+    },
+    {
+        "path":  "assets/players/spark/spark_revive_ally_v1.png",
+        "size":  39554,
+        "sha256":  "40B8EA8423A5792095427570F8D0280EE324EC4A9B3D4D895FDDFDF558AD9964"
+    },
+    {
+        "path":  "assets/players/spark/spark_walk_run_v1.png",
+        "size":  35779,
+        "sha256":  "D72A21E4EA7825F5F6B0738A08F9DE316EF2715C92D347CB6895CA6390AA62BA"
+    },
+    {
+        "path":  "assets/players/spark/spark_wall_climb_v1.png",
+        "size":  19566,
+        "sha256":  "A8730D23BF8B162F90A3E56DF0BCB9A593068BA9AC33D4EF9B5510A09B8C33A2"
+    },
+    {
+        "path":  "assets/players/spark/spark_wall_slide_v1.png",
+        "size":  18286,
+        "sha256":  "EE0C2A4784105759B35C2F845865951D2F2567BB88DC863AB16E5441364924B3"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/GODOT_INTEGRATION_README.txt",
+        "size":  2051,
+        "sha256":  "111FC2BD9C2BD97FFAEC52173662495758AB2BFB32A5329B0FCA60B7D0FEBFA7"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_cyan.png",
+        "size":  376,
+        "sha256":  "2B87D733A7E331F32A483FEDEEA2D8A11AA9C965AEF4D1443E4853D2C3F040D1"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_magenta.png",
+        "size":  376,
+        "sha256":  "2B87D733A7E331F32A483FEDEEA2D8A11AA9C965AEF4D1443E4853D2C3F040D1"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_red.png",
+        "size":  376,
+        "sha256":  "2B87D733A7E331F32A483FEDEEA2D8A11AA9C965AEF4D1443E4853D2C3F040D1"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/attack1_icon.png",
+        "size":  402,
+        "sha256":  "B104A2E716608A7B2097337713BB085A7C360DAEB8A3D28E703DD816E7A549D0"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/attack2_icon.png",
+        "size":  399,
+        "sha256":  "4819D84CC43E3130A3014AB421D8998BE10E8985964F9DCAEFE63D1290D4C706"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/dash_icon.png",
+        "size":  385,
+        "sha256":  "4A350B6288DB7284437C3CBF6DA18B954DE4D56C857E6C384FCCFA5DC08A0286"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/jump_icon.png",
+        "size":  398,
+        "sha256":  "FD235B7F63B28CD78432A99E116AA418BA7B95AC25EDA8AE8BB65EDEC3C9D714"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/actions/use_icon.png",
+        "size":  352,
+        "sha256":  "D006B8BE4A8A91DE7E2649F88A169D4C41E7BB7DD711C8A0BF3212FD53AFF926"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/joystick/joystick_base.png",
+        "size":  2118,
+        "sha256":  "D8AFF3B16AA806AA3AFAE75E1751D78DDF6E069B384C7BBF769A6EBE99468303"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/mobile/joystick/joystick_knob.png",
+        "size":  602,
+        "sha256":  "CB94DE5D92D4E08918EA3A5C92D186AC369C7A83353ADB9F17BDF5FE09A9A224"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/hud/hp_fill.png",
+        "size":  224,
+        "sha256":  "ABF49B1309E08FEEB5EA685FDC9572413387B4DAFE2A71D380EDAD3E65388CEE"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/hud/hp_track.png",
+        "size":  256,
+        "sha256":  "E7EB7E554348384CAA9041736C6C728BBF4C1A48A00CDEC5E49883E125D383C4"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/hud/pause_button_frame.png",
+        "size":  254,
+        "sha256":  "DDA00CE3C97BC5675187400896597740BCAA27FD3EE88F9CB8457C5CBDCBED3F"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/hud/player_frame.png",
+        "size":  630,
+        "sha256":  "C8D0764B9A89FC4AE9ACEDC8F7A5C26DC428F3ABC366E1FFD570518E342D9D66"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/hud/portrait_frame.png",
+        "size":  343,
+        "sha256":  "C1BC36B0AB8A8AE0F5C36F9EAFE90C41EE8F4C53760BE4C04588D5C8C6928AC6"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png",
+        "size":  242,
+        "sha256":  "3BAFDEB30AA2671C8A6C0C01CC1DCF533181AE92ECE3D8839EB3E221967E5677"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_health.png",
+        "size":  282,
+        "sha256":  "F7A7493952502BF404DF33C32643EBD49F73D4682B7D95FE1BF74F2ADF839A50"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_intelligence.png",
+        "size":  316,
+        "sha256":  "A36EC71BD0AABB7ABE5BE82FDECBBB33AE01F8691A0D89F12C2F38A94818781E"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_strength.png",
+        "size":  202,
+        "sha256":  "8DE5B0BD4540354D919F7452E5DDDB6571026A46829A3F45BA197B52557C10EB"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/icons/money_icon.png",
+        "size":  380,
+        "sha256":  "574D1403288700E8E5F81346CDC08BA9F7C278C93911FE2D2009EF0EED9A011C"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/low_hp/low_hp_vignette.png",
+        "size":  6428,
+        "sha256":  "4FA7F245D904DDD38AC9ADD11A9040FB2D0579D2E3AAE369B5B253712CAAE2D7"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/low_hp/player_frame_critical_accent.png",
+        "size":  606,
+        "sha256":  "751C13233559354775FAD3ACE7855B27F696362E3B7AEE34C384945EF544E3D5"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/assets/shared/minimap/minimap_frame.png",
+        "size":  542,
+        "sha256":  "9B616DA9E55C0783D2A46B39226B7F3685C9ED1D530BDD5BF1914758F878BD1A"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/official_manifest.json",
+        "size":  39910,
+        "sha256":  "568AF9A67F79218253F59638BE86D5439BBE2361C8FEE4FEF4625B340B863BCF"
+    },
+    {
+        "path":  "assets/ui/gameplay_hud/used_assets.json",
+        "size":  3822,
+        "sha256":  "2FF1F0D07CE40C960F8510E62F54DC7A9AE116E0E86D8AEB2C8FAF58B77C7C02"
+    },
+    {
+        "path":  "assets/ui/menu/animated/README.txt",
+        "size":  1622,
+        "sha256":  "1FA730F5FF85CC48E80D9CF9DDEB60EF38F4AB9D71D97D1DB299E8DE6FC514C7"
+    },
+    {
+        "path":  "assets/ui/menu/animated/SHA256SUMS.txt",
+        "size":  857,
+        "sha256":  "1BF6D0C2BD5C83C424379E1964A85487135D00458ABFA9F2F7E92F72DFDEFC3C"
+    },
+    {
+        "path":  "assets/ui/menu/animated/atmosphere_haze.png",
+        "size":  7396,
+        "sha256":  "02D6D9FC611D31F1FEAD2BAEDC8166A9D9E3D2AB653DDF70A2D9B0E209FDB478"
+    },
+    {
+        "path":  "assets/ui/menu/animated/city_glow_soft.png",
+        "size":  2058948,
+        "sha256":  "845383646A46ABF953A0B69B9912C6CA616AA2239BF210BD2A2821008E87E45C"
+    },
+    {
+        "path":  "assets/ui/menu/animated/concept_master_official.png",
+        "size":  1742542,
+        "sha256":  "91E9B463FA76160DA1C6CDA2ECC82538F25A2555C1A3B934B12112EBC7FE4CFB"
+    },
+    {
+        "path":  "assets/ui/menu/animated/lightning_flash_overlay.png",
+        "size":  51575,
+        "sha256":  "5943402D687BAF81759DABEF706EBC78F499CC4EDF14517F30F5F72F17C7DF33"
+    },
+    {
+        "path":  "assets/ui/menu/animated/lights_cyan.png",
+        "size":  2135396,
+        "sha256":  "57AD0B613D506CA7A3CEEDEE1F1D70E7262E4132EB6B2327E7E361134BDA4932"
+    },
+    {
+        "path":  "assets/ui/menu/animated/lights_magenta.png",
+        "size":  2047734,
+        "sha256":  "E19D0A8F6FD38C1B1D91CCED77E3D2B62975B44F7FC89F9E93B5DFE84B46046E"
+    },
+    {
+        "path":  "assets/ui/menu/animated/rain_back_drop.png",
+        "size":  166,
+        "sha256":  "81D6443878D885DA170F79556DD9D12F0F01874DF4AADADC43F8E3D8E51442C4"
+    },
+    {
+        "path":  "assets/ui/menu/animated/rain_front_drop.png",
+        "size":  216,
+        "sha256":  "16BAABB3599C542A614E42F286540A4140EA4E653E39872D4180CB84228A89A7"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/README.txt",
+        "size":  1465,
+        "sha256":  "64EE62A12A455505FC2009A42CBF2FCC80B6D20AAD959159CEDA47A3B56BF2DA"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/SHA256SUMS.txt",
+        "size":  1239,
+        "sha256":  "039D96A0624F978A8B69032C728FBEEA94255955A106374DBF5DE0C08CA364EE"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/TECHNICAL_METADATA.json",
+        "size":  399,
+        "sha256":  "8C8CEDADDA668813C30F6E5DA17781EEBBDCF7FE4404A4B8EDB2C40112A778CE"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/atmosphere_haze_v2.png",
+        "size":  22260,
+        "sha256":  "AF9FEDC8579BEB9A407EE83FA18E664AD980B400425DB62E7FE8308E31262C99"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/city_glow_soft_v2.png",
+        "size":  2211507,
+        "sha256":  "0AA28CC1792756CC77BD55DB147B53BA3FA7D7AE8661E0EC64B4543FF7846B09"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/concept_master_v2_1280x720.png",
+        "size":  1373941,
+        "sha256":  "01AC0EAD466142C0B5B09B0F96644E9B0F111D7C5613BA6D3546978F22355423"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/concept_master_v2_16x9.png",
+        "size":  1854502,
+        "sha256":  "ECD26D05A97C287A37FDCFC9E54F378AD3C50894D0AA9C9EE43D7E954C941C58"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/lightning_bolt_a_v2.png",
+        "size":  17945,
+        "sha256":  "7E1085E1CE2A8A08F7E86CB84285249B621F8DD30FBDECE6FFBC78416F256EF2"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/lightning_bolt_b_v2.png",
+        "size":  25307,
+        "sha256":  "2E8D2DD51AF63CFFF15F685B1EB738784C4FDDEC6E321955B7CFF1176F0F46E6"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/lightning_flash_v2.png",
+        "size":  52003,
+        "sha256":  "054BF9ECA0CA8D4A734E45C664AF39EF9F625496FECC261EE45CB3A31586D4DB"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/lights_cyan_v2.png",
+        "size":  2306398,
+        "sha256":  "4D672A1CF899013A050BD6C68C930A91B41B52E98DEBB50348C7858826DACE0C"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/lights_magenta_v2.png",
+        "size":  2203329,
+        "sha256":  "3B20391B4B289E449394C36F688EFE86BE67CF4336390BFBFA1D6B879824E369"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/rain_back_drop_v2.png",
+        "size":  167,
+        "sha256":  "A4704F1A677C027732A630378D9D44F2265DA6A808787A4C98F27B680FF91BF1"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/rain_front_drop_v2.png",
+        "size":  220,
+        "sha256":  "1E080F7555A0135A4B5B7FFCAE520049E9B4FE637287E35D853993A322CCD56E"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v2/windows_warm_v2.png",
+        "size":  2149781,
+        "sha256":  "B1E481820F2D62BB36AB13C519E07BD68E204B9E400C1EEBF25F71987B57FD16"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/README.txt",
+        "size":  1497,
+        "sha256":  "3CCC17EF4893F25721A408F0238BFB05752453C7C6BC9B7B77FE1231EFCACFC0"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/SHA256SUMS.txt",
+        "size":  2316,
+        "sha256":  "FDAC6B2661BAF5B3D22CA8E9919B4CD4C2D38C836E291A08B6623A94B7AA3AE3"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/TECHNICAL_METADATA.json",
+        "size":  815,
+        "sha256":  "493299A8CF36E741A0459F70161D20B501B3B6791D74C7640B12CF12300664AC"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/atmosphere/atmosphere_haze_v3.png",
+        "size":  23875,
+        "sha256":  "ACEB52A3E0D4C0863705DAF68C60DF182BE7DC4FA857B907B032DABE4C5D1A87"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_back_a_v3.png",
+        "size":  202222,
+        "sha256":  "D92BD60B1D55210C5316ED4B69E8B272431EE548E3204291419E70FDECF4B7CD"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_back_b_v3.png",
+        "size":  174824,
+        "sha256":  "24526B61534FE08B04064EFAFAA6D89F9B92BB1ED6CFA5C89DB85F9DE100FCF4"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_back_lightmask_v3.png",
+        "size":  131781,
+        "sha256":  "EB97525DF98F57B3709CA128C228AC3B83F6F33A7183C4BA7A8C7012CEA471BA"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_front_a_v3.png",
+        "size":  147909,
+        "sha256":  "BB2D1377325D1EE334690912A1DA108A40299C38DDF5BC2ADC298E60EE4D9583"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_front_b_v3.png",
+        "size":  153173,
+        "sha256":  "9A3E6BDAEE8BF83B41F8897548A691A1BA619CC424DF2CA9A044F9778E449DB6"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/clouds/cloud_front_lightmask_v3.png",
+        "size":  127957,
+        "sha256":  "5F397C6E17C0BFDD288D50DBF71BE4724029113632AA17DD8710E55A0B3278B9"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_flash_v3.png",
+        "size":  58266,
+        "sha256":  "CAB450E44268D83C04A1FF1BBF76B8DD002B3927C40C5A6817E0B68E652791C7"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_large_01_v3.png",
+        "size":  40894,
+        "sha256":  "33ABB7ABA29EC54593274D3F13127C5738AB920D70CD6141B66B787FCE19D7BA"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_large_02_v3.png",
+        "size":  49339,
+        "sha256":  "403C257371E419C2AD209A6AD6A78B17047E883C55DA400782CB283DDFF46895"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_large_03_v3.png",
+        "size":  49587,
+        "sha256":  "4AABD6897D4136A23E2053B74674007E828DD15E8E9D4D4EAF2F6D62294F559E"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_short_01_v3.png",
+        "size":  19907,
+        "sha256":  "B7C18EAD813E804C4BC9E50D871263ED3C1C6A70445893112E13AFBAB787DADD"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_short_02_v3.png",
+        "size":  27183,
+        "sha256":  "4A865AF8674CB9BB1D79C75D343FC352D5EF2EB02E22C6BF0BA5324213F53ADC"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lightning/lightning_short_03_v3.png",
+        "size":  29152,
+        "sha256":  "5503B453300D96C9E347535A514B845D6615B00EC18E36D078ECF84BF615F20A"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lights/city_glow_v3.png",
+        "size":  2518264,
+        "sha256":  "810850494025C220C70486D70CBD2BF9038464829006A3943870997B827C4655"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lights/lights_cyan_v3.png",
+        "size":  2588443,
+        "sha256":  "A0EAA1FCB3757387082B399AF84D0C287F78E1CA75187C3E3D0EAEE7A1D0FC58"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lights/lights_magenta_v3.png",
+        "size":  2588269,
+        "sha256":  "1DC4D9FF82A80F17BE60BFCEA34ABC1AAD1A7E718B68ED8A8D277D33248994D4"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/lights/windows_warm_v3.png",
+        "size":  2488334,
+        "sha256":  "EA594FB3499B4F894BB9298D2358E81AD1C5260ECC92A9CD06F5D847304A0EDE"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/master/concept_master_v3_1280x720.png",
+        "size":  1346032,
+        "sha256":  "359C494FC7005729DD510179BCE1D9C0820237A5AA23C12EF464D4C43A647920"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/master/concept_master_v3_16x9.png",
+        "size":  2118497,
+        "sha256":  "9A2F5900CC736370F1AA57EF5F0872F778EB9DFE49797A14F20FD50132DF9246"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/rain/rain_back_drop_v3.png",
+        "size":  167,
+        "sha256":  "A4704F1A677C027732A630378D9D44F2265DA6A808787A4C98F27B680FF91BF1"
+    },
+    {
+        "path":  "assets/ui/menu/animated/v3/rain/rain_front_drop_v3.png",
+        "size":  220,
+        "sha256":  "1E080F7555A0135A4B5B7FFCAE520049E9B4FE637287E35D853993A322CCD56E"
+    },
+    {
+        "path":  "assets/ui/menu/animated/windows_warm.png",
+        "size":  2008443,
+        "sha256":  "9DBC6DEDCE3C1CD6EDAC1536B81C6DFE32F274DD87D982989ABDB37C129FCE4E"
+    },
+    {
+        "path":  "assets/ui/menu/cyberfield_menu_concept_master.jpg",
+        "size":  322496,
+        "sha256":  "B8C001C6D855CFE7C60C8C540BE59F1C755EE1D65307A44FEFC5F217F5799A89"
+    },
+    {
+        "path":  "assets/ui/menu_panels/GODOT_INTEGRATION_README.txt",
+        "size":  1249,
+        "sha256":  "935CB6E7BF9C4AEE46EB4D3FBAD7731E683FE53E387586D590446336B1946612"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/inventory_panel.png",
+        "size":  2287,
+        "sha256":  "8CF14129647F6ACF0D7BC49F52C47AA4A4C96F8C8ADDEE4EA6592FC38FDDD97D"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/slot_empty.png",
+        "size":  412,
+        "sha256":  "F12DC6FAFC708B2F58FA9CDC737F73B0B9DE13F749764F0E4737CB9F1D19836A"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/slot_normal.png",
+        "size":  412,
+        "sha256":  "F12DC6FAFC708B2F58FA9CDC737F73B0B9DE13F749764F0E4737CB9F1D19836A"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/inventory/slot_selected.png",
+        "size":  407,
+        "sha256":  "DADEE6F9B4A4A52DC0B56F233807DE55AE6ACB2CC225DFEEB22E73E9BE411212"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/pause/pause_row_normal.png",
+        "size":  332,
+        "sha256":  "607B89BDBB67DC9E6D160EEC1901DE22C69CFB811ADE3148C8661C59E431051C"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/pause/pause_row_selected.png",
+        "size":  328,
+        "sha256":  "0945A08FBEE70234528D2C95FD31B37655CF98E652BDD0E265527D7ED3E66043"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/pause/pause_side_panel.png",
+        "size":  1455,
+        "sha256":  "E37306DA3159371DB079750EBB3F69B08934AC19971CA67347B8EE6014CF644E"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/option_row_focused.png",
+        "size":  334,
+        "sha256":  "EB547C9A2DC4E981AB3CF53DC2F9CBBC90946AA13B46861DB8586A37A80D2717"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/option_row_normal.png",
+        "size":  340,
+        "sha256":  "3102D5A88EAD3203535DE45F1C7B793E2B1488DDB21B0B60743B2961449148AB"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/settings_panel.png",
+        "size":  2656,
+        "sha256":  "1787FC7DEE8D3725E7EE4103D2F4DA2D848A70EA2E21B36A97C8114F81ECC71B"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/slider_fill.png",
+        "size":  129,
+        "sha256":  "CA9F69B2A842415BF8B502D70C27455DDC60BA2BC55A4ED2CEF90033B0AE1014"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/slider_handle.png",
+        "size":  159,
+        "sha256":  "9D20DAA82DF0EF8550C20FB91B46B8D411B120BA17D71D9F83B1BDE0D1389063"
+    },
+    {
+        "path":  "assets/ui/menu_panels/assets/shared/settings/slider_track.png",
+        "size":  164,
+        "sha256":  "1F3AA02F33875A2B5C27062532DB7C29147854C406C1C31F8B23239121C4A2E4"
+    },
+    {
+        "path":  "assets/ui/menu_panels/official_manifest.json",
+        "size":  39910,
+        "sha256":  "568AF9A67F79218253F59638BE86D5439BBE2361C8FEE4FEF4625B340B863BCF"
+    },
+    {
+        "path":  "assets/ui/menu_panels/used_assets.json",
+        "size":  16224,
+        "sha256":  "6D1DDF2BC8D41DF90528BC8030BCAF31EADDAEE96D83A455E1D41662A2A3D3C7"
+    },
+    {
+        "path":  "default_bus_layout.tres",
+        "size":  304,
+        "sha256":  "E9F119BB07E2895D130C9D07D7AD2D05BD4DCF5C67362E08B07814E329E540B4"
+    },
+    {
+        "path":  "docs/animated_menu_background.md",
+        "size":  10670,
+        "sha256":  "A89F53000A494FEB7919633E369B338F29093F711E2EC3215CBF825A441EACF6"
+    },
+    {
+        "path":  "entities/Enemy.gd",
+        "size":  15612,
+        "sha256":  "259CF08054172A6E5CC9F0FE7C6553438AD22AF6B15A8EBBD91887A7FC115130"
+    },
+    {
+        "path":  "entities/Enemy.gd.uid",
+        "size":  20,
+        "sha256":  "E1DE1D85A6643CAC8656E2905937BC3EC7EF43208B12FF39435773E70A5DF8C9"
+    },
+    {
+        "path":  "entities/Enemy.tscn",
+        "size":  7039,
+        "sha256":  "EE20699FA0B9D66BF7FE5F355570B4BC97F3C5799AFE9DEA930CB8E73EB561F2"
+    },
+    {
+        "path":  "entities/HeavyEnemy.gd",
+        "size":  4818,
+        "sha256":  "03D08A1A485ECDF8030BFC319588EC7131276E9CD118B0705434DCA14A340AEF"
+    },
+    {
+        "path":  "entities/HeavyEnemy.tscn",
+        "size":  790,
+        "sha256":  "8E8CCB2BF94A32F9BA21699736C4EF202BF972D5A48ABB3BD7015DBDDB9CF23B"
+    },
+    {
+        "path":  "entities/RangedEnemy.gd",
+        "size":  18856,
+        "sha256":  "396809A3C8EF43610E6BDEB20D9BD217C00DE95A1F2CEA5D9AE2494A3727D223"
+    },
+    {
+        "path":  "entities/RangedEnemy.gd.uid",
+        "size":  20,
+        "sha256":  "7B5BBC4EE2AEB5F28ABAC5DB46F694384A5DA5971FEA1BBEB67DCCC301E1EABC"
+    },
+    {
+        "path":  "entities/RangedEnemy.tscn",
+        "size":  2536,
+        "sha256":  "9739769A6312B769C848C54F90C3AE627F525F2A5ED3ED350ED6AB187C3245CA"
+    },
+    {
+        "path":  "entities/enemy_character_visual.gd",
+        "size":  5700,
+        "sha256":  "B529715BC2A49666B9CD52E70A3BF5E69C089C783DBA231EBAB3E43EC3501E4F"
+    },
+    {
+        "path":  "entities/heavy_projectile.gd",
+        "size":  214,
+        "sha256":  "7EE099B2F1DAACA4354B07C91CB4D0029826D7040DB51C9F3E247EC06EAB1428"
+    },
+    {
+        "path":  "entities/heavy_projectile.tscn",
+        "size":  699,
+        "sha256":  "F09B071ACED3B1095283115D9F3C2DD0C6CF0D5567613C1E23EA267EF6D11AAA"
+    },
+    {
+        "path":  "entities/jhon_idle_visual.gd",
+        "size":  11505,
+        "sha256":  "83108B6D7B4424B3DB0209AAAF78BE0B576758B9FB0BECF286A321C4E4FE7B65"
+    },
+    {
+        "path":  "entities/player.gd",
+        "size":  38865,
+        "sha256":  "2FA0E9F711A728EB2881D65F5850B131F8A93A1B89171E3433DB5B2C5D8403B0"
+    },
+    {
+        "path":  "entities/player.gd.uid",
+        "size":  20,
+        "sha256":  "A64D911799AE32C93C986E448FC456096BAAFFCA5E552B3EB65E7EF54B2F43ED"
+    },
+    {
+        "path":  "entities/player.tscn",
+        "size":  12689,
+        "sha256":  "7E979C7D5D9AB27DF9EA6A9E6A666DDF9144D67574904F347E5F49DB31D13A33"
+    },
+    {
+        "path":  "entities/player_character_visual.gd",
+        "size":  13480,
+        "sha256":  "25E238A050F521915B08378A99914704FAEFF7A5CA012DDAB55E511E5D137FFA"
+    },
+    {
+        "path":  "entities/projectile_visual.gd",
+        "size":  865,
+        "sha256":  "40162BF199363D7E2DCA4F5A090E638981810C9AD316D40F7D58EBD66FE61742"
+    },
+    {
+        "path":  "entities/ranged_projectile.gd",
+        "size":  3978,
+        "sha256":  "87AE550D9D4B02FF5D0ACA638C2F5818A61FE8517713700562CD80A350E665A1"
+    },
+    {
+        "path":  "entities/ranged_projectile.gd.uid",
+        "size":  20,
+        "sha256":  "3E34CB36109B523C4083FB10709C1CF47505FF39D758150E630545915F38A3B9"
+    },
+    {
+        "path":  "entities/ranged_projectile.tscn",
+        "size":  940,
+        "sha256":  "23E52CE58FA9AEA959D12F21F47D97AC3E4CD4F8D9D4C10A588CDA28AEFF05A7"
+    },
+    {
+        "path":  "entities/temp_pixel_visual.gd",
+        "size":  4076,
+        "sha256":  "7DEA4D4665385074B2145EF86CC881D12A76CBC43455490380E7D67F056DC2CC"
+    },
+    {
+        "path":  "entities/visual_sprite_factory.gd",
+        "size":  1465,
+        "sha256":  "C9859C45C63D496FC8D8FF6F724F3D5DFA73A57A2A0F05A6C09F3C57685E9723"
+    },
+    {
+        "path":  "export_presets.cfg",
+        "size":  7552,
+        "sha256":  "072FEF2639293959F56A08BCDE54F95C1B6A3D304BA8AE54C9579D52585BC907"
+    },
+    {
+        "path":  "icon.svg",
+        "size":  995,
+        "sha256":  "6C80384360A5B269D1054BFB27241258154E2CC8167C522016FDC1820E84E0F8"
+    },
+    {
+        "path":  "icon.svg.import",
+        "size":  1013,
+        "sha256":  "BC92E7BF21C4726E8A9F653BCBA604519A1C760DA8323DE3795A00F380A0AD45"
+    },
+    {
+        "path":  "project.godot",
+        "size":  8929,
+        "sha256":  "7CB9A081BD12D7D1588559FDBA081625810C27FACD09B2D56AD3782BC7809254"
+    },
+    {
+        "path":  "scene/animated_menu_background.gd",
+        "size":  12580,
+        "sha256":  "66A0829D41B17B51E41C88886047247AD33402AF7DDA02DB24F7AAA8943A8BB1"
+    },
+    {
+        "path":  "scene/animated_menu_background.tscn",
+        "size":  8078,
+        "sha256":  "A7961255E1EE184D8379A15A808F96F5AC95910BB348A416A817E78254394FA6"
+    },
+    {
+        "path":  "scene/attribute_choice_ui.gd",
+        "size":  6873,
+        "sha256":  "8D7BF98D965D9C27AA93A6EC4367F1FD3ACC9D5D72A8F5C4B89EA27F1EF6D1B2"
+    },
+    {
+        "path":  "scene/attribute_choice_ui.gd.uid",
+        "size":  20,
+        "sha256":  "16D87AD84200DF739D13FC2E2DD9C06FF1D46E422D490241F5CBC8BB4788801F"
+    },
+    {
+        "path":  "scene/biomes/biome_definition.gd",
+        "size":  893,
+        "sha256":  "4F79888AC7BB2510863A7EFC7C05F9AC2FCB4C9C16C64784CECC1EB93CA68AA1"
+    },
+    {
+        "path":  "scene/biomes/biome_exit.gd",
+        "size":  1076,
+        "sha256":  "93BADE5139EDC70D7A197FCF7E0FBFC936C1A52708650EFF7F43EA6E88377F85"
+    },
+    {
+        "path":  "scene/biomes/biome_exit.tscn",
+        "size":  942,
+        "sha256":  "D726747C351CBCAE56FAF773C8D359D33AEF1319450336F394713F49AF921787"
+    },
+    {
+        "path":  "scene/biomes/biome_generator.gd",
+        "size":  54425,
+        "sha256":  "EB2D3AE138D1A01270C61B4DD6A8F3A1BC6929F61D74AF2C4BCE0B6F114CB8B1"
+    },
+    {
+        "path":  "scene/biomes/biome_loot_placeholder.gd",
+        "size":  864,
+        "sha256":  "49DF071B8D1E4750D6E2510FCA6DB5C5995F02110DF511586E28AE64DB9941CC"
+    },
+    {
+        "path":  "scene/biomes/biome_loot_placeholder.tscn",
+        "size":  803,
+        "sha256":  "6FCE7F5F9E074417B6483FCB798278CA859AA7BDDE8C01FD7FF7A3F5D66B138C"
+    },
+    {
+        "path":  "scene/biomes/biome_map_state.gd",
+        "size":  7822,
+        "sha256":  "79A5788958D278F96688B4C59F5FB9742C08C99D1B1076180ADCCDD9AA12FDCE"
+    },
+    {
+        "path":  "scene/biomes/biome_minimap.gd",
+        "size":  10335,
+        "sha256":  "671C65EBA11DF418A3A40ABF8A87D1D31003DBD9857D3A939081884B628921D0"
+    },
+    {
+        "path":  "scene/biomes/biome_module_definition.gd",
+        "size":  749,
+        "sha256":  "C72158144136A91EA26B24842958EBC3557D15ADE5099436A84664BF58DAEB02"
+    },
+    {
+        "path":  "scene/biomes/biome_teleporter.gd",
+        "size":  2053,
+        "sha256":  "CCC515F2C623E0CF7E7CED82FCA924658CAB0B72AFCF493CFCA10BBDF6AE445F"
+    },
+    {
+        "path":  "scene/biomes/boss_stage.gd",
+        "size":  1563,
+        "sha256":  "A6E42B0DF386D72F7EE1215D592EB8BF55D82FFEF2FC95FC9FD5FCA35A6058BF"
+    },
+    {
+        "path":  "scene/biomes/boss_stage.tscn",
+        "size":  1872,
+        "sha256":  "1C616728B1387465DC5742CE724D2D807D9D87714401C1F6A8FE67645A9AFE8C"
+    },
+    {
+        "path":  "scene/biomes/full_map.gd",
+        "size":  13243,
+        "sha256":  "B262CA9258F110643232BC2310636FAEC94298C37A93F7A0CC6A66A9567940AE"
+    },
+    {
+        "path":  "scene/biomes/lower_city/lower_city.tres",
+        "size":  1688,
+        "sha256":  "D4DEFEDABDC3FCFB0F2B3095C7EE067EBE0990427714766390E54A915536810D"
+    },
+    {
+        "path":  "scene/biomes/lower_city/lower_city_biome.tscn",
+        "size":  354,
+        "sha256":  "8C6B800F2190E875CF954AEE815D1DDDDECCFF9C660C069B08B86BC36B54CAC5"
+    },
+    {
+        "path":  "scene/biomes/lower_city/lower_city_presentation.gd",
+        "size":  4846,
+        "sha256":  "88CFC3C456B41B35B3C0DFB52097FC269CDBAFD5DDFB9DA4E0DFF0182780A28A"
+    },
+    {
+        "path":  "scene/biomes/modules/corridor.tres",
+        "size":  606,
+        "sha256":  "44E4A5E5E5A5DEB210FAB517CE217A5F67038D7C0F4683C76C41127C2F9EAF6C"
+    },
+    {
+        "path":  "scene/biomes/modules/descent.tres",
+        "size":  639,
+        "sha256":  "CC42B5BE6EA07A2E0FC0A8941B1524C279F5EDC56445542A44F8FFE38E8B49AD"
+    },
+    {
+        "path":  "scene/biomes/modules/exit_platform.tres",
+        "size":  620,
+        "sha256":  "5A18928929AD98C23678FF4D20A7DCD6B2EA5710C7A8A3EA7EE59DEB2FA03BFC"
+    },
+    {
+        "path":  "scene/biomes/modules/fork_down.tres",
+        "size":  655,
+        "sha256":  "DCA9A31AB9C2591F9C08E4BCA375304532E2F1E17954D9E2C30D66D92FE1C428"
+    },
+    {
+        "path":  "scene/biomes/modules/fork_up.tres",
+        "size":  651,
+        "sha256":  "B917552290A63193FFA78CEA510F4D96F18BC91012F61DE96C6BF5B06CF8D653"
+    },
+    {
+        "path":  "scene/biomes/modules/lower_upper_passage.tres",
+        "size":  689,
+        "sha256":  "0549BB69F7189F83340627649148B5E2AC6CC079E3D1B036CCBE895CE3516401"
+    },
+    {
+        "path":  "scene/biomes/modules/open_area.tres",
+        "size":  656,
+        "sha256":  "419EB730EBA01B99B507D28525DCE6FC62E8F63FDE77DFFAC0C0E753752BBBB8"
+    },
+    {
+        "path":  "scene/biomes/modules/rise.tres",
+        "size":  633,
+        "sha256":  "38AE5C00A83942281534DAE540567BEE6FE3EB8CE52A037C45C2B2590AF81221"
+    },
+    {
+        "path":  "scene/biomes/modules/upper_lower_passage.tres",
+        "size":  689,
+        "sha256":  "611FE5C13A6D748549F250279F60DEF489F8674E24C944E6DFBF707E529ED073"
+    },
+    {
+        "path":  "scene/biomes/modules/vertical_shaft.tres",
+        "size":  659,
+        "sha256":  "2C2AC98C42A4175262E0678B43612C761096A1FD8C1936A5BFE7E0A4D1216D5A"
+    },
+    {
+        "path":  "scene/casa_jhon_hub.gd",
+        "size":  497,
+        "sha256":  "830F052203E76E87B48C175E829C29828C51CDAE7F7ADDBA1BA3767759AAD9BA"
+    },
+    {
+        "path":  "scene/casa_jhon_hub.tscn",
+        "size":  29058,
+        "sha256":  "7B7B3986AFA4FAC95080893B9BEA3C51AD3D44BC444AB7A0BBBF1CAEBBF96E2E"
+    },
+    {
+        "path":  "scene/combat_stats.gd",
+        "size":  2305,
+        "sha256":  "A651D14E4E798733E8ABEE07CDF524E2B728FC55FCD40557E7842982F443A730"
+    },
+    {
+        "path":  "scene/coop_debug_panel.gd",
+        "size":  1806,
+        "sha256":  "0CB3EF6738FA454803C68FD34FCAFFFC6628378BE6A3F636E2FDA045447A3C8B"
+    },
+    {
+        "path":  "scene/coop_debug_panel.gd.uid",
+        "size":  20,
+        "sha256":  "3992D5AD2D878DF287586AF88019550EC45F60A25DED8A84C0AE033A45CA8430"
+    },
+    {
+        "path":  "scene/enemy_fall_damage.gd",
+        "size":  584,
+        "sha256":  "A177CBF1E23D9CD9D9C49326F87BF79B56C1713DAECCACF3913A3C9F5485AAD0"
+    },
+    {
+        "path":  "scene/interactables/attribute_chest.gd",
+        "size":  3927,
+        "sha256":  "BD5369B7DFF96979EB52C9C33EE4E103B3F97D758D075716E7D1EAB2403DFC1E"
+    },
+    {
+        "path":  "scene/interactables/attribute_chest.gd.uid",
+        "size":  19,
+        "sha256":  "7C1E2C08DA49C8321EA2593B0D9BF32F23F1440D85B0F35CE8AE0CA31C6CF498"
+    },
+    {
+        "path":  "scene/interactables/attribute_chest.tscn",
+        "size":  882,
+        "sha256":  "E44BDA1B0A11AC6155DE8F1804FEBC59446F0A55F56BEBBA4A9C8DC044A2C142"
+    },
+    {
+        "path":  "scene/interactables/bandage_pickup.gd",
+        "size":  2319,
+        "sha256":  "92F9B435AD8655A3EB80530C477AEBBEF8DF82775C7DEB216BE4E3F965A6C3C0"
+    },
+    {
+        "path":  "scene/interactables/dirty_money_pickup.gd",
+        "size":  1003,
+        "sha256":  "B36CFC09A17C3E7A9B4E576EEE430B57C8B2EE51A3F0308974300CCB7E352A81"
+    },
+    {
+        "path":  "scene/interactables/dirty_money_pickup.gd.uid",
+        "size":  20,
+        "sha256":  "B5674A695363ADDB160C2A92C8BB7FAD745B4DB8CAAF5EAB922DBD038CF0F059"
+    },
+    {
+        "path":  "scene/interactables/dirty_money_pickup.tscn",
+        "size":  702,
+        "sha256":  "049DAD8B160F4A1DFE46899738331A77617FE6C5B91C5C8C50C22A0D05C12F61"
+    },
+    {
+        "path":  "scene/interactables/meta_terminal.gd",
+        "size":  798,
+        "sha256":  "A8BED05F3D9DBE61231F5BF3367ACFD719C14D6CF25C47438E8F40F736307D64"
+    },
+    {
+        "path":  "scene/interactables/room_exit.gd",
+        "size":  994,
+        "sha256":  "BDD8802F34E5840E4B3A5413F2E15BD30AC64010F9AE000A8D76AE46ADBA2B81"
+    },
+    {
+        "path":  "scene/interactables/room_exit.gd.uid",
+        "size":  19,
+        "sha256":  "EA9DC8094CA9A5FFDD84E33C2C056BAA8FE19106A1871128DDD22DE903CAEC35"
+    },
+    {
+        "path":  "scene/interactables/room_exit.tscn",
+        "size":  937,
+        "sha256":  "DE086635EFD5F72D7E7292D4DE9EFA391EA95304209604B16D42F077BED5CFBE"
+    },
+    {
+        "path":  "scene/interactables/run_portal.gd",
+        "size":  1403,
+        "sha256":  "F5EE92450A393BAAD75C8FFA0EB547E3BBF54B521A1E8EE164D9E75CAF80A4E4"
+    },
+    {
+        "path":  "scene/interactables/trap_chest.gd",
+        "size":  4454,
+        "sha256":  "DB5B5577B0AA273DC8BA13CA3D97A631DF2E2DBB5A66AC8610761A0EDE552439"
+    },
+    {
+        "path":  "scene/interactables/trap_chest.tscn",
+        "size":  721,
+        "sha256":  "CE9DF01B57D39EF394CB8F9AF6D8DB01D6723ECD44277733141499135BA4D6E3"
+    },
+    {
+        "path":  "scene/inventory_ui.gd",
+        "size":  11270,
+        "sha256":  "19E69D4C77A758A90F82D2FA111FF1B3A5753859BF56E61AF2F20863A75D6D38"
+    },
+    {
+        "path":  "scene/laboratory_hub.gd",
+        "size":  3805,
+        "sha256":  "C1E437FD4EECBD74EFFB5AF797C6CA4389DFFB2BE96A6BB033854C5BB3174837"
+    },
+    {
+        "path":  "scene/laboratory_hub.tscn",
+        "size":  21137,
+        "sha256":  "8BC2AD10A75B11C7EA1208E1C5667F091029523007BFA8EF3A8E1649E2440AD1"
+    },
+    {
+        "path":  "scene/levels/cyberfield_area_01.tscn",
+        "size":  2859,
+        "sha256":  "0B7B051DC954CF3FA24F0BFC9343F4637C378F049EB5677905E328E1F16D24E5"
+    },
+    {
+        "path":  "scene/levels/cyberfield_area_02.tscn",
+        "size":  3788,
+        "sha256":  "F393E194F92131A53FE3FC44E7D38251C9FCF0C65AD1FEDA42279C4DE4446598"
+    },
+    {
+        "path":  "scene/levels/cyberfield_boss_01.tscn",
+        "size":  1983,
+        "sha256":  "EB5F394208E8DD91F17A7BF7235F9637562DF9E91D247C4E0E2AB1B74694B18D"
+    },
+    {
+        "path":  "scene/levels/cyberfield_combat_02.tscn",
+        "size":  3018,
+        "sha256":  "31755A865D9907CD6DF87C629EDDCA1FB6E58F05523FE6DEC0B5000F5733D1E5"
+    },
+    {
+        "path":  "scene/levels/cyberfield_reward_01.tscn",
+        "size":  2241,
+        "sha256":  "69EFA8AD31FFB8524C0BB826854F38D605DDA03ED24E17CB2CB829DC8C7129F1"
+    },
+    {
+        "path":  "scene/levels/cyberfield_run_complete.tscn",
+        "size":  931,
+        "sha256":  "A6394943EB3172FDFAA4C8545E11602EEAD7CAAE925C3D83F945E1CF358CBF63"
+    },
+    {
+        "path":  "scene/local_coop_input.gd",
+        "size":  2725,
+        "sha256":  "8ADF31B6B14901D17C279AD38AD105FD4F60769C0FB39CDC1F1C3FECA461BC4B"
+    },
+    {
+        "path":  "scene/local_coop_input.gd.uid",
+        "size":  19,
+        "sha256":  "7D6AE25D50033F7D9C4BC285BEC3F8D3472E7F47EE144D7ECA6BD4E3DF9F1AC4"
+    },
+    {
+        "path":  "scene/local_settings.gd",
+        "size":  3226,
+        "sha256":  "47EA84EDB9EFF905C1307B8C8426FF1AB09E6FF9496AE9F9AEDD7986CE878715"
+    },
+    {
+        "path":  "scene/main.tscn",
+        "size":  17936,
+        "sha256":  "A739370DC37B6634945571F51833A55F0132BB5C0309132EA7AF0932683C333B"
+    },
+    {
+        "path":  "scene/main_menu_alive.gd",
+        "size":  13986,
+        "sha256":  "33F8191A493E3449CAE566BEBEF4D64D84A266B46EBAF4823B60FEB083AAEE65"
+    },
+    {
+        "path":  "scene/menu_clouds.gdshader",
+        "size":  1387,
+        "sha256":  "F9CB15717A8C223BB4C4932FC41D044822CD1E32A842961580D7F43D5B9ABE3E"
+    },
+    {
+        "path":  "scene/menu_environment.gd",
+        "size":  1278,
+        "sha256":  "B7302B9FCAA9D0DF2D6E52F3B4767BA740C5C6C1336DB98F81E72495E41FF14C"
+    },
+    {
+        "path":  "scene/menu_rain.gdshader",
+        "size":  333,
+        "sha256":  "653A2CC51CBEDD483D1742ABEFA7A917D3335F5038E808AB90DD1405755AE5E7"
+    },
+    {
+        "path":  "scene/meta_lab_ui.gd",
+        "size":  5009,
+        "sha256":  "3D3AD2189654917395371C617C0B0579378339DB2C6AB9049F80BCFB5049D395"
+    },
+    {
+        "path":  "scene/meta_progression.gd",
+        "size":  5372,
+        "sha256":  "271563F176D7CBF4C0A83C2D31195F5203702951DC3F232C7D1365CB01445927"
+    },
+    {
+        "path":  "scene/mode_select.gd",
+        "size":  6162,
+        "sha256":  "C2F86021AE6D2D204B81C34145EE27A793220D8986AC28B94C0EA9AFDB794C27"
+    },
+    {
+        "path":  "scene/mode_select.gd.uid",
+        "size":  20,
+        "sha256":  "807096D7C84F093A54C87DF536B9CC340BB3381F11B65484B3D2965C1166966B"
+    },
+    {
+        "path":  "scene/network/lan_lobby.gd",
+        "size":  9421,
+        "sha256":  "82AF0C0AD2BADEBE3A2992A262301BB9055702928D24B26B9DD8A1A92AACDBB3"
+    },
+    {
+        "path":  "scene/network/lan_lobby.tscn",
+        "size":  5152,
+        "sha256":  "312E7D911862C403AD83C79BD037F7255203AAB70BC92A6C30EFF064E3E9E35E"
+    },
+    {
+        "path":  "scene/network/lan_session.gd",
+        "size":  45223,
+        "sha256":  "2D9CF22ED8D0482BBBAE70FBEFBEFA2151A77AEB66C6598E8E29FFDBB0331E8C"
+    },
+    {
+        "path":  "scene/pause_menu.gd",
+        "size":  16586,
+        "sha256":  "7A7BE0C21A1B17F7316AA0152054310DF21B3A32456E24D1D45E66441E59E92B"
+    },
+    {
+        "path":  "scene/pause_menu.tscn",
+        "size":  5163,
+        "sha256":  "FEB4D9DDF27AA6948A658713FE5B8FD966486EAF85145923DBFF03BA56538367"
+    },
+    {
+        "path":  "scene/room_manager.gd",
+        "size":  36017,
+        "sha256":  "99ED152A231C8CAA47209805FE1F8B60A2E0A3F4CCFDDDE48914B19855A753D1"
+    },
+    {
+        "path":  "scene/room_manager.gd.uid",
+        "size":  20,
+        "sha256":  "BB5E58621DCB7A9BBEA6FB8D8F71EB339B0A22588611CDFBE4918922332097BE"
+    },
+    {
+        "path":  "scene/run_debug_hud.gd",
+        "size":  16617,
+        "sha256":  "93AD46FA9B453E46DC0DF8F68215072D4B19B18FE436D47044292674DAF6ECBD"
+    },
+    {
+        "path":  "scene/run_debug_hud.gd.uid",
+        "size":  20,
+        "sha256":  "BE1E8AC65BAD15C182976B0F3A685CE2A0F0689F538850D42F386880F1770724"
+    },
+    {
+        "path":  "scene/run_manager.gd",
+        "size":  41190,
+        "sha256":  "E27B4B12EF20221D055292778D26C50EF084AF5B584E4F04DA327E5DF84F16DE"
+    },
+    {
+        "path":  "scene/run_manager.gd.uid",
+        "size":  20,
+        "sha256":  "14BD299095184DA46425D3C0DDD4A645310C93E18D8E498D23BAB0728B9E923F"
+    },
+    {
+        "path":  "scene/run_result_ui.gd",
+        "size":  7025,
+        "sha256":  "2BAA1BB61C7836A5B2E241598181F1E44FC12C22DF6253E59A565D73C61FD815"
+    },
+    {
+        "path":  "scene/upgrades/attribute_upgrade_catalog.gd",
+        "size":  2130,
+        "sha256":  "B006818508F838D1847302D7CEDA08CD150136DFA1485489387AAA82E4C8D51F"
+    },
+    {
+        "path":  "scene/upgrades/attribute_upgrade_definition.gd",
+        "size":  267,
+        "sha256":  "2F2E2F77EB01458B9F059BDB4177DF32C75CEFCF39EFB41D1004398666720E79"
+    },
+    {
+        "path":  "scene/weapons/weapon_catalog.gd",
+        "size":  789,
+        "sha256":  "0D9A3E9C60A05AB692E0DC41C63FBB5A110AFCB29F2B912618CBA78FB78D49C6"
+    },
+    {
+        "path":  "scene/weapons/weapon_definition.gd",
+        "size":  487,
+        "sha256":  "339F1075762817DADAB9FF34C5E9A80629F242528F98E52AF6EF291E1EE6938E"
+    },
+    {
+        "path":  "scene/weapons/weapon_pickup.gd",
+        "size":  3076,
+        "sha256":  "5AE5E324390F4CB86E4CB29B2DD7DD7A9CD969BFBE49C403469A9B332DF04553"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Belly_Sliding (16 x 16).png",
+        "size":  446,
+        "sha256":  "853DC70CFEABC0D3DB7C9BA890665E75954A80FA5FBA94B0940B4D6F241702C1"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Belly_Sliding (16 x 16).png.import",
+        "size":  993,
+        "sha256":  "D608602A45AC571C5B919A3BFC1FBBFCB234B8E295413853827AB4D083881D7E"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Blink (16 x 16).png",
+        "size":  383,
+        "sha256":  "BDF5EF3AC7B98A380DB9F4ED867D14836332CC4E6739814F073ED43CCCAEAFEC"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Blink (16 x 16).png.import",
+        "size":  968,
+        "sha256":  "CDA7E507B87C38B68909023D6BED0A3711BACC843C7F8C06CD48AC9EF1BD0F4C"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Ducking (16 x 16).png",
+        "size":  325,
+        "sha256":  "9FFA0140A6386D18ACF33C8D67BACB7185D8AC5DC80B8BDC2FF7F3597DDA1862"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Ducking (16 x 16).png.import",
+        "size":  975,
+        "sha256":  "49A07E46509DBAA82381D2EF1EFB0A49A52410DF2BAB9A509743E1746A5FE223"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Falling (16 x 16).png",
+        "size":  381,
+        "sha256":  "CF06BAA5192849D7B5F2AEDF381FD2CFE437BB5F05CEA11F77A41DE227FC95DE"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Falling (16 x 16).png.import",
+        "size":  975,
+        "sha256":  "F074521A14101D405A645126D63A8C19AB079EE05FAA1A180C53298E5CED98EE"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Hurt (16 x 16).png",
+        "size":  374,
+        "sha256":  "6D03BE5697E2F8F715B50C2D06917D8FEB5DD23B33B955BB4D17C0111A8BF62E"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Hurt (16 x 16).png.import",
+        "size":  966,
+        "sha256":  "2BDD5FE42C90B16D6856FC2FDEC3169A01525FA98CB548937E4194F8AA314E57"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Idle (16 x 16).png",
+        "size":  544,
+        "sha256":  "4A7FCBD815037F9B957CB58D1A458B90C5EF08B19BB224611840B5D42C62317C"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Idle (16 x 16).png.import",
+        "size":  966,
+        "sha256":  "00E3E2D01BF4B86D6160132EBF2B15CC32D716140CEF4964173264C99F6361C5"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Jump (16 x 16).png",
+        "size":  399,
+        "sha256":  "E470299524BF3CD6DA7C39E4AE18E581451C46C4871E8821D62E7A41A4C6587F"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Jump (16 x 16).png.import",
+        "size":  966,
+        "sha256":  "083F0F0CA83A29105E9A1CB0F0341A1AE6DDF9F422BA613DB9D9F02087311B9C"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Looking_Off (16 x 16).png",
+        "size":  279,
+        "sha256":  "0F6A67CF2071FFD5820280E6C0D5CF80D165C0F3A686406929D10C0C67F75D57"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Looking_Off (16 x 16).png.import",
+        "size":  987,
+        "sha256":  "192AE157698B1562E8C349B0DF1FBE865418C0D2694EE11EF0C2E03EDEF4168B"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Looking_Up (16 x 16).png",
+        "size":  440,
+        "sha256":  "A98B20ECE76EDFC5AAFA78D548D31DCF865404CED8C227AA6F82FA0945BC2D48"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Looking_Up (16 x 16).png.import",
+        "size":  984,
+        "sha256":  "5E0FF0D1BD561C548F0DF692FA5EC7532881433769FD910AC5C815B967C03624"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Lying_On_Ground (16 x 16).png",
+        "size":  308,
+        "sha256":  "2E9DDDEA11D4BA9C2897B830E57B46D5B6CE354E6C6B919EF741CC27E5F52387"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Lying_On_Ground (16 x 16).png.import",
+        "size":  998,
+        "sha256":  "F645F09EEC8BFEB1E68109E4414F4EC073A4C9652C3894BF060AE7E5F2F9A933"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Sitting (16 x 16).png",
+        "size":  435,
+        "sha256":  "198A7CEB649426DA978369D136F3ED56343CF8A4EF0AB8981E979EA5432B8C1C"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Sitting (16 x 16).png.import",
+        "size":  975,
+        "sha256":  "9376E6C3A9C260F7C77D19E4C7F4943758E20B905808F3A1E222FE07881BEA3E"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Standing (16 x 16).png",
+        "size":  382,
+        "sha256":  "3D91817BCA63883013FC2460A6AB7B198DC8A284E65EDD6DD0EA820C9578FB50"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Standing (16 x 16).png.import",
+        "size":  978,
+        "sha256":  "6114678D99B3E99C14CDC2862A24B3477A573E18C6BCAA1DC04D50ECB00C4F6D"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Surprised (16 x 16).png",
+        "size":  378,
+        "sha256":  "4F16CFC2B2A2FF412978112905B9A4B672A2BF664FE533C9D3B940E882D536FC"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Surprised (16 x 16).png.import",
+        "size":  981,
+        "sha256":  "041AEEE1B4313E06D5D4111E00E0ABA4F188FE2676F456F833D8D02687D33F0F"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Swimming (16 x 16).png",
+        "size":  459,
+        "sha256":  "3EBB3C25D209AB98B2802E78D2DD5A858BB5409A5CE3C3744FEFCCCE34678A1B"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Swimming (16 x 16).png.import",
+        "size":  978,
+        "sha256":  "D899859AE26AE87EBD1A3152829A4A25DFCB9ABAE57FA43C40C2637844A8AB1E"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Victory_Dance (16 x 16).png",
+        "size":  640,
+        "sha256":  "F0A3DD6132F410B8C131C2621F6C70A1CEFACEA876CE2E110EF801741BAA72AA"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Victory_Dance (16 x 16).png.import",
+        "size":  993,
+        "sha256":  "8266164867BEACF667CD07D173730A9648A43339B6D4239E143B863D13A90068"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Waddling (16 x 16).png",
+        "size":  552,
+        "sha256":  "465D6DD8FB4D4836E6407316D087EA6EDA6F82768CAC4FD6FCDD995FA633A2B6"
+    },
+    {
+        "path":  "sprites/1 - Penguin/Waddling (16 x 16).png.import",
+        "size":  978,
+        "sha256":  "C5E2DB58DB9CAB0F2638049AFB621F0D5C9FB7FE7ABE8C0740F5C45582005A3A"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Pile (32 x 32).png",
+        "size":  416,
+        "sha256":  "4289A01753B9C3664566DFD8D7201F115AB7C26C0F48DED60F525244E2972FFB"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Pile (32 x 32).png.import",
+        "size":  982,
+        "sha256":  "9796A743A66F730DD368EC6853DF2CBE2D4535581B1428EBC3DB0CC19AE1B9E6"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Pile_Wakeup (32 x 32).png",
+        "size":  1178,
+        "sha256":  "FD0BAACFA73C25E21385E13E6EFA69159CF2CA68FE887E96862BD83F74EED0AD"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Pile_Wakeup (32 x 32).png.import",
+        "size":  1003,
+        "sha256":  "E262BB1CC4273812C45182DC49C31FF70CACA88B67F3196ABD2DFDE5A483EF50"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Toss (32 x 32).png",
+        "size":  1144,
+        "sha256":  "5F8D9658D5ADB28A3BA86E722828F5284E6E49616F9029BEE7F31A56D6013D76"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Bone_Toss (32 x 32).png.import",
+        "size":  982,
+        "sha256":  "59AAF37853014BC57B0F2A408BFE0018B08BCFA4E6CD83EA0C7E7507A047F716"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Crumbling_Into_Bone_Pile (32 x 32).png",
+        "size":  1093,
+        "sha256":  "9F1B48259DEEE7AABE102E503F725716449E078847C863AD54D8E5E909451555"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Crumbling_Into_Bone_Pile (32 x 32).png.import",
+        "size":  1027,
+        "sha256":  "5859B965E0097844248EFACA445B52531186328897B0F470CE03157BD07B4892"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Hurt (32 x 32).png",
+        "size":  682,
+        "sha256":  "5402D61FAB3282BEDF3AC3D9439DEFB088B8D713FFE984728BC18A6F65EA371C"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Hurt (32 x 32).png.import",
+        "size":  966,
+        "sha256":  "1004774FAE3BDB4002310F5056459A0EF1B03DFED90B15F0A171F2EE145EBDFF"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Inactive (32 x 32).png",
+        "size":  519,
+        "sha256":  "3B97053B39CD0DFED938AF93E6577534AACDFAA41A351308EE872B5E0D88863A"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Inactive (32 x 32).png.import",
+        "size":  979,
+        "sha256":  "1F55067B90C2B38190892C53940A754A7E38A27A43E28DA47CD96BDF79B8222F"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Jumping (32 x 32).png",
+        "size":  617,
+        "sha256":  "D9A271B20BEFEB3398A220F672C1A80A8134BCD3CA5C12178226E3DEE252DFB5"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Jumping (32 x 32).png.import",
+        "size":  976,
+        "sha256":  "8FF20B12D33D5E4BB88B62FE1F9B2580C9DB15B17E5C15C0EB5C8B3138945D46"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Landed (32 x 32).png",
+        "size":  668,
+        "sha256":  "5F9740996822AD6202DA90E198A442004B867FA3C23141E5024B3B2D3E46BC0F"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Landed (32 x 32).png.import",
+        "size":  973,
+        "sha256":  "A398BF3B92F9FDE705A68D596FC469AF111E0B5AAB0009BAA09FC7EDD147D8E4"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Limping_Movement (32 x 32).png",
+        "size":  1230,
+        "sha256":  "3AAF762DDC1C3D961255AD54F4270EF5B6CBBE1CAB0FD458D2C9E8363D4C2564"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Limping_Movement (32 x 32).png.import",
+        "size":  1003,
+        "sha256":  "B746A1DF727AA7DE05307F53357E3FB436CAA2024D966DB8363F07EB8D0CF269"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Preparing_Jump (32 x 32).png",
+        "size":  792,
+        "sha256":  "018DE213A7D80C09AE55D56D9569C44C7652842465FE2B715C81D7A0C63FF1D3"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Preparing_Jump (32 x 32).png.import",
+        "size":  997,
+        "sha256":  "CE3EC1179F5FA263320E3FF5EF27C976F36D9FA16121C9933374FC38A8CB2FB2"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Spinning_Bone (16 x 16).png",
+        "size":  429,
+        "sha256":  "5DBFD411F62DDA323CB1017B6D1E0F46801DA1865D2DD9B3CAAEC4F1255CF35D"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Spinning_Bone (16 x 16).png.import",
+        "size":  993,
+        "sha256":  "8275D7B691E11E17F0ECEA6B3A27164E2102E724AC59105065ACC1862E6D4428"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing (32 x 32).png",
+        "size":  561,
+        "sha256":  "43A6DB5D908932FA74B06DED387DFBD2549C704E998EDB51A24BE484BFA2BC56"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing (32 x 32).png.import",
+        "size":  979,
+        "sha256":  "D082F2124AF972F1B818B55DA7FA4CACAF470DC7FC21E63982DEE6AE3158BE19"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing_Idle (32 x 32).png",
+        "size":  1364,
+        "sha256":  "F1FEECAB86777DAE0297AE5D5525D550D6576FCB6A1CC7C093B8B1D3BF52329B"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing_Idle (32 x 32).png.import",
+        "size":  993,
+        "sha256":  "7F3F05356B0247C882F3B80BF00919CBA1B5F2D428F7D75E8B671937914CF8E6"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing_Wakeup (32 x 32).png",
+        "size":  739,
+        "sha256":  "77931BC47019C59B03B4AD47A9A3C1C1397761938AF4FA510997E486C9996EFC"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Standing_Wakeup (32 x 32).png.import",
+        "size":  999,
+        "sha256":  "275D555F9834E7EC9CEA1360512E1A3B427888D8FB0C5F076CC81143E402A0E4"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Twitching_Idle (32 x 32).png",
+        "size":  827,
+        "sha256":  "2404453708D1D0196F7935093626A938BD23E96867E3E9CEA3BCF5C34A5CACE4"
+    },
+    {
+        "path":  "sprites/3 - Skeleton/Twitching_Idle (32 x 32).png.import",
+        "size":  997,
+        "sha256":  "747A82A36704B9CEDF2B9C18FFBE69E0213CD0F197AE29196C8DC08C2A0C6B09"
+    },
+    {
+        "path":  "sprites/Cyberfield_Lab_128x128_TRUE_TRANSPARENT.png",
+        "size":  1165755,
+        "sha256":  "DBAA1DF29E15575C42FB88A8E2C122749D50DE60756466F2C691110882738E33"
+    },
+    {
+        "path":  "sprites/Cyberfield_Lab_128x128_TRUE_TRANSPARENT.png.import",
+        "size":  1029,
+        "sha256":  "A89B7632585FE1BBD8FA2BB464847F34037D3B09880F239E41D7EB8C7E215928"
+    },
+    {
+        "path":  "sprites/cyberfield_structure_16x16.png",
+        "size":  12884,
+        "sha256":  "55C74506D34692089A4478C2518762EF5481AA0A9648BD97103C335F4BF28692"
+    },
+    {
+        "path":  "sprites/cyberfield_structure_16x16.png.import",
+        "size":  990,
+        "sha256":  "FB25C9E4825AF7F7F6A390DBB041698EC05A4FE2A072F67AA9153A23BB36F2FF"
+    },
+    {
+        "path":  "tests/android_touch_hud_modal_hotfix_smoke_test.gd",
+        "size":  6287,
+        "sha256":  "1F0CE2A86499C2E06CD22FCB261DA4B83678D61C431E2FA81AA077DEE9B5BF1F"
+    },
+    {
+        "path":  "tests/animated_menu_background_static_test.py",
+        "size":  9716,
+        "sha256":  "EAFD94A21F6FFB1E251D9A8E8F48A4E16EF1F6E1D8DD12BFB6C8ED83E8354CFF"
+    },
+    {
+        "path":  "tests/biome_generation_smoke_test.gd",
+        "size":  5540,
+        "sha256":  "A5134A38F77755803838B3D4C352BFDC2B8706D8404CF21E5C8AA31D5DD8483C"
+    },
+    {
+        "path":  "tests/casa_jhon_stage0_smoke_test.gd",
+        "size":  1503,
+        "sha256":  "DF37FDB2F595A7C72CE2E886025398398AD0B58EDBAF5DF58EC7E7732FACC521"
+    },
+    {
+        "path":  "tests/casa_jhon_stage0_static_test.py",
+        "size":  5976,
+        "sha256":  "FE6F87B9C63FE14BBE449AA4EF536918DC00DBB7695BA0AB9B141FAB3D607E92"
+    },
+    {
+        "path":  "tests/cidade_baixa_presentation_static_test.py",
+        "size":  3312,
+        "sha256":  "775E3872E330DC40C14AE11C18C7B8A88270BA9D64744AA032438B0D959C968D"
+    },
+    {
+        "path":  "tests/common_enemy_rebuild_v2_smoke_test.gd",
+        "size":  4835,
+        "sha256":  "75D50998ED61157EB99239FB3C619988B395DEA0577CC73E55ED663D8EF9E2BF"
+    },
+    {
+        "path":  "tests/common_ranged_v2_1_presentation_smoke_test.gd",
+        "size":  9788,
+        "sha256":  "30F9E2DDC97F40526C7F818589E1D92AA98004CEA09CE7857B13B529FF7586A1"
+    },
+    {
+        "path":  "tests/final_post_phase7_1_hotfix_smoke_test.gd",
+        "size":  4721,
+        "sha256":  "4811E2803100EE193DF2858877F3386FBB46FA92D6CC6DADCD5F5947C260F47A"
+    },
+    {
+        "path":  "tests/gameplay_hud_presentation_static_test.py",
+        "size":  4281,
+        "sha256":  "6D9D92841DA6F422359F406598E8ADA4E47B3BD1D653D67D3AF1392CD1E14120"
+    },
+    {
+        "path":  "tests/lan_post_playtest_smoke_test.gd",
+        "size":  6141,
+        "sha256":  "9F6E12966F0BB26A5521B3C0DE952F6463B58AE5F6A6FDBF5A45602492C50082"
+    },
+    {
+        "path":  "tests/lan_post_playtest_static_test.py",
+        "size":  6326,
+        "sha256":  "735B9A1B9A25EB6DEFAF3F73A6D94A3254216E1B16207A455A989E33635D1CDC"
+    },
+    {
+        "path":  "tests/lan_session_smoke_test.gd",
+        "size":  1462,
+        "sha256":  "068302247D73DA033391E902C49CBFDFB65DAAD52C01E44AAA202A55653DB92A"
+    },
+    {
+        "path":  "tests/menu_panels_presentation_static_test.py",
+        "size":  6823,
+        "sha256":  "E45AD32B1925D47BDBC1D75FC222E93C081932D25C2D36C289810ACA1B7A687D"
+    },
+    {
+        "path":  "tests/menu_pass6_audio_smoke_test.gd",
+        "size":  1890,
+        "sha256":  "A213EF11991FFD43B6BE86B18A29EEB2D4B410A14D5E484C2AC532757B8DA54B"
+    },
+    {
+        "path":  "tests/menu_pass6_static_test.py",
+        "size":  4169,
+        "sha256":  "10571D011B8C1FABF0B4D4CE5B3493F0630DC2652D6853CFA54240A302E5F4D6"
+    },
+    {
+        "path":  "tests/official_visual_integration_smoke_test.gd",
+        "size":  6120,
+        "sha256":  "E765F4790EBAEDC315324CB8C286E1E5A2FABBB139F3EAC34B5C180E7F2ED3F5"
+    },
+    {
+        "path":  "tests/pass6_dropdown_modal_smoke_test.gd",
+        "size":  2509,
+        "sha256":  "C62E6F50175F7FA1C937C8BEECD15FAF945E928FFC804C1E86C74F04220ABE20"
+    },
+    {
+        "path":  "tests/pass6_dropdown_rain_hotfix_static_test.py",
+        "size":  2566,
+        "sha256":  "00DB2EAB2ADE050FB732D6A9787926BB71EF2EA939CE7C7665F48B80FE37244C"
+    },
+    {
+        "path":  "tests/pass6_hotfix2_scroll_smoke_test.gd",
+        "size":  2474,
+        "sha256":  "FCF515356C80FD66B92429CF794C97CF7DE2A3DEA2828499976A2D359074A3AB"
+    },
+    {
+        "path":  "tests/pass6_hotfix2_static_test.py",
+        "size":  2386,
+        "sha256":  "4B28D641FCDA91848E9BD98450C54386A29155DAA56E5D56B823C1EE147B6A4D"
+    },
+    {
+        "path":  "tests/phase3_foundation_smoke_test.gd",
+        "size":  6534,
+        "sha256":  "5CD918DE2643C9A66A942FF32F7AE4F9B254A5AA977A393D96EA7D30669E1467"
+    },
+    {
+        "path":  "tests/phase4_stats_hud_smoke_test.gd",
+        "size":  4820,
+        "sha256":  "F0FAFF12B6358B68D18BA7005B38AE7A9BDA4B5D187274ED0C456256A7B5B615"
+    },
+    {
+        "path":  "tests/phase5_exploration_smoke_test.gd",
+        "size":  2450,
+        "sha256":  "5204FB76C79C33BE92424CAF8B6BFAF66673732620465DAEA3C01FC4B398ADCF"
+    },
+    {
+        "path":  "tests/phase6_lan_contract_smoke_test.gd",
+        "size":  1479,
+        "sha256":  "5016FBB24C9FEFB97DC74FAA8CF771568A874DF67637ED0DD6B838747DEA8FF9"
+    },
+    {
+        "path":  "tests/phase6_run_quality_smoke_test.gd",
+        "size":  3787,
+        "sha256":  "C60163ACE881B19A2F176BC01624C0AB78578D92AFFA2F5623BBFD2C63792FA8"
+    },
+    {
+        "path":  "tests/phase7_1_bandage_hotfix_smoke_test.gd",
+        "size":  801,
+        "sha256":  "E8A9BFF3EC19E3328C0462752847F088CF2B15F5F80ECEE8E8C0187AB860CB81"
+    },
+    {
+        "path":  "tests/phase7_1_stabilization_smoke_test.gd",
+        "size":  3157,
+        "sha256":  "A9FD3F0B5ED62E432652F752E5AEA514346C018310FAA04A4CB39A157DBC0E1D"
+    },
+    {
+        "path":  "tests/phase7_consolidated_smoke_test.gd",
+        "size":  1742,
+        "sha256":  "B6E394C9347D22FB4E4BA71F4A68602516918DF40987B9148BAF5352CB7DC256"
+    },
+    {
+        "path":  "tests/phase8_combat_content_smoke_test.gd",
+        "size":  8347,
+        "sha256":  "D278A6BA48FD4A5D853851A8FE05AD0D84AE189C8E10C62298D63C2DE4BC1852"
+    },
+    {
+        "path":  "tests/phase8_final_consolidation_smoke_test.gd",
+        "size":  5281,
+        "sha256":  "C374D7A5D2A5864CE29FCA7EA5F868CBAEBC60B34761051C204096DB239DAAE4"
+    },
+    {
+        "path":  "tests/phase8_lan_four_player_smoke_test.gd",
+        "size":  3462,
+        "sha256":  "6B62EE4B6B37DDA1098F5675689FF188ED6708382AB6575F41037913EBDCEB17"
+    },
+    {
+        "path":  "tests/phase8_lan_lobby_process_test.gd",
+        "size":  5208,
+        "sha256":  "71171EAEB57F33D2D55E317EBE063CD3CACF8F6528B08ED44F335E8F8644F9C2"
+    },
+    {
+        "path":  "tests/phase8_lan_lobby_touch_smoke_test.gd",
+        "size":  1528,
+        "sha256":  "5345C407EB7323C7D516128D04410B9A4B81B0ABE4D16ED3F2A47877EF685F8E"
+    },
+    {
+        "path":  "tests/phase8_multi_seed_smoke_test.gd",
+        "size":  4072,
+        "sha256":  "BE7CD7E4B57B3B605BBF1FBBA0370623D895E883BC78EF80C3390957EB59D772"
+    },
+    {
+        "path":  "tests/phase8_wall_to_wall_shaft_hotfix_smoke_test.gd",
+        "size":  5435,
+        "sha256":  "C2DFBE76B0D4FD113E5518C630BACCEC32F92FF960416793D28600479C4DE5E9"
+    },
+    {
+        "path":  "tests/phase9_meta_ui_visual_smoke_test.gd",
+        "size":  5479,
+        "sha256":  "3AC87BE29AF7B863A82B9A2B4D2DE69F07AA91A04B9FE8FFB2743D78DD78844B"
+    },
+    {
+        "path":  "tests/phase_b_lan_transition_reconciliation_smoke_test.gd",
+        "size":  5613,
+        "sha256":  "A2F4C269C9CC87C0EC3FE3506BF9639D10E4000893C3422BCC90E8CFCC22BFA6"
+    },
+    {
+        "path":  "tests/player_visual_presentation_hotfix_smoke_test.gd",
+        "size":  4594,
+        "sha256":  "0FC40E8BA177B80241CBFEB12F2C70088EAAFC7A4FCC3FAE3DF575B68DE514A9"
+    },
+    {
+        "path":  "tests/ranged_enemy_integration_test.gd",
+        "size":  12543,
+        "sha256":  "61846593AB6F1265E8DF05678770F807DF2D4FFD0CC7807DA8D18880AAFF58A4"
+    },
+    {
+        "path":  "tests/ranged_enemy_integration_test.gd.uid",
+        "size":  20,
+        "sha256":  "6765E4F9C454C9B2DD520CA7219DCA599E1D71C0FCF7406E1F53114CC836837E"
+    },
+    {
+        "path":  "tests/ranged_enemy_rebuild_v2_smoke_test.gd",
+        "size":  7381,
+        "sha256":  "BE5B6B945A153612A72B4BD71A645DC182DFE5D1D905ABF2147F20ECD68CDF01"
+    },
+    {
+        "path":  "tilesets/cyberfield_structure_16.tres",
+        "size":  3548,
+        "sha256":  "007139381612F5125F4B8B452744B1C4F6F59018FDD72EBF9B4BAF7A93D3BB8B"
+    },
+    {
+        "path":  "ui/gameplay_hud_presentation.gd",
+        "size":  5522,
+        "sha256":  "FEAABC90012EE36DC85B25F88CDE99497A5D1E76B37944FA971EF6B05B83E366"
+    },
+    {
+        "path":  "ui/menu_panel_presentation.gd",
+        "size":  4664,
+        "sha256":  "6AF250B78A385DACC72F6E6BBED793541F113AF63517D02739F192C8992CFF02"
+    },
+    {
+        "path":  "ui/mobile_action_button.gd",
+        "size":  1270,
+        "sha256":  "E42037A4CF1AE87EA8F7655D8A4F784FE9136D4E8EE32F89AE8BBEAEB3D20F32"
+    },
+    {
+        "path":  "ui/touch_button.svg",
+        "size":  217,
+        "sha256":  "A7470D84321662014479C3CA3FB06A44039DEFB8F50F65441958F8506D9176B9"
+    },
+    {
+        "path":  "ui/touch_button_primary.svg",
+        "size":  217,
+        "sha256":  "ED2E63A831852E7BA8BC01153D13AE827264C145221FEA9DCB0D270A4AD80682"
+    },
+    {
+        "path":  "ui/touch_controls.gd",
+        "size":  4344,
+        "sha256":  "E25E281DD09271AD1FB5B3476FA934CB03EDD296DCB58E1D2113B18968AC4563"
+    },
+    {
+        "path":  "ui/touch_controls.tscn",
+        "size":  7212,
+        "sha256":  "E1F147417E56C9E07486ABD764498A5D6328383CAE53744DF04C3B26BD4A0C6A"
+    },
+    {
+        "path":  "ui/virtual_joystick.gd",
+        "size":  3971,
+        "sha256":  "CC7530596E44ACB881C278963BFE4045FC2CDFEBCC9EDB8BACB27323FE4C9AAE"
+    }
+]

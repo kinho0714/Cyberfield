@@ -23,8 +23,9 @@ var popup_touch_index := -1
 
 
 func _ready() -> void:
+	ContentRegistry.apply_ui_theme(self)
 	selection_style = StyleBoxFlat.new()
-	selection_style.bg_color = Color(0.025, 0.16, 0.21, 0.35)
+	selection_style.bg_color = Color(0.025, 0.16, 0.21, 0.85)
 	selection_style.border_color = CYAN
 	selection_style.set_border_width_all(2)
 	# Sorting only invalidates the drawing; geometry is read later in _draw().
@@ -34,7 +35,7 @@ func _ready() -> void:
 		if child is Label:
 			var label := child as Label
 			label.add_theme_font_size_override("font_size", 28 if child.name == &"Title" else 22)
-			label.add_theme_color_override("font_color", CYAN if child.name == &"Title" else (WHITE if options_legibility else Color("aabcca")))
+			label.add_theme_color_override("font_color", CYAN if child.name == &"Title" else WHITE)
 			label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 			var label_margin := StyleBoxEmpty.new()
 			label_margin.content_margin_left = 26.0
@@ -84,6 +85,8 @@ func _ready() -> void:
 			control.get_popup().about_to_popup.connect(_popup_opening.bind(control))
 			control.get_popup().popup_hide.connect(_popup_closed)
 			control.get_popup().window_input.connect(_popup_window_input)
+		if control is Button:
+			preload("res://ui/menu_panel_presentation.gd").style_button(control)
 	visibility_changed.connect(_visibility_changed)
 	resized.connect(_defer_refresh)
 	call_deferred("_visibility_changed")
@@ -210,6 +213,8 @@ func _refresh() -> void:
 		selected = null
 	for child in get_children():
 		if child is BaseButton:
+			if child.has_meta("pass3_native_selection"):
+				continue
 			var text_color: Color = WHITE if child == selected or options_legibility else Color("92aabb")
 			child.add_theme_color_override("font_color", text_color)
 			child.add_theme_color_override("font_hover_color", text_color)
@@ -223,6 +228,8 @@ func _draw() -> void:
 		return
 	var focus: Control = get_viewport().gui_get_focus_owner()
 	if focus == null or focus.get_parent() != self or not focus.is_visible_in_tree():
+		return
+	if focus.has_meta("pass3_native_selection"):
 		return
 	# Only menu actions: titles, fields, sliders and toggles keep their own visuals.
 	if focus.get_class() != "Button":
@@ -259,7 +266,7 @@ func _draw_compact_frame() -> void:
 		Vector2(right, bottom - cut), Vector2(right - cut, bottom),
 		Vector2(left, bottom), Vector2(left, top + cut), Vector2(left + cut, top)
 	])
-	draw_colored_polygon(outline, Color(0.01, 0.035, 0.05, 0.82 if options_legibility else 0.10))
+	draw_colored_polygon(outline, Color(0.01, 0.035, 0.05, 0.88))
 	draw_polyline(outline, Color(0.22, 0.87, 0.95, 0.78), 1.0, true)
 	# Short rails/corner cuts give the frame structure without an opaque surface.
 	draw_line(Vector2(left + cut, top - 3.0), Vector2(left + 64.0, top - 3.0), CYAN, 1.0)

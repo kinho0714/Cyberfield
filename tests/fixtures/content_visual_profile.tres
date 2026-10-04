@@ -1,0 +1,10 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/visual_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+profile_id = &"test_profile"
+sprite_frames_path = "res://tests/fixtures/content_visual_frames.tres"
+asset_paths = {"theme": "res://tests/fixtures/content_ui_theme.tres", "world": "res://assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png", "inventory_icon": "res://assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png", "portrait": "res://assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png", "missing": "res://assets/not_produced.png", "wrong_type": "res://content/catalog.tres"}
+animation_offsets = {"idle": Vector2(3, 4), "world": Vector2(2, 5)}

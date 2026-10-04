@@ -32,6 +32,15 @@ func _ready() -> void:
 
 
 func _build_temporary_weapon_visual() -> Node2D:
+	var texture := WeaponCatalog.get_visual_texture(weapon_id, "world")
+	if texture != null:
+		var sprite := Sprite2D.new()
+		sprite.name = "WeaponWorldVisual"
+		sprite.texture = texture
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		var profile := ContentRegistry.entry_profile(ContentRegistry.weapon(weapon_id))
+		sprite.offset = profile.alignment(&"world", Vector2.ZERO)
+		return sprite
 	var root := Node2D.new()
 	root.name = "TempWeaponSprite"
 	var glow := Polygon2D.new()

@@ -1,0 +1,94 @@
+{
+  "hud_player_frame": {
+    "file": "assets/shared/hud/player_frame.png",
+    "sha256": "c8d0764b9a89fc4ae9acedc8f7a5c26dc428f3abc366e1ffd570518e342d9d66"
+  },
+  "hud_hp_track": {
+    "file": "assets/shared/hud/hp_track.png",
+    "sha256": "e7eb7e554348384caa9041736c6c728bbf4c1a48a00cdec5e49883e125d383c4"
+  },
+  "hud_hp_fill": {
+    "file": "assets/shared/hud/hp_fill.png",
+    "sha256": "abf49b1309e08feeb5ea685fdc9572413387b4dafe2a71d380edad3e65388cee"
+  },
+  "hud_portrait_frame": {
+    "file": "assets/shared/hud/portrait_frame.png",
+    "sha256": "c1bc36b0ab8a8ae0f5c36f9eafe90c41ee8f4c53760be4c04588d5c8c6928ac6"
+  },
+  "icon_heal": {
+    "file": "assets/shared/icons/heal_icon.png",
+    "sha256": "3bafdeb30aa2671c8a6c0c01cc1dcf533181ae92ece3d8839eb3e221967e5677"
+  },
+  "icon_attr_health": {
+    "file": "assets/shared/icons/icon_attr_health.png",
+    "sha256": "f7a7493952502bf404df33c32643ebd49f73d4682b7d95fe1bf74f2adf839a50"
+  },
+  "icon_attr_intelligence": {
+    "file": "assets/shared/icons/icon_attr_intelligence.png",
+    "sha256": "a36ec71bd0aabb7abe5be82fdecbbb33ae01f8691a0d89f12c2f38a94818781e"
+  },
+  "icon_attr_strength": {
+    "file": "assets/shared/icons/icon_attr_strength.png",
+    "sha256": "8de5b0bd4540354d919f7452e5dddb6571026a46829a3f45ba197b52557c10eb"
+  },
+  "icon_money": {
+    "file": "assets/shared/icons/money_icon.png",
+    "sha256": "574d1403288700e8e5f81346cdc08ba9f7c278c93911fe2d2009ef0eed9a011c"
+  },
+  "minimap_frame": {
+    "file": "assets/shared/minimap/minimap_frame.png",
+    "sha256": "9b616da9e55c0783d2a46b39226b7f3685c9ed1d530bdd5bf1914758f878bd1a"
+  },
+  "pause_button_frame": {
+    "file": "assets/shared/hud/pause_button_frame.png",
+    "sha256": "dda00ce3c97bc5675187400896597740bcaa27fd3ee88f9cb8457c5cbdcbed3f"
+  },
+  "mobile_joystick_base": {
+    "file": "assets/mobile/joystick/joystick_base.png",
+    "sha256": "d8aff3b16aa806aa3afae75e1751d78ddf6e069b384c7bbf769a6ebe99468303"
+  },
+  "mobile_joystick_knob": {
+    "file": "assets/mobile/joystick/joystick_knob.png",
+    "sha256": "cb94de5d92d4e08918ea3a5c92d186ac369c7a83353adb9f17bdf5fe09a9a224"
+  },
+  "mobile_action_frame_cyan": {
+    "file": "assets/mobile/actions/action_frame_cyan.png",
+    "sha256": "2b87d733a7e331f32a483fedeea2d8a11aa9c965aef4d1443e4853d2c3f040d1"
+  },
+  "mobile_action_frame_magenta": {
+    "file": "assets/mobile/actions/action_frame_magenta.png",
+    "sha256": "2b87d733a7e331f32a483fedeea2d8a11aa9c965aef4d1443e4853d2c3f040d1"
+  },
+  "mobile_action_frame_red": {
+    "file": "assets/mobile/actions/action_frame_red.png",
+    "sha256": "2b87d733a7e331f32a483fedeea2d8a11aa9c965aef4d1443e4853d2c3f040d1"
+  },
+  "mobile_use_icon": {
+    "file": "assets/mobile/actions/use_icon.png",
+    "sha256": "d006b8be4a8a91de7e2649f88a169d4c41e7bb7dd711c8a0bf3212fd53aff926"
+  },
+  "mobile_dash_icon": {
+    "file": "assets/mobile/actions/dash_icon.png",
+    "sha256": "4a350b6288db7284437c3cbf6da18b954de4d56c857e6c384fccfa5dc08a0286"
+  },
+  "mobile_jump_icon": {
+    "file": "assets/mobile/actions/jump_icon.png",
+    "sha256": "fd235b7f63b28cd78432a99e116aa418ba7b95ac25eda8ae8bb65edec3c9d714"
+  },
+  "mobile_attack1_icon": {
+    "file": "assets/mobile/actions/attack1_icon.png",
+    "sha256": "b104a2e716608a7b2097337713bb085a7c360daeb8a3d28e703dd816e7a549d0"
+  },
+  "mobile_attack2_icon": {
+    "file": "assets/mobile/actions/attack2_icon.png",
+    "sha256": "4819d84cc43e3130a3014ab421d8998be10e8985964f9dcaefe63d1290d4c706"
+  },
+  "low_hp_vignette": {
+    "file": "assets/shared/low_hp/low_hp_vignette.png",
+    "sha256": "4fa7f245d904ddd38ac9add11a9040fb2d0579d2e3aae369b5b253712caae2d7"
+  },
+  "hud_player_frame_critical": {
+    "file": "assets/shared/low_hp/player_frame_critical_accent.png",
+    "sha256": "751c13233559354775fad3ace7855b27f696362e3b7aee34c384945ef544e3d5"
+  }
+}

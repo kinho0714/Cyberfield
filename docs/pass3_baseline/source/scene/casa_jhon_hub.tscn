@@ -1,0 +1,1059 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://scene/casa_jhon_hub.gd" id="1_hub"]
+[ext_resource type="Script" path="res://scene/interactables/run_portal.gd" id="2_portal"]
+[ext_resource type="Script" path="res://scene/interactables/meta_terminal.gd" id="3_terminal"]
+[ext_resource type="Texture2D" path="res://assets/environment/casa_jhon/assets/gameplay/casa_jhon_gameplay_interactives_stage0_v1.png" id="tex_0"]
+[ext_resource type="Texture2D" path="res://assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png" id="tex_1"]
+[ext_resource type="Texture2D" path="res://assets/environment/casa_jhon/assets/props/casa_jhon_props_workshop_stage0_v1.png" id="tex_2"]
+[ext_resource type="Texture2D" path="res://assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png" id="tex_3"]
+
+[sub_resource type="AtlasTexture" id="domestic_bed_01"]
+atlas = ExtResource("tex_1")
+region = Rect2(0, 0, 75, 58)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="domestic_fridge_01"]
+atlas = ExtResource("tex_1")
+region = Rect2(233, 0, 39, 58)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="domestic_sofa_01"]
+atlas = ExtResource("tex_1")
+region = Rect2(80, 0, 54, 58)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="interactive_operations"]
+atlas = ExtResource("tex_0")
+region = Rect2(172, 77, 86, 69)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="interactive_project_station"]
+atlas = ExtResource("tex_0")
+region = Rect2(0, 77, 86, 69)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="interactive_storage"]
+atlas = ExtResource("tex_0")
+region = Rect2(172, 0, 86, 69)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="interactive_terminal"]
+atlas = ExtResource("tex_0")
+region = Rect2(86, 0, 86, 69)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="interactive_upgrade_bench"]
+atlas = ExtResource("tex_0")
+region = Rect2(258, 0, 86, 69)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_ceiling_01"]
+atlas = ExtResource("tex_3")
+region = Rect2(218, 0, 69, 61)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_column_01"]
+atlas = ExtResource("tex_3")
+region = Rect2(258, 69, 42, 70)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_door_01"]
+atlas = ExtResource("tex_3")
+region = Rect2(0, 69, 45, 70)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_floor_01"]
+atlas = ExtResource("tex_3")
+region = Rect2(0, 0, 51, 61)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_floor_02"]
+atlas = ExtResource("tex_3")
+region = Rect2(54, 0, 50, 61)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="struct_wall_01"]
+atlas = ExtResource("tex_3")
+region = Rect2(107, 0, 50, 61)
+filter_clip = true
+
+[sub_resource type="AtlasTexture" id="workshop_bench_01"]
+atlas = ExtResource("tex_2")
+region = Rect2(0, 0, 132, 66)
+filter_clip = true
+
+[sub_resource type="RectangleShape2D" id="shape_floor"]
+size = Vector2(2560, 125)
+
+[sub_resource type="RectangleShape2D" id="shape_wall"]
+size = Vector2(32, 768)
+
+[sub_resource type="RectangleShape2D" id="shape_ceiling"]
+size = Vector2(2560, 16)
+
+[sub_resource type="RectangleShape2D" id="shape_portal"]
+size = Vector2(180, 130)
+
+[sub_resource type="RectangleShape2D" id="shape_terminal"]
+size = Vector2(120, 110)
+
+[node name="CasaJhonHub" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_hub")
+
+[node name="Environment" type="Node2D" parent="."]
+z_index = -20
+
+[node name="Backdrop" type="Polygon2D" parent="Environment"]
+polygon = PackedVector2Array(0, 0, 2560, 0, 2560, 768, 0, 768)
+color = Color(0.018, 0.045, 0.075, 1)
+z_index = -1
+
+[node name="Asset_000_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(0, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_001_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(0, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_002_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(64, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_003_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(64, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_004_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(128, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_005_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(128, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_006_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(192, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_007_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(192, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_008_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(256, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_009_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(256, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_010_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(320, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_011_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(320, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_012_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(384, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_013_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(384, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_014_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(448, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_015_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(448, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_016_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(512, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_017_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(512, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_018_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(576, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_019_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(576, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_020_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(640, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_021_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(640, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_022_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(704, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_023_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(704, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_024_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(768, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_025_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(768, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_026_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(832, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_027_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(832, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_028_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(896, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_029_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(896, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_030_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(960, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_031_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(960, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_032_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1024, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_033_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1024, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_034_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1088, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_035_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1088, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_036_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1152, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_037_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1152, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_038_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1216, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_039_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1216, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_040_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1280, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_041_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1280, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_042_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1344, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_043_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1344, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_044_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1408, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_045_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1408, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_046_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1472, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_047_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1472, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_048_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1536, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_049_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1536, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_050_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1600, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_051_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1600, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_052_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1664, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_053_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1664, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_054_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1728, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_055_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1728, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_056_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1792, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_057_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1792, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_058_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1856, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_059_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1856, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_060_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1920, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_061_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1920, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_062_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(1984, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_063_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1984, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_064_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2048, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_065_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2048, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_066_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(2112, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_067_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2112, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_068_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2176, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_069_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2176, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_070_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(2240, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_071_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2240, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_072_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2304, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_073_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2304, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_074_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(2368, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_075_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2368, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_076_struct_floor_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2432, 704)
+z_index = 0
+texture = SubResource("struct_floor_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_077_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2432, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_078_struct_floor_02" type="Sprite2D" parent="Environment"]
+position = Vector2(2496, 704)
+z_index = 0
+texture = SubResource("struct_floor_02")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_079_struct_ceiling_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2496, 64)
+z_index = 0
+texture = SubResource("struct_ceiling_01")
+centered = false
+offset = Vector2(-34, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_080_struct_door_01" type="Sprite2D" parent="Environment"]
+position = Vector2(64, 634)
+z_index = 1
+texture = SubResource("struct_door_01")
+centered = false
+offset = Vector2(-22, -70)
+flip_h = false
+flip_v = false
+
+[node name="Asset_081_struct_column_01" type="Sprite2D" parent="Environment"]
+position = Vector2(768, 634)
+z_index = 1
+texture = SubResource("struct_column_01")
+centered = false
+offset = Vector2(-21, -70)
+flip_h = false
+flip_v = false
+
+[node name="Asset_082_struct_wall_01" type="Sprite2D" parent="Environment"]
+position = Vector2(512, 640)
+z_index = 0
+texture = SubResource("struct_wall_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_083_struct_wall_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1024, 640)
+z_index = 0
+texture = SubResource("struct_wall_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_084_struct_wall_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1536, 640)
+z_index = 0
+texture = SubResource("struct_wall_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_085_struct_wall_01" type="Sprite2D" parent="Environment"]
+position = Vector2(2048, 640)
+z_index = 0
+texture = SubResource("struct_wall_01")
+centered = false
+offset = Vector2(-25, -61)
+flip_h = false
+flip_v = false
+
+[node name="Asset_086_domestic_sofa_01" type="Sprite2D" parent="Environment"]
+position = Vector2(384, 646)
+z_index = 2
+texture = SubResource("domestic_sofa_01")
+centered = false
+offset = Vector2(-27, -58)
+flip_h = false
+flip_v = false
+
+[node name="Asset_087_domestic_bed_01" type="Sprite2D" parent="Environment"]
+position = Vector2(512, 646)
+z_index = 2
+texture = SubResource("domestic_bed_01")
+centered = false
+offset = Vector2(-37, -58)
+flip_h = false
+flip_v = false
+
+[node name="Asset_088_domestic_fridge_01" type="Sprite2D" parent="Environment"]
+position = Vector2(704, 646)
+z_index = 2
+texture = SubResource("domestic_fridge_01")
+centered = false
+offset = Vector2(-19, -58)
+flip_h = false
+flip_v = false
+
+[node name="Asset_089_interactive_terminal" type="Sprite2D" parent="Environment"]
+position = Vector2(960, 635)
+z_index = 3
+texture = SubResource("interactive_terminal")
+centered = false
+offset = Vector2(-43, -69)
+flip_h = false
+flip_v = false
+
+[node name="Asset_090_interactive_operations" type="Sprite2D" parent="Environment"]
+position = Vector2(1120, 635)
+z_index = 3
+texture = SubResource("interactive_operations")
+centered = false
+offset = Vector2(-43, -69)
+flip_h = false
+flip_v = false
+
+[node name="Asset_091_workshop_bench_01" type="Sprite2D" parent="Environment"]
+position = Vector2(1344, 638)
+z_index = 2
+texture = SubResource("workshop_bench_01")
+centered = false
+offset = Vector2(-66, -66)
+flip_h = false
+flip_v = false
+
+[node name="Asset_092_interactive_upgrade_bench" type="Sprite2D" parent="Environment"]
+position = Vector2(1536, 635)
+z_index = 3
+texture = SubResource("interactive_upgrade_bench")
+centered = false
+offset = Vector2(-43, -69)
+flip_h = false
+flip_v = false
+
+[node name="Asset_093_interactive_storage" type="Sprite2D" parent="Environment"]
+position = Vector2(1856, 635)
+z_index = 3
+texture = SubResource("interactive_storage")
+centered = false
+offset = Vector2(-43, -69)
+flip_h = false
+flip_v = false
+
+[node name="Asset_094_interactive_project_station" type="Sprite2D" parent="Environment"]
+position = Vector2(2240, 635)
+z_index = 3
+texture = SubResource("interactive_project_station")
+centered = false
+offset = Vector2(-43, -69)
+flip_h = false
+flip_v = false
+
+[node name="Geometry" type="StaticBody2D" parent="."]
+
+[node name="Floor" type="CollisionShape2D" parent="Geometry"]
+position = Vector2(1280, 705.5)
+shape = SubResource("shape_floor")
+
+[node name="LeftWall" type="CollisionShape2D" parent="Geometry"]
+position = Vector2(-16, 384)
+shape = SubResource("shape_wall")
+
+[node name="RightWall" type="CollisionShape2D" parent="Geometry"]
+position = Vector2(2576, 384)
+shape = SubResource("shape_wall")
+
+[node name="Ceiling" type="CollisionShape2D" parent="Geometry"]
+position = Vector2(1280, -8)
+shape = SubResource("shape_ceiling")
+
+[node name="Anchors" type="Node2D" parent="."]
+
+[node name="main_entry" type="Marker2D" parent="Anchors"]
+position = Vector2(64, 634)
+
+[node name="historic_column" type="Marker2D" parent="Anchors"]
+position = Vector2(768, 634)
+
+[node name="domestic_core" type="Marker2D" parent="Anchors"]
+position = Vector2(512, 646)
+
+[node name="workshop_core" type="Marker2D" parent="Anchors"]
+position = Vector2(1344, 638)
+
+[node name="spark_slot_anchor" type="Marker2D" parent="Anchors"]
+position = Vector2(2240, 635)
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="P1Spawn" type="Marker2D" parent="Gameplay"]
+position = Vector2(160, 620)
+
+[node name="P2Spawn" type="Marker2D" parent="Gameplay"]
+position = Vector2(240, 620)
+
+[node name="RunPortal" type="Area2D" parent="Gameplay" groups=["interactable"]]
+position = Vector2(1120, 605)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("2_portal")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/RunPortal"]
+shape = SubResource("shape_portal")
+
+[node name="Prompt" type="Label" parent="Gameplay/RunPortal"]
+visible = false
+z_index = 20
+offset_left = -100.0
+offset_top = -115.0
+offset_right = 100.0
+offset_bottom = -65.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.8, 0.98, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 16
+text = "[USAR] INICIAR RUN"
+horizontal_alignment = 1
+
+[node name="MetaTerminal" type="Area2D" parent="Gameplay" groups=["interactable"]]
+position = Vector2(960, 605)
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("3_terminal")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Gameplay/MetaTerminal"]
+shape = SubResource("shape_terminal")
+
+[node name="Prompt" type="Label" parent="Gameplay/MetaTerminal"]
+visible = false
+z_index = 20
+offset_left = -100.0
+offset_top = -115.0
+offset_right = 100.0
+offset_bottom = -65.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.8, 0.98, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 16
+text = "[USAR] TERMINAL"
+horizontal_alignment = 1

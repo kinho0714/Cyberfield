@@ -432,7 +432,7 @@ func _build_module(parent: Node2D, index: int) -> void:
 		background.color = Color(0.018, 0.045, 0.075, 1.0) if int(data.grid.y) == 0 else Color(0.025, 0.06, 0.09, 1.0)
 		background.z_index = -10
 		module.add_child(background)
-	if biome_definition.biome_id == &"lower_city":
+	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
 		var decoration := CITY_PRESENTATION.new()
 		decoration.kind = "module"
 		decoration.variant = absi(int(data.grid.x) * 7 + int(data.grid.y) * 13)
@@ -493,7 +493,7 @@ func _add_static_rect(parent: Node2D, rectangle: Rect2, color: Color, one_way: b
 	visual.polygon = PackedVector2Array([Vector2(-half.x, -half.y), Vector2(half.x, -half.y), half, Vector2(-half.x, half.y)])
 	visual.color = color
 	body.add_child(visual)
-	if biome_definition != null and biome_definition.biome_id == &"lower_city" and color.a > 0:
+	if biome_definition != null and ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city" and color.a > 0:
 		var skin := CITY_PRESENTATION.new()
 		skin.surface = Rect2(-half, rectangle.size)
 		skin.kind = "platform" if one_way else ("wall" if rectangle.size.y > rectangle.size.x else "floor")
@@ -528,7 +528,7 @@ func _add_guard_rail(parent: Node2D, local_position: Vector2) -> void:
 	debug_visual.add_to_group("procedural_debug_collider")
 	body.add_child(debug_visual)
 	parent.add_child(body)
-	if biome_definition != null and biome_definition.biome_id == &"lower_city":
+	if biome_definition != null and ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
 		var skin := CITY_PRESENTATION.new()
 		skin.kind = "wall"
 		skin.surface = Rect2(-GUARD_RAIL_WIDTH * 0.5, -GUARD_RAIL_HEIGHT * 0.5,
@@ -705,7 +705,7 @@ func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, dest
 	exit.destination_id = destination
 	add_child(exit)
 	exit.global_position = marker.global_position
-	if biome_definition.biome_id == &"lower_city":
+	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
 		var skin := CITY_PRESENTATION.new()
 		skin.kind = "exit"
 		exit.add_child(skin)
@@ -936,6 +936,10 @@ func _spawn_enemies(rng: RandomNumberGenerator, run_manager: Node, stage_prefix:
 		if enemy.has_method("is_heavy") and bool(enemy.is_heavy()):
 			_heavy_enemy_ids.append(enemy.persistent_id)
 		enemy.run_room_id = StringName(stage_prefix)
+		# Deterministic local presentation context; persistence/RPC IDs stay intact.
+		var content_visual := enemy.get_node_or_null("EnemyCharacterVisual") as EnemyCharacterVisual
+		if content_visual != null:
+			content_visual.content_biome_id = ContentRegistry.biome_id(biome_definition.biome_id)
 		add_child(enemy)
 		var marker := ordered_candidates[index] as Marker2D
 		var marker_key := marker.get_instance_id()

@@ -20,6 +20,9 @@ func _ready() -> void:
 		},
 	}
 	sprite_frames = VisualSpriteFactory.build_sprite_frames(definitions)
+	var profile := ContentRegistry.profile(StringName("projectile_" + projectile_type))
+	if profile != null:
+		sprite_frames = profile.merge_frames(sprite_frames)
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	play(&"movement")
 

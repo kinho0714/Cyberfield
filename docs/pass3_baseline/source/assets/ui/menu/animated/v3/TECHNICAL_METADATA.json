@@ -1,0 +1,42 @@
+{
+  "pack": "Cyberfield Animated Menu Asset Pack V3",
+  "source_master_file": "a_wide_cinematic_cyberpunk_cityscape_at_night_di.png",
+  "source_dimensions": [
+    1672,
+    941
+  ],
+  "crop_box": [
+    4,
+    2,
+    1668,
+    938
+  ],
+  "master_dimensions": [
+    1664,
+    936
+  ],
+  "exact_16_9": true,
+  "logical_runtime": [
+    1280,
+    720
+  ],
+  "cloud_direction": "left_to_right",
+  "cloud_layers": 4,
+  "cloud_light_masks": 2,
+  "lightning_variants": {
+    "large": 3,
+    "short": 3
+  },
+  "depth_order": [
+    "sky/master",
+    "lightning",
+    "cloud_back",
+    "cloud_front",
+    "atmosphere",
+    "city_light_overlays",
+    "rain_back",
+    "rain_front",
+    "UI"
+  ],
+  "note": "Cloud layers are new independent transparent atmospheric assets; they are not extracted from the cloud-free Master V3."
+}

@@ -399,7 +399,11 @@ func _cancel_aim(apply_cooldown: bool) -> void:
 
 
 func _update_aim_line(direction: Vector2) -> void:
-	aim_line.points = PackedVector2Array([to_local(muzzle.global_position), to_local(muzzle.global_position + direction * maximum_attack_range)])
+	# Presentation only: keep the offensive direction/range and shot unchanged.
+	var visual_length := maximum_attack_range
+	if _is_valid_target(player):
+		visual_length = minf(visual_length, muzzle.global_position.distance_to(player.global_position))
+	aim_line.points = PackedVector2Array([to_local(muzzle.global_position), to_local(muzzle.global_position + direction * visual_length)])
 
 
 func _has_line_of_sight(target: Node2D) -> bool:

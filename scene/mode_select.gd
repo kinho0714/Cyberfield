@@ -160,10 +160,15 @@ func _refresh_controller() -> void:
 	var connected := Input.get_connected_joypads()
 	selected_joypad_device_id = connected[0] if not connected.is_empty() else -1
 	start_button.disabled = selected_joypad_device_id < 0
-	controller_label.text = "CONTROLE P2: %s" % Input.get_joy_name(selected_joypad_device_id) if selected_joypad_device_id >= 0 else "CONECTE UM CONTROLE PARA O PLAYER 2"
+	controller_label.text = tr("CONTROLE P2: %s") % Input.get_joy_name(selected_joypad_device_id) if selected_joypad_device_id >= 0 else "CONECTE UM CONTROLE PARA O PLAYER 2"
 	if start_button.disabled and start_button.has_focus():
 		lan_button.grab_focus()
 
 
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
 	_refresh_controller()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_TRANSLATION_CHANGED and is_node_ready():
+		_refresh_controller()

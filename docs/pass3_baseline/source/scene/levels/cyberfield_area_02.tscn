@@ -1,0 +1,100 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://entities/Enemy.tscn" id="1_enemy"]
+[ext_resource type="PackedScene" path="res://scene/interactables/room_exit.tscn" id="2_exit"]
+
+[sub_resource type="RectangleShape2D" id="FloorShape"]
+size = Vector2(1280, 40)
+
+[sub_resource type="RectangleShape2D" id="PlatformShapeWide"]
+size = Vector2(260, 24)
+
+[sub_resource type="RectangleShape2D" id="PlatformShapeSmall"]
+size = Vector2(150, 24)
+
+[node name="CyberfieldArea02" type="Node2D"]
+
+[node name="Background" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720)
+color = Color(0.04, 0.018, 0.075, 1)
+
+[node name="RoomLabel" type="Label" parent="."]
+position = Vector2(36, 28)
+text = "CYBERFIELD // SALA 02"
+theme_override_colors/font_color = Color(0.85, 0.25, 1, 1)
+theme_override_font_sizes/font_size = 24
+
+[node name="Floor" type="StaticBody2D" parent="."]
+position = Vector2(640, 700)
+
+[node name="Visual" type="Polygon2D" parent="Floor"]
+polygon = PackedVector2Array(-640, -20, 640, -20, 640, 20, -640, 20)
+color = Color(0.25, 0.08, 0.35, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Floor"]
+shape = SubResource("FloorShape")
+
+[node name="PlatformA" type="StaticBody2D" parent="."]
+position = Vector2(500, 590)
+
+[node name="Visual" type="Polygon2D" parent="PlatformA"]
+polygon = PackedVector2Array(-130, -12, 130, -12, 130, 12, -130, 12)
+color = Color(0.42, 0.12, 0.55, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformA"]
+shape = SubResource("PlatformShapeWide")
+
+[node name="InfernoEnemy01" type="Marker2D" parent="PlatformA" groups=["inferno_platform_spawn"]]
+position = Vector2(-70, -27)
+metadata/persistent_suffix = "inferno_platform_01_enemy_01"
+
+[node name="InfernoEnemy02" type="Marker2D" parent="PlatformA" groups=["inferno_platform_spawn"]]
+position = Vector2(70, -27)
+metadata/persistent_suffix = "inferno_platform_01_enemy_02"
+
+[node name="PlatformB" type="StaticBody2D" parent="."]
+position = Vector2(830, 500)
+
+[node name="Visual" type="Polygon2D" parent="PlatformB"]
+polygon = PackedVector2Array(-75, -12, 75, -12, 75, 12, -75, 12)
+color = Color(0.42, 0.12, 0.55, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformB"]
+shape = SubResource("PlatformShapeSmall")
+
+[node name="InfernoEnemy01" type="Marker2D" parent="PlatformB" groups=["inferno_platform_spawn"]]
+position = Vector2(-35, -27)
+metadata/persistent_suffix = "inferno_platform_02_enemy_01"
+
+[node name="InfernoEnemy02" type="Marker2D" parent="PlatformB" groups=["inferno_platform_spawn"]]
+position = Vector2(35, -27)
+metadata/persistent_suffix = "inferno_platform_02_enemy_02"
+
+[node name="Gameplay" type="Node2D" parent="."]
+
+[node name="from_room_01" type="Marker2D" parent="Gameplay" groups=["room_entry"]]
+position = Vector2(190, 665)
+
+[node name="ExtraEnemy01" type="Marker2D" parent="Gameplay" groups=["enemy_extra_spawn"]]
+position = Vector2(400, 665)
+
+[node name="ExtraEnemy02" type="Marker2D" parent="Gameplay" groups=["enemy_extra_spawn"]]
+position = Vector2(900, 665)
+
+[node name="ExtraEnemy03" type="Marker2D" parent="Gameplay" groups=["enemy_extra_spawn"]]
+position = Vector2(1040, 665)
+
+[node name="Enemy" parent="Gameplay" instance=ExtResource("1_enemy")]
+position = Vector2(720, 665)
+persistent_id = &"area02_enemy_01"
+
+[node name="ExitToRoom01" parent="Gameplay" instance=ExtResource("2_exit")]
+position = Vector2(90, 638)
+target_room_path = "res://scene/levels/cyberfield_area_01.tscn"
+target_entry_id = &"from_room_02"
+
+[node name="ExitToReward" parent="Gameplay" instance=ExtResource("2_exit")]
+position = Vector2(1180, 638)
+target_room_path = "res://scene/levels/cyberfield_reward_01.tscn"
+target_entry_id = &"start"
+requires_current_room_completed = true

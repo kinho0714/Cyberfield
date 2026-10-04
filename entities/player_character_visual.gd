@@ -60,6 +60,7 @@ const FILES := {
 @onready var _fallback_visual := get_node(fallback_visual_path) as CanvasItem
 
 var _active_character: StringName = &""
+var _content_profile: ContentVisualProfile
 var _frame_cache: Dictionary = {}
 var _last_state: StringName = &""
 var _last_attack_generation := -1
@@ -117,6 +118,8 @@ func _update_presentation(delta: float = 0.0) -> void:
 	if visual_state != &"air":
 		_was_airborne = false
 	_apply_frame_alignment(visual_state)
+	if _content_profile != null:
+		offset = _content_profile.alignment(visual_state, offset)
 	_last_state = visual_state
 
 
@@ -158,15 +161,22 @@ func get_presentation_state() -> StringName:
 	return _resolve_state(player) if player != null else &"idle"
 
 
+func get_content_portrait(fallback: Texture2D) -> Texture2D:
+	return _content_profile.texture("portrait", fallback) if _content_profile != null else fallback
+
+
 func _ensure_character(participant_id: StringName) -> void:
 	var character_id: StringName = CHARACTER_IDS.get(participant_id, &"jhon")
 	if character_id == _active_character:
 		return
+	_content_profile = ContentRegistry.entry_profile(ContentRegistry.character(character_id))
 	var cached: Variant = _frame_cache.get(character_id)
 	if cached is SpriteFrames:
 		sprite_frames = cached as SpriteFrames
 	else:
 		var generated := VisualSpriteFactory.build_sprite_frames(_build_definitions(character_id))
+		if _content_profile != null:
+			generated = _content_profile.merge_frames(generated)
 		_frame_cache[character_id] = generated
 		sprite_frames = generated
 	_active_character = character_id
@@ -331,4 +341,3 @@ func _air_frame(vertical_velocity: float) -> int:
 	if vertical_velocity < 240.0:
 		return 2
 	return 3
-
