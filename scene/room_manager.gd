@@ -2,6 +2,8 @@ extends Node2D
 
 signal coop_waiting_changed(visible: bool)
 
+const MOBILE_FRAMING = preload("res://scene/temporary_environment/mobile_framing.gd")
+const TEMP_PARALLAX = preload("res://scene/temporary_environment/parallax_driver.gd")
 const ROOM_BOUNDS := Rect2(0.0, 0.0, 1280.0, 720.0)
 const BOUNDARY_THICKNESS := 48.0
 const PLAYER_SCENE := preload("res://entities/player.tscn")
@@ -65,6 +67,16 @@ func _process(delta: float) -> void:
 	for player in active_players:
 		target += player.global_position
 	target /= float(active_players.size())
+	var view_size := get_viewport_rect().size
+	if MOBILE_FRAMING.enabled(OS.has_feature("android"), view_size):
+		_update_coop_camera(active_players, delta)
+		var headroom := minf(view_size.y / gameplay_camera.zoom.y * 0.25, 360.0)
+		var framing_bounds := generated_biome_bounds.grow_individual(0.0, headroom, 0.0, 0.0)
+		gameplay_camera.limit_top = floori(framing_bounds.position.y)
+		gameplay_camera.global_position = MOBILE_FRAMING.apply(target, active_players,
+			view_size, gameplay_camera.zoom.x, framing_bounds)
+		return
+	gameplay_camera.limit_top = floori(generated_biome_bounds.position.y)
 	var half_view := get_viewport_rect().size * 0.5
 	target.x = clampf(target.x, generated_biome_bounds.position.x + half_view.x, generated_biome_bounds.end.x - half_view.x)
 	target.y = clampf(target.y, generated_biome_bounds.position.y + half_view.y, generated_biome_bounds.end.y - half_view.y)
@@ -843,6 +855,15 @@ func validate_unique_player_participant_ids(context: String = "runtime") -> bool
 
 
 func _configure_camera_for_biome(bounds: Rect2, start_position: Vector2) -> void:
+	if is_instance_valid(current_room) and current_room.get_node_or_null("TemporaryParallax") == null:
+		var backdrop := TEMP_PARALLAX.new()
+		backdrop.name = "TemporaryParallax"
+		backdrop.room_bounds = bounds if current_is_hub else bounds.grow_individual(0.0, 360.0, 0.0, 0.0)
+		backdrop.profile_id = "house" if current_is_hub else "city"
+		if current_room is BiomeGenerator:
+			var entry := ContentRegistry.biome(current_room.biome_definition.biome_id)
+			backdrop.profile_id = String(entry.get("temporary_environment_family", "city"))
+		current_room.add_child(backdrop)
 	gameplay_camera.position_smoothing_enabled = true
 	gameplay_camera.position_smoothing_speed = 6.0
 	gameplay_camera.limit_left = floori(bounds.position.x)

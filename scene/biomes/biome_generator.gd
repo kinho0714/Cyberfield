@@ -435,6 +435,7 @@ func _build_module(parent: Node2D, index: int) -> void:
 	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
 		var decoration := CITY_PRESENTATION.new()
 		decoration.kind = "module"
+		decoration.room_role = String(data.role)
 		decoration.variant = absi(int(data.grid.x) * 7 + int(data.grid.y) * 13)
 		module.add_child(decoration)
 	_build_floor(module, data.required_connectors.has(&"down"))

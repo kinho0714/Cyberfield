@@ -1,0 +1,195 @@
+[
+  {
+    "key": "facade",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/tileset.png",
+    "destination": "assets/temporary_environment/city/facade.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "b84bbcac67eb7497c5be1644acced216e4cb170b1573b89bef1d2ba78be02536"
+  },
+  {
+    "key": "far",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/background/buildings-bg.png",
+    "destination": "assets/temporary_environment/city/far.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "2bcf93444924a333a340920ad773421137bc2d59d629017d5eb886239e70e7df"
+  },
+  {
+    "key": "mid",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/background/near-buildings-bg.png",
+    "destination": "assets/temporary_environment/city/mid.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "70eca49ce42f7c57135ade657d669ee9c7850f1bd02ba3eeece5f3f33c731205"
+  },
+  {
+    "key": "hotel",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/hotel-sign.png",
+    "destination": "assets/temporary_environment/city/hotel.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "e69f8299135a8ad677572fb1c9c93081b357ea10a83e626819ddb92268f89cac"
+  },
+  {
+    "key": "open",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/banner-open.png",
+    "destination": "assets/temporary_environment/city/open.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "b50eda5c5cc4757dc9b7deb771f1a347683c931f6b0c941c3f4068e1234d15e9"
+  },
+  {
+    "key": "control",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/control-box-1.png",
+    "destination": "assets/temporary_environment/city/control.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "033df177c1ea6048b91b7c448aae48dea8cfc159b06277ed60ada99134983948"
+  },
+  {
+    "key": "control_large",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/control-box-3.png",
+    "destination": "assets/temporary_environment/city/control_large.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "d4121f674aa53443c34954d91cb31909d5771dfd1545499b4dc2961b81a4be30"
+  },
+  {
+    "key": "antenna",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/antenna.png",
+    "destination": "assets/temporary_environment/city/antenna.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "d6fc0acd73b1158a1c8b2b1e8cf692946e57fc0b6f6acf6cb0347262444d34d8"
+  },
+  {
+    "key": "sign",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/banner-side/banner-side-1.png",
+    "destination": "assets/temporary_environment/city/sign.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "33f2da8c9d98097b2c9efe5cee0eb5ec0bde5f2b8cfe595c72539d3f7db74ab1"
+  },
+  {
+    "key": "advert",
+    "source": "packs/warped_city_files/warped city files/Assets/ENVIRONMENT/props/banner-big/banner-big-1.png",
+    "destination": "assets/temporary_environment/city/advert.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "89717b380a24519b25624becf80a64d3e60939eb93df702c5c6ed06ab62089e6"
+  },
+  {
+    "key": "street_far",
+    "source": "packs/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 1/PNG/layers/far-buildings.png",
+    "destination": "assets/temporary_environment/backgrounds/street_far.png",
+    "license": "CC0",
+    "author": "Ansimuz / Luis Zuno",
+    "transformation": "byte-identical",
+    "sha256": "ebbcd6ce46e23503170449568d5cb725a3a434c5518232cf410bc8121f46bd54"
+  },
+  {
+    "key": "lab_2",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_2.png",
+    "destination": "assets/temporary_environment/lab/lab_2.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "9dc170927baf6737f3717829614df24d9f13cc76bae34ceb88cef169bf485131"
+  },
+  {
+    "key": "lab_3",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_3.png",
+    "destination": "assets/temporary_environment/lab/lab_3.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "a16b9c7b3367a343afa02dcf2fac5d8d83878e94afe1e7e0ec269057acc63b8f"
+  },
+  {
+    "key": "lab_4",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_4.png",
+    "destination": "assets/temporary_environment/lab/lab_4.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "759c5e01d860253ed608aa4c4d0dc053a3da079264550a6a8f79865032fb4a63"
+  },
+  {
+    "key": "lab_5",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_5.png",
+    "destination": "assets/temporary_environment/lab/lab_5.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "6758713140e64d17078f504cb484d77e73e49dfcb962ce724eb734be661c2084"
+  },
+  {
+    "key": "lab_6",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_6.png",
+    "destination": "assets/temporary_environment/lab/lab_6.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "36a0cd34da475640a6feb4f8f465f6d6c98f3561f9627cd19e727798eb1ff1c6"
+  },
+  {
+    "key": "lab_7",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_7.png",
+    "destination": "assets/temporary_environment/lab/lab_7.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "06d764017c356a13fa32506f52e6a5b8aa925c698983d0ada00790bcef1d5d41"
+  },
+  {
+    "key": "lab_8",
+    "source": "packs/Foozle_2DT0001_Science_Fiction_Lab_TilesetDecorTraps/Foozle_2DT0001_Science_Fiction_Labs_Tileset/Decor/Individual_PNGs/decor_8.png",
+    "destination": "assets/temporary_environment/lab/lab_8.png",
+    "license": "CC0",
+    "author": "aimen23b; distributed by Foozle",
+    "transformation": "byte-identical",
+    "sha256": "86b1f10d6c31658a689742d90199ec91c938311a694544ae1246b3839f3f1147"
+  },
+  {
+    "key": "factory",
+    "source": "packs/robot_factory/tileset.png",
+    "destination": "assets/temporary_environment/industrial/factory.png",
+    "license": "CC-BY-4.0",
+    "author": "CookieEfedu",
+    "transformation": "crop (0, 0, 256, 168)",
+    "sha256": "ca533a9f9c8a1949adee89862b7c082bd9bddd96c27b136aa3d5cd1b62b2fbe1"
+  },
+  {
+    "key": "industrial_details",
+    "source": "packs/IndustrialPunk_AssetPack/IndustrialPunk_Tileset.png",
+    "destination": "assets/temporary_environment/architecture/industrial_details.png",
+    "author": "IndustrialPunk",
+    "license": "License not supplied in archive; LOCAL PRIVATE PROTOTYPE ONLY; public release NOT approved",
+    "temporary": true,
+    "release_approved": false,
+    "transformation": "byte-identical",
+    "sha256": "ef3796f38912c5a8e76a84b8c8b6496bc8351eec63485bad11fad5a0b1688f82"
+  },
+  {
+    "key": "outpost_services",
+    "source": "packs/Abandoned_Outpost_-_16x16_Sci-Fi_Platformer_Asset_Pack/Abandoned Outpost - 16x16 Sci-Fi Platformer Asset Pack/tilesets/tiles-props-16x16.png",
+    "destination": "assets/temporary_environment/architecture/outpost_services.png",
+    "author": "Abandoned Outpost / schwarnhild",
+    "license": "Commercial/noncommercial project use allowed; no asset redistribution/resale; PRIVATE development transfer only",
+    "temporary": true,
+    "release_approved": false,
+    "transformation": "byte-identical",
+    "sha256": "f51d5a33841fb9b25550ef3909c95af9c1c1d6d9155b700d147d00a2123dc998"
+  }
+]
