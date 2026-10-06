@@ -1,6 +1,8 @@
 extends Control
 ## Independent environment. Official textures only; no gameplay or UI dependencies.
 
+signal lightning_struck
+
 @export_group("Modules")
 @export var rain_enabled: bool = true:
 	set(value):
@@ -278,6 +280,7 @@ func trigger_lightning() -> void:
 		(mask.material as ShaderMaterial).set_shader_parameter("event_x", BOLT_CENTERS[selected_bolt])
 	double_flash = rng.randf() < 0.30
 	lightning_clock = _interval(lightning_min_interval, lightning_max_interval)
+	lightning_struck.emit()
 
 
 func _update_lightning(delta: float) -> void:

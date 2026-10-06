@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://b3x4ydn1pkenx"]
+[gd_scene load_steps=23 format=3 uid="uid://b3x4ydn1pkenx"]
 
 [ext_resource type="Script" path="res://scene/main_menu_alive.gd" id="menu_alive"]
 
@@ -19,6 +19,8 @@
 [ext_resource type="Script" path="res://scene/run_result_ui.gd" id="16_results"]
 [ext_resource type="Script" path="res://scene/meta_progression.gd" id="17_meta"]
 [ext_resource type="Script" path="res://scene/meta_lab_ui.gd" id="18_meta_ui"]
+[ext_resource type="Script" path="res://scene/audio_service.gd" id="19_audio"]
+[ext_resource type="Script" path="res://scene/gamepad_menu_input.gd" id="20_gamepad_menu"]
 
 [ext_resource type="PackedScene" path="res://scene/animated_menu_background.tscn" id="animated_menu"]
 
@@ -37,6 +39,12 @@ script = ExtResource("3_run")
 
 [node name="LocalSettings" type="Node" parent="."]
 script = ExtResource("12_settings")
+
+[node name="AudioService" type="Node" parent="."]
+script = ExtResource("19_audio")
+
+[node name="GamepadMenuInput" type="Node" parent="."]
+script = ExtResource("20_gamepad_menu")
 
 [node name="LanSession" type="Node" parent="."]
 script = ExtResource("10_lan_session")

@@ -15,6 +15,8 @@ var routed_participant_index := 2
 var last_route_at_msec := 0
 var hub_seen := false
 var portal_positioned := false
+var client_passed := false
+var client_passed_at_msec := 0
 
 
 func _initialize() -> void:
@@ -105,12 +107,18 @@ func _test_host_flow() -> void:
 		last_route_at_msec = now
 		routed_participant_index += 1
 		return
-	if routed_participant_index > LanSession.MAX_PLAYERS and now - last_route_at_msec >= 1000:
+	# Give all local client processes time to consume the final remote UI RPC
+	# before the host process exits and tears down their ENet connection.
+	if routed_participant_index > LanSession.MAX_PLAYERS and now - last_route_at_msec >= 3000:
 		print("PHASE8_LAN_LOBBY_PROCESS_HOST_PASSED_REMOTE_INTERACTIONS")
 		quit(0)
 
 
 func _test_client_flow() -> void:
+	if client_passed:
+		if Time.get_ticks_msec() - client_passed_at_msec >= 2000:
+			quit(0)
+		return
 	if session.is_client() and (lobby.get("host_page") as Control).visible:
 		assert((lobby.get_node("Overlay/Center/HostPage/Difficulty") as OptionButton).disabled)
 	if bool(manager.mode_selected) and not manager.run_manager.run_active:
@@ -127,7 +135,8 @@ func _test_client_flow() -> void:
 			full_map.close_map()
 			assert(bool(local_player.get("input_enabled")))
 			print("PHASE8_LAN_LOBBY_PROCESS_CLIENT_PASSED_REMOTE_INTERACTION_%s" % session.get_local_participant_id())
-			quit(0)
+			client_passed = true
+			client_passed_at_msec = Time.get_ticks_msec()
 
 
 func _touch(control: Control) -> void:

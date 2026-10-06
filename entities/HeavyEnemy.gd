@@ -64,6 +64,7 @@ func _begin_ranged_attack() -> void:
 	attack_generation += 1
 	attack_telegraph_active = true
 	anim.modulate = attack_telegraph_color
+	_play_audio_event(&"enemy_telegraph")
 	velocity.x = 0.0
 	_update_muzzle_facing()
 	locked_shot_direction = (player.global_position - muzzle.global_position).normalized()
@@ -96,6 +97,7 @@ func _update_ranged_attack(delta: float) -> void:
 
 
 func _fire_heavy_projectile() -> void:
+	_play_audio_event(&"enemy_attack")
 	var projectile := HEAVY_PROJECTILE_SCENE.instantiate()
 	projectile.shooter = self
 	get_parent().add_child(projectile)

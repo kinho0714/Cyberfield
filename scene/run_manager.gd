@@ -11,7 +11,21 @@ const RANGED_ENEMY_SCENE := preload("res://entities/RangedEnemy.tscn")
 const HEAVY_ENEMY_SCENE := preload("res://entities/HeavyEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
 const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
-const BANDAGE_DROP_CHANCE := 0.11
+const SCRAP_PICKUP_SCRIPT := preload("res://scene/interactables/scrap_pickup.gd")
+const BANDAGE_DROP_CHANCE_BY_DIFFICULTY := {
+	&"normal": 0.07,
+	&"hard": 0.065,
+	&"pro": 0.06,
+	&"inferno_pro": 0.055,
+}
+const SCRAP_DROP_CHANCE_BY_ROLE := {
+	0: 0.24,
+	1: 1.0,
+	2: 0.62,
+	3: 0.48,
+}
+const DROP_GROUND_MAX_DISTANCE := 144.0
+const DROP_GROUND_CLEARANCE := 10.0
 const BIOME_MAP_STATE := preload("res://scene/biomes/biome_map_state.gd")
 const ATTRIBUTE_IDS := [&"intellect", &"health", &"strength"]
 const ATTRIBUTE_TRIPLE_CHOICE_CHANCE := 0.60
@@ -61,6 +75,7 @@ var heavy_projectile_damage := CombatStats.HEAVY_PROJECTILE_BASE_DAMAGE
 var p2_joypad_device_id := -1
 var p2_joypad_name := ""
 var dirty_money := 0
+var scrap := 0
 var current_biome_id: StringName
 var current_biome_name := ""
 var generated_module_count := 0
@@ -75,6 +90,7 @@ var stage_history: Array[Dictionary] = []
 var map_states: Dictionary = {}
 var run_elapsed_time := 0.0
 var total_money_earned := 0
+var total_scrap_earned := 0
 var weapons_found: Dictionary = {}
 var last_run_results: Dictionary = {}
 var boss_defeated := false
@@ -124,6 +140,7 @@ func prepare_hub() -> void:
 	participants.clear()
 	participant_progress.clear()
 	dirty_money = 0
+	scrap = 0
 	stage_index = 0
 	current_stage_id = &""
 	stage_history.clear()
@@ -144,6 +161,7 @@ func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false
 	participants.clear()
 	participant_progress.clear()
 	dirty_money = 0
+	scrap = 0
 	stage_index = 0
 	current_stage_id = &"lower_city"
 	stage_history.clear()
@@ -165,6 +183,8 @@ func configure_run_weapon_pool(values: Array) -> void:
 
 
 func _configure_run_weapon_pool_from_meta() -> void:
+	if not is_inside_tree():
+		return
 	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
 	if meta != null:
 		configure_run_weapon_pool(meta.get_run_weapon_pool())
@@ -194,6 +214,7 @@ func clear_run() -> void:
 	participants.clear()
 	participant_progress.clear()
 	dirty_money = 0
+	scrap = 0
 	stage_index = 0
 	current_stage_id = &""
 	stage_history.clear()
@@ -266,7 +287,7 @@ func prepare_room(room_id: StringName, room: Node) -> void:
 func enter_generated_biome(report: Dictionary) -> void:
 	var definition_id := StringName(report.get("biome_id", &"lower_city"))
 	current_biome_id = current_stage_id if not current_stage_id.is_empty() else definition_id
-	current_biome_name = String(report.get("display_name", "CIDADE BAIXA")) if stage_index == 0 else "PRÓXIMO BIOMA // %s" % String(current_stage_id).to_upper()
+	current_biome_name = String(report.get("display_name", "CIDADE BAIXA"))
 	generated_module_count = int(report.get("module_count", 0))
 	generation_fallback = bool(report.get("fallback", false))
 	generation_failure_reason = String(report.get("failure_reason", ""))
@@ -370,6 +391,9 @@ func collect_biome_loot(loot_id: StringName, amount: int) -> bool:
 	get_current_map_state().collect_content(&"loot", loot_id)
 	dirty_money += maxi(amount, 0)
 	total_money_earned += maxi(amount, 0)
+	var scrap_amount := 1 + posmod(_stable_hash("loot_scrap:%s" % loot_id), 3)
+	scrap += scrap_amount
+	total_scrap_earned += scrap_amount
 	state_changed.emit()
 	return true
 
@@ -667,10 +691,14 @@ func claim_trap_event_reward(trap_id: StringName) -> int:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value + _stable_hash("trap_reward:%s" % trap_id)
 	var amount := rng.randi_range(48, 68) + stage_index * 6 + extra_enemy_count * 4
+	var scrap_amount := rng.randi_range(2, 4) + mini(stage_index / 2, 2)
 	dirty_money += amount
 	total_money_earned += amount
+	scrap += scrap_amount
+	total_scrap_earned += scrap_amount
 	trap_events_rewarded += 1
 	completion_rewards.trap_money = int(completion_rewards.get("trap_money", 0)) + amount
+	completion_rewards.trap_scrap = int(completion_rewards.get("trap_scrap", 0)) + scrap_amount
 	map_state.collect_content(&"loot", trap_id)
 	state_changed.emit()
 	return amount
@@ -774,7 +802,7 @@ func has_chest_choice(room_id: StringName, chest_id: StringName, participant_id:
 	return room_states[room_id].chest_choices.get(chest_id, {}).has(participant_id)
 
 
-func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: int, death_position: Vector2) -> void:
+func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: int, death_position: Vector2, source_enemy: CollisionObject2D = null) -> void:
 	if not run_active or not room_states.has(room_id):
 		return
 	var state: Dictionary = room_states[room_id]
@@ -794,13 +822,64 @@ func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: in
 		minimum = 20
 		maximum = 30
 	var amount := rng.randi_range(minimum, maximum) if rng.randf() <= chance else 0
-	var bandage := rng.randf() <= BANDAGE_DROP_CHANCE
-	state.drops_rolled[enemy_id] = {"amount": amount, "collected": amount == 0, "position": death_position, "bandage": bandage, "bandage_collected": not bandage}
+	var bandage_chance := float(BANDAGE_DROP_CHANCE_BY_DIFFICULTY.get(difficulty, 0.07))
+	var bandage := rng.randf() <= bandage_chance
+	var scrap_chance := float(SCRAP_DROP_CHANCE_BY_ROLE.get(enemy_role, 0.24))
+	var scrap_minimum := 1
+	var scrap_maximum := 2
+	if enemy_role == 1:
+		scrap_minimum = 5
+		scrap_maximum = 8
+	elif enemy_role == 2:
+		scrap_minimum = 2
+		scrap_maximum = 4
+	elif enemy_role == 3:
+		scrap_minimum = 2
+		scrap_maximum = 3
+	var scrap_amount := rng.randi_range(scrap_minimum, scrap_maximum) if rng.randf() <= scrap_chance else 0
+	var settled_position := _resolve_enemy_drop_position(death_position, source_enemy)
+	var scrap_position := _resolve_enemy_drop_position(death_position + Vector2(18.0, 0.0), source_enemy)
+	state.drops_rolled[enemy_id] = {
+		"amount": amount,
+		"collected": amount == 0,
+		"position": settled_position,
+		"bandage": bandage,
+		"bandage_collected": not bandage,
+		"scrap_amount": scrap_amount,
+		"scrap_collected": scrap_amount == 0,
+		"scrap_position": scrap_position,
+	}
 	if amount > 0:
-		_spawn_money_pickup(room_id, enemy_id, amount, death_position)
+		_spawn_money_pickup(room_id, enemy_id, amount, settled_position)
 	if bandage:
-		_spawn_bandage_pickup(room_id, enemy_id, death_position)
+		_spawn_bandage_pickup(room_id, enemy_id, settled_position)
+	if scrap_amount > 0:
+		_spawn_scrap_pickup(room_id, enemy_id, scrap_amount, scrap_position)
 	state_changed.emit()
+
+
+func _resolve_enemy_drop_position(death_position: Vector2, source_enemy: CollisionObject2D = null) -> Vector2:
+	var room_manager := get_tree().get_first_node_in_group("room_manager")
+	var room := room_manager.current_room as Node2D if room_manager != null else null
+	if room == null or not room.is_inside_tree():
+		return death_position
+	var excluded: Array[RID] = []
+	if source_enemy != null and is_instance_valid(source_enemy):
+		excluded.append(source_enemy.get_rid())
+	for group_name: StringName in [&"player", &"enemy"]:
+		for body in get_tree().get_nodes_in_group(group_name):
+			if body is CollisionObject2D and body != source_enemy:
+				excluded.append((body as CollisionObject2D).get_rid())
+	var space_state := room.get_world_2d().direct_space_state
+	for horizontal_offset in [0.0, -18.0, 18.0, -36.0, 36.0]:
+		var origin := death_position + Vector2(horizontal_offset, -18.0)
+		var target := death_position + Vector2(horizontal_offset, DROP_GROUND_MAX_DISTANCE)
+		var query := PhysicsRayQueryParameters2D.create(origin, target, 1, excluded)
+		query.collide_with_areas = false
+		var hit := space_state.intersect_ray(query)
+		if not hit.is_empty():
+			return Vector2(origin.x, float(hit.position.y) - DROP_GROUND_CLEARANCE)
+	return death_position
 
 
 func collect_money_drop(room_id: StringName, drop_id: StringName) -> bool:
@@ -827,6 +906,25 @@ func collect_bandage_drop(room_id: StringName, drop_id: StringName, player: Node
 	var map_state := get_current_map_state()
 	if map_state != null:
 		map_state.collect_content(&"bandage", drop_id)
+	state_changed.emit()
+	return true
+
+
+func collect_scrap_drop(room_id: StringName, drop_id: StringName) -> bool:
+	if not room_states.has(room_id):
+		return false
+	var drop: Dictionary = room_states[room_id].drops_rolled.get(drop_id, {})
+	if drop.is_empty() or bool(drop.get("scrap_collected", true)):
+		return false
+	var collected_amount := maxi(int(drop.get("scrap_amount", 0)), 0)
+	if collected_amount <= 0:
+		return false
+	drop.scrap_collected = true
+	scrap += collected_amount
+	total_scrap_earned += collected_amount
+	var map_state := get_current_map_state()
+	if map_state != null:
+		map_state.collect_content(&"scrap", drop_id)
 	state_changed.emit()
 	return true
 
@@ -952,6 +1050,14 @@ func _spawn_pending_money(room_id: StringName, room: Node) -> void:
 			_spawn_money_pickup(room_id, drop_id, drop.amount, drop.position, room)
 		if drop.get("bandage", false) and not drop.get("bandage_collected", false):
 			_spawn_bandage_pickup(room_id, drop_id, drop.position, room)
+		if int(drop.get("scrap_amount", 0)) > 0 and not bool(drop.get("scrap_collected", false)):
+			_spawn_scrap_pickup(
+				room_id,
+				drop_id,
+				int(drop.get("scrap_amount", 0)),
+				Vector2(drop.get("scrap_position", drop.position)),
+				room
+			)
 
 
 func _spawn_bandage_pickup(room_id: StringName, drop_id: StringName, position: Vector2, room_override: Node = null) -> void:
@@ -967,6 +1073,24 @@ func _spawn_bandage_pickup(room_id: StringName, drop_id: StringName, position: V
 	var pickup := BANDAGE_PICKUP_SCRIPT.new() as BandagePickup
 	pickup.pickup_id = drop_id
 	pickup.room_id = room_id
+	room.add_child(pickup)
+	pickup.global_position = position
+
+
+func _spawn_scrap_pickup(room_id: StringName, drop_id: StringName, amount: int, position: Vector2, room_override: Node = null) -> void:
+	var room := room_override
+	if room == null:
+		var room_manager := get_tree().get_first_node_in_group("room_manager")
+		room = room_manager.current_room if room_manager else null
+	if room == null:
+		return
+	for existing in _find_nodes_in_group(room, &"scrap_pickup"):
+		if existing.pickup_id == drop_id:
+			return
+	var pickup := SCRAP_PICKUP_SCRIPT.new() as ScrapPickup
+	pickup.pickup_id = drop_id
+	pickup.room_id = room_id
+	pickup.amount = maxi(amount, 1)
 	room.add_child(pickup)
 	pickup.global_position = position
 
@@ -1121,6 +1245,8 @@ func _capture_run_results(completed: bool) -> void:
 		"elapsed_time": run_elapsed_time,
 		"money_earned": total_money_earned,
 		"money_remaining": dirty_money,
+		"scrap_earned": total_scrap_earned,
+		"scrap_remaining": scrap,
 		"difficulty": difficulty,
 		"stage_index": stage_index,
 		"player_count": player_count,
@@ -1140,6 +1266,7 @@ func _capture_run_results(completed: bool) -> void:
 func _reset_run_quality_state() -> void:
 	run_elapsed_time = 0.0
 	total_money_earned = 0
+	total_scrap_earned = 0
 	weapons_found.clear()
 	last_run_results.clear()
 	boss_defeated = false
@@ -1153,6 +1280,10 @@ func _grant_boss_completion_reward() -> void:
 	if not boss_defeated or completion_rewards.has("boss_money"):
 		return
 	var amount := 100 + extra_enemy_count * 20
+	var scrap_amount := 5 + extra_enemy_count
 	completion_rewards.boss_money = amount
+	completion_rewards.boss_scrap = scrap_amount
 	dirty_money += amount
 	total_money_earned += amount
+	scrap += scrap_amount
+	total_scrap_earned += scrap_amount

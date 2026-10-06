@@ -4,6 +4,7 @@ extends Node
 const NETWORK_PROJECTILE_SCENE := preload("res://entities/ranged_projectile.tscn")
 const NETWORK_HEAVY_PROJECTILE_SCENE := preload("res://entities/heavy_projectile.tscn")
 const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
+const SCRAP_PICKUP_SCRIPT := preload("res://scene/interactables/scrap_pickup.gd")
 
 signal lobby_changed
 signal discovered_rooms_changed
@@ -501,9 +502,9 @@ func _send_local_input() -> void:
 		if action not in [&"left", &"right"] and Input.is_action_just_pressed(action):
 			_submit_action_pulse.rpc_id(1, String(action), _input_sequence)
 	var state := {
-		"left": Input.get_action_strength(&"left"),
-		"right": Input.get_action_strength(&"right"),
-		"down": Input.is_action_pressed(&"down"),
+		"left": maxf(Input.get_action_strength(&"left"), Input.get_action_strength(&"touch_left")) if InputMap.has_action(&"touch_left") else Input.get_action_strength(&"left"),
+		"right": maxf(Input.get_action_strength(&"right"), Input.get_action_strength(&"touch_right")) if InputMap.has_action(&"touch_right") else Input.get_action_strength(&"right"),
+		"down": Input.is_action_pressed(&"down") or (InputMap.has_action(&"touch_down") and Input.is_action_pressed(&"touch_down")),
 		"jump": Input.is_action_pressed(&"jump"),
 		"attack": Input.is_action_pressed(&"attack"),
 		"attack_slot_1": Input.is_action_pressed(&"attack_slot_1"),
@@ -625,6 +626,14 @@ func _broadcast_authoritative_snapshot() -> void:
 	var bandages: Array[Dictionary] = []
 	for pickup in get_tree().get_nodes_in_group("bandage_pickup"):
 		bandages.append({"pickup_id": String(pickup.pickup_id), "room_id": String(pickup.room_id), "position": pickup.global_position})
+	var scrap_pickups: Array[Dictionary] = []
+	for pickup in get_tree().get_nodes_in_group("scrap_pickup"):
+		scrap_pickups.append({
+			"pickup_id": String(pickup.pickup_id),
+			"room_id": String(pickup.room_id),
+			"amount": int(pickup.amount),
+			"position": pickup.global_position,
+		})
 	var layout_signature := ""
 	if room_manager.current_room != null and room_manager.current_room.has_method("get_generation_report"):
 		var generation_report: Dictionary = room_manager.current_room.get_generation_report()
@@ -634,7 +643,9 @@ func _broadcast_authoritative_snapshot() -> void:
 		"players": players,
 		"enemies": enemies,
 		"bandages": bandages,
+		"scrap_pickups": scrap_pickups,
 		"dirty_money": int(room_manager.run_manager.dirty_money),
+		"scrap": int(room_manager.run_manager.scrap),
 		"selected_exit_id": String(room_manager.run_manager.selected_exit_id),
 		"stage_index": int(room_manager.run_manager.stage_index),
 		"collected_loot": room_manager.run_manager.collected_biome_loot.keys(),
@@ -714,11 +725,30 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 	for pickup_id in local_bandages:
 		if not authoritative_bandages.has(pickup_id):
 			local_bandages[pickup_id].queue_free()
+	var local_scrap := {}
+	for pickup in get_tree().get_nodes_in_group("scrap_pickup"):
+		local_scrap[pickup.pickup_id] = pickup
+	var authoritative_scrap := {}
+	for data_value: Variant in snapshot.get("scrap_pickups", []):
+		var data := data_value as Dictionary
+		var pickup_id := StringName(data.pickup_id)
+		authoritative_scrap[pickup_id] = true
+		if not local_scrap.has(pickup_id) and room_manager.current_room != null:
+			var pickup := SCRAP_PICKUP_SCRIPT.new() as ScrapPickup
+			pickup.pickup_id = pickup_id
+			pickup.room_id = StringName(data.room_id)
+			pickup.amount = maxi(int(data.get("amount", 1)), 1)
+			room_manager.current_room.add_child(pickup)
+			pickup.global_position = Vector2(data.position)
+	for pickup_id in local_scrap:
+		if not authoritative_scrap.has(pickup_id):
+			local_scrap[pickup_id].queue_free()
 	var collected_loot: Array = snapshot.get("collected_loot", []) as Array
 	for loot in get_tree().get_nodes_in_group("biome_loot"):
 		if collected_loot.has(loot.loot_id):
 			loot.queue_free()
 	room_manager.run_manager.dirty_money = int(snapshot.get("dirty_money", room_manager.run_manager.dirty_money))
+	room_manager.run_manager.scrap = int(snapshot.get("scrap", room_manager.run_manager.scrap))
 	room_manager.run_manager.apply_network_map_state(snapshot.get("map_state", {}))
 	room_manager.run_manager.run_elapsed_time = float(snapshot.get("run_elapsed_time", room_manager.run_manager.run_elapsed_time))
 	var map_state: BiomeMapState = room_manager.run_manager.get_current_map_state()

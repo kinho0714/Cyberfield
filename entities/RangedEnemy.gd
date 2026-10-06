@@ -36,6 +36,8 @@ const KNOCKBACK_DURATION := 0.18
 @export var patrol_pause_min := 0.40
 @export var patrol_pause_max := 1.20
 @export var target_detection_range := 560.0
+@export var target_memory_duration := 0.55
+@export var investigate_stop_distance := 18.0
 @export var separation_distance := 30.0
 
 var run_room_id: StringName
@@ -73,6 +75,8 @@ var network_target_position := Vector2.ZERO
 var network_presentation_state: StringName = &""
 var _fall_origin_y := 0.0
 var _was_on_floor := false
+var _target_memory_timer := 0.0
+var _last_seen_target_position := Vector2.ZERO
 
 @onready var health_bar: ProgressBar = $HealthBar
 @onready var visual: Node2D = $Visual
@@ -188,7 +192,7 @@ func _physics_process(delta: float) -> void:
 	knockback_timer = maxf(knockback_timer - delta, 0.0)
 	attack_cooldown_timer = maxf(attack_cooldown_timer - delta, 0.0)
 	melee_cooldown_timer = maxf(melee_cooldown_timer - delta, 0.0)
-	_select_active_player()
+	_select_active_player(delta)
 	if state == State.HURT:
 		state_timer = maxf(state_timer - delta, 0.0)
 		if state_timer <= 0.0:
@@ -235,10 +239,19 @@ func _update_movement_and_attack(delta: float) -> void:
 	if not _is_valid_target(player):
 		_update_patrol(delta)
 		return
-	var offset := player.global_position - global_position
+	var can_see_target := _has_line_of_sight(player)
+	if can_see_target:
+		_last_seen_target_position = player.global_position
+	var pursuit_position := player.global_position if can_see_target else _last_seen_target_position
+	var offset := pursuit_position - global_position
 	_face_direction(signf(offset.x))
 	velocity.x = 0.0
 	state = State.REPOSITION
+	if not can_see_target:
+		combat_choice = &"ranged"
+		if absf(offset.x) > investigate_stop_distance:
+			velocity.x = _safe_horizontal_velocity(signf(offset.x), move_speed * 0.62)
+		return
 	_update_combat_choice(offset)
 	if combat_choice == &"melee":
 		if melee_cooldown_timer <= 0.0:
@@ -272,6 +285,7 @@ func _begin_melee() -> void:
 	velocity.x = 0.0
 	state_timer = melee_windup
 	visual.modulate = Color(1.0, 0.45, 0.85, 1.0)
+	_play_audio_event(&"enemy_telegraph")
 
 
 func _update_melee_windup(delta: float) -> void:
@@ -293,6 +307,7 @@ func _apply_melee_impact() -> void:
 	melee_shape_cast.target_position = Vector2(clampf(offset.x, -melee_horizontal_range, melee_horizontal_range), clampf(offset.y, -melee_vertical_range, melee_vertical_range))
 	melee_shape_cast.enabled = true
 	melee_shape_cast.force_shapecast_update()
+	_play_audio_event(&"enemy_attack")
 	if melee_shape_cast.is_colliding():
 		for index in melee_shape_cast.get_collision_count():
 			var body := melee_shape_cast.get_collider(index)
@@ -340,6 +355,7 @@ func _begin_aim() -> void:
 	velocity.x = 0.0
 	aim_line.visible = true
 	_update_aim_line((player.global_position - muzzle.global_position).normalized())
+	_play_audio_event(&"enemy_telegraph")
 
 
 func _update_aim(delta: float) -> void:
@@ -373,6 +389,7 @@ func _fire_once() -> void:
 		return
 	shot_spawned = true
 	aim_line.visible = false
+	_play_audio_event(&"enemy_attack")
 	var projectile := PROJECTILE_SCENE.instantiate()
 	projectile.shooter = self
 	get_parent().add_child(projectile)
@@ -407,31 +424,62 @@ func _update_aim_line(direction: Vector2) -> void:
 
 
 func _has_line_of_sight(target: Node2D) -> bool:
-	var query := PhysicsRayQueryParameters2D.create(muzzle.global_position, target.global_position, 1, [self])
-	query.collide_with_areas = false
-	var hit := get_world_2d().direct_space_state.intersect_ray(query)
-	return not hit.is_empty() and hit.collider == target
+	var excluded: Array[RID] = [get_rid()]
+	for _pass in 8:
+		var query := PhysicsRayQueryParameters2D.create(muzzle.global_position, target.global_position, 1, excluded)
+		query.collide_with_areas = false
+		var hit := get_world_2d().direct_space_state.intersect_ray(query)
+		if hit.is_empty():
+			return false
+		var collider: Variant = hit.get("collider")
+		if collider == target:
+			return true
+		# Co-op players should not behave like opaque world geometry for target
+		# perception. Real static/physics obstacles still terminate the query.
+		if collider is CollisionObject2D and (collider as Node).is_in_group("player"):
+			excluded.append((collider as CollisionObject2D).get_rid())
+			continue
+		return false
+	return false
 
 
-func _select_active_player() -> void:
+func _select_active_player(delta: float) -> void:
 	var nearest: CharacterBody2D = null
 	var nearest_distance := INF
 	for candidate in get_tree().get_nodes_in_group("player"):
 		if not _is_valid_target(candidate):
 			continue
 		var distance := global_position.distance_to(candidate.global_position)
-		if distance <= target_detection_range and distance < nearest_distance:
+		if distance <= target_detection_range and distance < nearest_distance and _has_line_of_sight(candidate):
 			nearest = candidate
 			nearest_distance = distance
-	if _is_valid_target(player):
+	var current_visible := _is_valid_target(player) \
+		and global_position.distance_to(player.global_position) <= target_detection_range \
+		and _has_line_of_sight(player)
+	if current_visible:
 		var current_distance := global_position.distance_to(player.global_position)
+		_target_memory_timer = target_memory_duration
+		_last_seen_target_position = player.global_position
 		if current_distance <= target_detection_range and current_distance <= nearest_distance + target_switch_margin:
 			return
+	else:
+		_target_memory_timer = maxf(_target_memory_timer - delta, 0.0)
+	if nearest != null:
+		if player != nearest:
+			if state == State.AIM or state == State.SHOOT:
+				_cancel_aim(true)
+			_cancel_melee(true)
+		player = nearest
+		_target_memory_timer = target_memory_duration
+		_last_seen_target_position = nearest.global_position
+		return
+	if _is_valid_target(player) and _target_memory_timer > 0.0:
+		return
 	if player != nearest:
 		if state == State.AIM or state == State.SHOOT:
 			_cancel_aim(true)
 		_cancel_melee(true)
-	player = nearest
+	player = null
 
 
 func _is_valid_target(candidate: Node) -> bool:
@@ -501,12 +549,15 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 	visual.modulate = Color(1, 1, 1, 0.5)
 	if health <= 0:
 		_die()
+	else:
+		_play_audio_event(&"enemy_hurt")
 
 
 func _die() -> void:
 	if state == State.DEAD:
 		return
 	state = State.DEAD
+	_play_audio_event(&"enemy_death")
 	is_attacking = false
 	is_hurt = false
 	velocity = Vector2.ZERO
@@ -518,10 +569,16 @@ func _die() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		if run_manager.has_method("handle_enemy_drop"):
-			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position)
+			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position, self)
 		run_manager.register_enemy_death(run_room_id, persistent_id)
 	await get_tree().create_timer(0.30).timeout
 	queue_free()
+
+
+func _play_audio_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("play_event"):
+		audio.play_event(event_id)
 
 
 func get_visual_state() -> StringName:

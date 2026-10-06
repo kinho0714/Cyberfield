@@ -158,6 +158,17 @@ max_value = 100.0
 step = 1.0
 value = 100.0
 
+[node name="AmbienceLabel" type="Label" parent="Overlay/Center/SettingsPage/Scroll/Content"]
+layout_mode = 2
+text = "Ambiente — 100%"
+
+[node name="AmbienceVolume" type="HSlider" parent="Overlay/Center/SettingsPage/Scroll/Content"]
+custom_minimum_size = Vector2(560, 56)
+layout_mode = 2
+max_value = 100.0
+step = 1.0
+value = 100.0
+
 [node name="SFXLabel" type="Label" parent="Overlay/Center/SettingsPage/Scroll/Content"]
 layout_mode = 2
 text = "Efeitos Sonoros — 100%"

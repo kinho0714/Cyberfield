@@ -1,5 +1,7 @@
 extends Area2D
 
+const CHEST_TEXTURE := preload("res://assets/temporary_items/pixelexplosive/metal_chest_09.png")
+
 @export_enum("challenge", "paid", "free") var chest_type := "challenge"
 @export var chest_id: StringName = &"attribute_chest"
 @export var cost := 50
@@ -7,10 +9,21 @@ var room_id: StringName
 var feedback := ""
 
 @onready var visual: Polygon2D = $Visual
+@onready var lid: Polygon2D = $Lid
 @onready var label: Label = $Label
+var _chest_sprite: Sprite2D
 
 func _ready() -> void:
 	collision_mask = 1
+	visual.visible = false
+	lid.visible = false
+	_chest_sprite = Sprite2D.new()
+	_chest_sprite.name = "TemporaryAttributeChestVisual"
+	_chest_sprite.texture = CHEST_TEXTURE
+	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_chest_sprite.scale = Vector2(1.6, 1.6)
+	_chest_sprite.position = Vector2(0.0, -3.0)
+	add_child(_chest_sprite)
 	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)
 	body_exited.connect(func(body: Node) -> void:
 		if body.is_in_group("player"):
@@ -78,15 +91,20 @@ func _refresh() -> void:
 		if not state.get("challenge_activated", false):
 			label.text = "[E] ATIVAR DESAFIO OPCIONAL"
 			visual.color = Color(0.9, 0.55, 0.12)
+			_chest_sprite.modulate = Color(1.0, 0.82, 0.48, 1.0)
 		elif not state.get("challenge_completed", false):
 			label.text = "BAÚ BLOQUEADO // DERROTE A HORDA"
 			visual.color = Color(0.35, 0.35, 0.35)
+			_chest_sprite.modulate = Color(0.48, 0.48, 0.48, 1.0)
 		else:
 			label.text = "[E] ESCOLHER ATRIBUTO"
 			visual.color = Color(0.2, 0.9, 0.45)
+			_chest_sprite.modulate = Color(0.62, 1.0, 0.72, 1.0)
 	elif chest_type == "paid":
 		label.text = feedback if not feedback.is_empty() else "[E] BAÚ DE ATRIBUTO // $%d" % cost
 		visual.color = Color(0.2, 0.7, 1.0) if manager.room_states[room_id].completed else Color(0.3, 0.3, 0.3)
+		_chest_sprite.modulate = Color(0.55, 0.82, 1.0, 1.0) if manager.room_states[room_id].completed else Color(0.46, 0.46, 0.46, 1.0)
 	else:
 		label.text = "[E] RECOMPENSA DE ATRIBUTO"
 		visual.color = Color(0.2, 0.9, 0.45)
+		_chest_sprite.modulate = Color(0.62, 1.0, 0.72, 1.0)

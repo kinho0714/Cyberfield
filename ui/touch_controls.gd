@@ -20,6 +20,10 @@ var menu_blocked := false
 
 
 func _ready() -> void:
+	# Touch directional input must not release a held keyboard/gamepad action.
+	for touch_action: StringName in [&"touch_left", &"touch_right", &"touch_down"]:
+		if not InputMap.has_action(touch_action):
+			InputMap.add_action(touch_action, 0.0)
 	var pause_style := StyleBoxTexture.new()
 	pause_style.texture = preload("res://assets/ui/gameplay_hud/assets/shared/hud/pause_button_frame.png")
 	for state in ["normal", "hover", "pressed", "focus"]:

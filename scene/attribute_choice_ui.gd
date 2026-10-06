@@ -66,7 +66,7 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 	network_choice_mode = false
 	options = available_options
 	selected_index = 0
-	title.text = "%s // ESCOLHA UM ATRIBUTO" % String(player.participant_id).to_upper()
+	title.text = "%s // %s" % [String(player.participant_id).replace("player_", "P").to_upper(), tr("ESCOLHA UM ATRIBUTO")]
 	for index in buttons.size():
 		var button: Button = buttons[index]
 		button.visible = index < options.size()
@@ -93,7 +93,7 @@ func open_network_for(player: Node, available_options: Array[StringName]) -> boo
 	network_choice_mode = true
 	options = available_options
 	selected_index = 0
-	title.text = "%s // ESCOLHA UM ATRIBUTO" % String(player.participant_id).replace("player_", "P")
+	title.text = "%s // %s" % [String(player.participant_id).replace("player_", "P").to_upper(), tr("ESCOLHA UM ATRIBUTO")]
 	for index in buttons.size():
 		var button: Button = buttons[index]
 		button.visible = index < options.size()
@@ -146,6 +146,7 @@ func _choose(index: int) -> void:
 		var selected_attribute: StringName = options[index]
 		active_player.set_input_enabled(true)
 		visible = false
+		get_viewport().gui_release_focus()
 		active_player = null
 		options.clear()
 		network_choice_mode = false
@@ -157,6 +158,7 @@ func _choose(index: int) -> void:
 	if active_chest.apply_choice(active_player, options[index]):
 		active_player.set_input_enabled(true)
 		visible = false
+		get_viewport().gui_release_focus()
 		active_player = null
 		active_chest = null
 		options.clear()
@@ -166,6 +168,12 @@ func _choose(index: int) -> void:
 func cancel_selection() -> void:
 	if active_player:
 		active_player.set_input_enabled(true)
+	visible = false
+	get_viewport().gui_release_focus()
+	active_player = null
+	active_chest = null
+	options.clear()
+	network_choice_mode = false
 	_set_touch_controls_blocked(false)
 
 

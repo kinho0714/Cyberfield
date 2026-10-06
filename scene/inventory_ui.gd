@@ -187,6 +187,7 @@ func close_inventory() -> void:
 		get_tree().paused = false
 		_tree_paused = false
 	overlay.visible = false
+	get_viewport().gui_release_focus()
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
 		room_manager.get_node("TouchControls").set_menu_blocked(false)
@@ -297,12 +298,13 @@ func _show_inventory_tab(index: int) -> void:
 		var run := get_parent().get_node_or_null("RunManager")
 		_summary.text = "RUN\n\n" + (hud.get_session_summary() if hud != null else "")
 		if run != null:
-			_summary.text += "\n%s  %s\n%s  %d" % [tr("TEMPO"), run.format_run_time(), tr("DINHEIRO"), run.dirty_money]
+			_summary.text += "\n%s  %s\n%s  %d\n%s  %d" % [tr("TEMPO"), run.format_run_time(), tr("DINHEIRO"), run.dirty_money, tr("SUCATA"), run.scrap]
 	elif index == 3:
 		_summary.text = tr("MOCHILA") + "\n\n"
 		if player != null:
 			var cargo: Dictionary = _backpack.snapshot(player.participant_id)
-			_summary.text += "%s  %d\n\n" % [tr("DINHEIRO SUJO (EQUIPE)"), cargo.team_dirty_money]
+			var run := get_parent().get_node_or_null("RunManager")
+			_summary.text += "%s  %d\n%s  %d\n\n" % [tr("DINHEIRO SUJO (EQUIPE)"), cargo.team_dirty_money, tr("SUCATA (EQUIPE)"), int(run.scrap) if run != null else 0]
 			for item: Dictionary in cargo.items:
 				_summary.text += "%s × %d\n" % [tr(String(item.get("name_key", item.get("id", "")))), int(item.get("quantity", 0))]
 			if cargo.items.is_empty():

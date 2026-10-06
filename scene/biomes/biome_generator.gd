@@ -2,6 +2,7 @@ class_name BiomeGenerator
 extends Node2D
 
 const CITY_PRESENTATION := preload("res://scene/biomes/lower_city/lower_city_presentation.gd")
+const ROOM_DIRECTOR_SCRIPT := preload("res://scene/biomes/room_director.gd")
 
 const SOURCE_MODULE_SIZE := Vector2(960.0, 540.0)
 const CELL_SIZE := Vector2(840.0, 480.0)
@@ -29,6 +30,10 @@ const VERTICAL_SHAFT_INNER_WIDTH := 136.0
 const VERTICAL_SHAFT_WALL_THICKNESS := 18.0
 const MINIMUM_TRAVERSAL_CLEARANCE := 112.0
 const MINIMUM_STACKED_PASSAGE_OVERLAP := 32.0
+const TELEPORTER_MIN_GRAPH_DISTANCE := 3
+const TELEPORTER_MIN_WORLD_DISTANCE := 1040.0
+const TELEPORTER_RELAXED_GRAPH_DISTANCE := 2
+const TELEPORTER_RELAXED_WORLD_DISTANCE := 760.0
 
 @export var biome_definition: BiomeDefinition
 
@@ -63,6 +68,8 @@ var _teleporter_entries: Array[Dictionary] = []
 var _trap_event_ids: Array[StringName] = []
 var _heavy_enemy_ids: Array[StringName] = []
 var _reserved_event_marker_ids: Dictionary = {}
+var _room_director: RoomDirector
+var _structural_metrics: Dictionary = {}
 
 
 func generate(run_seed: int, run_manager: Node) -> bool:
@@ -82,7 +89,7 @@ func generate(run_seed: int, run_manager: Node) -> bool:
 		rng.seed = run_seed + attempt * 104729 + _stable_hash(String(biome_definition.biome_id))
 		var target_count := rng.randi_range(biome_definition.min_modules, biome_definition.max_modules)
 		_nodes = _build_exploration_layout(target_count, rng)
-		_assign_module_roles()
+		_assign_module_roles(rng)
 		_assign_module_definitions(definitions, rng)
 		var validation := _validate_layout()
 		if bool(validation.valid):
@@ -151,6 +158,12 @@ func get_generation_report() -> Dictionary:
 		"rejected_micro_ledge_count": rejected_micro_ledge_count,
 		"invalid_platform_clearance_count": invalid_platform_clearance_count,
 		"minimum_platform_clearance": 0.0 if is_inf(minimum_platform_clearance) else minimum_platform_clearance,
+		"horizontal_edge_count": int(_structural_metrics.get("horizontal_edges", 0)),
+		"vertical_edge_count": int(_structural_metrics.get("vertical_edges", 0)),
+		"vertical_edge_ratio": float(_structural_metrics.get("vertical_edge_ratio", 0.0)),
+		"max_vertical_chain": int(_structural_metrics.get("max_vertical_chain", 0)),
+		"row_count": int(_structural_metrics.get("row_count", 0)),
+		"director_intents": (_structural_metrics.get("intents", {}) as Dictionary).duplicate(true),
 		"signature": generation_signature,
 	}
 
@@ -167,6 +180,7 @@ func get_map_graph() -> Dictionary:
 			"neighbors": (data.neighbors as Array).duplicate(),
 			"main_route": bool(data.main_route),
 			"role": StringName(data.role),
+			"intent": StringName(data.get("intent", &"traversal")),
 			"module_id": definition.module_id if definition != null else &"unknown",
 			"instance_id": _module_instance_id(index),
 			"route_style": definition.route_style if definition != null else &"flat",
@@ -192,48 +206,172 @@ func get_module_index_at(world_position: Vector2) -> int:
 
 
 func _build_exploration_layout(target_count: int, rng: RandomNumberGenerator) -> Array[Dictionary]:
-	# A compact, Manhattan-connected macro graph. Its two loops force meaningful
-	# vertical traversal while every connector remains one safe module step apart.
-	var main_route: Array[Vector2i] = [
-		Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(2, -1),
-		Vector2i(3, -1), Vector2i(4, -1), Vector2i(4, 0), Vector2i(5, 0),
-		Vector2i(5, 1), Vector2i(6, 1), Vector2i(7, 1), Vector2i(7, 0),
-		Vector2i(8, 0),
-	]
-	var optional_routes: Array[Vector2i] = [
-		Vector2i(4, -2), Vector2i(5, -2), Vector2i(6, -2), Vector2i(6, -1), Vector2i(6, 0),
-		Vector2i(5, 2), Vector2i(6, 2), Vector2i(7, 2), Vector2i(8, 2), Vector2i(8, 1),
-	]
-	var desired_count := clampi(target_count, 23, 25)
-	if desired_count >= 24:
-		optional_routes.append(Vector2i(1, 1))
-	if desired_count >= 25:
-		optional_routes.append(Vector2i(8, -1))
-	var mirror_vertical := rng.randi_range(0, 1) == 1
-	var layout: Array[Dictionary] = []
-	for coordinate in main_route:
-		var grid := Vector2i(coordinate.x, -coordinate.y if mirror_vertical else coordinate.y)
-		layout.append(_new_layout_node(grid, true))
-	for coordinate in optional_routes:
-		var grid := Vector2i(coordinate.x, -coordinate.y if mirror_vertical else coordinate.y)
-		layout.append(_new_layout_node(grid, false))
-	for first in layout.size():
-		var first_grid: Vector2i = layout[first].grid
-		for second in range(first + 1, layout.size()):
-			var second_grid: Vector2i = layout[second].grid
-			if absi(first_grid.x - second_grid.x) + absi(first_grid.y - second_grid.y) == 1:
-				_add_edge(layout, first, second)
-	var exit_a_grid := Vector2i(6, 2 if mirror_vertical else -2)
-	var exit_b_grid := Vector2i(8, -2 if mirror_vertical else 2)
-	_exit_module_indices = [_find_grid_index(layout, exit_a_grid), _find_grid_index(layout, exit_b_grid)]
+	_room_director = ROOM_DIRECTOR_SCRIPT.new() as RoomDirector
+	_room_director.configure(biome_definition.generation_rules if biome_definition != null else {})
+	var minimum_count := biome_definition.min_modules if biome_definition != null else 15
+	var maximum_count := biome_definition.max_modules if biome_definition != null else 25
+	var desired_count := clampi(target_count, minimum_count, maximum_count)
+	var main_target := clampi(roundi(float(desired_count) * 0.62), mini(9, desired_count), maxi(desired_count - 4, 1))
+	var layout: Array[Dictionary] = [_new_layout_node(Vector2i.ZERO, true)]
+	var occupied := {_grid_key(Vector2i.ZERO): true}
+	var current_index := 0
+
+	while layout.size() < main_target:
+		var anchor_index := _select_growth_anchor(layout, occupied, true, current_index, rng)
+		if anchor_index < 0:
+			break
+		var anchor_grid: Vector2i = layout[anchor_index].grid
+		var candidates := _available_growth_directions(anchor_grid, occupied)
+		if candidates.is_empty():
+			break
+		var direction := _room_director.choose_direction(candidates, anchor_grid, occupied, rng)
+		if direction == Vector2i.ZERO:
+			break
+		var next_grid := anchor_grid + direction
+		var next_index := layout.size()
+		layout.append(_new_layout_node(next_grid, true))
+		occupied[_grid_key(next_grid)] = true
+		_add_edge(layout, anchor_index, next_index)
+		_room_director.note_direction(direction)
+		current_index = next_index
+
+	while layout.size() < desired_count:
+		var anchor_index := _select_growth_anchor(layout, occupied, false, -1, rng)
+		if anchor_index < 0:
+			break
+		var anchor_grid: Vector2i = layout[anchor_index].grid
+		var candidates := _available_growth_directions(anchor_grid, occupied)
+		if candidates.is_empty():
+			continue
+		var direction := _room_director.choose_direction(candidates, anchor_grid, occupied, rng)
+		if direction == Vector2i.ZERO:
+			continue
+		var next_grid := anchor_grid + direction
+		var next_index := layout.size()
+		layout.append(_new_layout_node(next_grid, false))
+		occupied[_grid_key(next_grid)] = true
+		_add_edge(layout, anchor_index, next_index)
+		_room_director.note_direction(direction)
+
+	# Growth edges are the topology. Do not automatically connect every adjacent
+	# grid cell: that turns a varied layout into a dense lattice, forces generic
+	# four-way modules, and erases the distinction between routes and branches.
+	_exit_module_indices = _select_exit_modules(layout)
 	return layout
 
 
-func _find_grid_index(layout: Array[Dictionary], grid: Vector2i) -> int:
+func _grid_key(grid: Vector2i) -> String:
+	return "%d:%d" % [grid.x, grid.y]
+
+
+func _available_growth_directions(grid: Vector2i, occupied: Dictionary) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	for direction in [Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT]:
+		var next: Vector2i = grid + direction
+		if next.x < 0 or occupied.has(_grid_key(next)):
+			continue
+		result.append(direction)
+	return result
+
+
+func _select_growth_anchor(layout: Array[Dictionary], occupied: Dictionary, prefer_main: bool, current_index: int, rng: RandomNumberGenerator) -> int:
+	if current_index >= 0 and current_index < layout.size():
+		var current_grid: Vector2i = layout[current_index].grid
+		if not _available_growth_directions(current_grid, occupied).is_empty():
+			return current_index
+	var candidates: Array[int] = []
 	for index in layout.size():
-		if Vector2i(layout[index].grid) == grid:
-			return index
-	return -1
+		if prefer_main and not bool(layout[index].main_route):
+			continue
+		var grid: Vector2i = layout[index].grid
+		if not _available_growth_directions(grid, occupied).is_empty():
+			candidates.append(index)
+	if candidates.is_empty() and prefer_main:
+		for index in layout.size():
+			var grid: Vector2i = layout[index].grid
+			if not _available_growth_directions(grid, occupied).is_empty():
+				candidates.append(index)
+	if candidates.is_empty():
+		return -1
+	if prefer_main:
+		return candidates.back()
+	var branch_tips := candidates.filter(func(index: int) -> bool:
+		return not bool(layout[index].main_route) and (layout[index].neighbors as Array).size() == 1
+	)
+	if not branch_tips.is_empty() and rng.randf() < 0.62:
+		return branch_tips[rng.randi_range(0, branch_tips.size() - 1)]
+	var branch_candidates := candidates.filter(func(index: int) -> bool:
+		return (layout[index].neighbors as Array).size() == 2
+	)
+	if not branch_candidates.is_empty() and rng.randf() < 0.72:
+		candidates = branch_candidates
+	return candidates[rng.randi_range(0, candidates.size() - 1)]
+
+
+func _select_exit_modules(layout: Array[Dictionary]) -> Array[int]:
+	if layout.size() < 3:
+		return [maxi(layout.size() - 2, 0), maxi(layout.size() - 1, 0)]
+	var distances := _layout_distances(layout, 0)
+	var candidates: Array[int] = []
+	for index in range(1, layout.size()):
+		if (layout[index].neighbors as Array).size() == 1:
+			candidates.append(index)
+	if candidates.size() < 2:
+		candidates.clear()
+		for index in range(1, layout.size()):
+			if (layout[index].neighbors as Array).size() <= 2:
+				candidates.append(index)
+	if candidates.size() < 2:
+		candidates.clear()
+		for index in range(1, layout.size()):
+			candidates.append(index)
+	candidates.sort_custom(func(first: int, second: int) -> bool:
+		var first_distance := int(distances.get(first, 0))
+		var second_distance := int(distances.get(second, 0))
+		if first_distance != second_distance:
+			return first_distance > second_distance
+		var first_grid: Vector2i = layout[first].grid
+		var second_grid: Vector2i = layout[second].grid
+		return first_grid.x > second_grid.x
+	)
+	var first := candidates[0]
+	var first_grid: Vector2i = layout[first].grid
+	var maximum_x := first_grid.x
+	for data in layout:
+		maximum_x = maxi(maximum_x, int((data.grid as Vector2i).x))
+	var second := -1
+	for candidate in candidates:
+		if candidate == first:
+			continue
+		var grid: Vector2i = layout[candidate].grid
+		if grid.y == first_grid.y:
+			continue
+		if first_grid.x == maximum_x and grid.x == maximum_x:
+			continue
+		second = candidate
+		break
+	if second < 0:
+		for candidate in candidates:
+			if candidate != first and Vector2i(layout[candidate].grid).y != first_grid.y:
+				second = candidate
+				break
+	if second < 0:
+		second = candidates[1]
+	return [first, second]
+
+
+func _layout_distances(layout: Array[Dictionary], start_index: int) -> Dictionary:
+	var result := {start_index: 0}
+	var queue: Array[int] = [start_index]
+	while not queue.is_empty():
+		var current: int = queue.pop_front()
+		for neighbor_value: Variant in layout[current].neighbors:
+			var neighbor := int(neighbor_value)
+			if result.has(neighbor):
+				continue
+			result[neighbor] = int(result[current]) + 1
+			queue.append(neighbor)
+	return result
 
 
 func _new_layout_node(grid_position: Vector2i, main_route: bool) -> Dictionary:
@@ -244,28 +382,96 @@ func _new_layout_node(grid_position: Vector2i, main_route: bool) -> Dictionary:
 		"definition": null,
 		"required_connectors": [],
 		"role": &"traversal",
+		"intent": &"traversal",
 	}
 
 
-func _assign_module_roles() -> void:
-	var optional_modules: Array[int] = []
+func _assign_module_roles(rng: RandomNumberGenerator) -> void:
+	if _room_director == null:
+		_room_director = ROOM_DIRECTOR_SCRIPT.new() as RoomDirector
+		_room_director.configure(biome_definition.generation_rules if biome_definition != null else {})
+	var reward_count := 0
+	var special_count := 0
+	var special_candidates: Array[int] = []
+	var special_fallback_candidates: Array[int] = []
 	for index in _nodes.size():
 		var data: Dictionary = _nodes[index]
+		var intent: StringName
 		if index == 0:
+			intent = &"transition"
 			data.role = &"start"
 		elif _exit_module_indices.has(index):
+			intent = &"transition"
 			data.role = &"exit"
-		elif not bool(data.main_route):
-			data.role = &"reward" if (data.neighbors as Array).size() == 1 else &"combat"
-			optional_modules.append(index)
-		elif index % 4 == 2:
-			data.role = &"combat"
 		else:
-			data.role = &"traversal"
-	if not optional_modules.is_empty():
-		var reward_positions: Array[int] = [0, floori(optional_modules.size() * 0.5), optional_modules.size() - 1]
-		for reward_position in reward_positions:
-			_nodes[optional_modules[reward_position]].role = &"reward"
+			var required := _required_connectors(index)
+			var candidates: Array[StringName] = [&"traversal", &"combat"]
+			if not required.has(&"up") and not required.has(&"down"):
+				special_fallback_candidates.append(index)
+			if required.has(&"up") or required.has(&"down"):
+				candidates.append(&"vertical_traversal")
+			if (data.neighbors as Array).size() >= 3:
+				candidates.append(&"route_change")
+			if not bool(data.main_route) and (data.neighbors as Array).size() == 1:
+				candidates.append(&"reward")
+				if not required.has(&"up") and not required.has(&"down"):
+					candidates.append(&"special_encounter")
+					special_candidates.append(index)
+			if index > 2:
+				candidates.append(&"breathing")
+			intent = _room_director.choose_intent(candidates, rng)
+			match intent:
+				&"combat":
+					data.role = &"combat"
+				&"reward", &"special_encounter":
+					data.role = &"reward"
+					reward_count += 1
+					if intent == &"special_encounter":
+						special_count += 1
+				_:
+					data.role = &"traversal"
+		data.intent = intent
+		_room_director.note_intent(intent)
+	if special_count == 0:
+		var special_pool: Array[int] = special_candidates if not special_candidates.is_empty() else special_fallback_candidates
+		if not special_pool.is_empty():
+			var special_index := special_pool[rng.randi_range(0, special_pool.size() - 1)]
+			if _nodes[special_index].role != &"reward":
+				reward_count += 1
+			_nodes[special_index].intent = &"special_encounter"
+			_nodes[special_index].role = &"reward"
+			special_count = 1
+	if reward_count < 2:
+		for index in _nodes.size():
+			if reward_count >= 2:
+				break
+			if index == 0 or _exit_module_indices.has(index) or bool(_nodes[index].main_route):
+				continue
+			if (_nodes[index].neighbors as Array).size() != 1:
+				continue
+			_nodes[index].intent = &"reward"
+			_nodes[index].role = &"reward"
+			reward_count += 1
+	if reward_count < 2:
+		for index in _nodes.size():
+			if reward_count >= 2:
+				break
+			if index == 0 or _exit_module_indices.has(index) or bool(_nodes[index].main_route):
+				continue
+			if _nodes[index].role == &"reward":
+				continue
+			_nodes[index].intent = &"reward"
+			_nodes[index].role = &"reward"
+			reward_count += 1
+	if reward_count < 2:
+		for index in _nodes.size():
+			if reward_count >= 2:
+				break
+			if index == 0 or _exit_module_indices.has(index) or _nodes[index].role == &"reward":
+				continue
+			_nodes[index].intent = &"reward"
+			_nodes[index].role = &"reward"
+			reward_count += 1
 
 
 func _add_edge(layout: Array[Dictionary], first: int, second: int) -> void:
@@ -276,7 +482,6 @@ func _add_edge(layout: Array[Dictionary], first: int, second: int) -> void:
 
 
 func _assign_module_definitions(definitions: Array[BiomeModuleDefinition], rng: RandomNumberGenerator) -> void:
-	var recent_module_ids: Array[StringName] = []
 	for index in _nodes.size():
 		var required := _required_connectors(index)
 		_nodes[index].required_connectors = required
@@ -284,27 +489,45 @@ func _assign_module_definitions(definitions: Array[BiomeModuleDefinition], rng: 
 		for definition in definitions:
 			if definition.supports(required):
 				candidates.append(definition)
-		var horizontal_only := required.size() == 2 and required.has(&"left") and required.has(&"right")
-		if horizontal_only and _nodes[index].role == &"traversal" and index % 3 != 0:
-			var route_candidates: Array[BiomeModuleDefinition] = []
-			for candidate in candidates:
-				if candidate.route_style in ["upper_lower", "lower_upper"]:
-					route_candidates.append(candidate)
-			if not route_candidates.is_empty():
-				candidates = route_candidates
 		if _exit_module_indices.has(index):
-			var exit_candidates := candidates.filter(func(value: BiomeModuleDefinition) -> bool: return value.module_id == &"exit_platform")
+			var exit_candidates: Array[BiomeModuleDefinition] = []
+			for candidate in candidates:
+				if candidate.module_id == &"exit_platform":
+					exit_candidates.append(candidate)
 			if not exit_candidates.is_empty():
 				candidates = exit_candidates
-		if candidates.size() > 1 and not recent_module_ids.is_empty():
-			var varied := candidates.filter(func(value: BiomeModuleDefinition) -> bool: return not recent_module_ids.has(value.module_id))
-			if not varied.is_empty():
-				candidates = varied
-		_nodes[index].definition = candidates[rng.randi_range(0, candidates.size() - 1)] if not candidates.is_empty() else null
-		if _nodes[index].definition != null:
-			recent_module_ids.append((_nodes[index].definition as BiomeModuleDefinition).module_id)
-			if recent_module_ids.size() > 2:
-				recent_module_ids.pop_front()
+		else:
+			var non_exit_candidates: Array[BiomeModuleDefinition] = []
+			for candidate in candidates:
+				if candidate.module_id != &"exit_platform":
+					non_exit_candidates.append(candidate)
+			if not non_exit_candidates.is_empty():
+				candidates = non_exit_candidates
+			var minimum_connector_count := 999
+			for candidate in candidates:
+				minimum_connector_count = mini(minimum_connector_count, candidate.connectors.size())
+			var specific_candidates: Array[BiomeModuleDefinition] = []
+			for candidate in candidates:
+				if candidate.connectors.size() == minimum_connector_count:
+					specific_candidates.append(candidate)
+			if not specific_candidates.is_empty():
+				candidates = specific_candidates
+			if _nodes[index].role == &"reward":
+				var reward_candidates: Array[BiomeModuleDefinition] = []
+				for candidate in candidates:
+					var is_special := StringName(_nodes[index].get("intent", &"traversal")) == &"special_encounter"
+					var special_ready := candidate.module_id in [&"corridor", &"open_area", &"upper_lower_passage"] and candidate.enemy_sockets.size() >= 2
+					if candidate.module_id != &"vertical_shaft" and not candidate.loot_sockets.is_empty() and (not is_special or special_ready):
+						reward_candidates.append(candidate)
+				if not reward_candidates.is_empty():
+					candidates = reward_candidates
+		var selected: BiomeModuleDefinition = null
+		if not candidates.is_empty():
+			selected = _room_director.choose_module(candidates, StringName(_nodes[index].get("intent", &"traversal")), rng)
+		_nodes[index].definition = selected
+		if selected != null:
+			_room_director.note_module(selected.module_id)
+	_structural_metrics = _calculate_structural_metrics()
 
 
 func _required_connectors(index: int) -> Array[StringName]:
@@ -359,15 +582,84 @@ func _validate_layout() -> Dictionary:
 		var exit_definition := _nodes[exit_index].definition as BiomeModuleDefinition
 		if exit_definition.exit_sockets.is_empty() or exit_definition.attribute_sockets.is_empty():
 			return {"valid": false, "reason": "saída sem sockets obrigatórios"}
+	_structural_metrics = _calculate_structural_metrics()
+	if _nodes.size() >= 9:
+		if int(_structural_metrics.get("row_count", 0)) < 3:
+			return {"valid": false, "reason": "variação vertical insuficiente"}
+		if not bool(_structural_metrics.get("has_branch", false)):
+			return {"valid": false, "reason": "layout sem bifurcação estrutural"}
+		var first_exit_grid: Vector2i = _nodes[_exit_module_indices[0]].grid
+		var second_exit_grid: Vector2i = _nodes[_exit_module_indices[1]].grid
+		if first_exit_grid.y == second_exit_grid.y:
+			return {"valid": false, "reason": "saídas sem rotas verticais distintas"}
+		var rules := biome_definition.generation_rules if biome_definition != null else {}
+		if int(_structural_metrics.get("max_vertical_chain", 0)) > clampi(int(rules.get("hard_vertical_chain_limit", 5)), 3, 8):
+			return {"valid": false, "reason": "cadeia vertical extrema"}
+		if float(_structural_metrics.get("vertical_edge_ratio", 0.0)) > clampf(float(rules.get("max_vertical_edge_ratio", 0.55)), 0.30, 0.80):
+			return {"valid": false, "reason": "verticalidade domina a topologia"}
 	var loot_capacity := 0
 	var enemy_capacity := 0
+	var reward_capacity := 0
 	for data in _nodes:
 		var definition := data.definition as BiomeModuleDefinition
 		loot_capacity += definition.loot_sockets.size()
 		enemy_capacity += definition.enemy_sockets.size()
+		if data.role == &"reward" and not definition.loot_sockets.is_empty():
+			reward_capacity += 1
 	if loot_capacity < 3 or enemy_capacity < 7:
 		return {"valid": false, "reason": "capacidade de conteúdo insuficiente"}
+	if reward_capacity < 2:
+		return {"valid": false, "reason": "capacidade de recompensa insuficiente"}
 	return {"valid": true, "reason": ""}
+
+
+func _calculate_structural_metrics() -> Dictionary:
+	var horizontal_edges := 0
+	var vertical_edges := 0
+	var rows := {}
+	var has_branch := false
+	var intents := {}
+	var occupied := {}
+	for index in _nodes.size():
+		var grid: Vector2i = _nodes[index].grid
+		rows[grid.y] = true
+		occupied[_grid_key(grid)] = true
+		var intent := StringName(_nodes[index].get("intent", &"traversal"))
+		intents[intent] = int(intents.get(intent, 0)) + 1
+		has_branch = has_branch or (_nodes[index].neighbors as Array).size() >= 3
+		for neighbor_value: Variant in _nodes[index].neighbors:
+			var neighbor := int(neighbor_value)
+			if neighbor <= index:
+				continue
+			var difference: Vector2i = _nodes[neighbor].grid - grid
+			if difference.x != 0:
+				horizontal_edges += 1
+			elif difference.y != 0:
+				vertical_edges += 1
+	var total_edges := horizontal_edges + vertical_edges
+	return {
+		"horizontal_edges": horizontal_edges,
+		"vertical_edges": vertical_edges,
+		"vertical_edge_ratio": float(vertical_edges) / float(total_edges) if total_edges > 0 else 0.0,
+		"max_vertical_chain": _maximum_vertical_chain(occupied),
+		"row_count": rows.size(),
+		"has_branch": has_branch,
+		"intents": intents,
+	}
+
+
+func _maximum_vertical_chain(occupied: Dictionary) -> int:
+	var maximum := 0
+	for data in _nodes:
+		var origin: Vector2i = data.grid
+		for direction_y in [-1, 1]:
+			var chain := 0
+			var cursor := origin
+			while occupied.has(_grid_key(cursor + Vector2i(0, direction_y))):
+				cursor += Vector2i(0, direction_y)
+				chain += 1
+			maximum = maxi(maximum, chain)
+	return maximum
 
 
 func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
@@ -435,13 +727,14 @@ func _build_module(parent: Node2D, index: int) -> void:
 	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
 		var decoration := CITY_PRESENTATION.new()
 		decoration.kind = "module"
+		decoration.room_role = String(data.role)
 		decoration.variant = absi(int(data.grid.x) * 7 + int(data.grid.y) * 13)
 		module.add_child(decoration)
 	_build_floor(module, data.required_connectors.has(&"down"))
 	_build_module_guard_rails(module, data.required_connectors)
 	var has_vertical_route: bool = data.required_connectors.has(&"up") or data.required_connectors.has(&"down")
 	var has_internal_routes: bool = definition.route_style in ["upper_lower", "lower_upper"]
-	var has_purposeful_platforms: bool = has_vertical_route or has_internal_routes or data.role in [&"combat", &"reward", &"exit"]
+	var has_purposeful_platforms: bool = _module_has_built_platforms(index)
 	if has_purposeful_platforms:
 		for platform_rect in definition.platform_rects:
 			if _platform_is_functional(definition, platform_rect, has_vertical_route or has_internal_routes):
@@ -649,13 +942,28 @@ func _spawn_teleporters(run_manager: Node) -> void:
 		var second_distance := int(distances.get(second, 0))
 		return first_distance < second_distance or (first_distance == second_distance and first < second)
 	)
+	var preferred: Array[int] = []
+	var fallback: Array[int] = []
+	for candidate in ordered:
+		if candidate == 0:
+			continue
+		if _nodes[candidate].intent == &"special_encounter":
+			continue
+		if _exit_module_indices.has(candidate) or _nodes[candidate].role == &"reward":
+			fallback.append(candidate)
+		else:
+			preferred.append(candidate)
+	if preferred.size() < desired_count - 1:
+		for candidate in fallback:
+			preferred.append(candidate)
 	var chosen: Array[int] = [0]
-	for slot in range(1, desired_count):
-		var position := roundi(float(slot) * float(ordered.size() - 1) / float(desired_count - 1))
-		var candidate := ordered[position]
-		if not chosen.has(candidate):
-			chosen.append(candidate)
-	chosen.sort()
+	while chosen.size() < desired_count:
+		var candidate := _best_spaced_teleporter_candidate(preferred, chosen, TELEPORTER_MIN_GRAPH_DISTANCE, TELEPORTER_MIN_WORLD_DISTANCE)
+		if candidate < 0:
+			candidate = _best_spaced_teleporter_candidate(preferred, chosen, TELEPORTER_RELAXED_GRAPH_DISTANCE, TELEPORTER_RELAXED_WORLD_DISTANCE)
+		if candidate < 0:
+			break
+		chosen.append(candidate)
 	var stage_prefix := String(run_manager.current_stage_id) if not String(run_manager.current_stage_id).is_empty() else "lower_city"
 	for order in chosen.size():
 		var module_index := chosen[order]
@@ -675,6 +983,29 @@ func _spawn_teleporters(run_manager: Node) -> void:
 			"display_name": teleporter.display_name,
 			"position": teleporter.global_position,
 		})
+
+
+func _best_spaced_teleporter_candidate(candidates: Array[int], chosen: Array[int], minimum_graph_distance: int, minimum_world_distance: float) -> int:
+	var best_candidate := -1
+	var best_score := -INF
+	for candidate in candidates:
+		if chosen.has(candidate):
+			continue
+		var minimum_graph := 999
+		var minimum_world := INF
+		var candidate_world := Vector2(_nodes[candidate].grid) * CELL_SIZE
+		for selected in chosen:
+			var selected_distances := _graph_distances(selected)
+			minimum_graph = mini(minimum_graph, int(selected_distances.get(candidate, 999)))
+			var selected_world := Vector2(_nodes[selected].grid) * CELL_SIZE
+			minimum_world = minf(minimum_world, candidate_world.distance_to(selected_world))
+		if minimum_graph < minimum_graph_distance or minimum_world < minimum_world_distance:
+			continue
+		var score := float(minimum_graph) * 10000.0 + minimum_world
+		if score > best_score or (is_equal_approx(score, best_score) and (best_candidate < 0 or candidate < best_candidate)):
+			best_score = score
+			best_candidate = candidate
+	return best_candidate
 
 
 func _graph_distances(start_index: int) -> Dictionary:
@@ -727,7 +1058,7 @@ func _spawn_attribute_reward(reward_index: int, module_index: int, stage_prefix:
 	var exit_suffix := "a" if reward_index == 0 else "b"
 	chest.chest_id = StringName("%s_exit_%s_attribute" % [stage_prefix, exit_suffix])
 	add_child(chest)
-	chest.global_position = marker.global_position
+	chest.global_position = _grounded_content_position(marker, 34.0, 23.0)
 	spawned_attribute_count += 1
 	(_content_modules.attribute as Array).append(module_index)
 	_content_entries.append({"kind": &"attribute", "content_id": chest.chest_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
@@ -737,7 +1068,9 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 	var candidates: Array = _sockets.loot.duplicate()
 	candidates = candidates.filter(func(marker: Marker2D) -> bool:
 		var module_index := int(marker.get_meta("module_index"))
-		return module_index != 0 and not _exit_module_indices.has(module_index) and _nodes[module_index].role == &"reward" and _is_valid_spawn_socket(marker, 44.0)
+		var is_special := StringName(_nodes[module_index].get("intent", &"traversal")) == &"special_encounter"
+		var half_width := 32.0 if is_special else 44.0
+		return module_index != 0 and not _exit_module_indices.has(module_index) and _nodes[module_index].role == &"reward" and _is_valid_spawn_socket(marker, half_width)
 	)
 	if candidates.size() < 2:
 		for fallback_marker in _sockets.loot:
@@ -751,6 +1084,18 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 	var used_modules: Dictionary = {}
 	for marker in candidates:
 		var module_index := int(marker.get_meta("module_index"))
+		if StringName(_nodes[module_index].get("intent", &"traversal")) != &"special_encounter":
+			continue
+		selected.append(marker)
+		used_modules[module_index] = true
+		if selected.size() >= desired_count:
+			break
+	for marker in candidates:
+		if selected.size() >= desired_count:
+			break
+		var module_index := int(marker.get_meta("module_index"))
+		if used_modules.has(module_index):
+			continue
 		if (_nodes[module_index].neighbors as Array).size() == 1:
 			selected.append(marker)
 			used_modules[module_index] = true
@@ -774,9 +1119,11 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 		used_modules[module_index] = true
 	for index in selected.size():
 		var marker := selected[index]
+		var module_index := int(marker.get_meta("module_index"))
 		var loot_id := StringName("%s_loot_%02d" % [stage_prefix, index + 1])
 		var event_markers := _trap_event_markers_for_loot(marker)
-		var spawn_trap := event_markers.size() >= 2 and rng.randf() <= TRAP_CHEST_CHANCE
+		var force_special_trap := StringName(_nodes[module_index].get("intent", &"traversal")) == &"special_encounter"
+		var spawn_trap := event_markers.size() >= 2 and (force_special_trap or rng.randf() <= TRAP_CHEST_CHANCE)
 		var loot: Node2D
 		if spawn_trap:
 			var trap := TRAP_CHEST_SCENE.instantiate() as TrapChest
@@ -795,9 +1142,8 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 			ordinary_loot.amount = 15 + run_manager.extra_enemy_count * 5
 			loot = ordinary_loot
 		add_child(loot)
-		loot.global_position = marker.global_position
+		loot.global_position = _grounded_content_position(marker, 44.0, 21.0)
 		spawned_loot_count += 1
-		var module_index := int(marker.get_meta("module_index"))
 		(_content_modules.loot as Array).append(module_index)
 		_content_entries.append({"kind": &"loot", "content_id": loot_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
 
@@ -844,7 +1190,7 @@ func _spawn_weapon_pickups(rng: RandomNumberGenerator, run_manager: Node, stage_
 		weapon_pool.assign(configured_pool)
 	pickup.weapon_id = weapon_pool[rng.randi_range(0, weapon_pool.size() - 1)]
 	add_child(pickup)
-	pickup.global_position = marker.global_position
+	pickup.global_position = _grounded_content_position(marker, 44.0, 15.0)
 	var module_index := int(marker.get_meta("module_index"))
 	(_content_modules.weapon as Array).append(module_index)
 	_content_entries.append({"kind": &"weapon", "content_id": pickup.pickup_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
@@ -877,7 +1223,8 @@ func _spawn_enemies(rng: RandomNumberGenerator, run_manager: Node, stage_prefix:
 		var module_candidates := by_module[module_index] as Array
 		_shuffle(module_candidates, rng)
 		var forced := empty_streak >= maximum_gap
-		var contextual_bonus := 0.16 if _nodes[module_index].role in [&"combat", &"reward"] else 0.0
+		var intent := StringName(_nodes[module_index].get("intent", &"traversal"))
+		var contextual_bonus := 0.28 if intent == &"special_encounter" else (0.18 if _nodes[module_index].role in [&"combat", &"reward"] else 0.0)
 		if forced or rng.randf() <= occupancy + contextual_bonus:
 			chosen_modules.append(module_index)
 			empty_streak = 0
@@ -1017,16 +1364,55 @@ func _is_valid_spawn_socket(marker: Marker2D, half_width: float) -> bool:
 		return false
 	var definition := _nodes[module_index].definition as BiomeModuleDefinition
 	var supported := absf(local_position.y - (FLOOR_TOP - 45.0)) <= 64.0
-	for source_rect in definition.platform_rects:
-		if not _platform_is_functional(definition, source_rect, _nodes[module_index].required_connectors.has(&"up") or _nodes[module_index].required_connectors.has(&"down") or definition.route_style in ["upper_lower", "lower_upper"]):
-			continue
-		var platform := _scaled_platform_rect(source_rect, definition)
-		if local_position.x >= platform.position.x + half_width and local_position.x <= platform.end.x - half_width and absf(local_position.y - platform.position.y) <= 58.0:
-			supported = true
-			break
+	if _module_has_built_platforms(module_index):
+		for source_rect in definition.platform_rects:
+			if not _platform_is_functional(definition, source_rect, _nodes[module_index].required_connectors.has(&"up") or _nodes[module_index].required_connectors.has(&"down") or definition.route_style in ["upper_lower", "lower_upper"]):
+				continue
+			var platform := _scaled_platform_rect(source_rect, definition)
+			if local_position.x >= platform.position.x + half_width and local_position.x <= platform.end.x - half_width and absf(local_position.y - platform.position.y) <= 58.0:
+				supported = true
+				break
 	if _nodes[module_index].required_connectors.has(&"down") and absf(local_position.x - CELL_SIZE.x * 0.5) < 110.0:
 		return false
 	return supported and not _position_near_teleporter(marker.global_position)
+
+
+func _module_has_built_platforms(module_index: int) -> bool:
+	var data: Dictionary = _nodes[module_index]
+	var definition := data.definition as BiomeModuleDefinition
+	var connectors: Array = data.required_connectors
+	return connectors.has(&"up") or connectors.has(&"down") or definition.route_style in ["upper_lower", "lower_upper"] or data.role in [&"combat", &"reward", &"exit"]
+
+
+func _grounded_content_position(marker: Marker2D, half_width: float, visual_bottom_offset: float) -> Vector2:
+	# Spawn sockets are authored for player/enemy centres, often ~45px above the
+	# support. Small chest art used the same pivot and appeared to float.
+	var module_index := int(marker.get_meta("module_index", -1))
+	if module_index < 0 or module_index >= _nodes.size():
+		return marker.global_position
+	var definition := _nodes[module_index].definition as BiomeModuleDefinition
+	var connectors: Array = _nodes[module_index].required_connectors as Array
+	var local := marker.position
+	var best_distance := INF
+	var surface_y := local.y
+	var floor_open := connectors.has(&"down") and absf(local.x - CELL_SIZE.x * 0.5) <= 70.0 + half_width
+	if not floor_open and absf(local.y - (FLOOR_TOP - 45.0)) <= 64.0:
+		best_distance = absf(local.y - (FLOOR_TOP - 45.0))
+		surface_y = FLOOR_TOP
+	if _module_has_built_platforms(module_index):
+		for source_rect in definition.platform_rects:
+			if not _platform_is_functional(definition, source_rect, connectors.has(&"up") or connectors.has(&"down") or definition.route_style in ["upper_lower", "lower_upper"]):
+				continue
+			var platform := _scaled_platform_rect(source_rect, definition)
+			if local.x < platform.position.x + half_width or local.x > platform.end.x - half_width:
+				continue
+			var distance := absf(local.y - platform.position.y)
+			if distance <= 58.0 and distance < best_distance:
+				best_distance = distance
+				surface_y = platform.position.y
+	if is_inf(best_distance):
+		return marker.global_position
+	return marker.global_position + Vector2(0.0, surface_y - visual_bottom_offset - local.y)
 
 
 func _position_near_teleporter(world_position: Vector2) -> bool:
@@ -1109,9 +1495,12 @@ func _build_fallback(run_seed: int, run_manager: Node, reason: String) -> bool:
 	for index in _nodes.size():
 		_nodes[index].required_connectors = _required_connectors(index)
 	_exit_module_indices = [3, 4]
-	_assign_module_roles()
 	var rng := RandomNumberGenerator.new()
 	rng.seed = run_seed
+	_room_director = ROOM_DIRECTOR_SCRIPT.new() as RoomDirector
+	_room_director.configure(biome_definition.generation_rules if biome_definition != null else {})
+	_assign_module_roles(rng)
+	_structural_metrics = _calculate_structural_metrics()
 	_build_world(rng, run_manager)
 	generated_module_count = _nodes.size()
 	push_warning("GENERATION FALLBACK: %s" % reason)
@@ -1145,6 +1534,8 @@ func _clear_generated_children() -> void:
 	_trap_event_ids.clear()
 	_heavy_enemy_ids.clear()
 	_reserved_event_marker_ids.clear()
+	_structural_metrics.clear()
+	_room_director = null
 
 
 func _scale_source_position(value: Vector2) -> Vector2:

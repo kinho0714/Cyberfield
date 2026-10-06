@@ -2,6 +2,7 @@ class_name BandagePickup
 extends Area2D
 
 const HEAL_RATIO := 0.10
+const MEDKIT_TEXTURE := preload("res://assets/temporary_items/foozle/medkit.png")
 var pickup_id: StringName
 var room_id: StringName
 var _nearby: Array[Node] = []
@@ -26,17 +27,13 @@ func _ready() -> void:
 	glow.scale = Vector2(1.25, 1.25)
 	glow.z_index = 1
 	add_child(glow)
-	var packet := Polygon2D.new()
-	packet.polygon = PackedVector2Array([Vector2(-23, -15), Vector2(23, -15), Vector2(23, 15), Vector2(-23, 15)])
-	packet.color = Color(0.9, 0.96, 0.92, 1.0)
-	packet.z_index = 2
-	add_child(packet)
-	var cross := Line2D.new()
-	cross.points = PackedVector2Array([Vector2(-9, 0), Vector2(9, 0), Vector2.ZERO, Vector2(0, -9), Vector2(0, 9)])
-	cross.width = 5.0
-	cross.default_color = Color(0.08, 0.75, 0.68, 1.0)
-	cross.z_index = 3
-	add_child(cross)
+	var sprite := Sprite2D.new()
+	sprite.name = "TemporaryMedkitVisual"
+	sprite.texture = MEDKIT_TEXTURE
+	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	sprite.scale = Vector2(1.5, 1.5)
+	sprite.z_index = 2
+	add_child(sprite)
 	var label := Label.new()
 	label.position = Vector2(-62, -48)
 	label.size = Vector2(124, 42)

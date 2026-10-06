@@ -134,7 +134,9 @@ var network_is_hurt := false
 
 
 func _ready() -> void:
-	if input_profile == "p2" and joypad_device_id >= 0:
+	if input_profile == "p1":
+		LocalCoopInput.ensure_player_one_actions(joypad_device_id)
+	elif input_profile == "p2" and joypad_device_id >= 0:
 		LocalCoopInput.ensure_player_two_actions(joypad_device_id)
 	elif input_profile != "p1":
 		LocalCoopInput.ensure_network_player_actions(StringName(input_profile))
@@ -199,7 +201,7 @@ func _physics_process(delta: float) -> void:
 		velocity = Vector2.ZERO
 		return
 
-	var direction: float = Input.get_axis(_action(&"left"), _action(&"right"))
+	var direction: float = get_movement_direction()
 	wall_transfer_assist_timer = maxf(wall_transfer_assist_timer - delta, 0.0)
 	var wall_normal: Vector2 = get_wall_normal() if is_on_wall() else Vector2.ZERO
 	if wall_normal.x == 0.0 and wall_transfer_assist_timer > 0.0 and direction != 0.0:
@@ -276,7 +278,7 @@ func _physics_process(delta: float) -> void:
 
 	# Require two separate down presses while airborne to start a ground slam.
 	if (
-		Input.is_action_just_pressed(_action(&"down"))
+		_down_just_pressed()
 		and not is_on_floor()
 		and not is_ground_slamming
 		and not is_attacking
@@ -296,7 +298,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = GROUND_SLAM_SPEED
 
 	var jump_pressed := Input.is_action_just_pressed(_action(&"jump"))
-	if jump_pressed and Input.is_action_pressed(_action(&"down")) and _can_drop_through_platform():
+	if jump_pressed and _down_pressed() and _can_drop_through_platform():
 		position.y += 10.0
 		velocity.y = 90.0
 		drop_through_timer = DROP_THROUGH_COOLDOWN
@@ -310,6 +312,7 @@ func _physics_process(delta: float) -> void:
 		elif jumps_left > 0:
 			velocity.y = JUMP_VELOCITY
 			jumps_left -= 1
+			_play_audio_event(&"player_jump")
 
 	# Consume one buffered press as soon as the existing attack state allows it.
 	if attack_input_buffer_timer > 0.0 and _can_start_attack():
@@ -453,6 +456,7 @@ func _launch_wall_jump(wall_normal: Vector2) -> void:
 	wall_transfer_assist_timer = WALL_TRANSFER_GRACE_DURATION
 	last_wall_jump_normal_x = wall_normal.x
 	wall_jump_available = false
+	_play_audio_event(&"player_jump")
 
 
 func attack(slot: int = -1) -> void:
@@ -468,6 +472,7 @@ func attack(slot: int = -1) -> void:
 	if is_attacking or combo_end_recovery_timer > 0.0 or is_downed or is_healing or not input_enabled:
 		return
 	weapon_cooldowns[requested_slot] = float(definition.get("cooldown", ATTACK_DURATION))
+	_play_audio_event(&"player_attack")
 
 	is_attacking = true
 	attack_generation += 1
@@ -550,6 +555,7 @@ func _start_dash() -> void:
 		if enemy is PhysicsBody2D:
 			add_collision_exception_with(enemy)
 			_dash_exceptions.append(enemy)
+	_play_audio_event(&"player_dash")
 
 
 func _end_dash() -> void:
@@ -574,6 +580,7 @@ func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 	if is_downed or is_healing or not input_enabled:
 		return
 	weapon_cooldowns[slot] = float(definition.get("cooldown", 0.42))
+	_play_audio_event(&"player_attack")
 	var player_anim := anim if anim != null else get_node("AnimatedSprite2D") as AnimatedSprite2D
 	is_attacking = true
 	attack_generation += 1
@@ -843,11 +850,34 @@ func interact_with_nearest() -> void:
 			nearest_interactable.interact(self)
 
 
+func _play_audio_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("play_event"):
+		audio.play_event(event_id)
+
+
 func _action(base_action: StringName) -> StringName:
 	if input_profile != "p1":
 		return StringName("%s_%s" % [input_profile, base_action])
 
 	return base_action
+
+
+func get_movement_direction() -> float:
+	var direction: float = Input.get_axis(_action(&"left"), _action(&"right"))
+	if input_profile == "p1" and InputMap.has_action(&"touch_left") and InputMap.has_action(&"touch_right"):
+		var touch_direction: float = Input.get_axis(&"touch_left", &"touch_right")
+		if not is_zero_approx(touch_direction):
+			return touch_direction
+	return direction
+
+
+func _down_pressed() -> bool:
+	return Input.is_action_pressed(_action(&"down")) or (input_profile == "p1" and InputMap.has_action(&"touch_down") and Input.is_action_pressed(&"touch_down"))
+
+
+func _down_just_pressed() -> bool:
+	return Input.is_action_just_pressed(_action(&"down")) or (input_profile == "p1" and InputMap.has_action(&"touch_down") and Input.is_action_just_pressed(&"touch_down"))
 
 
 func _attack_just_pressed() -> bool:
@@ -991,6 +1021,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
 	var reduced_amount := maxi(1, roundi(amount * (1.0 - damage_resistance)))
 	health = maxi(health - reduced_amount, 0)
 	_update_health_label()
+	_play_audio_event(&"player_hurt")
 
 	print("Player health: ", health)
 
@@ -1043,6 +1074,7 @@ func enter_downed() -> void:
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null and not network_prediction_only:
 		room_manager.handle_teleport_participant_removed(participant_id)
+	_play_audio_event(&"player_downed")
 	downed_state_changed.emit(true)
 
 
@@ -1090,6 +1122,7 @@ func revive() -> void:
 	downed_label.visible = false
 	revive_bar.visible = false
 	_update_participant_state(true)
+	_play_audio_event(&"player_revive")
 	downed_state_changed.emit(false)
 
 

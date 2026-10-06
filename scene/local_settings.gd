@@ -17,8 +17,8 @@ var touch_control_scale := 1.0
 var debug_hud_visible := false
 var language := "pt_BR"
 const LOCALIZATION = preload("res://ui/localization.gd")
-const AUDIO_BUSES: Array[StringName] = [&"Master", &"Music", &"SFX", &"Dialogue"]
-var audio_volumes: Dictionary = {&"Master": 1.0, &"Music": 1.0, &"SFX": 1.0, &"Dialogue": 1.0}
+const AUDIO_BUSES: Array[StringName] = [&"Master", &"Music", &"Ambience", &"SFX", &"Dialogue"]
+var audio_volumes: Dictionary = {&"Master": 1.0, &"Music": 1.0, &"Ambience": 1.0, &"SFX": 1.0, &"Dialogue": 1.0}
 
 
 func _ready() -> void:

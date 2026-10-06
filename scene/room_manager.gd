@@ -2,11 +2,15 @@ extends Node2D
 
 signal coop_waiting_changed(visible: bool)
 
+const MOBILE_FRAMING = preload("res://scene/temporary_environment/mobile_framing.gd")
+const TEMP_PARALLAX = preload("res://scene/temporary_environment/parallax_driver.gd")
 const ROOM_BOUNDS := Rect2(0.0, 0.0, 1280.0, 720.0)
 const BOUNDARY_THICKNESS := 48.0
 const PLAYER_SCENE := preload("res://entities/player.tscn")
 const LABORATORY_HUB_SCENE := preload("res://scene/casa_jhon_hub.tscn")
 const LOWER_CITY_BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_city_biome.tscn")
+const INDUSTRIAL_BIOME_SCENE := preload("res://scene/biomes/industrial/industrial_biome.tscn")
+const LAB_BIOME_SCENE := preload("res://scene/biomes/lab/lab_biome.tscn")
 const BOSS_STAGE_SCENE := preload("res://scene/biomes/boss_stage.tscn")
 const COOP_SPAWN_OFFSET := 22.0
 const EXIT_GROUP_DISTANCE := 96.0
@@ -50,6 +54,7 @@ func _ready() -> void:
 	mode_select.lan_requested.connect(_show_lan_lobby)
 	lan_lobby.close_requested.connect(_show_mode_selection)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	_set_music_context(&"main_menu")
 
 
 func _process(delta: float) -> void:
@@ -65,6 +70,16 @@ func _process(delta: float) -> void:
 	for player in active_players:
 		target += player.global_position
 	target /= float(active_players.size())
+	var view_size := get_viewport_rect().size
+	if MOBILE_FRAMING.enabled(OS.has_feature("android"), view_size):
+		_update_coop_camera(active_players, delta)
+		var headroom := minf(view_size.y / gameplay_camera.zoom.y * 0.25, 360.0)
+		var framing_bounds := generated_biome_bounds.grow_individual(0.0, headroom, 0.0, 0.0)
+		gameplay_camera.limit_top = floori(framing_bounds.position.y)
+		gameplay_camera.global_position = MOBILE_FRAMING.apply(target, active_players,
+			view_size, gameplay_camera.zoom.x, framing_bounds)
+		return
+	gameplay_camera.limit_top = floori(generated_biome_bounds.position.y)
 	var half_view := get_viewport_rect().size * 0.5
 	target.x = clampf(target.x, generated_biome_bounds.position.x + half_view.x, generated_biome_bounds.end.x - half_view.x)
 	target.y = clampf(target.y, generated_biome_bounds.position.y + half_view.y, generated_biome_bounds.end.y - half_view.y)
@@ -426,6 +441,7 @@ func _clear_run_and_show_menu() -> void:
 	$RunDebugHUD.visible = false
 	mode_select.visible = true
 	mode_select.focus_default()
+	_set_music_context(&"main_menu", 0.35)
 	await _fade_to(0.0)
 	is_transitioning = false
 
@@ -477,10 +493,14 @@ func _load_room(room_path: String, entry_id: StringName) -> bool:
 
 
 func _load_lower_city_biome(generation_seed: int = 0) -> bool:
-	var generated_biome := LOWER_CITY_BIOME_SCENE.instantiate()
+	return _load_generated_biome(LOWER_CITY_BIOME_SCENE, generation_seed, "Lower City")
+
+
+func _load_generated_biome(scene: PackedScene, generation_seed: int, label: String) -> bool:
+	var generated_biome := scene.instantiate()
 	var seed_to_use: int = run_manager.seed_value if generation_seed == 0 else generation_seed
 	if not generated_biome.generate(seed_to_use, run_manager):
-		push_error("Lower City generation and fallback both failed")
+		push_error("%s generation and fallback both failed" % label)
 		generated_biome.queue_free()
 		return false
 	var report: Dictionary = generated_biome.get_generation_report()
@@ -496,13 +516,20 @@ func _load_lower_city_biome(generation_seed: int = 0) -> bool:
 	_configure_camera_for_biome(generated_biome_bounds, generated_biome.get_start_position())
 	_position_players_in_biome(generated_biome.get_start_position())
 	refresh_teleporter_states()
+	_set_music_context(&"operation", 0.35)
 	return true
 
 
 func _load_current_stage(generation_seed: int) -> bool:
-	if run_manager.stage_index == 5:
-		return _load_boss_stage()
-	return _load_lower_city_biome(generation_seed)
+	match run_manager.stage_index:
+		1, 3:
+			return _load_generated_biome(INDUSTRIAL_BIOME_SCENE, generation_seed, "Industrial")
+		2, 4:
+			return _load_generated_biome(LAB_BIOME_SCENE, generation_seed, "Lab")
+		5:
+			return _load_boss_stage()
+		_:
+			return _load_lower_city_biome(generation_seed)
 
 
 func _load_boss_stage() -> bool:
@@ -519,6 +546,7 @@ func _load_boss_stage() -> bool:
 	generated_biome_bounds = boss_stage.get_generated_bounds()
 	_configure_camera_for_biome(generated_biome_bounds, boss_stage.get_start_position())
 	_position_players_in_biome(boss_stage.get_start_position())
+	_set_music_context(&"boss", 0.35)
 	return true
 
 
@@ -540,6 +568,7 @@ func _load_laboratory_hub() -> bool:
 	_position_players_in_hub(p1_spawn.global_position, p2_spawn.global_position)
 	_update_hub_camera(0.0)
 	gameplay_camera.reset_smoothing()
+	_set_music_context(&"house", 0.35)
 	return true
 
 
@@ -774,7 +803,12 @@ func _create_player_count(player_count: int, joypad_device_id: int) -> void:
 		player.name = "Player" if slot == 1 else "Player%d" % slot
 		player.participant_id = StringName("player_%d" % slot)
 		player.input_profile = "p%d" % slot
-		player.joypad_device_id = joypad_device_id if slot == 2 and player_count == 2 else -1
+		if slot == 1 and player_count == 1:
+			player.joypad_device_id = _first_connected_joypad()
+		elif slot == 2 and player_count == 2:
+			player.joypad_device_id = joypad_device_id
+		else:
+			player.joypad_device_id = -1
 		add_child(player)
 		player.anim.modulate = colors[index]
 		for existing: CharacterBody2D in created_players:
@@ -843,6 +877,15 @@ func validate_unique_player_participant_ids(context: String = "runtime") -> bool
 
 
 func _configure_camera_for_biome(bounds: Rect2, start_position: Vector2) -> void:
+	if is_instance_valid(current_room) and current_room.get_node_or_null("TemporaryParallax") == null:
+		var backdrop := TEMP_PARALLAX.new()
+		backdrop.name = "TemporaryParallax"
+		backdrop.room_bounds = bounds if current_is_hub else bounds.grow_individual(0.0, 360.0, 0.0, 0.0)
+		backdrop.profile_id = "house" if current_is_hub else "city"
+		if current_room is BiomeGenerator:
+			var entry := ContentRegistry.biome(current_room.biome_definition.biome_id)
+			backdrop.profile_id = String(entry.get("temporary_environment_family", "city"))
+		current_room.add_child(backdrop)
 	gameplay_camera.position_smoothing_enabled = true
 	gameplay_camera.position_smoothing_speed = 6.0
 	gameplay_camera.limit_left = floori(bounds.position.x)
@@ -874,9 +917,19 @@ func _set_all_player_input(enabled: bool) -> void:
 
 
 func _on_joy_connection_changed(_device: int, _connected: bool) -> void:
-	if not mode_selected or not run_manager.is_coop():
+	if not mode_selected:
 		return
 	var connected := Input.get_connected_joypads()
+	if run_manager.game_mode == &"solo":
+		var solo_device := connected[0] if not connected.is_empty() else -1
+		for candidate in get_players():
+			if candidate.input_profile == "p1":
+				candidate.joypad_device_id = solo_device
+				LocalCoopInput.ensure_player_one_actions(solo_device)
+		run_manager.state_changed.emit()
+		return
+	if not run_manager.is_coop():
+		return
 	if connected.has(run_manager.p2_joypad_device_id) or connected.is_empty():
 		run_manager.state_changed.emit()
 		return
@@ -938,6 +991,12 @@ func _find_entry_point(room: Node, entry_id: StringName) -> Marker2D:
 		if room.is_ancestor_of(node) and node.name == entry_id:
 			return node as Marker2D
 	return null
+
+
+func _set_music_context(context: StringName, fade_seconds: float = 0.0) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("set_music_context"):
+		audio.set_music_context(context, fade_seconds)
 
 
 func _fade_to(alpha: float) -> void:

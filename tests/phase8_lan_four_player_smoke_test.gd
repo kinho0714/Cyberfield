@@ -13,6 +13,9 @@ func _run() -> void:
 	await process_frame
 	var lan := main.get_node("LanSession") as LanSession
 	var manager := main as Node2D
+	# This smoke test uses synthetic peer IDs and exercises LAN methods directly.
+	# Disable periodic snapshots so the harness does not RPC non-existent peers.
+	lan.set_process(false)
 
 	assert(LanSession.MAX_PLAYERS == 4)
 	assert(LanSession.PROTOCOL_VERSION == 3)
@@ -41,7 +44,7 @@ func _run() -> void:
 	assert(not manager.run_manager.run_active)
 	assert(manager.get_players().size() == 1)
 	assert(manager.get_players()[0].participant_id == &"player_1")
-	assert(manager.current_room.name == "LaboratoryHub")
+	assert(manager.current_room.name == "CasaJhonHub")
 
 	for player_count in range(1, LanSession.MAX_PLAYERS + 1):
 		manager._create_network_players(player_count)

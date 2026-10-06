@@ -28,4 +28,11 @@ func interact(interactor: Node2D = null) -> void:
 	if not room_manager.can_use_exit(self, interactor):
 		return
 	_used = true
+	_play_audio_event(&"world_door")
 	room_manager.request_biome_advance(exit_id, destination_id)
+
+
+func _play_audio_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("play_event"):
+		audio.play_event(event_id)

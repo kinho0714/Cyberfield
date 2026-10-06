@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scene/biomes/biome_generator.gd" id="1_generator"]
+[ext_resource type="Resource" path="res://scene/biomes/lab/lab.tres" id="2_definition"]
+
+[node name="LabBiome" type="Node2D"]
+script = ExtResource("1_generator")
+biome_definition = ExtResource("2_definition")

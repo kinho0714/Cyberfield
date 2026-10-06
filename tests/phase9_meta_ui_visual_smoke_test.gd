@@ -80,7 +80,9 @@ func _test_ui_and_visual_contracts() -> void:
 	pickup.weapon_id = &"arc_emitter"
 	root.add_child(pickup)
 	await process_frame
-	assert(pickup.has_node("TempWeaponSprite"))
+	var weapon_visual := pickup.get_node_or_null("WeaponWorldVisual") as Sprite2D
+	assert(weapon_visual != null and weapon_visual.texture != null)
+	assert(weapon_visual.texture.get_width() > 0 and weapon_visual.texture.get_height() > 0)
 	pickup.free()
 	main.free()
 	await process_frame

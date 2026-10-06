@@ -23,6 +23,7 @@ func _run() -> void:
 	settings.set_touch_control_scale(1.2)
 	settings.set_audio_volume(&"Master", 0.5)
 	settings.set_audio_volume(&"Music", 0.0)
+	settings.set_audio_volume(&"Ambience", 0.65)
 	settings.set_audio_volume(&"SFX", 0.25)
 	settings.set_audio_volume(&"Dialogue", 1.0)
 	var second: LocalSettings = SETTINGS_SCRIPT.new()
@@ -33,7 +34,7 @@ func _run() -> void:
 	assert(is_equal_approx(second.touch_control_scale, 1.2))
 	for index in LocalSettings.AUDIO_BUSES.size():
 		var bus: StringName = LocalSettings.AUDIO_BUSES[index]
-		var expected: float = [0.5, 0.0, 0.25, 1.0][index]
+		var expected: float = [0.5, 0.0, 0.65, 0.25, 1.0][index]
 		var bus_index: int = AudioServer.get_bus_index(bus)
 		assert(is_equal_approx(second.get_audio_volume(bus), expected))
 		assert(AudioServer.is_bus_mute(bus_index) == (expected == 0.0))

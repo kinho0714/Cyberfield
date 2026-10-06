@@ -5,7 +5,9 @@
 [resource]
 script = ExtResource("1")
 aliases = {
-  "lower_city": "biome_01"
+  "lower_city": "biome_01",
+  "industrial": "biome_02",
+  "lab": "biome_03"
 }
 biomes = {
   "biome_01": {
@@ -23,15 +25,16 @@ biomes = {
       "heavy": "enemy_b01_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "city",
     "boss_roster": []
   },
   "biome_02": {
     "id": "biome_02",
     "display_name_key": "BIOME_02_NAME",
-    "display_name_fallback": "Biome 02",
+    "display_name_fallback": "INDUSTRIAL",
     "description_key": "BIOME_02_DESCRIPTION",
-    "definition_path": "",
-    "scene_path": "",
+    "definition_path": "res://scene/biomes/industrial/industrial.tres",
+    "scene_path": "res://scene/biomes/industrial/industrial_biome.tscn",
     "fallback_biome_id": "biome_01",
     "visual_profile_id": "biome_02",
     "enemy_roster": {
@@ -40,15 +43,16 @@ biomes = {
       "heavy": "enemy_b02_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "industrial",
     "boss_roster": []
   },
   "biome_03": {
     "id": "biome_03",
     "display_name_key": "BIOME_03_NAME",
-    "display_name_fallback": "Biome 03",
+    "display_name_fallback": "LABORATÓRIO",
     "description_key": "BIOME_03_DESCRIPTION",
-    "definition_path": "",
-    "scene_path": "",
+    "definition_path": "res://scene/biomes/lab/lab.tres",
+    "scene_path": "res://scene/biomes/lab/lab_biome.tscn",
     "fallback_biome_id": "biome_01",
     "visual_profile_id": "biome_03",
     "enemy_roster": {
@@ -57,6 +61,7 @@ biomes = {
       "heavy": "enemy_b03_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "lab",
     "boss_roster": []
   },
   "biome_04": {
@@ -74,6 +79,7 @@ biomes = {
       "heavy": "enemy_b04_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "industrial",
     "boss_roster": []
   },
   "biome_05": {
@@ -91,6 +97,7 @@ biomes = {
       "heavy": "enemy_b05_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "lab",
     "boss_roster": []
   },
   "biome_06": {
@@ -108,6 +115,7 @@ biomes = {
       "heavy": "enemy_b06_heavy_01"
     },
     "presentation_adapter_id": "lower_city",
+    "temporary_environment_family": "city",
     "boss_roster": []
   }
 }
@@ -345,7 +353,7 @@ visual_profiles = {
   "player_spark": "",
   "scrap_blade": "",
   "breaker_maul": "",
-  "arc_emitter": "",
+  "arc_emitter": "res://content/visual_profiles/arc_emitter_temp.tres",
   "hub_stage_00": "",
   "hub_stage_01": "",
   "hub_stage_02": "",

@@ -25,7 +25,7 @@ const OPTIONS_DRAG_THRESHOLD: float = 12.0
 var audio_sliders: Array[HSlider] = []
 var category_buttons: Array[Button] = []
 var selected_category: int = 0
-const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Efeitos Sonoros", "Diálogos"]
+const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Ambiente", "Efeitos Sonoros", "Diálogos"]
 @onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
 @onready var settings_content: VBoxContainer = $Overlay/Center/SettingsPage/Scroll/Content
 
@@ -74,7 +74,11 @@ func _input(event: InputEvent) -> void:
 		return
 	if overlay.visible and (zoom_option.get_popup().visible or language_option.get_popup().visible):
 		return
-	if (event.is_action_pressed(&"pause_menu") or event.is_action_pressed(&"ui_cancel")) and not event.is_echo():
+	# B / Circle also performs dash. It may cancel an open menu, but must never
+	# open Pause from gameplay when the overlay is closed.
+	var pause_pressed: bool = event.is_action_pressed(&"pause_menu")
+	var cancel_pressed: bool = overlay.visible and event.is_action_pressed(&"ui_cancel")
+	if (pause_pressed or cancel_pressed) and not event.is_echo():
 		var inventory := get_tree().get_first_node_in_group("inventory_ui")
 		if inventory != null and inventory.overlay.visible:
 			inventory.close_inventory()
@@ -424,7 +428,7 @@ func _select_category(index: int) -> void:
 	selected_category = index
 	var groups: Array = [["ZoomLabel", "CameraZoom", "DebugHud", "LanguageLabel", "LanguageOption"],
 		["TouchLabel", "TouchScale", "TouchValue"],
-		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
+		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "AmbienceLabel", "AmbienceVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
 	for child in settings_content.get_children():
 		if child is Control:
 			child.visible = String(child.name) in groups[index]

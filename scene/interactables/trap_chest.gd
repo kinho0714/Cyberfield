@@ -4,6 +4,7 @@ extends Area2D
 const COMMON_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_SCENE := preload("res://entities/RangedEnemy.tscn")
 const HEAVY_SCENE := preload("res://entities/HeavyEnemy.tscn")
+const CHEST_TEXTURE := preload("res://assets/temporary_items/pixelexplosive/metal_chest_05.png")
 
 @export var trap_id: StringName
 @export var event_spawn_positions: Array[Vector2] = []
@@ -12,6 +13,7 @@ var _event_spawned := false
 
 @onready var visual: Polygon2D = $Visual
 @onready var label: Label = $Label
+var _chest_sprite: Sprite2D
 
 
 func _ready() -> void:
@@ -19,6 +21,14 @@ func _ready() -> void:
 	add_to_group("trap_chest")
 	collision_layer = 2
 	collision_mask = 1
+	visual.visible = false
+	_chest_sprite = Sprite2D.new()
+	_chest_sprite.name = "TemporaryTrapChestVisual"
+	_chest_sprite.texture = CHEST_TEXTURE
+	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_chest_sprite.scale = Vector2(1.5, 1.5)
+	_chest_sprite.position = Vector2(0.0, -3.0)
+	add_child(_chest_sprite)
 	label.visible = false
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
@@ -44,8 +54,10 @@ func interact(interactor: Node2D = null) -> void:
 		return
 	var state: StringName = StringName(manager.get_current_map_state().get_trap_event_state(trap_id))
 	if state == BiomeMapState.TRAP_UNOPENED:
+		_play_audio_event(&"loot_open")
 		manager.activate_trap_event(trap_id, manager.get_current_map_state().get_trap_event_enemy_ids(trap_id))
 	elif state == BiomeMapState.TRAP_CLEARED:
+		_play_audio_event(&"loot_open")
 		manager.claim_trap_event_reward(trap_id)
 
 
@@ -59,16 +71,19 @@ func _refresh() -> void:
 	match state:
 		BiomeMapState.TRAP_ACTIVE:
 			visual.color = Color(0.9, 0.24, 0.18, 1.0)
+			_chest_sprite.modulate = Color(1.0, 0.55, 0.48, 1.0)
 			label.text = "EVENTO ATIVO // DERROTE A EMBOSCADA"
 			_spawn_event_enemies()
 		BiomeMapState.TRAP_CLEARED:
 			visual.color = Color(0.2, 0.9, 0.45, 1.0)
+			_chest_sprite.modulate = Color(0.62, 1.0, 0.72, 1.0)
 			label.text = "[USAR] COLETAR RECOMPENSA MELHORADA"
 		BiomeMapState.TRAP_REWARDED:
 			queue_free()
 		_:
 			# It deliberately looks like ordinary loot before activation.
 			visual.color = Color(0.72, 0.25, 0.85, 1.0)
+			_chest_sprite.modulate = Color.WHITE
 			label.text = "[USAR] LOOT"
 
 
@@ -112,6 +127,12 @@ func _event_enemy_ids(count: int) -> Array[StringName]:
 
 func _run_manager() -> Node:
 	return get_tree().get_first_node_in_group("run_manager")
+
+
+func _play_audio_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("play_event"):
+		audio.play_event(event_id)
 
 
 func _on_body_entered(body: Node) -> void:

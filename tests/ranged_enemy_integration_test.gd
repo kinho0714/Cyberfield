@@ -19,7 +19,8 @@ func _initialize() -> void:
 
 func _run() -> void:
 	_test_scene_contracts()
-	_test_target_selection()
+	await _test_target_selection()
+	await _test_line_of_sight_occlusion()
 	await _test_hybrid_combat_contracts()
 	for room_id in ROOM_CASES:
 		for difficulty_index in DIFFICULTIES.size():
@@ -177,24 +178,72 @@ func _test_target_selection() -> void:
 	var p2 := (load("res://entities/player.tscn") as PackedScene).instantiate()
 	p2.participant_id = &"player_2"
 	root.add_child(p2)
+	ranged.set_physics_process(false)
+	p1.set_physics_process(false)
+	p2.set_physics_process(false)
+	ranged.global_position = Vector2.ZERO
+	p1.global_position = Vector2(100, 0)
 	p2.global_position = Vector2(120, 0)
-	ranged._select_active_player()
+	await physics_frame
+	ranged._select_active_player(0.0)
 	_check(ranged.player == p1, "RangedEnemy must select the nearest active Player")
 	p2.global_position.x = 90.0
-	ranged._select_active_player()
-	_check(ranged.player == p1, "Target switch margin must prevent co-op target thrashing")
+	await physics_frame
+	_check(ranged._has_line_of_sight(p1), "A co-op Player in front must not block LOS to the current target")
+	ranged._select_active_player(0.0)
+	_check(ranged.player == p1, "Target switch margin must prevent co-op target thrashing // p1=%.2f p2=%.2f" % [ranged.global_position.distance_to(p1.global_position), ranged.global_position.distance_to(p2.global_position)])
 	p2.global_position.x = 70.0
-	ranged._select_active_player()
+	await physics_frame
+	ranged._select_active_player(0.0)
 	_check(ranged.player == p2, "RangedEnemy must switch when the alternative is beyond the margin")
 	p2.is_downed = true
-	ranged._select_active_player()
+	ranged._select_active_player(0.0)
 	_check(ranged.player == p1, "RangedEnemy must ignore downed Players")
 	p1.visible = false
-	ranged._select_active_player()
+	ranged._select_active_player(0.0)
 	_check(ranged.player == null, "RangedEnemy must ignore hidden Players")
 	ranged.free()
 	p1.free()
 	p2.free()
+
+
+func _test_line_of_sight_occlusion() -> void:
+	var ranged := (load("res://entities/RangedEnemy.tscn") as PackedScene).instantiate()
+	ranged.persistent_id = &"los_test"
+	root.add_child(ranged)
+	ranged.global_position = Vector2(100, 100)
+	var player := (load("res://entities/player.tscn") as PackedScene).instantiate()
+	player.participant_id = &"los_test_player"
+	root.add_child(player)
+	player.global_position = Vector2(280, 100)
+	await physics_frame
+	_check(ranged._has_line_of_sight(player), "RangedEnemy must see an unobstructed Player")
+	var wall := StaticBody2D.new()
+	wall.collision_layer = 1
+	wall.collision_mask = 0
+	var wall_shape := CollisionShape2D.new()
+	var rectangle := RectangleShape2D.new()
+	rectangle.size = Vector2(24, 180)
+	wall_shape.shape = rectangle
+	wall.add_child(wall_shape)
+	root.add_child(wall)
+	wall.global_position = Vector2(190, 100)
+	await physics_frame
+	_check(not ranged._has_line_of_sight(player), "World geometry must block RangedEnemy line of sight")
+	ranged.player = null
+	ranged._select_active_player(1.0 / 60.0)
+	_check(ranged.player == null, "RangedEnemy must not acquire a Player through a wall")
+	ranged.player = player
+	ranged.state = ranged.State.AIM
+	ranged.is_attacking = true
+	ranged._update_aim(1.0 / 60.0)
+	_check(ranged.state == ranged.State.IDLE and not ranged.is_attacking, "Losing LOS while aiming must cancel the shot")
+	wall.free()
+	await physics_frame
+	ranged._select_active_player(1.0 / 60.0)
+	_check(ranged.player == player, "RangedEnemy must reacquire the Player after LOS is restored")
+	ranged.free()
+	player.free()
 
 
 func _test_projectile_dash_interaction() -> void:

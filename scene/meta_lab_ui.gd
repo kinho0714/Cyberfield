@@ -1,10 +1,13 @@
 class_name MetaLabUI
 extends CanvasLayer
 
+const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
+
 var overlay: ColorRect
 var credits_label: Label
 var stats_label: Label
 var purchase_buttons: Dictionary = {}
+var blueprint_buttons: Dictionary = {}
 var close_button: Button
 var blocked_player: Node
 
@@ -22,12 +25,17 @@ func _ready() -> void:
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(center)
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(650, 510)
+	panel.custom_minimum_size = Vector2(650, 560)
 	center.add_child(panel)
+	var scroll := ScrollContainer.new()
+	scroll.follow_focus = true
+	scroll.custom_minimum_size = Vector2(0, 500)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(scroll)
 	var margin := MarginContainer.new()
 	for side: StringName in [&"margin_left", &"margin_top", &"margin_right", &"margin_bottom"]:
 		margin.add_theme_constant_override(side, 26)
-	panel.add_child(margin)
+	scroll.add_child(margin)
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 12)
 	margin.add_child(column)
@@ -47,12 +55,22 @@ func _ready() -> void:
 		var item_id := StringName(item_value)
 		var button := Button.new()
 		button.custom_minimum_size = Vector2(590, 58)
+		PANEL_PRESENTATION.style_button(button)
 		button.pressed.connect(_purchase.bind(item_id))
 		column.add_child(button)
 		purchase_buttons[item_id] = button
+	for weapon_value: Variant in WeaponCatalog.WEAPONS:
+		var weapon_id := StringName(weapon_value)
+		var blueprint_button := Button.new()
+		blueprint_button.custom_minimum_size = Vector2(590, 48)
+		PANEL_PRESENTATION.style_button(blueprint_button)
+		blueprint_button.pressed.connect(_study_blueprint.bind(weapon_id))
+		column.add_child(blueprint_button)
+		blueprint_buttons[weapon_id] = blueprint_button
 	close_button = Button.new()
 	close_button.text = "VOLTAR AO LABORATÓRIO"
 	close_button.custom_minimum_size = Vector2(590, 54)
+	PANEL_PRESENTATION.style_button(close_button)
 	close_button.pressed.connect(close_terminal)
 	column.add_child(close_button)
 	overlay.visible = false
@@ -73,6 +91,7 @@ func open_terminal(player: Node) -> void:
 
 func close_terminal() -> void:
 	overlay.visible = false
+	get_viewport().gui_release_focus()
 	if is_instance_valid(blocked_player):
 		blocked_player.set_input_enabled(true)
 	blocked_player = null
@@ -99,12 +118,25 @@ func _input(event: InputEvent) -> void:
 				_purchase(StringName(item_value))
 				get_viewport().set_input_as_handled()
 				return
+		for blueprint_value: Variant in blueprint_buttons:
+			var blueprint_button := blueprint_buttons[blueprint_value] as Button
+			if blueprint_button.visible and blueprint_button.get_global_rect().has_point(position) and not blueprint_button.disabled:
+				_study_blueprint(StringName(blueprint_value))
+				get_viewport().set_input_as_handled()
+				return
 
 
 func _purchase(item_id: StringName) -> void:
 	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
 	if meta != null:
 		meta.purchase(item_id)
+	_refresh()
+
+
+func _study_blueprint(model_id: StringName) -> void:
+	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
+	if meta != null:
+		meta.study_blueprint(model_id)
 	_refresh()
 
 
@@ -115,7 +147,7 @@ func _refresh() -> void:
 	credits_label.text = "CRÉDITOS PERMANENTES  ◈ %d" % meta.credits
 	var best_time := float(meta.statistics.get("best_time", 0.0))
 	var best_time_text := "%02d:%02d" % [floori(best_time / 60.0), floori(best_time) % 60] if best_time > 0.0 else "--:--"
-	stats_label.text = "RUNS %d   VITÓRIAS %d   MORTES %d   BOSSES %d\nMAIOR STAGE %d/6   MELHOR TEMPO %s" % [int(meta.statistics.get("runs", 0)), int(meta.statistics.get("victories", 0)), int(meta.statistics.get("deaths", 0)), int(meta.statistics.get("bosses_defeated", 0)), int(meta.statistics.get("highest_stage", 0)), best_time_text]
+	stats_label.text = "RUNS %d   VITÓRIAS %d   MORTES %d   BOSSES %d\nMAIOR STAGE %d/6   MELHOR TEMPO %s\nMODELOS EXTRAÍDOS %d   BLUEPRINTS %d" % [int(meta.statistics.get("runs", 0)), int(meta.statistics.get("victories", 0)), int(meta.statistics.get("deaths", 0)), int(meta.statistics.get("bosses_defeated", 0)), int(meta.statistics.get("highest_stage", 0)), best_time_text, meta.recovered_models.size(), meta.blueprints.size()]
 	for item_value: Variant in purchase_buttons:
 		var item_id := StringName(item_value)
 		var definition: Dictionary = MetaProgression.PURCHASES[item_id]
@@ -123,3 +155,11 @@ func _refresh() -> void:
 		var unlocked := meta.is_unlocked(item_id)
 		button.text = "%s  //  %s" % [String(definition.get("name", item_id)), "DESBLOQUEADO" if unlocked else "◈ %d" % int(definition.get("cost", 0))]
 		button.disabled = unlocked or meta.credits < int(definition.get("cost", 0))
+	for weapon_value: Variant in blueprint_buttons:
+		var weapon_id := StringName(weapon_value)
+		var blueprint_button := blueprint_buttons[weapon_id] as Button
+		var recovered := meta.recovered_models.has(weapon_id)
+		var studied := meta.blueprints.has(weapon_id)
+		blueprint_button.visible = recovered or studied
+		blueprint_button.disabled = studied
+		blueprint_button.text = "BLUEPRINT // %s // %s" % [WeaponCatalog.get_display_name(weapon_id), "ESTUDADO" if studied else "ESTUDAR"]

@@ -2,6 +2,32 @@ class_name LocalCoopInput
 extends RefCounted
 
 
+const P1_GAMEPLAY_ACTIONS: Array[StringName] = [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon"]
+
+
+static func ensure_player_one_actions(device_id: int) -> void:
+	for action in P1_GAMEPLAY_ACTIONS:
+		_add_action(action, 0.25 if action in [&"left", &"right", &"down"] else 0.2)
+		_erase_joypad_events(action)
+	if device_id < 0:
+		return
+	_add_axis(&"left", JOY_AXIS_LEFT_X, -1.0, device_id)
+	_add_axis(&"right", JOY_AXIS_LEFT_X, 1.0, device_id)
+	_add_axis(&"down", JOY_AXIS_LEFT_Y, 1.0, device_id)
+	_add_button(&"left", JOY_BUTTON_DPAD_LEFT, device_id)
+	_add_button(&"right", JOY_BUTTON_DPAD_RIGHT, device_id)
+	_add_button(&"down", JOY_BUTTON_DPAD_DOWN, device_id)
+	_add_button(&"jump", JOY_BUTTON_A, device_id)
+	_add_button(&"attack", JOY_BUTTON_X, device_id)
+	_add_button(&"attack_slot_1", JOY_BUTTON_X, device_id)
+	_add_button(&"attack_slot_2", JOY_BUTTON_RIGHT_SHOULDER, device_id)
+	_add_axis(&"attack_slot_2", JOY_AXIS_TRIGGER_RIGHT, 1.0, device_id)
+	_add_button(&"dash", JOY_BUTTON_B, device_id)
+	_add_button(&"interact", JOY_BUTTON_Y, device_id)
+	_add_button(&"heal", JOY_BUTTON_LEFT_SHOULDER, device_id)
+	_add_button(&"switch_weapon", JOY_BUTTON_LEFT_STICK, device_id)
+
+
 static func ensure_player_two_actions(device_id: int) -> void:
 	if device_id < 0:
 		ensure_network_player_two_actions()
@@ -29,7 +55,8 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_button(&"p2_down", JOY_BUTTON_DPAD_DOWN, device_id)
 	_add_button(&"p2_jump", JOY_BUTTON_A, device_id)
 	_add_button(&"p2_attack", JOY_BUTTON_X, device_id)
-	_add_button(&"p2_attack_slot_1", JOY_BUTTON_RIGHT_SHOULDER, device_id)
+	_add_button(&"p2_attack_slot_1", JOY_BUTTON_X, device_id)
+	_add_button(&"p2_attack_slot_2", JOY_BUTTON_RIGHT_SHOULDER, device_id)
 	_add_axis(&"p2_attack_slot_2", JOY_AXIS_TRIGGER_RIGHT, 1.0, device_id)
 	_add_button(&"p2_dash", JOY_BUTTON_B, device_id)
 	_add_button(&"p2_interact", JOY_BUTTON_Y, device_id)
@@ -52,6 +79,12 @@ static func _add_action(action: StringName, deadzone := 0.2) -> void:
 		InputMap.add_action(action, deadzone)
 	else:
 		InputMap.action_set_deadzone(action, deadzone)
+
+
+static func _erase_joypad_events(action: StringName) -> void:
+	for event in InputMap.action_get_events(action):
+		if event is InputEventJoypadButton or event is InputEventJoypadMotion:
+			InputMap.action_erase_event(action, event)
 
 
 static func _add_axis(action: StringName, axis: JoyAxis, value: float, device_id: int) -> void:

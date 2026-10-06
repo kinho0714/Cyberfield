@@ -112,7 +112,8 @@ func _test_bandage_visual() -> void:
 	var bandage := BANDAGE_SCRIPT.new() as BandagePickup
 	root.add_child(bandage)
 	var polygons := bandage.get_children().filter(func(child: Node) -> bool: return child is Polygon2D)
-	var lines := bandage.get_children().filter(func(child: Node) -> bool: return child is Line2D)
-	assert(polygons.size() >= 2 and not lines.is_empty())
+	var medkit := bandage.get_node_or_null("TemporaryMedkitVisual") as Sprite2D
+	assert(not polygons.is_empty())
+	assert(medkit != null and medkit.texture != null and medkit.texture.get_width() == 32 and medkit.texture.get_height() == 32)
 	assert(bandage.has_method("claim_authoritative") and is_equal_approx(bandage.HEAL_RATIO, 0.10))
 	bandage.free()

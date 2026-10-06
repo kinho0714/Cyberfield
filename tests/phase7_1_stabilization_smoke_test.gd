@@ -2,6 +2,7 @@ extends SceneTree
 
 const BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_city_biome.tscn")
 const RUN_MANAGER_SCRIPT := preload("res://scene/run_manager.gd")
+const LOCAL_SETTINGS_SCRIPT := preload("res://scene/local_settings.gd")
 const PLAYER_SCENE := preload("res://entities/player.tscn")
 const TOUCH_SCENE := preload("res://ui/touch_controls.tscn")
 
@@ -36,15 +37,22 @@ func _initialize() -> void:
 		averages[difficulty] = float(totals.enemies) / 20.0
 		print("PHASE7_1 %s modules=%d encounters=%d enemies=%d ranged=%d max_empty=%d platforms=%d rejected=%d rejected_micro=%d micro=%d rails=%d invalid=%d" % [difficulty, totals.modules, totals.encounters, totals.enemies, totals.ranged, totals.max_empty, totals.platforms, totals.rejected, totals.rejected_micro, totals.micro, totals.rails, totals.invalid])
 	assert(float(averages[&"inferno_pro"]) >= float(averages[&"pro"]) * 1.20)
-	_test_dual_weapon_and_mobile_contract()
+	await _test_dual_weapon_and_mobile_contract()
 	print("PHASE7_1_STABILIZATION_SMOKE_TEST_OK")
 	quit()
 
 
 func _test_dual_weapon_and_mobile_contract() -> void:
 	assert(InputMap.has_action(&"attack_slot_1") and InputMap.has_action(&"attack_slot_2"))
+	var run_manager := RUN_MANAGER_SCRIPT.new()
+	run_manager.name = "RunManager"
+	root.add_child(run_manager)
+	var local_settings := LOCAL_SETTINGS_SCRIPT.new()
+	local_settings.name = "LocalSettings"
+	root.add_child(local_settings)
 	var player := PLAYER_SCENE.instantiate()
 	root.add_child(player)
+	await process_frame
 	assert(player.equip_weapon(&"arc_emitter"))
 	player.attack(1)
 	assert(player.weapon_cooldowns[1] > 0.0 and player.weapon_cooldowns[0] == 0.0)
@@ -61,3 +69,5 @@ func _test_dual_weapon_and_mobile_contract() -> void:
 	assert(not touch.has_node("SafeArea/InventoryButton"))
 	touch.free()
 	player.free()
+	local_settings.free()
+	run_manager.free()

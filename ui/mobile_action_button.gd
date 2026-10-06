@@ -31,6 +31,8 @@ func _contains_touch(viewport_position: Vector2) -> bool:
 
 
 func release_input() -> void:
+	if active_touch_index < 0:
+		return
 	active_touch_index = -1
 	if action != &"" and InputMap.has_action(action):
 		Input.action_release(action)

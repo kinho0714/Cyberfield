@@ -395,6 +395,7 @@ func attack() -> void:
 	var this_attack := attack_generation
 	attack_telegraph_active = true
 	anim.modulate = attack_telegraph_color
+	_play_audio_event(&"enemy_telegraph")
 
 	anim.play("attack")
 
@@ -414,6 +415,7 @@ func attack() -> void:
 	)
 
 	attack_shape_cast.force_shapecast_update()
+	_play_audio_event(&"enemy_attack")
 
 	if attack_shape_cast.is_colliding():
 		for i in attack_shape_cast.get_collision_count():
@@ -453,6 +455,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 	if health <= 0:
 		_die()
 		return
+	_play_audio_event(&"enemy_hurt")
 
 	if knockback_direction != 0.0:
 		var effective_knockback: float = knockback_multiplier * (1.0 - clampf(knockback_resistance, 0.0, 0.9))
@@ -475,6 +478,7 @@ func _die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	_play_audio_event(&"enemy_death")
 	is_attacking = false
 	is_hurt = false
 	attack_generation += 1
@@ -487,10 +491,16 @@ func _die() -> void:
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	if run_manager:
 		if run_manager.has_method("handle_enemy_drop"):
-			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position)
+			run_manager.handle_enemy_drop(run_room_id, persistent_id, enemy_role, global_position, self)
 		run_manager.register_enemy_death(run_room_id, persistent_id)
 	await get_tree().create_timer(0.30).timeout
 	queue_free()
+
+
+func _play_audio_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null and audio.has_method("play_event"):
+		audio.play_event(event_id)
 
 
 func get_visual_state() -> StringName:

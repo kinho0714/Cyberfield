@@ -3,9 +3,9 @@ extends Control
 const BASE_TEXTURE = preload("res://assets/ui/gameplay_hud/assets/mobile/joystick/joystick_base.png")
 const KNOB_TEXTURE = preload("res://assets/ui/gameplay_hud/assets/mobile/joystick/joystick_knob.png")
 
-@export var left_action: StringName = &"left"
-@export var right_action: StringName = &"right"
-@export var down_action: StringName = &"down"
+@export var left_action: StringName = &"touch_left"
+@export var right_action: StringName = &"touch_right"
+@export var down_action: StringName = &"touch_down"
 @export_range(0.0, 0.9, 0.01) var deadzone := 0.18
 @export_range(0.5, 0.95, 0.01) var down_threshold := 0.72
 @export_range(0.3, 0.9, 0.01) var down_release_threshold := 0.55

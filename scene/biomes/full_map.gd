@@ -1,6 +1,7 @@
 extends Control
 
 const MAP_MARGIN := 70.0
+const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
 
 var source_teleporter_id: StringName
 var _graph: Dictionary = {}
@@ -24,6 +25,7 @@ func _ready() -> void:
 	_destination_panel = VBoxContainer.new()
 	_destination_panel.position = Vector2(size.x - 310.0, 80.0)
 	_destination_panel.size = Vector2(250.0, 500.0)
+	_destination_panel.add_theme_constant_override("separation", 10)
 	add_child(_destination_panel)
 	_close_button = Button.new()
 	_close_button.text = "FECHAR"
@@ -31,6 +33,7 @@ func _ready() -> void:
 	_close_button.position = Vector2(-170.0, 20.0)
 	_close_button.size = Vector2(150.0, 50.0)
 	_close_button.pressed.connect(close_map)
+	PANEL_PRESENTATION.style_button(_close_button)
 	add_child(_close_button)
 	_vote_status = Label.new()
 	_vote_status.position = Vector2(54.0, 64.0)
@@ -107,6 +110,8 @@ func close_map(notify_cancel: bool = true) -> void:
 		get_tree().paused = false
 		_tree_paused = false
 	visible = false
+	get_viewport().gui_release_focus()
+	_highlighted_teleporter_id = &""
 	source_teleporter_id = &""
 	if room_manager != null:
 		room_manager.get_node("TouchControls").set_menu_blocked(false)
@@ -160,7 +165,7 @@ func _draw() -> void:
 		draw_rect(Rect2(point + Vector2(-15, -10 + vertical_offset), Vector2(30, 20)), Color(0.12, 0.42, 0.62), true)
 	_draw_content(origin, scale, modules, state)
 	_draw_players(origin, scale, modules)
-	draw_string(ThemeDB.fallback_font, Vector2(54, 48), "MAPA DO BIOMA  //  TAB / ESC PARA FECHAR", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color(0.75, 0.95, 1.0))
+	draw_string(ThemeDB.fallback_font, Vector2(54, 48), "MAPA DO BIOMA  //  TAB / ESC / B PARA FECHAR", HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color(0.75, 0.95, 1.0))
 
 
 func _draw_content(origin: Vector2, scale: float, modules: Array, state: BiomeMapState) -> void:
@@ -208,23 +213,49 @@ func _rebuild_destinations() -> void:
 	if source_teleporter_id.is_empty():
 		return
 	var title := Label.new()
-	title.text = "TELEPORTES ATIVOS"
+	title.text = "REDE DE TELEPORTE"
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color("dff8ff"))
 	_destination_panel.add_child(title)
+	var origin := Label.new()
+	origin.text = "ORIGEM // %s" % _teleporter_display_name(source_teleporter_id)
+	origin.add_theme_font_size_override("font_size", 14)
+	origin.add_theme_color_override("font_color", Color("70d9ee"))
+	_destination_panel.add_child(origin)
+	var hint := Label.new()
+	hint.text = "Escolha um setor ativo.\nA / ENTER confirma  •  B / ESC volta"
+	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	hint.add_theme_font_size_override("font_size", 13)
+	hint.add_theme_color_override("font_color", Color("9fb8c4"))
+	_destination_panel.add_child(hint)
 	var state := _map_state()
+	var first_button: Button = null
 	for entry_value: Variant in _graph.get("teleporters", []):
 		var entry := entry_value as Dictionary
 		var destination_id := StringName(entry.teleporter_id)
 		if destination_id == source_teleporter_id or not state.active_teleporter_ids.has(destination_id):
 			continue
 		var button := Button.new()
-		button.text = String(entry.display_name)
+		button.text = "VIAJAR // %s" % String(entry.display_name)
+		button.custom_minimum_size = Vector2(250.0, 54.0)
+		button.add_theme_font_size_override("font_size", 16)
+		PANEL_PRESENTATION.style_button(button)
 		button.pressed.connect(_choose_destination.bind(destination_id))
 		button.focus_entered.connect(_highlight_destination.bind(destination_id))
 		button.mouse_entered.connect(_highlight_destination.bind(destination_id))
 		_destination_panel.add_child(button)
 		_destination_buttons[button] = destination_id
-		if not button.has_focus():
-			button.grab_focus()
+		if first_button == null:
+			first_button = button
+	if first_button != null:
+		first_button.grab_focus()
+	else:
+		var empty := Label.new()
+		empty.text = "Nenhum outro setor ativo ainda."
+		empty.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		empty.add_theme_color_override("font_color", Color("8195a3"))
+		_destination_panel.add_child(empty)
+		_close_button.grab_focus()
 
 
 func _choose_destination(destination_id: StringName) -> void:
@@ -245,7 +276,7 @@ func apply_fast_travel_vote(origin_id: StringName, destination_id: StringName, c
 	_vote_confirmed_ids = confirmed_ids.duplicate()
 	_vote_active_ids = active_ids.duplicate()
 	_vote_status.visible = true
-	var lines: PackedStringArray = ["CONFIRMAÇÃO COLETIVA // %s" % String(destination_id).to_upper()]
+	var lines: PackedStringArray = ["CONFIRMAÇÃO COLETIVA // %s" % _teleporter_display_name(destination_id)]
 	for participant_id in _vote_active_ids:
 		lines.append("%s — %s" % [String(participant_id).replace("player_", "P"), "PRONTO" if _vote_confirmed_ids.has(participant_id) else "AGUARDANDO"])
 	_vote_status.text = "\n".join(lines)
@@ -277,6 +308,14 @@ func _process_local_vote_confirmations() -> void:
 func _highlight_destination(destination_id: StringName) -> void:
 	_highlighted_teleporter_id = destination_id
 	queue_redraw()
+
+
+func _teleporter_display_name(teleporter_id: StringName) -> String:
+	for entry_value: Variant in _graph.get("teleporters", []):
+		var entry := entry_value as Dictionary
+		if StringName(entry.get("teleporter_id", &"")) == teleporter_id:
+			return String(entry.get("display_name", teleporter_id)).to_upper()
+	return String(teleporter_id).to_upper()
 
 
 func _block_local_players(room_manager: Node) -> void:
@@ -311,4 +350,6 @@ func _map_transform(modules: Array) -> Dictionary:
 
 
 func _on_resized() -> void:
-	_destination_panel.position = Vector2(size.x - 310.0, 80.0)
+	var panel_width := clampf(size.x * 0.24, 260.0, 330.0)
+	_destination_panel.position = Vector2(size.x - panel_width - 36.0, 86.0)
+	_destination_panel.size = Vector2(panel_width, maxf(320.0, size.y - 150.0))

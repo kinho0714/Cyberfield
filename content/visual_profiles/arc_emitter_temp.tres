@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://content/visual_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+profile_id = &"arc_emitter"
+asset_paths = {
+"inventory_icon": "res://assets/temporary_items/reactorcore/arc_emitter_temp.png",
+"world": "res://assets/temporary_items/reactorcore/arc_emitter_temp.png"
+}
+animation_offsets = {
+"world": Vector2(0, 0)
+}

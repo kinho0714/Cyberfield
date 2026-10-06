@@ -1,0 +1,8 @@
+TEMPORARY ENVIRONMENT LIBRARY V1
+Warped City / Cyberpunk Street: Luis Zuno (Ansimuz), CC0.
+Sci-Fi Labs: aimen23b, distributed by Foozle, CC0.
+2D Art by CookieEfedu (https://cookieefedu.itch.io)
+Robot Factory: CC-BY 4.0 https://creativecommons.org/licenses/by/4.0/
+Robot Factory atlas cropped to environmental pixels (0,0)-(256,168); no redraw.
+All runtime tint, placement, atlas regions and integer scaling by Cyberfield integration.
+Keep these credits in distributed builds/credits accompanying these assets.
