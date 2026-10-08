@@ -59,4 +59,7 @@ func collect() -> void:
 	if manager == null or not manager.collect_scrap_drop(room_id, pickup_id):
 		return
 	_collected = true
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"scrap_collect")
 	queue_free()

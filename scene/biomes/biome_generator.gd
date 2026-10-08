@@ -1,7 +1,6 @@
 class_name BiomeGenerator
 extends Node2D
 
-const CITY_PRESENTATION := preload("res://scene/biomes/lower_city/lower_city_presentation.gd")
 const ROOM_DIRECTOR_SCRIPT := preload("res://scene/biomes/room_director.gd")
 
 const SOURCE_MODULE_SIZE := Vector2(960.0, 540.0)
@@ -31,9 +30,9 @@ const VERTICAL_SHAFT_WALL_THICKNESS := 18.0
 const MINIMUM_TRAVERSAL_CLEARANCE := 112.0
 const MINIMUM_STACKED_PASSAGE_OVERLAP := 32.0
 const TELEPORTER_MIN_GRAPH_DISTANCE := 3
-const TELEPORTER_MIN_WORLD_DISTANCE := 1040.0
+const TELEPORTER_MIN_WORLD_DISTANCE := 1240.0
 const TELEPORTER_RELAXED_GRAPH_DISTANCE := 2
-const TELEPORTER_RELAXED_WORLD_DISTANCE := 760.0
+const TELEPORTER_RELAXED_WORLD_DISTANCE := 1040.0
 
 @export var biome_definition: BiomeDefinition
 
@@ -724,12 +723,6 @@ func _build_module(parent: Node2D, index: int) -> void:
 		background.color = Color(0.018, 0.045, 0.075, 1.0) if int(data.grid.y) == 0 else Color(0.025, 0.06, 0.09, 1.0)
 		background.z_index = -10
 		module.add_child(background)
-	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
-		var decoration := CITY_PRESENTATION.new()
-		decoration.kind = "module"
-		decoration.room_role = String(data.role)
-		decoration.variant = absi(int(data.grid.x) * 7 + int(data.grid.y) * 13)
-		module.add_child(decoration)
 	_build_floor(module, data.required_connectors.has(&"down"))
 	_build_module_guard_rails(module, data.required_connectors)
 	var has_vertical_route: bool = data.required_connectors.has(&"up") or data.required_connectors.has(&"down")
@@ -786,14 +779,6 @@ func _add_static_rect(parent: Node2D, rectangle: Rect2, color: Color, one_way: b
 	visual.polygon = PackedVector2Array([Vector2(-half.x, -half.y), Vector2(half.x, -half.y), half, Vector2(-half.x, half.y)])
 	visual.color = color
 	body.add_child(visual)
-	if biome_definition != null and ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city" and color.a > 0:
-		var skin := CITY_PRESENTATION.new()
-		skin.surface = Rect2(-half, rectangle.size)
-		skin.kind = "platform" if one_way else ("wall" if rectangle.size.y > rectangle.size.x else "floor")
-		skin.variant = absi(roundi(body.global_position.x / 64.0))
-		body.add_child(skin)
-		# Keep the original visual node/index for existing safety/debug contracts.
-		visual.visible = false
 
 
 func _build_module_guard_rails(module: Node2D, connectors: Array) -> void:
@@ -821,12 +806,6 @@ func _add_guard_rail(parent: Node2D, local_position: Vector2) -> void:
 	debug_visual.add_to_group("procedural_debug_collider")
 	body.add_child(debug_visual)
 	parent.add_child(body)
-	if biome_definition != null and ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
-		var skin := CITY_PRESENTATION.new()
-		skin.kind = "wall"
-		skin.surface = Rect2(-GUARD_RAIL_WIDTH * 0.5, -GUARD_RAIL_HEIGHT * 0.5,
-			GUARD_RAIL_WIDTH, GUARD_RAIL_HEIGHT)
-		body.add_child(skin)
 
 
 func _create_module_sockets(module: Node2D, definition: BiomeModuleDefinition, module_index: int) -> void:
@@ -1036,12 +1015,6 @@ func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, dest
 	exit.destination_id = destination
 	add_child(exit)
 	exit.global_position = marker.global_position
-	if ContentRegistry.biome(biome_definition.biome_id).get("presentation_adapter_id") == "lower_city":
-		var skin := CITY_PRESENTATION.new()
-		skin.kind = "exit"
-		exit.add_child(skin)
-		exit.get_node("Door").visible = false
-		exit.get_node("Frame").visible = false
 	(_content_modules.exit as Array).append(module_index)
 	_content_entries.append({"kind": &"exit", "content_id": exit_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
 	var exit_label := "A" if socket_order == 0 else "B"
@@ -1058,7 +1031,7 @@ func _spawn_attribute_reward(reward_index: int, module_index: int, stage_prefix:
 	var exit_suffix := "a" if reward_index == 0 else "b"
 	chest.chest_id = StringName("%s_exit_%s_attribute" % [stage_prefix, exit_suffix])
 	add_child(chest)
-	chest.global_position = _grounded_content_position(marker, 34.0, 23.0)
+	chest.global_position = _grounded_content_position(marker, 34.0, 26.0)
 	spawned_attribute_count += 1
 	(_content_modules.attribute as Array).append(module_index)
 	_content_entries.append({"kind": &"attribute", "content_id": chest.chest_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
@@ -1142,7 +1115,7 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 			ordinary_loot.amount = 15 + run_manager.extra_enemy_count * 5
 			loot = ordinary_loot
 		add_child(loot)
-		loot.global_position = _grounded_content_position(marker, 44.0, 21.0)
+		loot.global_position = _grounded_content_position(marker, 44.0, 26.0)
 		spawned_loot_count += 1
 		(_content_modules.loot as Array).append(module_index)
 		_content_entries.append({"kind": &"loot", "content_id": loot_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
@@ -1411,6 +1384,15 @@ func _grounded_content_position(marker: Marker2D, half_width: float, visual_bott
 				best_distance = distance
 				surface_y = platform.position.y
 	if is_inf(best_distance):
+		if not is_inside_tree():
+			return marker.global_position
+		# Some procedural sockets have an offset centre; raycast to the nearest
+		# actual static support before accepting a potentially floating chest.
+		var query := PhysicsRayQueryParameters2D.create(marker.global_position + Vector2(0.0, -36.0), marker.global_position + Vector2(0.0, 150.0), 1)
+		query.collide_with_areas = false
+		var result := get_world_2d().direct_space_state.intersect_ray(query)
+		if not result.is_empty():
+			return Vector2(marker.global_position.x, float(result.position.y) - visual_bottom_offset)
 		return marker.global_position
 	return marker.global_position + Vector2(0.0, surface_y - visual_bottom_offset - local.y)
 

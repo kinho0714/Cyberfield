@@ -80,13 +80,13 @@ static func layout_id(family: String, variant: int, grid: Vector2, role: String 
 
 static func identity_for_layout(id: String, role: String = "") -> String:
 	if id.begins_with("city_"):
+		var index := clampi(int(id.get_slice("_", 1)), 0, CITY_IDENTITIES.size() - 1)
 		if role == "reward":
-			return "commercial"
+			return "workshop" if index in [3, 8, 11] else "residential" if index in [6, 10] else "commercial"
 		if role == "combat":
-			return "infrastructure"
+			return "alley" if index in [0, 5] else "rooftop" if index in [3, 11] else "infrastructure"
 		if role in ["start", "exit"]:
 			return "transition"
-		var index := clampi(int(id.get_slice("_", 1)), 0, CITY_IDENTITIES.size() - 1)
 		return String(CITY_IDENTITIES[index])
 	if id.begins_with("industrial_"):
 		return "heavy_industrial" if int(id.get_slice("_", 1)) % 2 == 0 else "maintenance"

@@ -15,11 +15,18 @@ var _sidebar_buttons: Array[Button] = []
 var _tabs: Array[Button] = []
 var _equipment: HBoxContainer
 var _summary: Label
+var _summary_scroll: ScrollContainer
 var _details: Label
 var _preview_index: int = 0
 var _selected_tab := 0
 var _backpack: Node
 var _gadget_labels: Array[Label] = []
+var _armory_list: VBoxContainer
+var _owned_weapon_buttons: Dictionary = {}
+var _selected_weapon_id: StringName = &"scrap_blade"
+var _equip_slot_buttons: Array[Button] = []
+var _unequip_button: Button
+var _reload_button: Button
 
 
 func _ready() -> void:
@@ -36,6 +43,7 @@ func _ready() -> void:
 	overlay = ColorRect.new()
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.color = Color(0.005, 0.015, 0.035, 0.66)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(overlay)
 	_sidebar = PanelContainer.new()
 	_sidebar.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("pause/pause_side_panel", 18, 18))
@@ -43,7 +51,7 @@ func _ready() -> void:
 	var navigation := VBoxContainer.new()
 	navigation.add_theme_constant_override("separation", 10)
 	_sidebar.add_child(navigation)
-	_add_label(navigation, "PAUSA", 28)
+	_add_label(navigation, "CYBERFIELD // TERMINAL", 20)
 	var actions: Array[String] = ["CONTINUAR", "INVENTÁRIO", "CONFIGURAÇÕES", "ABANDONAR RUN", "MENU PRINCIPAL"]
 	for index in actions.size():
 		var button := Button.new()
@@ -59,11 +67,11 @@ func _ready() -> void:
 	_inventory_frame.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/inventory_panel", 18, 22))
 	overlay.add_child(_inventory_frame)
 	var panel := VBoxContainer.new()
-	panel.add_theme_constant_override("separation", 16)
+	panel.add_theme_constant_override("separation", 12)
 	_inventory_frame.add_child(panel)
 	var header := HBoxContainer.new()
 	panel.add_child(header)
-	var title: Label = _add_label(header, "INVENTÁRIO", 28)
+	var title: Label = _add_label(header, "MOCHILA // EQUIPAMENTO", 24)
 	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var labels: Array[String] = ["EQUIPAMENTOS", "STATUS", "RUN", "MOCHILA"]
 	for index in labels.size():
@@ -77,7 +85,7 @@ func _ready() -> void:
 		header.add_child(tab)
 		_tabs.append(tab)
 	_equipment = HBoxContainer.new()
-	_equipment.add_theme_constant_override("separation", 22)
+	_equipment.add_theme_constant_override("separation", 14)
 	panel.add_child(_equipment)
 	var cards := VBoxContainer.new()
 	cards.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -85,7 +93,7 @@ func _ready() -> void:
 	_equipment.add_child(cards)
 	for index in 2:
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(200, 128)
+		button.custom_minimum_size = Vector2(190, 103)
 		button.pressed.connect(_select_slot.bind(index))
 		button.focus_entered.connect(_preview_slot.bind(index))
 		button.mouse_entered.connect(_preview_slot.bind(index))
@@ -98,15 +106,57 @@ func _ready() -> void:
 		empty.name = "Gadget%d" % index
 		_gadget_labels.append(empty)
 	var detail_panel := PanelContainer.new()
-	detail_panel.custom_minimum_size = Vector2(320, 272)
+	detail_panel.custom_minimum_size = Vector2(410, 320)
 	detail_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	detail_panel.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/detail_panel", 16, 18))
 	_equipment.add_child(detail_panel)
-	_details = _add_label(detail_panel, "", 20)
+	var detail_column := VBoxContainer.new()
+	detail_column.add_theme_constant_override("separation", 8)
+	detail_panel.add_child(detail_column)
+	_details = _add_label(detail_column, "", 17)
 	_details.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_details.custom_minimum_size = Vector2(280, 0)
-	_summary = _add_label(panel, "", 22)
-	_summary.custom_minimum_size = Vector2(0, 272)
+	_details.custom_minimum_size = Vector2(360, 112)
+	_add_label(detail_column, "ARSENAL DA OPERAÇÃO // SELECIONE UMA ARMA", 15)
+	var armory_scroll := ScrollContainer.new()
+	armory_scroll.custom_minimum_size = Vector2(360, 152)
+	armory_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	armory_scroll.follow_focus = true
+	detail_column.add_child(armory_scroll)
+	_armory_list = VBoxContainer.new()
+	_armory_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_armory_list.add_theme_constant_override("separation", 4)
+	armory_scroll.add_child(_armory_list)
+	var actions_row := HBoxContainer.new()
+	actions_row.add_theme_constant_override("separation", 6)
+	detail_column.add_child(actions_row)
+	for index in 2:
+		var equip := Button.new()
+		equip.text = "SLOT %d" % (index + 1)
+		equip.custom_minimum_size = Vector2(98, 42)
+		PANEL_PRESENTATION.style_button(equip)
+		equip.pressed.connect(_equip_selected.bind(index))
+		actions_row.add_child(equip)
+		_equip_slot_buttons.append(equip)
+	_unequip_button = Button.new()
+	_unequip_button.text = "RETIRAR"
+	_unequip_button.custom_minimum_size = Vector2(80, 42)
+	PANEL_PRESENTATION.style_button(_unequip_button)
+	_unequip_button.pressed.connect(_unequip_active)
+	actions_row.add_child(_unequip_button)
+	_reload_button = Button.new()
+	_reload_button.text = "RECARREGAR"
+	_reload_button.custom_minimum_size = Vector2(114, 42)
+	PANEL_PRESENTATION.style_button(_reload_button)
+	_reload_button.pressed.connect(_reload_active)
+	actions_row.add_child(_reload_button)
+	_summary_scroll = ScrollContainer.new()
+	_summary_scroll.custom_minimum_size = Vector2(0, 280)
+	_summary_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_summary_scroll.follow_focus = true
+	_summary_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	panel.add_child(_summary_scroll)
+	_summary = _add_label(_summary_scroll, "", 20)
+	_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_close_button = Button.new()
 	_close_button.text = "VOLTAR"
@@ -172,6 +222,9 @@ func open_inventory() -> void:
 		_tree_paused = true
 	room_manager.get_node("TouchControls").set_menu_blocked(true)
 	overlay.visible = true
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"ui_open")
 	_show_inventory_tab(0)
 	_refresh()
 	slot_buttons[0].grab_focus()
@@ -187,6 +240,9 @@ func close_inventory() -> void:
 		get_tree().paused = false
 		_tree_paused = false
 	overlay.visible = false
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"ui_close")
 	get_viewport().gui_release_focus()
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if room_manager != null:
@@ -205,7 +261,9 @@ func close_inventory() -> void:
 func _select_slot(index: int) -> void:
 	var player := _local_player()
 	if player != null and not player.equipped_weapons[index].is_empty():
-		player.active_weapon_slot = index
+		if player.active_weapon_slot != index:
+			player.switch_weapon()
+		_selected_weapon_id = player.equipped_weapons[index]
 		_refresh()
 
 
@@ -225,7 +283,8 @@ func _refresh() -> void:
 		slot_buttons[index].disabled = false
 		PANEL_PRESENTATION.mark_equipped(slot_buttons[index], player.active_weapon_slot == index)
 		slot_buttons[index].text = "%sSLOT %d\n%s\n%s" % ["▶ " if player.active_weapon_slot == index else "", index + 1, tr(data.name), tr(String(data.type).to_upper())]
-	_preview_slot(_preview_index)
+	_refresh_armory(player)
+	_update_weapon_detail(player)
 
 
 
@@ -264,28 +323,107 @@ func _add_label(parent: Node, text: String, font_size: int) -> Label:
 
 func _layout_inventory() -> void:
 	var screen: Vector2 = get_viewport().get_visible_rect().size
-	_sidebar.position = Vector2(32, maxf(24, (screen.y - 402) * 0.5))
+	var compact := screen.x < 1140.0
+	_sidebar.visible = not compact
+	_sidebar.position = Vector2(24, maxf(16, (screen.y - 402) * 0.5))
 	_sidebar.size = Vector2(256, 402)
-	var height := maxf(464, _inventory_frame.get_combined_minimum_size().y)
-	_inventory_frame.position = Vector2(332, maxf(24, (screen.y - height) * 0.5))
-	_inventory_frame.size = Vector2(maxf(740, screen.x - 364), height)
+	var height := minf(maxf(462, _inventory_frame.get_combined_minimum_size().y), screen.y - 24.0)
+	_inventory_frame.position = Vector2(294 if not compact else 12, maxf(12, (screen.y - height) * 0.5))
+	_inventory_frame.size = Vector2(screen.x - (306 if not compact else 24), height)
 
 
 func _preview_slot(index: int) -> void:
 	_preview_index = index
 	var player := _local_player()
-	if player == null or player.equipped_weapons[index].is_empty():
-		_details.text = tr("SLOT %d\n\nVAZIO") % (index + 1)
+	if player == null:
 		return
-	var data := WeaponCatalog.get_definition(player.equipped_weapons[index])
-	_details.text = "%s\n%s\n\n%s  %d\n%s  %.2fs\n%s  %s\n\n%s" % [tr(data.name), tr(String(data.rarity).to_upper()), tr("DANO"), data.damage, tr("RECARGA"), data.cooldown, tr("TIPO"), tr(String(data.type).to_upper()), tr("EQUIPADO") if player.active_weapon_slot == index else tr("Ative o slot para equipar.")]
+	var weapon_id: StringName = player.equipped_weapons[index]
+	if not weapon_id.is_empty():
+		_selected_weapon_id = weapon_id
+	_update_weapon_detail(player)
+
+
+func _refresh_armory(player: Node) -> void:
+	if _armory_list == null:
+		return
+	_owned_weapon_buttons.clear()
+	for child in _armory_list.get_children():
+		_armory_list.remove_child(child)
+		child.queue_free()
+	for weapon_id: StringName in player.owned_weapons:
+		var button := Button.new()
+		button.text = "◆ %s" % WeaponCatalog.get_display_name(weapon_id)
+		button.icon = WeaponCatalog.get_visual_texture(weapon_id, "inventory_icon")
+		button.custom_minimum_size = Vector2(320, 39)
+		button.expand_icon = false
+		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		button.add_theme_font_size_override("font_size", 15)
+		PANEL_PRESENTATION.style_button(button)
+		button.pressed.connect(_select_owned_weapon.bind(weapon_id))
+		_armory_list.add_child(button)
+		_owned_weapon_buttons[weapon_id] = button
+		PANEL_PRESENTATION.mark_equipped(button, weapon_id == _selected_weapon_id)
+	if player.owned_weapons.is_empty():
+		_add_label(_armory_list, "NENHUMA ARMA ENCONTRADA", 14)
+
+
+func _select_owned_weapon(weapon_id: StringName) -> void:
+	_selected_weapon_id = weapon_id
+	var player := _local_player()
+	if player != null:
+		_refresh_armory(player)
+		_update_weapon_detail(player)
+
+
+func _equip_selected(slot: int) -> void:
+	var player := _local_player()
+	if player != null and player.equip_owned_weapon(_selected_weapon_id, slot):
+		_preview_index = slot
+		_refresh()
+
+
+func _unequip_active() -> void:
+	var player := _local_player()
+	if player != null and player.unequip_weapon(player.active_weapon_slot):
+		_refresh()
+
+
+func _reload_active() -> void:
+	var player := _local_player()
+	if player != null and WeaponCatalog.is_ranged(player.get_active_weapon_id()):
+		close_inventory()
+		player.reload_weapon()
+
+
+func _update_weapon_detail(player: Node) -> void:
+	var weapon_id := _selected_weapon_id
+	if not player.owned_weapons.has(weapon_id):
+		weapon_id = player.get_active_weapon_id()
+		_selected_weapon_id = weapon_id
+	var data := WeaponCatalog.get_definition(weapon_id)
+	var equipped_slots: Array[String] = []
+	for index in 2:
+		if player.equipped_weapons[index] == weapon_id:
+			equipped_slots.append("SLOT %d" % (index + 1))
+	var status := "EQUIPADO: %s" % ", ".join(equipped_slots) if not equipped_slots.is_empty() else "NO ARSENAL"
+	var ammo_text := "SEM MUNIÇÃO // CORPO A CORPO"
+	if WeaponCatalog.is_ranged(weapon_id):
+		var ammo: Dictionary = player.weapon_ammo.get(weapon_id, {})
+		ammo_text = "MUNIÇÃO %d/%d  |  RESERVA %d" % [int(ammo.get("clip", 0)), int(data.get("magazine", 0)), int(ammo.get("reserve", 0))]
+		if player.weapon_reload_timers.has(weapon_id):
+			ammo_text += "  |  RECARREGANDO"
+	_details.text = "%s  //  %s\n%s\nDANO %d  |  CADÊNCIA %.2fs  |  ALCANCE %d\n%s\n%s" % [WeaponCatalog.get_display_name(weapon_id), tr(String(data.rarity).to_upper()), tr(String(data.get("description", ""))), int(data.damage), float(data.cooldown), int(data.range), ammo_text, status]
+	for button in _equip_slot_buttons:
+		button.disabled = not player.owned_weapons.has(weapon_id)
+	_unequip_button.disabled = player.equipped_weapons[1 - player.active_weapon_slot].is_empty()
+	_reload_button.disabled = not WeaponCatalog.is_ranged(player.get_active_weapon_id())
 
 
 func _show_inventory_tab(index: int) -> void:
 	_selected_tab = index
 	call_deferred("_layout_inventory")
 	_equipment.visible = index == 0
-	_summary.visible = index != 0
+	_summary_scroll.visible = index != 0
 	for n in _tabs.size():
 		PANEL_PRESENTATION.set_button_normal(_tabs[n], PANEL_PRESENTATION.style("inventory/tab_selected" if n == index else "inventory/tab_normal", 8, 8))
 		for state in ["hover", "pressed"]:
@@ -300,11 +438,16 @@ func _show_inventory_tab(index: int) -> void:
 		if run != null:
 			_summary.text += "\n%s  %s\n%s  %d\n%s  %d" % [tr("TEMPO"), run.format_run_time(), tr("DINHEIRO"), run.dirty_money, tr("SUCATA"), run.scrap]
 	elif index == 3:
-		_summary.text = tr("MOCHILA") + "\n\n"
+		_summary.text = "MOCHILA  //  CARGA TEMPORÁRIA\n\n"
 		if player != null:
 			var cargo: Dictionary = _backpack.snapshot(player.participant_id)
 			var run := get_parent().get_node_or_null("RunManager")
-			_summary.text += "%s  %d\n%s  %d\n\n" % [tr("DINHEIRO SUJO (EQUIPE)"), cargo.team_dirty_money, tr("SUCATA (EQUIPE)"), int(run.scrap) if run != null else 0]
+			_summary.text += "RECURSOS DA EQUIPE\n%s  %d\n%s  %d\n\n" % [tr("DINHEIRO SUJO (EQUIPE)"), cargo.team_dirty_money, tr("SUCATA (EQUIPE)"), int(run.scrap) if run != null else 0]
+			_summary.text += "ARSENAL ENCONTRADO\n"
+			for weapon_id: StringName in player.owned_weapons:
+				var equipped := " [EM USO]" if player.equipped_weapons.has(weapon_id) else ""
+				_summary.text += "• %s%s\n" % [WeaponCatalog.get_display_name(weapon_id), equipped]
+			_summary.text += "\nCONSUMÍVEIS\nFRASCOS DE CURA  %d / %d\n\nOUTROS ITENS\n" % [player.heal_doses, player.max_heal_doses]
 			for item: Dictionary in cargo.items:
 				_summary.text += "%s × %d\n" % [tr(String(item.get("name_key", item.get("id", "")))), int(item.get("quantity", 0))]
 			if cargo.items.is_empty():

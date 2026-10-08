@@ -83,6 +83,10 @@ func _begin_impact(impact_position: Vector2) -> void:
 		return
 	spent = true
 	global_position = impact_position
+	if target_group == &"enemy" and not network_visual_only:
+		var audio := get_tree().get_first_node_in_group("audio_service")
+		if audio != null:
+			audio.play_event(&"weapon_impact")
 	$CollisionShape2D.set_deferred("disabled", true)
 	if projectile_visual != null:
 		projectile_visual.show_impact()

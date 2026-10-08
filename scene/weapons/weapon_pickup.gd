@@ -22,7 +22,7 @@ func _ready() -> void:
 	label.size = Vector2(210, 48)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	var data := WeaponCatalog.get_definition(weapon_id)
-	label.text = "%s\n[USAR] PEGAR // %s %d" % [data.name, String(data.type).to_upper(), int(data.damage)]
+	label.text = "%s\n[USAR] PEGAR // %s %d" % [WeaponCatalog.get_display_name(weapon_id), String(data.type).to_upper(), int(data.damage)]
 	label.visible = false
 	add_child(label)
 	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)
@@ -38,8 +38,9 @@ func _build_temporary_weapon_visual() -> Node2D:
 		sprite.name = "WeaponWorldVisual"
 		sprite.texture = texture
 		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		var profile := ContentRegistry.entry_profile(ContentRegistry.weapon(weapon_id))
-		sprite.offset = profile.alignment(&"world", Vector2.ZERO)
+		var profile := ContentRegistry.entry_profile(ContentRegistry.weapon(weapon_id)) if ContentRegistry.DATA.weapons.has(String(weapon_id)) else null
+		sprite.offset = profile.alignment(&"world", Vector2.ZERO) if profile != null else Vector2.ZERO
+		sprite.scale = Vector2.ONE * minf(1.8, 60.0 / maxf(texture.get_width(), 1.0))
 		return sprite
 	var root := Node2D.new()
 	root.name = "TempWeaponSprite"

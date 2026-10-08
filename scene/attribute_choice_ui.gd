@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 signal network_choice_submitted(attribute: StringName)
+const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
 
 const LABELS := {
 	&"intellect": ["INTELECTO", "+0,5 s de stamina de escalada", Color(1.0, 0.5, 0.1)],
@@ -35,24 +36,42 @@ func _ready() -> void:
 func _build_interface() -> void:
 	var overlay := ColorRect.new()
 	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	overlay.color = Color(0, 0, 0, 0.78)
+	overlay.color = Color(0.004, 0.012, 0.026, 0.91)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	add_child(overlay)
 	var center := CenterContainer.new()
 	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(center)
 	panel = PanelContainer.new()
-	panel.custom_minimum_size = Vector2(520, 280)
+	panel.custom_minimum_size = Vector2(670, 405)
+	panel.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/inventory_panel", 20, 25))
 	center.add_child(panel)
 	var box := VBoxContainer.new()
-	box.add_theme_constant_override("separation", 16)
+	box.add_theme_constant_override("separation", 12)
 	panel.add_child(box)
+	var eyebrow := Label.new()
+	eyebrow.text = "CYBERFIELD  //  MÓDULO DE EVOLUÇÃO"
+	eyebrow.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	eyebrow.add_theme_font_size_override("font_size", 16)
+	eyebrow.add_theme_color_override("font_color", Color("61ddec"))
+	box.add_child(eyebrow)
 	title = Label.new()
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 26)
+	title.add_theme_font_size_override("font_size", 25)
+	title.add_theme_color_override("font_color", Color("e6f5ff"))
 	box.add_child(title)
+	var instruction := Label.new()
+	instruction.text = "ESCOLHA UMA MELHORIA  //  BÔNUS VÁLIDO NESTA RUN"
+	instruction.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	instruction.add_theme_font_size_override("font_size", 14)
+	instruction.add_theme_color_override("font_color", Color("97b6c5"))
+	box.add_child(instruction)
 	for index in 3:
 		var button := Button.new()
-		button.custom_minimum_size = Vector2(480, 56)
+		button.custom_minimum_size = Vector2(580, 70)
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.add_theme_font_size_override("font_size", 17)
+		PANEL_PRESENTATION.style_button(button)
 		button.pressed.connect(_choose.bind(index))
 		box.add_child(button)
 		buttons.append(button)
@@ -72,15 +91,17 @@ func open_for(chest: Node, player: Node, available_options: Array[StringName]) -
 		button.visible = index < options.size()
 		if button.visible:
 			var data := _option_data(options[index])
-			button.text = "%s // %s\n%s" % [data[0], data[1], data[2]]
-			button.modulate = data[3]
+			button.text = "0%d  //  %s  //  %s\n%s" % [index + 1, data[0], data[1], data[2]]
+			button.add_theme_color_override("font_color", (data[3] as Color).lerp(Color.WHITE, 0.30))
 		button.mouse_filter = Control.MOUSE_FILTER_STOP if player.input_profile == "p1" else Control.MOUSE_FILTER_IGNORE
 		button.focus_mode = Control.FOCUS_ALL if player.input_profile == "p1" else Control.FOCUS_NONE
 	player.set_input_enabled(false)
 	_set_touch_controls_blocked(true)
 	visible = true
+	_play_ui_event(&"ui_open")
 	if player.input_profile == "p1":
 		buttons[0].grab_focus()
+	_update_p2_selection()
 	return true
 
 
@@ -99,14 +120,16 @@ func open_network_for(player: Node, available_options: Array[StringName]) -> boo
 		button.visible = index < options.size()
 		if button.visible:
 			var data := _option_data(options[index])
-			button.text = "%s // %s\n%s" % [data[0], data[1], data[2]]
-			button.modulate = data[3]
+			button.text = "0%d  //  %s  //  %s\n%s" % [index + 1, data[0], data[1], data[2]]
+			button.add_theme_color_override("font_color", (data[3] as Color).lerp(Color.WHITE, 0.30))
 			button.mouse_filter = Control.MOUSE_FILTER_STOP
 			button.focus_mode = Control.FOCUS_ALL
 	player.set_input_enabled(false)
 	_set_touch_controls_blocked(true)
 	visible = true
+	_play_ui_event(&"ui_open")
 	buttons[0].grab_focus()
+	_update_p2_selection()
 	return true
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -137,7 +160,7 @@ func _input(event: InputEvent) -> void:
 
 func _update_p2_selection() -> void:
 	for index in options.size():
-		buttons[index].button_pressed = index == selected_index
+		PANEL_PRESENTATION.mark_equipped(buttons[index], index == selected_index)
 
 func _choose(index: int) -> void:
 	if index < 0 or index >= options.size() or active_player == null:
@@ -146,6 +169,7 @@ func _choose(index: int) -> void:
 		var selected_attribute: StringName = options[index]
 		active_player.set_input_enabled(true)
 		visible = false
+		_play_ui_event(&"ui_close")
 		get_viewport().gui_release_focus()
 		active_player = null
 		options.clear()
@@ -158,6 +182,7 @@ func _choose(index: int) -> void:
 	if active_chest.apply_choice(active_player, options[index]):
 		active_player.set_input_enabled(true)
 		visible = false
+		_play_ui_event(&"ui_close")
 		get_viewport().gui_release_focus()
 		active_player = null
 		active_chest = null
@@ -169,6 +194,7 @@ func cancel_selection() -> void:
 	if active_player:
 		active_player.set_input_enabled(true)
 	visible = false
+	_play_ui_event(&"ui_cancel")
 	get_viewport().gui_release_focus()
 	active_player = null
 	active_chest = null
@@ -201,3 +227,9 @@ func _set_touch_controls_blocked(value: bool) -> void:
 	var touch_controls := room_manager.get_node_or_null("TouchControls")
 	if touch_controls != null and touch_controls.has_method("set_menu_blocked"):
 		touch_controls.set_menu_blocked(value)
+
+
+func _play_ui_event(event_id: StringName) -> void:
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(event_id)

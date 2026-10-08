@@ -6,6 +6,35 @@ const MENU_RAIN = preload("res://assets/audio/menu/ambiente_chuva.ogg")
 const MENU_CITY = preload("res://assets/audio/menu/ambiente_urbano.ogg")
 const MENU_THUNDER = preload("res://assets/audio/menu/Efeito_sonoro_Trovoadas.wav")
 const MENU_MUSIC_VOLUME_DB := -10.0
+const MAX_EVENT_VOICES := 14
+const SELECTED_SFX := {
+	&"ui_focus": preload("res://assets/audio/sfx/ui_focus.ogg"),
+	&"ui_confirm": preload("res://assets/audio/sfx/ui_confirm.ogg"),
+	&"ui_cancel": preload("res://assets/audio/sfx/ui_cancel.ogg"),
+	&"ui_open": preload("res://assets/audio/sfx/ui_open.ogg"),
+	&"ui_close": preload("res://assets/audio/sfx/ui_close.ogg"),
+	&"weapon_switch": preload("res://assets/audio/sfx/weapon_switch.ogg"),
+	&"weapon_equip": preload("res://assets/audio/sfx/weapon_equip.ogg"),
+	&"weapon_reload": preload("res://assets/audio/sfx/weapon_reload.ogg"),
+	&"weapon_fire_small": preload("res://assets/audio/sfx/weapon_fire_small.ogg"),
+	&"weapon_fire_large": preload("res://assets/audio/sfx/weapon_fire_large.ogg"),
+	&"weapon_impact": preload("res://assets/audio/sfx/weapon_impact.ogg"),
+	&"scrap_collect": preload("res://assets/audio/sfx/scrap_collect.ogg"),
+	&"player_jump": preload("res://assets/audio/sfx/player_jump.ogg"),
+	&"player_dash": preload("res://assets/audio/sfx/player_dash.ogg"),
+	&"player_attack": preload("res://assets/audio/sfx/player_attack.ogg"),
+	&"player_hurt": preload("res://assets/audio/sfx/player_hurt.ogg"),
+	&"player_downed": preload("res://assets/audio/sfx/player_downed.ogg"),
+	&"player_revive": preload("res://assets/audio/sfx/player_revive.ogg"),
+	&"player_heal": preload("res://assets/audio/sfx/player_heal.ogg"),
+	&"enemy_attack": preload("res://assets/audio/sfx/enemy_attack.ogg"),
+	&"enemy_hurt": preload("res://assets/audio/sfx/enemy_hurt.ogg"),
+	&"enemy_death": preload("res://assets/audio/sfx/enemy_death.ogg"),
+	&"enemy_telegraph": preload("res://assets/audio/sfx/enemy_telegraph.ogg"),
+	&"world_door": preload("res://assets/audio/sfx/world_door.ogg"),
+	&"loot_open": preload("res://assets/audio/sfx/loot_open.ogg"),
+	&"teleport": preload("res://assets/audio/sfx/teleport.ogg"),
+}
 
 const MUSIC_CONTEXTS: Array[StringName] = [&"main_menu", &"house", &"operation", &"boss"]
 const EVENT_BUSES := {
@@ -39,6 +68,8 @@ var _menu_rain_player: AudioStreamPlayer
 var _menu_city_player: AudioStreamPlayer
 var _ambience_fades: Dictionary = {}
 var _menu_ambience_active := false
+var _active_event_voices := 0
+var _event_last_played: Dictionary = {}
 
 
 func _ready() -> void:
@@ -52,6 +83,8 @@ func _ready() -> void:
 	menu_city.loop = true
 	register_music_stream(&"main_menu", menu_music)
 	register_event_stream(&"menu_thunder", MENU_THUNDER, &"SFX")
+	for event_id: StringName in SELECTED_SFX:
+		register_event_stream(event_id, SELECTED_SFX[event_id], &"SFX")
 	_music_player = AudioStreamPlayer.new()
 	_music_player.name = "MusicPlayer"
 	_music_player.bus = &"Music"
@@ -123,6 +156,12 @@ func play_event(event_id: StringName, pitch_scale: float = 1.0) -> bool:
 	var entry: Variant = event_streams.get(event_id)
 	if entry == null:
 		return false
+	if _active_event_voices >= MAX_EVENT_VOICES:
+		return false
+	var now := Time.get_ticks_msec()
+	var minimum_interval := 95 if event_id in [&"ui_focus", &"enemy_hurt", &"player_attack"] else 48
+	if now - int(_event_last_played.get(event_id, -100000)) < minimum_interval:
+		return false
 	var stream: AudioStream = entry.get("stream") as AudioStream
 	if stream == null:
 		return false
@@ -133,9 +172,16 @@ func play_event(event_id: StringName, pitch_scale: float = 1.0) -> bool:
 	player.bus = explicit_bus if not explicit_bus.is_empty() else StringName(EVENT_BUSES.get(event_id, &"SFX"))
 	if event_id == &"menu_thunder":
 		player.volume_db = -8.0
-	player.pitch_scale = clampf(pitch_scale, 0.25, 4.0)
+	else:
+		player.volume_db = -11.0 if String(event_id).begins_with("ui_") else -8.0 if String(event_id).begins_with("weapon_fire") else -7.0
+	player.pitch_scale = clampf(pitch_scale * randf_range(0.97, 1.03), 0.25, 4.0)
 	add_child(player)
-	player.finished.connect(player.queue_free)
+	_event_last_played[event_id] = now
+	_active_event_voices += 1
+	player.finished.connect(func() -> void:
+		_active_event_voices = maxi(_active_event_voices - 1, 0)
+		player.queue_free()
+	)
 	player.play()
 	return true
 

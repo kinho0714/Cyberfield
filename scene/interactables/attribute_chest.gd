@@ -21,7 +21,7 @@ func _ready() -> void:
 	_chest_sprite.name = "TemporaryAttributeChestVisual"
 	_chest_sprite.texture = CHEST_TEXTURE
 	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_chest_sprite.scale = Vector2(1.6, 1.6)
+	_chest_sprite.scale = Vector2(2.0, 2.0)
 	_chest_sprite.position = Vector2(0.0, -3.0)
 	add_child(_chest_sprite)
 	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)

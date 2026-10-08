@@ -145,7 +145,8 @@ func _test_generated_context() -> bool:
 		if node.get_script() == load("res://scene/biomes/lower_city/lower_city_presentation.gd"):
 			assert(node.content_biome_id == &"biome_02")
 			presentation_count += 1
-	assert(presentation_count > 0)
+	# The temporary district renderer is deliberately detached from every run.
+	assert(presentation_count == 0)
 	legacy.free()
 	future.free()
 	manager.free()

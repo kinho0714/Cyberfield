@@ -735,6 +735,9 @@ func perform_fast_travel_authoritative(origin_id: StringName, destination_id: St
 	var full_map := get_tree().get_first_node_in_group("full_map")
 	if full_map != null:
 		full_map.close_map(false)
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"teleport")
 	return true
 
 
@@ -745,6 +748,9 @@ func apply_network_fast_travel(destination_id: StringName) -> void:
 	var destination: BiomeTeleporter = _find_teleporter(destination_id)
 	if destination == null:
 		return
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"teleport")
 	gameplay_camera.position_smoothing_enabled = false
 	gameplay_camera.global_position = destination.arrival_position
 	get_tree().process_frame.connect(func() -> void: gameplay_camera.position_smoothing_enabled = true, CONNECT_ONE_SHOT)
@@ -877,14 +883,11 @@ func validate_unique_player_participant_ids(context: String = "runtime") -> bool
 
 
 func _configure_camera_for_biome(bounds: Rect2, start_position: Vector2) -> void:
-	if is_instance_valid(current_room) and current_room.get_node_or_null("TemporaryParallax") == null:
+	if current_is_hub and is_instance_valid(current_room) and current_room.get_node_or_null("TemporaryParallax") == null:
 		var backdrop := TEMP_PARALLAX.new()
 		backdrop.name = "TemporaryParallax"
-		backdrop.room_bounds = bounds if current_is_hub else bounds.grow_individual(0.0, 360.0, 0.0, 0.0)
-		backdrop.profile_id = "house" if current_is_hub else "city"
-		if current_room is BiomeGenerator:
-			var entry := ContentRegistry.biome(current_room.biome_definition.biome_id)
-			backdrop.profile_id = String(entry.get("temporary_environment_family", "city"))
+		backdrop.room_bounds = bounds
+		backdrop.profile_id = "house"
 		current_room.add_child(backdrop)
 	gameplay_camera.position_smoothing_enabled = true
 	gameplay_camera.position_smoothing_speed = 6.0

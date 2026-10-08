@@ -26,7 +26,7 @@ func _ready() -> void:
 	_chest_sprite.name = "TemporaryTrapChestVisual"
 	_chest_sprite.texture = CHEST_TEXTURE
 	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_chest_sprite.scale = Vector2(1.5, 1.5)
+	_chest_sprite.scale = Vector2(2.0, 2.0)
 	_chest_sprite.position = Vector2(0.0, -3.0)
 	add_child(_chest_sprite)
 	label.visible = false

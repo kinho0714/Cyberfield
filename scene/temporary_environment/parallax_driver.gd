@@ -43,6 +43,7 @@ func _process(_delta: float) -> void:
 	var size := get_viewport_rect().size
 	if center == _last_camera and size == _last_size and camera.zoom == _last_zoom and not environment_changed:
 		return
+	var camera_moved := center != _last_camera
 	_last_camera = center
 	_last_size = size
 	_last_zoom = camera.zoom
@@ -83,7 +84,7 @@ func _process(_delta: float) -> void:
 		view.set_meta("temp_mid_offset", (local_delta * (1.0 - float(profile.mid_speed))).clamp(
 			Vector2.ONE * -mid_limit, Vector2.ONE * mid_limit).round())
 		var extent := room_bounds.size if profile_id == "house" else Vector2(840, 480)
-		if visible_area.intersects(Rect2(view.global_position, extent)) and (background_changed or environment_changed or center != _last_camera):
+		if visible_area.intersects(Rect2(view.global_position, extent)) and (background_changed or environment_changed or camera_moved):
 			view.queue_redraw()
 
 

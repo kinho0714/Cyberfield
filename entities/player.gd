@@ -113,6 +113,9 @@ var tech_damage_bonus := 0.0
 var dash_duration_bonus := 0.0
 var drop_through_timer := 0.0
 var equipped_weapons: Array[StringName] = [&"scrap_blade", &""]
+var owned_weapons: Array[StringName] = [&"scrap_blade"]
+var weapon_ammo: Dictionary = {}
+var weapon_reload_timers: Dictionary = {}
 var active_weapon_slot := 0
 var weapon_cooldowns: Array[float] = [0.0, 0.0]
 var _dash_exceptions: Array[Node] = []
@@ -143,6 +146,7 @@ func _ready() -> void:
 	attack_shape_cast.enabled = true
 	ground_slam_shape_cast.enabled = true
 	heal_doses = max_heal_doses
+	_ensure_weapon_ammo(&"scrap_blade")
 	_update_health_label()
 	call_deferred("_register_participant")
 
@@ -217,6 +221,12 @@ func _physics_process(delta: float) -> void:
 	drop_through_timer = maxf(drop_through_timer - delta, 0.0)
 	for slot in 2:
 		weapon_cooldowns[slot] = maxf(weapon_cooldowns[slot] - delta, 0.0)
+	for weapon_id: StringName in weapon_reload_timers.keys():
+		var remaining := maxf(float(weapon_reload_timers[weapon_id]) - delta, 0.0)
+		if remaining > 0.0:
+			weapon_reload_timers[weapon_id] = remaining
+		else:
+			_finish_weapon_reload(weapon_id)
 
 	# A press made during an attack represents the next combo intent. Do not let
 	# its short post-lock buffer expire while the current attack coroutine still
@@ -346,6 +356,8 @@ func _physics_process(delta: float) -> void:
 			_start_dash()
 	if Input.is_action_just_pressed(_action(&"switch_weapon")):
 		switch_weapon()
+	if InputMap.has_action(_action(&"reload")) and Input.is_action_just_pressed(_action(&"reload")):
+		reload_weapon()
 
 	# Climb while holding toward a wall, then slide once climbing is unavailable.
 	if touching_wall_in_air and knockback_timer <= 0 and dash_timer <= 0 and not is_ground_slamming and not did_wall_jump:
@@ -472,6 +484,7 @@ func attack(slot: int = -1) -> void:
 	if is_attacking or combo_end_recovery_timer > 0.0 or is_downed or is_healing or not input_enabled:
 		return
 	weapon_cooldowns[requested_slot] = float(definition.get("cooldown", ATTACK_DURATION))
+	attack_shape_cast.target_position.x = (-1.0 if anim.flip_h else 1.0) * float(definition.get("range", 30.0))
 	_play_audio_event(&"player_attack")
 
 	is_attacking = true
@@ -579,8 +592,18 @@ func _reset_combo(clear_recovery := true) -> void:
 func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 	if is_downed or is_healing or not input_enabled:
 		return
+	var weapon_id := equipped_weapons[slot]
+	_ensure_weapon_ammo(weapon_id)
+	if float(weapon_reload_timers.get(weapon_id, 0.0)) > 0.0:
+		return
+	var ammo: Dictionary = weapon_ammo[weapon_id]
+	if int(ammo.get("clip", 0)) <= 0:
+		reload_weapon(slot)
+		return
+	ammo["clip"] = int(ammo["clip"]) - 1
+	weapon_ammo[weapon_id] = ammo
 	weapon_cooldowns[slot] = float(definition.get("cooldown", 0.42))
-	_play_audio_event(&"player_attack")
+	_play_audio_event(StringName(definition.get("shot_sfx", &"weapon_fire_small")))
 	var player_anim := anim if anim != null else get_node("AnimatedSprite2D") as AnimatedSprite2D
 	is_attacking = true
 	attack_generation += 1
@@ -593,13 +616,26 @@ func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 		return
 	var direction := Vector2.LEFT if player_anim.flip_h else Vector2.RIGHT
 	var origin := global_position + Vector2(direction.x * 28.0, -8.0)
+	# A tiny transient muzzle flash gives firing feedback without changing the
+	# official character spritesheet or adding a per-frame particle emitter.
+	var muzzle := Polygon2D.new()
+	muzzle.name = "TemporaryMuzzleFlash"
+	muzzle.polygon = PackedVector2Array([Vector2(0, -4), Vector2(13, -2), Vector2(24, 0), Vector2(13, 2), Vector2(0, 4)])
+	muzzle.color = Color("8deaff") if weapon_id == &"pulse_carbine" else Color("f1b8ff")
+	muzzle.scale.x = direction.x
+	muzzle.z_index = 8
+	get_parent().add_child(muzzle)
+	muzzle.global_position = origin
+	get_tree().create_timer(0.075).timeout.connect(muzzle.queue_free)
 	var projectile := RANGED_PROJECTILE_SCENE.instantiate()
 	get_parent().add_child(projectile)
 	var damage := maxi(1, roundi(float(definition.get("damage", 34)) * (1.0 + 0.10 * intellect + tech_damage_bonus)))
-	projectile.setup(origin, direction, self, 620.0, damage, &"enemy")
+	var projectile_speed := float(definition.get("projectile_speed", 620.0))
+	projectile.maximum_lifetime = float(definition.get("range", 360.0)) / projectile_speed
+	projectile.setup(origin, direction, self, projectile_speed, damage, &"enemy")
 	var lan_session := get_tree().get_first_node_in_group("lan_session") if is_inside_tree() else null
 	if lan_session != null:
-		projectile.network_id = lan_session.replicate_projectile_spawn(origin, direction, 620.0, damage, &"enemy")
+		projectile.network_id = lan_session.replicate_projectile_spawn(origin, direction, projectile_speed, damage, &"enemy")
 	await get_tree().create_timer(ATTACK_DURATION).timeout
 	if presentation_generation == attack_generation:
 		is_attacking = false
@@ -635,15 +671,77 @@ func equip_weapon(weapon_id: StringName, replace_slot: int = -1) -> bool:
 		target_slot = active_weapon_slot
 	target_slot = clampi(target_slot, 0, 1)
 	equipped_weapons[target_slot] = weapon_id
+	if not owned_weapons.has(weapon_id):
+		owned_weapons.append(weapon_id)
+	_ensure_weapon_ammo(weapon_id)
 	active_weapon_slot = target_slot
+	_play_audio_event(&"weapon_equip")
 	_sync_progress()
 	return true
+
+
+func equip_owned_weapon(weapon_id: StringName, target_slot: int) -> bool:
+	if not owned_weapons.has(weapon_id) or target_slot < 0 or target_slot > 1:
+		return false
+	var other_slot := equipped_weapons.find(weapon_id)
+	if other_slot >= 0 and other_slot != target_slot:
+		equipped_weapons[other_slot] = equipped_weapons[target_slot]
+	equipped_weapons[target_slot] = weapon_id
+	active_weapon_slot = target_slot
+	_play_audio_event(&"weapon_equip")
+	_sync_progress()
+	return true
+
+
+func unequip_weapon(slot: int) -> bool:
+	if slot < 0 or slot > 1 or equipped_weapons[slot].is_empty():
+		return false
+	if equipped_weapons[1 - slot].is_empty():
+		return false # Always retain at least one usable weapon.
+	equipped_weapons[slot] = &""
+	active_weapon_slot = 1 - slot
+	_sync_progress()
+	return true
+
+
+func _ensure_weapon_ammo(weapon_id: StringName) -> void:
+	if not WeaponCatalog.is_ranged(weapon_id) or weapon_ammo.has(weapon_id):
+		return
+	var data := WeaponCatalog.get_definition(weapon_id)
+	weapon_ammo[weapon_id] = {"clip": int(data.get("magazine", 0)), "reserve": int(data.get("reserve", 0))}
+
+
+func reload_weapon(slot: int = -1) -> bool:
+	var index := active_weapon_slot if slot < 0 else clampi(slot, 0, 1)
+	var weapon_id := equipped_weapons[index]
+	if not WeaponCatalog.is_ranged(weapon_id) or is_downed or is_healing or not input_enabled:
+		return false
+	_ensure_weapon_ammo(weapon_id)
+	var ammo: Dictionary = weapon_ammo[weapon_id]
+	if weapon_reload_timers.has(weapon_id) or int(ammo.get("reserve", 0)) <= 0 or int(ammo.get("clip", 0)) >= int(WeaponCatalog.get_definition(weapon_id).get("magazine", 0)):
+		return false
+	weapon_reload_timers[weapon_id] = float(WeaponCatalog.get_definition(weapon_id).get("reload_time", 1.5))
+	_play_audio_event(&"weapon_reload")
+	return true
+
+
+func _finish_weapon_reload(weapon_id: StringName) -> void:
+	weapon_reload_timers.erase(weapon_id)
+	if not weapon_ammo.has(weapon_id):
+		return
+	var ammo: Dictionary = weapon_ammo[weapon_id]
+	var needed := maxi(int(WeaponCatalog.get_definition(weapon_id).get("magazine", 0)) - int(ammo.get("clip", 0)), 0)
+	var supplied := mini(needed, int(ammo.get("reserve", 0)))
+	ammo["clip"] = int(ammo.get("clip", 0)) + supplied
+	ammo["reserve"] = int(ammo.get("reserve", 0)) - supplied
+	weapon_ammo[weapon_id] = ammo
 
 
 func switch_weapon() -> void:
 	var other_slot := 1 - active_weapon_slot
 	if not equipped_weapons[other_slot].is_empty():
 		active_weapon_slot = other_slot
+		_play_audio_event(&"weapon_switch")
 		_sync_progress()
 
 
@@ -723,6 +821,7 @@ func _complete_heal() -> void:
 		return
 	health = mini(max_health, health + roundi(CombatStats.heal_amount(max_health) * (1.0 + healing_bonus)))
 	heal_doses -= 1
+	_play_audio_event(&"player_heal")
 	is_healing = false
 	heal_progress = 0.0
 	_update_health_label()
@@ -770,6 +869,9 @@ func reset_for_new_run() -> void:
 	tech_damage_bonus = 0.0
 	dash_duration_bonus = 0.0
 	equipped_weapons = [&"scrap_blade", &""]
+	owned_weapons = [&"scrap_blade"]
+	weapon_ammo.clear()
+	weapon_reload_timers.clear()
 	active_weapon_slot = 0
 	weapon_cooldowns = [0.0, 0.0]
 	max_wall_climb_duration = WALL_CLIMB_DURATION
@@ -933,6 +1035,9 @@ func get_network_state() -> Dictionary:
 		"strength": strength,
 		"heal_doses": heal_doses,
 		"equipped_weapons": equipped_weapons.duplicate(),
+		"owned_weapons": owned_weapons.duplicate(),
+		"weapon_ammo": weapon_ammo.duplicate(true),
+		"weapon_reload_timers": weapon_reload_timers.duplicate(true),
 		"active_weapon_slot": active_weapon_slot,
 		"acquired_upgrades": acquired_upgrades.duplicate(true),
 	}
@@ -1002,6 +1107,12 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false, snaps
 	var network_weapons: Array = state.get("equipped_weapons", equipped_weapons) as Array
 	if network_weapons.size() == 2:
 		equipped_weapons = [StringName(network_weapons[0]), StringName(network_weapons[1])]
+	var network_owned: Array = state.get("owned_weapons", owned_weapons) as Array
+	owned_weapons.clear()
+	for item: Variant in network_owned:
+		owned_weapons.append(StringName(item))
+	weapon_ammo = (state.get("weapon_ammo", weapon_ammo) as Dictionary).duplicate(true)
+	weapon_reload_timers = (state.get("weapon_reload_timers", weapon_reload_timers) as Dictionary).duplicate(true)
 	if not predicted_local:
 		active_weapon_slot = clampi(int(state.get("active_weapon_slot", active_weapon_slot)), 0, 1)
 	acquired_upgrades = (state.get("acquired_upgrades", acquired_upgrades) as Dictionary).duplicate(true)

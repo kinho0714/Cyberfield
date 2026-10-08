@@ -8,7 +8,9 @@ const DEFAULT_SAVE_PATH := "user://cyberfield_meta_v1.json"
 const CREDIT_RATE := 0.20
 const PURCHASES := {
 	&"breaker_maul": {"name": "LICENÇA // MARTELO QUEBRADOR", "cost": 120, "kind": &"weapon"},
+	&"arc_saber": {"name": "LICENÇA // SABRE ÍON", "cost": 175, "kind": &"weapon"},
 	&"arc_emitter": {"name": "LICENÇA // EMISSOR DE ARCO", "cost": 220, "kind": &"weapon"},
+	&"pulse_carbine": {"name": "LICENÇA // CARABINA PULSO", "cost": 260, "kind": &"weapon"},
 	&"salvage_protocol": {"name": "PROTOCOLO DE RECUPERAÇÃO +10%", "cost": 180, "kind": &"upgrade"},
 }
 

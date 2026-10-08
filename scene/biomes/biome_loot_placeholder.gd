@@ -18,7 +18,7 @@ func _ready() -> void:
 	sprite.name = "TemporaryChestVisual"
 	sprite.texture = CHEST_TEXTURE
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = Vector2(1.5, 1.5)
+	sprite.scale = Vector2(2.0, 2.0)
 	sprite.position = Vector2(0.0, -3.0)
 	add_child(sprite)
 	var label := get_node_or_null("Label") as Label

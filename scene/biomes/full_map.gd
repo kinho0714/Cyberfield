@@ -8,6 +8,7 @@ var _graph: Dictionary = {}
 var _blocked_players: Array[Node] = []
 var _tree_paused := false
 var _destination_panel: VBoxContainer
+var _destination_frame: PanelContainer
 var _highlighted_teleporter_id: StringName
 var _close_button: Button
 var _destination_buttons: Dictionary = {}
@@ -22,11 +23,17 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	visible = false
+	_destination_frame = PanelContainer.new()
+	_destination_frame.add_theme_stylebox_override("panel", PANEL_PRESENTATION.style("inventory/detail_panel", 16, 18))
+	add_child(_destination_frame)
+	var destination_scroll := ScrollContainer.new()
+	destination_scroll.follow_focus = true
+	destination_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	_destination_frame.add_child(destination_scroll)
 	_destination_panel = VBoxContainer.new()
-	_destination_panel.position = Vector2(size.x - 310.0, 80.0)
-	_destination_panel.size = Vector2(250.0, 500.0)
-	_destination_panel.add_theme_constant_override("separation", 10)
-	add_child(_destination_panel)
+	_destination_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_destination_panel.add_theme_constant_override("separation", 9)
+	destination_scroll.add_child(_destination_panel)
 	_close_button = Button.new()
 	_close_button.text = "FECHAR"
 	_close_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -39,9 +46,11 @@ func _ready() -> void:
 	_vote_status.position = Vector2(54.0, 64.0)
 	_vote_status.size = Vector2(520.0, 150.0)
 	_vote_status.add_theme_font_size_override("font_size", 18)
+	_vote_status.add_theme_color_override("font_color", Color("e8deaa"))
 	_vote_status.visible = false
 	add_child(_vote_status)
 	resized.connect(_on_resized)
+	call_deferred("_on_resized")
 
 
 func _input(event: InputEvent) -> void:
@@ -94,6 +103,9 @@ func open_map(origin_id: StringName = &"") -> void:
 		_tree_paused = true
 	room_manager.get_node("TouchControls").set_menu_blocked(true)
 	visible = true
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"ui_open")
 	_rebuild_destinations()
 	queue_redraw()
 
@@ -110,6 +122,9 @@ func close_map(notify_cancel: bool = true) -> void:
 		get_tree().paused = false
 		_tree_paused = false
 	visible = false
+	var audio := get_tree().get_first_node_in_group("audio_service")
+	if audio != null:
+		audio.play_event(&"ui_close")
 	get_viewport().gui_release_focus()
 	_highlighted_teleporter_id = &""
 	source_teleporter_id = &""
@@ -218,12 +233,12 @@ func _rebuild_destinations() -> void:
 	title.add_theme_color_override("font_color", Color("dff8ff"))
 	_destination_panel.add_child(title)
 	var origin := Label.new()
-	origin.text = "ORIGEM // %s" % _teleporter_display_name(source_teleporter_id)
+	origin.text = "PONTO ATUAL  //  %s" % _teleporter_display_name(source_teleporter_id)
 	origin.add_theme_font_size_override("font_size", 14)
 	origin.add_theme_color_override("font_color", Color("70d9ee"))
 	_destination_panel.add_child(origin)
 	var hint := Label.new()
-	hint.text = "Escolha um setor ativo.\nA / ENTER confirma  •  B / ESC volta"
+	hint.text = "DESTINOS DESBLOQUEADOS\nA / ENTER: viajar  •  B / ESC: voltar"
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	hint.add_theme_font_size_override("font_size", 13)
 	hint.add_theme_color_override("font_color", Color("9fb8c4"))
@@ -236,8 +251,8 @@ func _rebuild_destinations() -> void:
 		if destination_id == source_teleporter_id or not state.active_teleporter_ids.has(destination_id):
 			continue
 		var button := Button.new()
-		button.text = "VIAJAR // %s" % String(entry.display_name)
-		button.custom_minimum_size = Vector2(250.0, 54.0)
+		button.text = "↳  %s" % String(entry.display_name).to_upper()
+		button.custom_minimum_size = Vector2(220.0, 56.0)
 		button.add_theme_font_size_override("font_size", 16)
 		PANEL_PRESENTATION.style_button(button)
 		button.pressed.connect(_choose_destination.bind(destination_id))
@@ -307,6 +322,9 @@ func _process_local_vote_confirmations() -> void:
 
 func _highlight_destination(destination_id: StringName) -> void:
 	_highlighted_teleporter_id = destination_id
+	for button_value: Variant in _destination_buttons:
+		var button := button_value as Button
+		PANEL_PRESENTATION.mark_equipped(button, StringName(_destination_buttons[button]) == destination_id)
 	queue_redraw()
 
 
@@ -350,6 +368,6 @@ func _map_transform(modules: Array) -> Dictionary:
 
 
 func _on_resized() -> void:
-	var panel_width := clampf(size.x * 0.24, 260.0, 330.0)
-	_destination_panel.position = Vector2(size.x - panel_width - 36.0, 86.0)
-	_destination_panel.size = Vector2(panel_width, maxf(320.0, size.y - 150.0))
+	var panel_width := clampf(size.x * 0.27, 235.0, 354.0)
+	_destination_frame.position = Vector2(size.x - panel_width - 22.0, 88.0)
+	_destination_frame.size = Vector2(panel_width, maxf(220.0, size.y - 106.0))
