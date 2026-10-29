@@ -501,8 +501,8 @@ def preview(layers, cam_x, out_path):
     # Official character sprites, only to judge readability at real scale.
     jhon = Image.open(ROOT / "assets/players/jhon/jhon_v2_idle_v2.png").crop((0, 0, 56, 72))
     enemy = Image.open(ROOT / "assets/enemies/common/v2/common_idle_v2.png")
-    fw = enemy.height
-    enemy = enemy.crop((0, 0, fw, enemy.height)).resize((fw * 3 // 4, enemy.height * 3 // 4), Image.NEAREST)
+    fw = enemy.width // 4  # 4-frame sheet, same hframes as the Godot scene
+    enemy = enemy.crop((0, 0, fw, enemy.height)).resize((fw * 4 // 5, enemy.height * 4 // 5), Image.NEAREST)
     for img, wx, wy in ((jhon, 820, FLOOR_TOP - 72), (enemy, 1220, FLOOR_TOP - enemy.height), (enemy, 900, 300 - enemy.height)):
         x, y = wx - cam_x, wy - CAM_TOP
         if -img.width < x < W:
