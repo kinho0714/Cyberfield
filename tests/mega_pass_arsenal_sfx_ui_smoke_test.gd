@@ -79,6 +79,9 @@ func _run() -> void:
 	assert(map._destination_frame != null)
 	for id in [&"player_jump", &"enemy_death", &"weapon_fire_small", &"weapon_fire_large", &"weapon_reload", &"loot_open", &"teleport", &"ui_confirm"]:
 		assert(audio.event_streams.has(id))
+	assert(not audio.play_event(&"weapon_reload")) # Audio policy: action SFX muted.
+	assert(audio.is_event_allowed(&"menu_thunder"))
+	audio.action_sfx_enabled = true
 	assert(audio.play_event(&"weapon_reload"))
 	assert(not audio.play_event(&"weapon_reload")) # Event-rate limiter.
 	game.free()

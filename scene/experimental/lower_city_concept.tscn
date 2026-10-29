@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scene/experimental/lower_city_concept.gd" id="1_concept"]
+
+[node name="LowerCityConcept" type="Node2D"]
+script = ExtResource("1_concept")

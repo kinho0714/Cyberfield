@@ -71,7 +71,9 @@ func _run() -> void:
 	var audio := AUDIO_SERVICE_SCRIPT.new() as AudioService
 	root.add_child(audio)
 	await process_frame
-	assert(audio.play_event(&"player_jump"))
+	assert(not audio.play_event(&"player_jump")) # Audio policy: action SFX muted.
+	audio.action_sfx_enabled = true
+	assert(audio.play_event(&"player_jump")) # Legacy path still intact when re-enabled.
 	assert(not audio.set_music_context(&"operation"))
 	assert(audio.current_music_context == &"operation")
 	audio.queue_free()

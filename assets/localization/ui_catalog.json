@@ -122,5 +122,12 @@
     "Informe o IP do host.": "Enter the host IP address.",
     "Conectado ao host. Aguardando início da run.": "Connected to host. Waiting for the run to start.",
     "Falha ao conectar. Verifique IP, Wi-Fi e hotspot.": "Connection failed. Check IP, Wi-Fi and hotspot.",
-    "O host desconectou. Retornando ao menu LAN.": "Host disconnected. Returning to the LAN menu."
+    "O host desconectou. Retornando ao menu LAN.": "Host disconnected. Returning to the LAN menu.",
+    "SINAL PERDIDO":  "SIGNAL LOST",
+    "EXTRAÇÃO CONCLUÍDA":  "EXTRACTION COMPLETE",
+    "DINHEIRO OBTIDO":  "MONEY EARNED",
+    "RESTANTE":  "REMAINING",
+    "ROTA":  "ROUTE",
+    "ARMAS":  "WEAPONS",
+    "STAGES":  "STAGES"
 }

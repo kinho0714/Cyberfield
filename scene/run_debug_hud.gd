@@ -1,7 +1,10 @@
 extends CanvasLayer
 
 const OFFICIAL_HUD = preload("res://ui/gameplay_hud_presentation.gd")
+const RUN_END_PRESENTATION = preload("res://ui/run_end_presentation.gd")
 var official_hud: Control
+var _end_view: Dictionary = {}
+var _end_view_shown := false
 
 @onready var status_label: Label = $Panel/Margin/VBox/Status
 @onready var restart_button: Button = $Panel/Margin/VBox/Restart
@@ -57,6 +60,7 @@ func _ready() -> void:
 	restart_button.text = "RETORNAR AO LABORATÓRIO"
 	end_restart.text = "RETORNAR AO LABORATÓRIO"
 	back_to_mode.text = "VOLTAR AO MENU"
+	_end_view = RUN_END_PRESENTATION.build(end_overlay, $EndOverlay/Center/VBox as VBoxContainer, end_title, [end_restart, back_to_mode])
 	get_parent().coop_waiting_changed.connect(func(value: bool) -> void: waiting_label.visible = value)
 	get_viewport().size_changed.connect(_apply_safe_area)
 	session_summary_close.pressed.connect(_dismiss_session_summary)
@@ -278,6 +282,7 @@ func _refresh() -> void:
 		status_label.text = "Laboratório\nRun: INATIVA\nModo: %s\nDificuldade preparada: %s\nJogadores: %d" % [mode_label, run_manager.get_difficulty_label(), run_manager.player_count]
 		room_title.text = tr("LABORATÓRIO // HUB")
 		end_overlay.visible = false
+		_sync_end_view()
 		return
 	if not run_manager.current_biome_id.is_empty():
 		var lan_session := get_tree().get_first_node_in_group("lan_session")
@@ -294,6 +299,7 @@ func _refresh() -> void:
 			end_title.text = _build_run_summary(false)
 		elif run_manager.run_is_completed:
 			end_title.text = _build_run_summary(true)
+		_sync_end_view()
 		if end_overlay.visible:
 			gameplay_hud.visible = false
 			end_restart.grab_focus()
@@ -308,26 +314,68 @@ func _refresh() -> void:
 		end_title.text = "RUN PERDIDA"
 	elif run_manager.run_is_completed:
 		end_title.text = "RUN CONCLUÍDA"
+	_sync_end_view()
 	if end_overlay.visible:
 		gameplay_hud.visible = false
 		end_restart.grab_focus()
 
 
-func _build_run_summary(completed: bool = true) -> String:
+func _collect_run_summary(completed: bool) -> Dictionary:
 	var route_parts: PackedStringArray = []
 	for stage: Dictionary in run_manager.stage_history:
 		route_parts.append(String(stage.get("exit_id", "?")).to_upper())
-	var route_text := " → ".join(route_parts) if not route_parts.is_empty() else tr("DIRETA")
+	var players: Array[Dictionary] = []
+	for player in get_parent().get_players():
+		var weapons := PackedStringArray([
+			tr(WeaponCatalog.get_display_name(player.equipped_weapons[0])),
+			tr(WeaponCatalog.get_display_name(player.equipped_weapons[1])) if not player.equipped_weapons[1].is_empty() else tr("VAZIO"),
+		])
+		players.append({
+			"id": String(player.participant_id).replace("player_", "P"),
+			"intellect": int(player.intellect),
+			"health": int(player.health_attribute),
+			"strength": int(player.strength),
+			"weapons": weapons,
+		})
+	return {
+		"completed": completed,
+		"time": run_manager.format_run_time(float(run_manager.last_run_results.get("elapsed_time", run_manager.run_elapsed_time))),
+		"difficulty": tr(run_manager.get_difficulty_label()),
+		"money_earned": int(run_manager.total_money_earned),
+		"remaining": int(run_manager.dirty_money),
+		"stage": mini(run_manager.stage_index + 1, 6),
+		"route": " → ".join(route_parts) if not route_parts.is_empty() else tr("DIRETA"),
+		"players": players,
+	}
+
+
+func _build_run_summary(completed: bool = true) -> String:
+	var data := _collect_run_summary(completed)
 	var summary: PackedStringArray = [
 		tr("RUN CONCLUÍDA") if completed else tr("RUN PERDIDA"),
-		tr("TEMPO: %s // DIFICULDADE: %s") % [run_manager.format_run_time(float(run_manager.last_run_results.get("elapsed_time", run_manager.run_elapsed_time))), tr(run_manager.get_difficulty_label())],
-		tr("DINHEIRO OBTIDO: $%d // RESTANTE: $%d") % [run_manager.total_money_earned, run_manager.dirty_money],
-		tr("STAGES: %d/6 // ROTA: %s") % [mini(run_manager.stage_index + 1, 6), route_text],
+		tr("TEMPO: %s // DIFICULDADE: %s") % [data.time, data.difficulty],
+		tr("DINHEIRO OBTIDO: $%d // RESTANTE: $%d") % [data.money_earned, data.remaining],
+		tr("STAGES: %d/6 // ROTA: %s") % [data.stage, data.route],
 	]
-	for player in get_parent().get_players():
-		var weapons := "%s / %s" % [tr(WeaponCatalog.get_display_name(player.equipped_weapons[0])), tr(WeaponCatalog.get_display_name(player.equipped_weapons[1])) if not player.equipped_weapons[1].is_empty() else tr("VAZIO")]
-		summary.append(tr("%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s") % [String(player.participant_id).replace("player_", "P"), player.intellect, player.health_attribute, player.strength, weapons])
+	for entry: Dictionary in data.players:
+		var weapons: PackedStringArray = entry.weapons
+		summary.append(tr("%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s") % [entry.id, entry.intellect, entry.health, entry.strength, " / ".join(weapons)])
 	return "\n".join(summary)
+
+
+func _sync_end_view() -> void:
+	# Presentation only: the overlay visibility and Title text are decided above.
+	if _end_view.is_empty():
+		return
+	if not end_overlay.visible:
+		if _end_view_shown:
+			RUN_END_PRESENTATION.stop(_end_view)
+		_end_view_shown = false
+		return
+	RUN_END_PRESENTATION.populate(_end_view, _collect_run_summary(bool(run_manager.run_is_completed)))
+	if not _end_view_shown:
+		_end_view_shown = true
+		RUN_END_PRESENTATION.play_intro(_end_view, self)
 
 
 func _notification(what: int) -> void:

@@ -3,6 +3,13 @@
 [resource]
 locale = "pt_BR"
 messages = {
+"SINAL PERDIDO": "SINAL PERDIDO",
+"EXTRAÇÃO CONCLUÍDA": "EXTRAÇÃO CONCLUÍDA",
+"DINHEIRO OBTIDO": "DINHEIRO OBTIDO",
+"RESTANTE": "RESTANTE",
+"ROTA": "ROTA",
+"ARMAS": "ARMAS",
+"STAGES": "STAGES",
 "%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s": "%s — INT %d // SAÚDE %d // FORÇA %d\nARMAS: %s",
 "%s // PEER %d\nJOGADORES: %d/%d\n%s%s\n%s": "%s // PEER %d\nJOGADORES: %d/%d\n%s%s\n%s",
 "%s · %s · %d jogador(es)\nRun: %s": "%s · %s · %d jogador(es)\nRun: %s",

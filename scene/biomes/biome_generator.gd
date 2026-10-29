@@ -805,7 +805,35 @@ func _add_guard_rail(parent: Node2D, local_position: Vector2) -> void:
 	debug_visual.visible = false
 	debug_visual.add_to_group("procedural_debug_collider")
 	body.add_child(debug_visual)
+	# 29/10: the rail used to be physics-only, so a floor that continued into an
+	# unconnected neighbour hid a wall. Keep the block (design: off-route cell) but
+	# show it as a sealed bulkhead with a lit edge on the playable side.
+	_add_guard_rail_bulkhead(body, local_position.x < CELL_SIZE.x * 0.5)
 	parent.add_child(body)
+
+
+func _add_guard_rail_bulkhead(body: StaticBody2D, is_left_edge: bool) -> void:
+	var half := Vector2(GUARD_RAIL_WIDTH, GUARD_RAIL_HEIGHT) * 0.5
+	var bulkhead := Polygon2D.new()
+	bulkhead.name = "Bulkhead"
+	bulkhead.polygon = PackedVector2Array([Vector2(-half.x, -half.y), Vector2(half.x, -half.y), half, Vector2(-half.x, half.y)])
+	bulkhead.color = Color(0.06, 0.13, 0.17, 1.0)
+	body.add_child(bulkhead)
+	# Playable side faces into the module: +x for the left rail, -x for the right rail.
+	var inner_x := half.x if is_left_edge else -half.x
+	var edge_x := inner_x - 3.0 if is_left_edge else inner_x
+	var edge := Polygon2D.new()
+	edge.name = "BulkheadEdge"
+	edge.polygon = PackedVector2Array([Vector2(edge_x, -half.y), Vector2(edge_x + 3.0, -half.y), Vector2(edge_x + 3.0, half.y), Vector2(edge_x, half.y)])
+	edge.color = Color(0.16, 0.46, 0.52, 1.0)
+	body.add_child(edge)
+	# Hazard band at walking height tells the player this is a wall, not darkness.
+	for band in 3:
+		var stripe := Polygon2D.new()
+		var top := half.y - 96.0 + float(band) * 22.0
+		stripe.polygon = PackedVector2Array([Vector2(-half.x, top), Vector2(half.x, top - 8.0), Vector2(half.x, top), Vector2(-half.x, top + 8.0)])
+		stripe.color = Color(0.85, 0.62, 0.16, 0.55)
+		body.add_child(stripe)
 
 
 func _create_module_sockets(module: Node2D, definition: BiomeModuleDefinition, module_index: int) -> void:

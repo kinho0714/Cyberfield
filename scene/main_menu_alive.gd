@@ -4,6 +4,8 @@ const WHITE := Color("f2f7ff")
 const DIM := Color("6c8596")
 const CYAN := Color("39dff2")
 const TRANSITION_TIME := 0.18
+const FOCUS_ACCENT_TIME := 0.16
+const FOCUS_SWEEP_TIME := 0.42
 
 @export var compact := false
 @export var draw_frame := true
@@ -20,6 +22,9 @@ var popup_mouse_override := false
 var previous_mouse_emulation := false
 var awaiting_popup_release := false
 var popup_touch_index := -1
+var _focus_anim := 1.0
+var _sweep_anim := 1.0
+var _last_focus: Control
 
 
 func _ready() -> void:
@@ -123,6 +128,8 @@ func _input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	_focus_anim = minf(1.0, _focus_anim + delta / FOCUS_ACCENT_TIME)
+	_sweep_anim = minf(1.0, _sweep_anim + delta / FOCUS_SWEEP_TIME)
 	# Also catch text/theme changes and position-only updates. No cached rectangle.
 	if is_visible_in_tree():
 		queue_redraw()
@@ -211,6 +218,10 @@ func _refresh() -> void:
 		selected = null
 	if selected is BaseButton and selected.disabled:
 		selected = null
+	if selected != _last_focus:
+		_last_focus = selected
+		_focus_anim = 0.0
+		_sweep_anim = 0.0
 	for child in get_children():
 		if child is BaseButton:
 			if child.has_meta("pass3_native_selection"):
@@ -230,6 +241,8 @@ func _draw() -> void:
 	if focus == null or focus.get_parent() != self or not focus.is_visible_in_tree():
 		return
 	if focus.has_meta("pass3_native_selection"):
+		if focus is Button and not (focus as Button).disabled:
+			_draw_focus_accent(focus)
 		return
 	# Only menu actions: titles, fields, sliders and toggles keep their own visuals.
 	if focus.get_class() != "Button":
@@ -250,6 +263,20 @@ func _draw() -> void:
 	)
 	# Never clamp to a stale Control width or interpolate through an old page/title.
 	draw_style_box(selection_style, Rect2(box_position, box_size))
+
+
+func _draw_focus_accent(control: Control) -> void:
+	# 29/10: feedback on top of the native selected row; drawing only, no layout.
+	var rect := Rect2(control.position, control.size)
+	var grow := ease(_focus_anim, 0.35)
+	var bar_height := maxf(rect.size.y - 20.0, 4.0) * grow
+	var bar := Rect2(rect.position.x + 7.0, rect.position.y + (rect.size.y - bar_height) * 0.5, 3.0, bar_height)
+	draw_rect(bar.grow(2.0), Color(CYAN, 0.16 * grow))
+	draw_rect(bar, CYAN)
+	if _sweep_anim < 1.0:
+		var sweep := ease(_sweep_anim, 0.5)
+		var sweep_x := rect.position.x + 12.0 + (rect.size.x - 40.0) * sweep
+		draw_rect(Rect2(sweep_x, rect.position.y + 5.0, 24.0, rect.size.y - 10.0), Color(CYAN, 0.10 * (1.0 - sweep)))
 
 
 func _draw_compact_frame() -> void:

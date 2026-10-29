@@ -6,6 +6,11 @@ const MENU_RAIN = preload("res://assets/audio/menu/ambiente_chuva.ogg")
 const MENU_CITY = preload("res://assets/audio/menu/ambiente_urbano.ogg")
 const MENU_THUNDER = preload("res://assets/audio/menu/Efeito_sonoro_Trovoadas.wav")
 const MENU_MUSIC_VOLUME_DB := -10.0
+## Audio policy (29/10/2026): keep soundtrack, rain, city ambience and thunder only.
+## Action/UI one-shots stay registered (no broken references) but are muted here.
+## Flip ACTION_SFX_ENABLED (or the runtime var) to true to restore every effect.
+const ACTION_SFX_ENABLED := false
+const AMBIENT_EVENTS: Array[StringName] = [&"menu_thunder"]
 const MAX_EVENT_VOICES := 14
 const SELECTED_SFX := {
 	&"ui_focus": preload("res://assets/audio/sfx/ui_focus.ogg"),
@@ -70,6 +75,7 @@ var _ambience_fades: Dictionary = {}
 var _menu_ambience_active := false
 var _active_event_voices := 0
 var _event_last_played: Dictionary = {}
+var action_sfx_enabled := ACTION_SFX_ENABLED
 
 
 func _ready() -> void:
@@ -152,7 +158,13 @@ func register_music_stream(context: StringName, stream: AudioStream) -> void:
 	music_streams[context] = stream
 
 
+func is_event_allowed(event_id: StringName) -> bool:
+	return action_sfx_enabled or AMBIENT_EVENTS.has(event_id)
+
+
 func play_event(event_id: StringName, pitch_scale: float = 1.0) -> bool:
+	if not is_event_allowed(event_id):
+		return false
 	var entry: Variant = event_streams.get(event_id)
 	if entry == null:
 		return false

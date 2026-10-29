@@ -44,6 +44,12 @@ signal lightning_struck
 @export_range(3.0, 60.0, 1.0) var lightning_min_interval: float = 7.0
 @export_range(3.0, 90.0, 1.0) var lightning_max_interval: float = 16.0
 @export_range(0.0, 1.0, 0.05) var lightning_intensity: float = 0.85
+@export_group("Parallax")
+## 29/10: ambient depth. City stack drifts slowly; rain sits on a nearer plane.
+@export var parallax_enabled: bool = true
+@export_range(0.0, 0.04, 0.002) var parallax_overscan: float = 0.018
+@export_range(0.0, 1.0, 0.05) var parallax_pointer_influence: float = 0.55
+@export_range(0.0, 1.0, 0.05) var parallax_rain_depth: float = 0.6
 @export_group("Debug — runtime Remote Inspector; defaults OFF")
 @export var debug_force_rain: bool = false
 @export var debug_force_lights: bool = false
@@ -84,6 +90,10 @@ var double_flash: bool = false
 var selected_bolt: int = -1
 var pre_glow_duration: float = 0.04
 var cloud_phase: Vector2 = Vector2.ZERO
+var _parallax_base: Vector2 = Vector2.ZERO
+var _parallax_range: Vector2 = Vector2.ZERO
+var _parallax_offset: Vector2 = Vector2.ZERO
+var _parallax_phase: float = 0.0
 @onready var cloud_back: Array[Sprite2D] = [$Composition/BackA, $Composition/BackB, $Composition/BackMask]
 @onready var cloud_front: Array[Sprite2D] = [$Composition/FrontA, $Composition/FrontB, $Composition/FrontMask]
 
@@ -104,12 +114,18 @@ func _ready() -> void:
 func _fit_master() -> void:
 	# Uniform cover: exact 10/13 at 1280x720; only excess is clipped on other aspects.
 	var factor: float = maxf(size.x / MASTER_SIZE.x, size.y / MASTER_SIZE.y)
+	if parallax_enabled:
+		# A tiny uniform overscan gives the drift room without ever exposing an edge.
+		factor *= 1.0 + parallax_overscan
 	composition.scale = Vector2.ONE * maxf(factor, 0.001)
 	composition.position = (size - MASTER_SIZE * factor) * 0.5
 	# Recover 24 logical pixels of top framing only where cover already crops vertically.
 	# Clamp to the available crop: 16:9 remains exactly (0, 0), with no empty edge.
 	var vertical_excess: float = maxf(0.0, MASTER_SIZE.y * factor - size.y)
 	composition.position.y = clampf(composition.position.y + 24.0 * size.y / 720.0, -vertical_excess, 0.0)
+	_parallax_base = composition.position
+	_parallax_range = (MASTER_SIZE * factor - size).max(Vector2.ZERO)
+	_apply_parallax()
 
 
 func _interval(low: float, high: float) -> float:
@@ -191,6 +207,8 @@ func _create_rain(front: bool) -> CPUParticles2D:
 
 
 func _process(delta: float) -> void:
+	if parallax_enabled:
+		_update_parallax(delta)
 	if clouds_enabled:
 		_update_clouds(delta)
 	if rain_enabled:
@@ -311,3 +329,27 @@ func _update_lightning(delta: float) -> void:
 	cloud_front[2].modulate.a = cloud_strength if clouds_enabled else 0.0
 	if lights_enabled:
 		glow.modulate.a += flash_strength * 0.10
+
+
+func _update_parallax(delta: float) -> void:
+	_parallax_phase += delta
+	var reach: Vector2 = _parallax_range * 0.5
+	# Slow Lissajous drift, ~30 s period: alive, never noticeable as motion.
+	var drift := Vector2(sin(_parallax_phase * 0.21), 0.6 * sin(_parallax_phase * 0.13 + 1.3))
+	var target: Vector2 = drift * reach * 0.45
+	if not OS.has_feature("mobile") and size.x > 0.0 and size.y > 0.0:
+		var pointer: Vector2 = (get_local_mouse_position() / size - Vector2(0.5, 0.5)) * 2.0
+		pointer = pointer.clamp(Vector2(-1.0, -1.0), Vector2(1.0, 1.0))
+		target -= pointer * reach * 0.5 * parallax_pointer_influence
+	_parallax_offset = _parallax_offset.lerp(target, 1.0 - exp(-delta * 2.5))
+	_apply_parallax()
+
+
+func _apply_parallax() -> void:
+	if not parallax_enabled:
+		weather.position = Vector2.ZERO
+		return
+	var lowest: Vector2 = size - MASTER_SIZE * composition.scale.x
+	composition.position = (_parallax_base + _parallax_offset).clamp(lowest.min(Vector2.ZERO), Vector2.ZERO)
+	# Rain is a nearer plane: it travels further than the city it falls in front of.
+	weather.position = _parallax_offset * parallax_rain_depth / maxf(composition.scale.x, 0.001)

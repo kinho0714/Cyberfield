@@ -57,6 +57,9 @@ func _test_generated_exploration_contract() -> String:
 	for node in biome.find_children("*", "StaticBody2D", true, false):
 		if node.get_meta("collision_role", &"") == &"procedural_guard_rail":
 			rail_count += 1
+			var bulkhead := node.get_node_or_null("Bulkhead") as Polygon2D
+			if bulkhead == null or not bulkhead.visible:
+				return "guard rail blocks without a visible bulkhead"
 	if rail_count == 0:
 		return "procedural guard rails were not generated"
 	biome.free()
