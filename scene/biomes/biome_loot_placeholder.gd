@@ -1,6 +1,6 @@
 extends Area2D
 
-const CHEST_TEXTURE := preload("res://assets/temporary_items/pixelexplosive/metal_chest_01.png")
+const CHEST_TEXTURE := preload("res://assets/props/chests/loot_chest.png")
 
 @export var loot_id: StringName
 @export var amount := 20
@@ -18,7 +18,7 @@ func _ready() -> void:
 	sprite.name = "TemporaryChestVisual"
 	sprite.texture = CHEST_TEXTURE
 	sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	sprite.scale = Vector2(2.0, 2.0)
+	sprite.scale = Vector2.ONE  # original chest art, drawn at final size
 	sprite.position = Vector2(0.0, -3.0)
 	add_child(sprite)
 	var label := get_node_or_null("Label") as Label

@@ -2,6 +2,7 @@ extends Node2D
 
 const BOSS_SCENE := preload("res://entities/Enemy.tscn")
 const VISUAL_THEME_SCRIPT := preload("res://scene/biomes/visual/biome_visual_theme.gd")
+const BOSS_AURA := preload("res://scene/fx/boss_aura.gd")
 const ARENA_BOUNDS := Rect2(0.0, 0.0, 1600.0, 720.0)
 
 var run_manager: Node
@@ -31,6 +32,7 @@ func setup(manager: Node) -> void:
 	boss.attack_telegraph_color = Color(1.0, 0.16, 0.35, 1.0)
 	boss.position = $BossSpawn.position
 	$Entities.add_child(boss)
+	boss.add_child(BOSS_AURA.new())  # presentation only; dedicated boss art still pending
 	boss_spawned = true
 
 

@@ -4,7 +4,7 @@ extends Area2D
 const COMMON_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_SCENE := preload("res://entities/RangedEnemy.tscn")
 const HEAVY_SCENE := preload("res://entities/HeavyEnemy.tscn")
-const CHEST_TEXTURE := preload("res://assets/temporary_items/pixelexplosive/metal_chest_05.png")
+const CHEST_TEXTURE := preload("res://assets/props/chests/trap_chest.png")
 
 @export var trap_id: StringName
 @export var event_spawn_positions: Array[Vector2] = []
@@ -26,7 +26,7 @@ func _ready() -> void:
 	_chest_sprite.name = "TemporaryTrapChestVisual"
 	_chest_sprite.texture = CHEST_TEXTURE
 	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_chest_sprite.scale = Vector2(2.0, 2.0)
+	_chest_sprite.scale = Vector2.ONE  # original chest art, drawn at final size
 	_chest_sprite.position = Vector2(0.0, -3.0)
 	add_child(_chest_sprite)
 	label.visible = false

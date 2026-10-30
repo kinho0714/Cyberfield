@@ -1,6 +1,6 @@
 extends Area2D
 
-const CHEST_TEXTURE := preload("res://assets/temporary_items/pixelexplosive/metal_chest_09.png")
+const CHEST_TEXTURE := preload("res://assets/props/chests/attribute_chest.png")
 
 @export_enum("challenge", "paid", "free") var chest_type := "challenge"
 @export var chest_id: StringName = &"attribute_chest"
@@ -21,7 +21,7 @@ func _ready() -> void:
 	_chest_sprite.name = "TemporaryAttributeChestVisual"
 	_chest_sprite.texture = CHEST_TEXTURE
 	_chest_sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_chest_sprite.scale = Vector2(2.0, 2.0)
+	_chest_sprite.scale = Vector2.ONE  # original chest art, drawn at final size
 	_chest_sprite.position = Vector2(0.0, -3.0)
 	add_child(_chest_sprite)
 	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)
