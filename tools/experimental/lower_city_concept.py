@@ -1,8 +1,8 @@
 """Cyberfield — Lower City visual experiment (29/10/2026).
 
 Generates ORIGINAL pixel-art layers for the isolated scene
-res://scene/experimental/lower_city_concept.tscn and for the in-game Lower City theme
-(res://scene/biomes/lower_city/lower_city_visual_theme.gd). No third-party pixels are used:
+res://scene/experimental/lower_city_concept.tscn (archived concept; the in-game biomes
+now use tools/visual/biome_art.py). No third-party pixels are used:
 every shape below is authored in code, deterministic (fixed seed) and reproducible.
 
     python3 -I tools/experimental/lower_city_concept.py [--preview DIR]
@@ -568,7 +568,7 @@ def main():
     for name, img in (("sky", sky), ("far", far), ("mid", mid), ("mid_signs", mid_signs), ("mid_glow", mid_glow),
                       ("rail", rail), ("world", world), ("world_lights", lights), ("lamp_cone", cone),
                       ("fog", fog), ("puddles", puddles), ("rain_drop", make_rain_drop()), ("steam", make_steam()),
-                      # Gameplay skins for res://scene/biomes/lower_city/lower_city_visual_theme.gd
+                      # Legacy tiles of the 30/10 concept (superseded by tools/visual/biome_art.py)
                       ("street_tile", make_street_tile()), ("catwalk_tile", make_catwalk_tile()),
                       ("wall_tile", make_wall_tile())):
         img.save(OUT / f"{name}.png", optimize=True)

@@ -13,6 +13,7 @@ const PANEL_BG := Color(0.010, 0.024, 0.042, 0.97)
 const TILE_BG := Color(0.030, 0.066, 0.096, 0.88)
 const PANEL_WIDTH := 860.0
 const TILE_WIDTH := 252.0
+const HEADLINE_FONT := preload("res://assets/fonts/pixelify_sans/PixelifySans-Bold.woff2")
 
 
 static func build(overlay: ColorRect, vbox: VBoxContainer, title: Label, buttons: Array) -> Dictionary:
@@ -52,6 +53,7 @@ static func build(overlay: ColorRect, vbox: VBoxContainer, title: Label, buttons
 	kicker.auto_translate_mode = Node.AUTO_TRANSLATE_MODE_DISABLED
 	column.add_child(kicker)
 	var headline := _label("RUN PERDIDA", 44, LOST)
+	headline.add_theme_font_override("font", HEADLINE_FONT)
 	column.add_child(headline)
 	var rule := ColorRect.new()
 	rule.name = "AccentRule"
