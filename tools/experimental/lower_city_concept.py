@@ -1,7 +1,8 @@
 """Cyberfield — Lower City visual experiment (29/10/2026).
 
 Generates ORIGINAL pixel-art layers for the isolated scene
-res://scene/experimental/lower_city_concept.tscn. No third-party pixels are used:
+res://scene/experimental/lower_city_concept.tscn and for the in-game Lower City theme
+(res://scene/biomes/lower_city/lower_city_visual_theme.gd). No third-party pixels are used:
 every shape below is authored in code, deterministic (fixed seed) and reproducible.
 
     python3 -I tools/experimental/lower_city_concept.py [--preview DIR]
@@ -463,6 +464,48 @@ def make_puddles(signs: Image.Image):
     return im
 
 
+def make_street_tile():
+    """Gameplay floor skin, 64x60 and tileable on x: same street language as world.png."""
+    w, h = 64, FLOOR_HEIGHT
+    lay = Layer(w, h, wrap=True)
+    lay.rect(0, 0, w - 1, h - 1, rgba(P["street"]))
+    lay.rect(0, 0, w - 1, 1, rgba(P["edge"]))           # walkable lit edge, readable at any zoom
+    lay.rect(0, 2, w - 1, 5, rgba(P["curb"]))
+    for x in (0, 32):                                   # slab joints
+        lay.rect(x, 6, x, h - 1, rgba(P["street2"]))
+    rnd = random.Random(41)
+    for _ in range(18):                                 # grit, low contrast
+        lay.px(rnd.randint(0, w - 1), rnd.randint(8, h - 6), rgba(P["street2"]))
+    lay.rect(0, h - 4, w - 1, h - 1, rgba(P["under1"]))  # underside shadow
+    return lay.im
+
+
+def make_catwalk_tile():
+    """One-way platform skin, 64x20: grated catwalk, lit top edge."""
+    w, h = 64, 20
+    lay = Layer(w, h, wrap=True)
+    lay.rect(0, 0, w - 1, h - 1, rgba(P["pipe"]))
+    lay.rect(0, 0, w - 1, 1, rgba(P["edge"]))
+    for gx in range(2, w, 6):
+        lay.rect(gx, 5, gx + 2, h - 6, rgba(P["under1"]))
+    lay.rect(0, h - 3, w - 1, h - 1, rgba(P["rail0"]))
+    return lay.im
+
+
+def make_wall_tile():
+    """Vertical shaft wall skin, 18x64 and tileable on y: riveted steel, lit inner edges."""
+    w, h = 18, 64
+    lay = Layer(w, h)
+    lay.rect(0, 0, w - 1, h - 1, rgba(P["rail1"]))
+    lay.rect(0, 0, 1, h - 1, rgba(P["cyan_dim"]))
+    lay.rect(w - 2, 0, w - 1, h - 1, rgba(P["cyan_dim"]))
+    lay.rect(2, 31, w - 3, 32, rgba(P["rail0"]))        # panel seam
+    for y in (6, 38):
+        lay.px(5, y, rgba(P["rail_edge"]))
+        lay.px(w - 6, y, rgba(P["rail_edge"]))
+    return lay.im
+
+
 PUDDLES: list = []
 
 
@@ -524,7 +567,10 @@ def main():
     PUDDLES[:] = [puddles]
     for name, img in (("sky", sky), ("far", far), ("mid", mid), ("mid_signs", mid_signs), ("mid_glow", mid_glow),
                       ("rail", rail), ("world", world), ("world_lights", lights), ("lamp_cone", cone),
-                      ("fog", fog), ("puddles", puddles), ("rain_drop", make_rain_drop()), ("steam", make_steam())):
+                      ("fog", fog), ("puddles", puddles), ("rain_drop", make_rain_drop()), ("steam", make_steam()),
+                      # Gameplay skins for res://scene/biomes/lower_city/lower_city_visual_theme.gd
+                      ("street_tile", make_street_tile()), ("catwalk_tile", make_catwalk_tile()),
+                      ("wall_tile", make_wall_tile())):
         img.save(OUT / f"{name}.png", optimize=True)
     if "--preview" in sys.argv:
         out_dir = Path(sys.argv[sys.argv.index("--preview") + 1])

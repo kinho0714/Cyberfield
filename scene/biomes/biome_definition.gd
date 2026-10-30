@@ -15,6 +15,8 @@ extends Resource
 @export var debug_draw_modules := true
 @export var debug_draw_connectors := true
 @export var debug_draw_sockets := false
+## Presentation-only skin applied after generation (see BiomeGenerator.VISUAL_THEMES).
+@export var visual_theme: StringName = &""
 
 
 func get_module_definitions() -> Array[BiomeModuleDefinition]:
