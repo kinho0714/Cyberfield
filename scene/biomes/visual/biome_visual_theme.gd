@@ -16,6 +16,8 @@ const LAMP_SLOTS := [150.0, 690.0]
 const SOCKET_CLEARANCE := 96.0
 const TRAIN_PERIOD := 34.0
 const TRAIN_SPEED := 260.0
+# Lit edge of the generator's sealed bulkheads, per dressing family.
+const BULKHEAD_EDGE := {"city": Color("ff4fb4"), "industrial": Color("ffb347"), "lab": Color("39dff2"), "core": Color("ff2a6d")}
 
 var style_id: StringName = &""
 var _style: Dictionary = {}
@@ -93,6 +95,9 @@ func _skin_geometry(generator: Node2D, skin_untagged: bool) -> void:
 	var wall := _tex("wall_tile")
 	for body in generator.find_children("*", "StaticBody2D", true, false):
 		var role: StringName = body.get_meta("collision_role", &"solid_structure" if skin_untagged else &"")
+		if role == &"procedural_guard_rail":
+			_skin_bulkhead(body, generator, wall)
+			continue
 		if role != &"solid_structure" and role != &"one_way_platform":
 			continue
 		var visual: Polygon2D = null
@@ -129,6 +134,24 @@ func _skin_geometry(generator: Node2D, skin_untagged: bool) -> void:
 			Vector2(left + size.x, v1), Vector2(left, v1),
 		])
 		visual.color = Color.WHITE
+
+
+## Sealed module edges (BiomeGenerator._add_guard_rail_bulkhead): flat teal slabs before.
+func _skin_bulkhead(body: Node, generator: Node2D, wall: Texture2D) -> void:
+	var bulkhead := body.get_node_or_null("Bulkhead") as Polygon2D
+	if bulkhead != null and wall != null:
+		var offset := _offset_in(body, generator)
+		bulkhead.texture = wall
+		bulkhead.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+		bulkhead.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		bulkhead.color = Color(0.72, 0.72, 0.78)
+		var uv := PackedVector2Array()
+		for point in bulkhead.polygon:
+			uv.append(point + offset)
+		bulkhead.uv = uv
+	var edge := body.get_node_or_null("BulkheadEdge") as Polygon2D
+	if edge != null:
+		edge.color = BULKHEAD_EDGE.get(String(_style.dressing), edge.color)
 
 
 func _soften_backgrounds(root: Node) -> void:
@@ -362,13 +385,17 @@ func _update_backdrop(center: Vector2, zoom: float, view: Vector2, delta: float)
 		plane["drift"] = float(plane.drift) + float(plane.speed) * delta
 		# Whole texture pixels only: fractional offsets shimmer on nearest-filtered art.
 		var scroll := (center.x * zoom * follow.x - float(plane.drift)) / PLANE_SCALE
-		sprite.region_rect = Rect2(roundf(scroll), 0.0, ceilf(view.x / PLANE_SCALE) + 1.0, sprite.texture.get_height())
 		var y := roundf(float(plane.top) + depth * follow.y)
+		var rows := float(sprite.texture.get_height())
 		if plane.role == "anchor":
 			anchor_y = y
 		elif plane.role == "under":
 			y = anchor_y + GROUND_ROW
 			_ground.position = Vector2(0.0, y)
+			# Below street level the substructure repeats down to the screen edge, so
+			# shafts and descents never show an empty (black) fill.
+			rows = maxf(rows, ceilf((view.y - y) / PLANE_SCALE) + 1.0)
+		sprite.region_rect = Rect2(roundf(scroll), 0.0, ceilf(view.x / PLANE_SCALE) + 1.0, rows)
 		sprite.position = Vector2(0.0, y)
 	if _train != null:
 		var cycle := fposmod(_clock, TRAIN_PERIOD)

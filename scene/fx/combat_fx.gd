@@ -80,7 +80,8 @@ static func shake(context: Node, strength: float, duration: float) -> void:
 	var camera := context.get_viewport().get_camera_2d()
 	if camera == null:
 		return
-	var running: Variant = camera.get_meta(SHAKE_META, null)
+	# get_meta(name, null) counts as "no default" in Godot 4 and logs an error.
+	var running: Variant = camera.get_meta(SHAKE_META) if camera.has_meta(SHAKE_META) else null
 	if running is Tween and (running as Tween).is_valid():
 		(running as Tween).kill()  # never stack shakes
 	var tween := camera.create_tween()
