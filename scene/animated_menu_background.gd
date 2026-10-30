@@ -105,6 +105,10 @@ func _ready() -> void:
 	rain_clock = rng.randf_range(9.0, 18.0)
 	light_clock = _interval(light_event_min_interval, light_event_max_interval)
 	lightning_clock = _interval(lightning_min_interval, lightning_max_interval)
+	# Alpha 0.5.0: traffic on the bridge, drawn right above the master, under clouds and rain.
+	var traffic := preload("res://scene/fx/menu_bridge_traffic.gd").new()
+	composition.add_child(traffic)
+	composition.move_child(traffic, 1)
 	resized.connect(_fit_master)
 	visibility_changed.connect(_sync_modules)
 	_fit_master()

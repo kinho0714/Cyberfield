@@ -47,5 +47,9 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   ar/parede). Sem mudança de gameplay.
 - Evidência: `tests/character_lineup_capture.gd` (todos os quadros na cena real
   `player.tscn`, com cápsula e linha do chão; relata pés vs. chão) + captura de gameplay.
+- Menu: `scene/fx/menu_bridge_traffic.gd` — tráfego na ponte elevada do master
+  (1 Node2D, draw_rect, sem textura/shader; MÍNIMO desliga, REDUZIDO = metade).
+  Comprovado por captura no fluxo real (`main.tscn`, 7 carros, movimento entre quadros).
+- Push para `origin/dev/visual` bloqueado: 403 (app GitHub sem acesso de escrita).
 - Pendente: redesenho real de poses (proporções do revive do Spark, borda cortada do
   hurt do Jhon), escala 1.5× não inteira do sprite (distorce pixels), menu/ponte.
