@@ -1,13 +1,13 @@
-"""Cyberfield hub — Casa Jhon stage 0, Operação Renascimento (30/10/2026).
+"""Cyberfield hub — Casa Jhon stages 0-3, Operação Renascimento (30/10/2026).
 
 Original composition for the hub the game actually loads (scene/casa_jhon_hub.tscn,
 2560x768, floor top y=643). Drawn at native 1280x384 and shown at 2x by
 scene/casa_jhon_presentation.gd. Zones follow the scene's anchors:
   main entry 64 | domestic core 512 | historic column 768 | MetaTerminal 960 |
   RunPortal 1120 | workshop core 1344 | spark slot 2240   (screen x)
-Outputs:
-    assets/environment/hub/hub_stage0_back.png    1280x384 room (opaque)
-    assets/environment/hub/hub_stage0_lights.png  1280x384 additive light layer
+Outputs, one pair per MetaProgression.house_stage (0-3, cumulative upgrades):
+    assets/environment/hub/hub_stage{N}_back.png    1280x384 room (opaque)
+    assets/environment/hub/hub_stage{N}_lights.png  1280x384 additive light layer
 
     python3 -I tools/visual/hub_art.py [--preview DIR]
 """
@@ -266,7 +266,146 @@ def floor(c: Canvas, lights: Canvas):
     c.im.alpha_composite(fade.im)
 
 
-def build():
+# ---- House stages 1-3 (MetaProgression.house_stage): cumulative upgrades over stage 0.
+# Stage 0 output stays byte-identical; each stage only adds on top of the previous one.
+
+def stage1_repairs(c: Canvas, lights: Canvas):
+    """1 — Reparos: the house is lived in and the lab gets organised."""
+    for x in range(30, 590):                                                   # string lights garland
+        y = 44 + int(10 * math.sin((x - 30) / 560 * math.pi * 4) ** 2)
+        c.px(x, y, rgba(DARK))
+        if x % 14 == 0:
+            lights.rect(x, y + 1, x + 1, y + 2, rgba(AMBER if (x // 14) % 3 else MAG))
+    lights.im.alpha_composite(pk.radial((600, 40), AMBER, power=1.8, max_alpha=22, steps=24), (0, 32))
+    pk.text(lights, 7, 206, "JHON", rgba(AMBER, 230))                          # neon over the door
+    c.rect(40, FLOOR + 3, 140, FLOOR + 9, rgba(hexc("5a2a44")))                  # rug under the sofa-bed
+    for x in range(44, 138, 6):
+        c.px(x, FLOOR + 6, rgba(hexc("c86a8a")))
+    c.rect(188, 302, 204, FLOOR - 1, rgba(hexc("6a3a2a")))                     # potted plant
+    c.rect(186, 300, 206, 303, rgba(hexc("8a4a32")))
+    for k, (lx, ly) in enumerate(((180, 262), (196, 254), (210, 266), (186, 280), (204, 284), (194, 270))):
+        c.poly([(196, 300), (lx, ly), (lx + (4 if k % 2 else -4), ly + 6)], rgba(hexc("2e6a3a") if k % 2 else hexc("3e8a4a")))
+    c.rect(608, 36, 1272, 40, rgba(METAL))                                     # lab cable tray
+    c.rect(608, 36, 1272, 36, rgba(METAL_HI))
+    for x in range(620, 1270, 48):
+        c.rect(x, 26, x + 1, 36, rgba(DARK))
+    for k, col in enumerate((hexc("2a3a6a"), hexc("5a2a4a"), hexc("2a5a4a"))):
+        c.rect(608, 41 + k, 1272, 41 + k, rgba(col))
+    lights.rect(600, 30, 600, FLOOR - 2, rgba(MAG, 170))                        # partition neon seam
+    lights.im.alpha_composite(pk.radial((30, 300), MAG, power=1.4, max_alpha=26, steps=24), (585, 24))
+    x0, y0, w, h = 614, 140, 50, 46                                            # holo blueprint panel
+    lights.rect(x0, y0, x0 + w, y0 + h, rgba(CYAN, 26))
+    for gx in range(x0, x0 + w + 1, 10):
+        lights.rect(gx, y0, gx, y0 + h, rgba(CYAN, 50))
+    for gy in range(y0, y0 + h + 1, 10):
+        lights.rect(x0, gy, x0 + w, gy, rgba(CYAN, 50))
+    lights.line([(x0 + 8, y0 + 38), (x0 + 18, y0 + 22), (x0 + 32, y0 + 26), (x0 + 40, y0 + 12)], rgba(WHITE), width=2)
+    lights.d.ellipse((x0 + 14, y0 + 18, x0 + 22, y0 + 26), outline=rgba(CYAN))
+    lights.d.ellipse((x0 + 36, y0 + 8, x0 + 44, y0 + 16), outline=rgba(CYAN))
+    lights.rect(x0 + 4, y0 + 40, x0 + 46, y0 + 41, rgba(CYAN, 160))
+    c.rect(x0 + 22, y0 + h + 2, x0 + 28, y0 + h + 6, rgba(METAL))               # its emitter
+
+
+def stage2_operations(c: Canvas, lights: Canvas):
+    """2 — Base operacional: mezzanine, city map, portal header, second tank."""
+    deck = 64
+    c.rect(608, deck, 1272, deck + 4, rgba(METAL))                             # mezzanine catwalk
+    c.rect(608, deck, 1272, deck, rgba(METAL_HI))
+    c.rect(608, deck + 5, 1272, deck + 6, rgba(DARK))
+    c.rect(608, deck - 16, 1272, deck - 15, rgba(METAL_HI))                    # top rail
+    c.rect(608, deck - 8, 1272, deck - 8, rgba(METAL))
+    for x in range(610, 1272, 22):
+        c.rect(x, deck - 16, x + 1, deck, rgba(METAL))
+    for x in range(640, 1272, 120):                                            # wall brackets
+        c.line([(x, deck + 6), (x + 14, deck + 22)], rgba(METAL), width=2)
+    for x in range(700, 1272, 160):                                            # under-deck lamps
+        c.rect(x, deck + 7, x + 10, deck + 9, rgba(METAL_HI))
+        lights.rect(x + 1, deck + 10, x + 9, deck + 10, rgba(MAG))
+        lights.im.alpha_composite(pk.cone(60, 46, MAG, max_alpha=34), (x - 25, deck + 10))
+    dx = 820                                                                   # docked drone
+    c.ellipse(dx - 12, deck - 12, dx + 12, deck - 1, rgba(hexc("2a3048")))
+    c.rect(dx - 18, deck - 9, dx + 18, deck - 8, rgba(METAL_HI))
+    for sx in (dx - 18, dx + 15):
+        c.rect(sx, deck - 11, sx + 3, deck - 10, rgba(METAL))
+    lights.rect(dx - 3, deck - 7, dx + 2, deck - 6, rgba(CYAN))
+    mx, my, mw, mh = 424, 118, 112, 84                                         # city map above the terminal
+    c.rect(mx - 3, my - 3, mx + mw + 2, my + mh + 2, rgba(DARK))
+    c.rect(mx, my, mx + mw - 1, my + mh - 1, rgba(hexc("0a1424")))
+    for gx in range(mx, mx + mw, 8):
+        lights.rect(gx, my, gx, my + mh - 1, rgba(CYAN, 22))
+    for gy in range(my, my + mh, 8):
+        lights.rect(mx, gy, mx + mw - 1, gy, rgba(CYAN, 22))
+    route = [(mx + 14, my + 64), (mx + 40, my + 50), (mx + 66, my + 58), (mx + 96, my + 26)]
+    lights.line(route, rgba(CYAN, 170), width=1)
+    for (px_, py), word, col in zip(route, ("CID", "IND", "LAB", "NUC"), (MAG, AMBER, CYAN, hexc("ff2a6d"))):
+        lights.rect(px_ - 2, py - 2, px_ + 2, py + 2, rgba(col))
+        pk.text(lights, px_ - 5, py + 5 if py < my + 60 else py - 11, word, rgba(col, 210))
+    pk.text(lights, mx + 4, my + 4, "MAPA", rgba(CYAN, 200))
+    lights.im.alpha_composite(pk.radial((150, 110), CYAN, power=1.6, max_alpha=30, steps=24), (mx - 19, my - 13))
+    c.rect(500, 198, 620, 205, rgba(DARK))                                     # portal header
+    c.rect(500, 198, 620, 198, rgba(METAL_HI))
+    for k, x in enumerate(range(504, 616, 10)):
+        lights.rect(x, 201, x + 5, 202, rgba(MAG if k % 2 else CYAN, 220))
+    for side in (-1, 1):
+        c.line([(560 + side * 58, 205), (560 + side * 50, 252)], rgba(METAL), width=3)
+    c.rect(30, 108, 92, 168, rgba(DARK))                                       # neon poster
+    c.rect(33, 111, 89, 165, rgba(hexc("2a1040")))
+    lights.d.rectangle((31, 109, 91, 167), outline=rgba(MAG, 200))
+    c.poly([(40, 160), (61, 118), (82, 160)], rgba(hexc("4a1a5a")))
+    lights.line([(40, 160), (61, 118), (82, 160)], rgba(CYAN, 180))
+    lights.d.ellipse((54, 128, 68, 142), outline=rgba(AMBER, 210))
+    tx = 996                                                                   # second specimen tank
+    c.rect(tx, 226, tx + 30, FLOOR - 1, rgba(hexc("2a3660")))
+    for y in range(234, FLOOR - 8):
+        lights.rect(tx + 4, y, tx + 26, y, rgba(CYAN, 34 + int(18 * math.sin(y / 6))))
+    c.rect(tx + 10, 252, tx + 20, 266, rgba(hexc("1a2038")))                    # frame of a robot in it
+    c.rect(tx + 12, 266, tx + 18, 290, rgba(hexc("1a2038")))
+    lights.rect(tx + 12, 256, tx + 17, 257, rgba(CYAN))
+    c.rect(tx - 2, 222, tx + 32, 226, rgba(METAL)); c.rect(tx - 2, FLOOR - 6, tx + 32, FLOOR - 1, rgba(METAL))
+
+
+def stage3_headquarters(c: Canvas, lights: Canvas):
+    """3 — Quartel Cyberfield: panoramic window, logo, exosuit gantry, energy riser."""
+    window(c, lights, 104, 96, 140, 110)                                       # panoramic window
+    word, sc = "CYBERFIELD", 3                                                 # logo on the mezzanine
+    wx = 930 - pk.text_width(word, sc) // 2
+    c.rect(wx - 6, 72, wx + pk.text_width(word, sc) + 5, 72 + 5 * sc + 9, rgba(DARK))
+    for dx_, col in ((1, MAG), (0, CYAN)):
+        pk.text(lights, wx + dx_, 77 + dx_, word, rgba(col, 255 if dx_ == 0 else 150), scale=sc)
+    lights.im.alpha_composite(pk.radial((pk.text_width(word, sc) + 80, 70), MAG, power=1.5, max_alpha=40, steps=24), (wx - 40, 50))
+    gx = 1240                                                                  # exosuit in its gantry
+    c.rect(gx - 8, 196, gx - 5, FLOOR - 1, rgba(METAL)); c.rect(gx + 33, 196, gx + 36, FLOOR - 1, rgba(METAL))
+    c.rect(gx - 8, 194, gx + 36, 198, rgba(METAL_HI))
+    armour = hexc("3a4460")
+    c.rect(gx + 9, 214, gx + 19, 226, rgba(armour))                            # helmet
+    lights.rect(gx + 11, 218, gx + 17, 220, rgba(CYAN))
+    c.poly([(gx + 2, 228), (gx + 26, 228), (gx + 22, 262), (gx + 6, 262)], rgba(armour))   # torso
+    c.rect(gx + 6, 228, gx + 22, 230, rgba(METAL_HI))
+    lights.rect(gx + 12, 240, gx + 16, 244, rgba(MAG))                          # chest core
+    for ax in (gx - 2, gx + 26):                                               # arms
+        c.rect(ax, 230, ax + 4, 264, rgba(mix(armour, DARK, 0.3)))
+    for lx in (gx + 7, gx + 16):                                               # legs
+        c.rect(lx, 262, lx + 5, FLOOR - 4, rgba(mix(armour, DARK, 0.2)))
+        c.rect(lx - 1, FLOOR - 4, lx + 6, FLOOR - 1, rgba(METAL))
+    for k in range(3):
+        c.line([(gx + 4 + k * 10, 198), (gx + 6 + k * 8, 214)], rgba(DARK))
+    lights.im.alpha_composite(pk.radial((80, 140), CYAN, power=1.6, max_alpha=28, steps=24), (gx - 26, 190))
+    c.rect(1114, 70, 1126, 225, rgba(DARK))                                    # energy riser over the spark slot
+    c.rect(1115, 70, 1125, 225, rgba(hexc("142040")))
+    lights.rect(1119, 70, 1121, 225, rgba(CYAN, 170))
+    for k, y in enumerate(range(86, 220, 26)):                                 # pulse nodes (not rungs)
+        side = 1112 if k % 2 else 1124
+        c.rect(side, y, side + 3, y + 6, rgba(METAL))
+        lights.rect(1118, y + 2, 1122, y + 4, rgba(WHITE, 220))
+    lights.im.alpha_composite(pk.radial((40, 170), CYAN, power=1.5, max_alpha=30, steps=24), (1100, 62))
+    c.rect(268, 196, 300, 208, rgba(DARK))                                     # kitchen neon menu
+    pk.text(lights, 271, 200, "RAMEN", rgba(MAG, 230))
+
+
+STAGES = (stage1_repairs, stage2_operations, stage3_headquarters)
+
+
+def build(stage: int = 0):
     back, lights = Canvas(W, H), Canvas(W, H)
     wall(back, lights)
     home(back, lights)
@@ -277,28 +416,34 @@ def build():
     lab(back, lights)
     lab_density(back, lights)
     spark_slot(back, lights)
+    for extra in STAGES[:stage]:
+        extra(back, lights)
     floor(back, lights)
     return back.im, lights.im
 
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    back, lights = build()
-    back.save(OUT / "hub_stage0_back.png", optimize=True)
-    lights.save(OUT / "hub_stage0_lights.png", optimize=True)
+    frames = []
+    for stage in range(4):
+        back, lights = build(stage)
+        back.save(OUT / f"hub_stage{stage}_back.png", optimize=True)
+        lights.save(OUT / f"hub_stage{stage}_lights.png", optimize=True)
+        frame = pk.up(back, 2)
+        pk.add_blend(frame, pk.up(lights, 2), (0, 0))
+        frames.append(frame)
     if "--preview" in sys.argv:
         d = Path(sys.argv[sys.argv.index("--preview") + 1])
         d.mkdir(parents=True, exist_ok=True)
-        frame = pk.up(back, 2)
-        pk.add_blend(frame, pk.up(lights, 2), (0, 0))
-        for x, name in ((160, "jhon"), (960, None), (1120, None)):
-            if name:
-                jh = Image.open(ROOT / "assets/players/jhon/jhon_v2_idle_v2.png").convert("RGBA").crop((0, 0, 56, 72))
-                frame.alpha_composite(jh, (x - 28, 643 - 69))
-        frame.save(d / "hub_full.png")
-        frame.crop((0, 0, 1280, 768)).save(d / "hub_left.png")
-        frame.crop((1280, 0, 2560, 768)).save(d / "hub_right.png")
-    print("ok hub")
+        jh = Image.open(ROOT / "assets/players/jhon/jhon_v2_idle_v2.png").convert("RGBA").crop((0, 0, 56, 72))
+        for stage, frame in enumerate(frames):
+            frame.alpha_composite(jh, (160 - 28, 643 - 69))
+            frame.save(d / f"hub_stage{stage}_full.png")
+        board = Image.new("RGBA", (1280, 4 * 384), (0, 0, 0, 255))
+        for stage, frame in enumerate(frames):
+            board.alpha_composite(frame.resize((1280, 384), Image.NEAREST), (0, stage * 384))
+        board.save(d / "hub_stages_overview.png")
+    print("ok hub stages 0-3")
 
 
 if __name__ == "__main__":

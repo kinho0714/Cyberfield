@@ -1,16 +1,36 @@
 extends Node2D
-## Operação Renascimento (30/10/2026): original Casa Jhon stage-0 composition
-## (tools/visual/hub_art.py), drawn at 2x. Replaces the temporary painter renderer.
+## Operação Renascimento (30/10/2026): original Casa Jhon compositions for house stages
+## 0-3 (tools/visual/hub_art.py, cumulative upgrades), drawn at 2x. Only the art of the
+## current MetaProgression.house_stage is loaded. Replaces the temporary painter renderer.
 ## Geometry, spawns, portal, terminal and progression remain in the unchanged hub scene;
 ## lights and motion live in scene/fx/hub_atmosphere.gd.
-const ROOM_ART := preload("res://assets/environment/hub/hub_stage0_back.png")
+const STAGE_ART := [
+	"res://assets/environment/hub/hub_stage0_back.png",
+	"res://assets/environment/hub/hub_stage1_back.png",
+	"res://assets/environment/hub/hub_stage2_back.png",
+	"res://assets/environment/hub/hub_stage3_back.png",
+]
+const STAGE_LIGHTS := [
+	"res://assets/environment/hub/hub_stage0_lights.png",
+	"res://assets/environment/hub/hub_stage1_lights.png",
+	"res://assets/environment/hub/hub_stage2_lights.png",
+	"res://assets/environment/hub/hub_stage3_lights.png",
+]
 const FLOOR_Y := 643.0
 @export var visual_stage_id: StringName = &"hub_stage_00"
 var progression_state: Dictionary = {}
+var _room_art: Texture2D
+
+
+static func house_stage_of(state: Dictionary) -> int:
+	return clampi(int(state.get("house_stage", 0)), 0, STAGE_ART.size() - 1)
 
 
 func set_progression_state(value: Dictionary) -> void:
 	progression_state = value.duplicate(true)
+	var stage := house_stage_of(progression_state)
+	visual_stage_id = StringName("hub_stage_%02d" % stage)
+	_room_art = load(STAGE_ART[stage]) as Texture2D
 	queue_redraw()
 
 
@@ -21,18 +41,16 @@ func _ready() -> void:
 
 func _draw() -> void:
 	# Native row 322 is the walkable edge: drawn at 2x with a -1 offset it lands on y=643.
-	draw_texture_rect(ROOM_ART, Rect2(0.0, -1.0, 2560.0, 768.0), false)
+	if _room_art == null:
+		_room_art = load(STAGE_ART[0]) as Texture2D
+	draw_texture_rect(_room_art, Rect2(0.0, -1.0, 2560.0, 768.0), false)
 	_draw_progression_deltas()
 
 
 func _draw_progression_deltas() -> void:
-	var house_stage := clampi(int(progression_state.get("house_stage", 0)), 0, 3)
 	var blueprint_count := int(progression_state.get("blueprint_count", 0))
 	var recovered_count := int(progression_state.get("recovered_model_count", 0))
 	var axes: Dictionary = progression_state.get("axes", {}) as Dictionary
-	for stage_step in house_stage:
-		var stage_y := 314.0 + float(stage_step) * 12.0
-		draw_line(Vector2(1210, stage_y), Vector2(1900, stage_y), Color(0.20, 0.72, 0.78, 0.30), 2)
 	for index in mini(blueprint_count, 6):
 		draw_rect(Rect2(1390 + index * 18, 555, 12, 6), Color("39dff2"))
 	for index in mini(recovered_count, 6):

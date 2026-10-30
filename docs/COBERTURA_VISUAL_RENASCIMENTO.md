@@ -19,7 +19,7 @@ Legenda: **RV** = Reconstruído, aguardando validação · **RI** = Reconstruíd
 | Componente | Cena real | Status | O que mudou de fato |
 |---|---|---|---|
 | Hub — Casa Jhon estágio 0 (casa + laboratório) | `scene/casa_jhon_hub.tscn` via `casa_jhon_presentation.gd` | RV | Arte nova desenhada (`assets/environment/hub/hub_stage0_back.png`), camada de luz aditiva respirando, washes âmbar/ciano/magenta, poeira, varredura holográfica. Antes: pintura procedural plana. |
-| Hub — estágios 1–3 (evolução da casa) | `_draw_progression_deltas()` | P | Os deltas de progressão continuam desenhados por código sobre a nova arte; precisam de arte própria por estágio. |
+| Hub — estágios 1–3 (evolução da casa) | mesma cena; `MetaProgression.house_stage` escolhe a arte | RV | Arte nova cumulativa por estágio (`hub_stage{1,2,3}_back/lights.png`). 1 Reparos: varal de luzes, letreiro JHON, planta, tapete, bandeja de cabos, painel holográfico de projeto, filete neon na divisória. 2 Base operacional: mezanino com drone, mapa da cidade (CID/IND/LAB/NUC) sobre o terminal, pórtico do portal, pôster neon, segundo tanque. 3 Quartel: janela panorâmica, logo CYBERFIELD, exotraje no pórtico, conduto de energia sobre o Spark, letreiro RAMEN. Luzes ambiente ficam 15% mais fortes por estágio. Estágio 0 ficou byte-idêntico. Removidas as linhas ciano provisórias que marcavam o estágio. **Observação:** nada no jogo atual sobe `house_stage` (só o save); para ver os estágios use a cena de prévia `tests/visual/hub_house_stages_preview.tscn`. |
 | Cidade Baixa | `lower_city_biome.tscn` (gerador) | RV | Pacote completo: céu, skyline distante com faróis, prédios médios com letreiros e brilho, monotrilho com trem a cada 34 s, névoa em 2 camadas, chuva, piso/parede/passarela texturizados, adereços por módulo. |
 | Industrial | `industrial_biome.tscn` | RV | Pacote novo "forja": chaminés, guindastes-pórtico, fornos com brilho, engrenagens girando, lâmpadas com cone de luz, brasas. Antes: sem tema visual. |
 | Laboratório (bioma) | `lab_biome.tscn` | RV | Pacote "crio": tanques, teto técnico, lâmpadas suspensas, poeira, piso/parede próprios. Antes: sem tema visual. |
@@ -86,7 +86,7 @@ Os 3 baús privados deixaram de ser dependência. O instalador avisa sobre os re
 ## 7. Pendências reais (resumo)
 
 1. Validação no Godot Android de todos os itens RV (desempenho e FPS **não medidos**).
-2. Arte dos estágios 1–3 da Casa Jhon.
+2. ~~Arte dos estágios 1–3 da Casa Jhon~~ — feita (RV). Falta a regra de jogo que avança `house_stage` (mudança funcional: precisa da sua aprovação).
 3. Sprite dedicado do chefe.
 4. Redesenho dos personagens (aguarda folha de referência do Jhon).
 5. Revisão de fragmentos de Jackson/Kai/Spark fora do wall-slide.
