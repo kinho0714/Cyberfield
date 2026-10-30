@@ -1,6 +1,12 @@
 # Cyberfield — Direção visual
 
-Versão 1 · 30/10/2026 · Documento vivo. Mudanças de regra exigem aprovação.
+Versão 2 · 30/10/2026 · Documento vivo. Mudanças de regra exigem aprovação.
+
+> **Mudança da v2 (Operação Renascimento Total):** a pedido da direção (referências de
+> 30/10: rua neon, side-scroller em crepúsculo violeta, laboratório magenta/ciano e
+> fábrica ferrugem/ciano), magenta e violeta passam a ser **luz ambiente legítima** do
+> cenário. A regra "magenta só para ameaças" da v1 foi revogada. A legibilidade das
+> ameaças agora vem das regras da seção 2.4.
 
 ## 1. Identidade
 
@@ -40,7 +46,7 @@ anos 80, nem cópia de franquias conhecidas.
 | Função | Cor | Hex | Regra |
 |---|---|---|---|
 | Sistema, jogador e interação segura | Ciano | `#39DFF2` | UI, foco, bordas caminháveis, habilidades do jogador. |
-| **Ameaça** | Carmesim e magenta | `#FF2A6D` / `#D6469A` | **Exclusiva** de inimigos, ataques inimigos, projéteis e áreas de dano. **Nunca** em cenário. |
+| **Ameaça** | Carmesim | `#FF2A6D` | Inimigos, ataques, projéteis e áreas de dano. No cenário, o magenta é permitido (2.4) mas nunca no plano jogável próximo a uma ameaça. |
 | Perigo crítico | Vermelho | `#FF3D5F` | HP baixo, armadilhas ativas, alarme. |
 | Recompensa, valor e luz prática | Âmbar | `#E8A852` | dinheiro, loot, lâmpadas de rua, sinalização industrial. |
 | Cura e sucesso | Verde | `#43F2B0` | cura, conclusão, farmácia. |
@@ -50,15 +56,27 @@ Regra de contraste: **personagens e ameaças sempre ≥ 2 níveis de luminância
 fundo imediato.** Camadas de fundo ficam com saturação ≤ 60% e brilho ≤ 50% do primeiro
 plano.
 
+### 2.4 Legibilidade de ameaças sem exclusividade de cor (v2)
+
+1. **Separação de planos.** Todo fundo é desenhado em camada de tela atrás de uma névoa
+   de módulo (alfa 0,20–0,34) e com névoa atmosférica própria. O plano jogável é sempre
+   o mais nítido e contrastado.
+2. **Bordas caminháveis acesas.** Todo topo pisável tem linha clara de 1–2 px na cor do
+   bioma (lilás, âmbar, ciano, rosa-claro), distinta das luzes de fundo.
+3. **Silhueta.** Inimigos mantêm contorno escuro e massa carmesim saturada. O cenário
+   usa magenta em letreiros e luz, nunca em grandes massas sólidas no nível do chão.
+4. **Arena do chefe.** O Núcleo é escurecido de propósito (condutos a 70/255) para o
+   chefe carmesim e sua aura serem o ponto mais brilhante.
+
 ### 2.3 Paletas por bioma
 
 | Bioma | Dominante | Acento de cenário | Clima |
 |---|---|---|---|
-| Cidade Baixa | azul-noite e concreto molhado | âmbar (rua), ciano e verde (letreiros) | chuva, poças, névoa baixa |
-| Industrial | aço oxidado e grafite | âmbar operacional e faixas pretas e amarelas; vermelho só em alarme | vapor, fagulhas, luz de sódio vinda de cima |
-| Laboratório | azul-acinzentado frio, superfícies claras | ciano clínico e verde de fluido | ar parado, luz controlada; degrada com a profundidade |
-| Hub (lar) | madeira escura e metal doméstico | âmbar quente | interior, seguro |
-| Núcleo (chefe) | grafite profundo | carmesim dominante (é território inimigo) | pulsação, alarme |
+| Cidade Baixa (`lower_city_night`) | crepúsculo violeta, prédios índigo | letreiros ciano/magenta/âmbar/violeta, lanternas âmbar | chuva, reflexos, monotrilho com trem |
+| Industrial (`industrial_forge`) | aço oxidado, ferrugem, smog | âmbar de fornalha, faixas de perigo, ciano de bordas | brasas subindo, fumaça, engrenagens girando |
+| Laboratório (`lab_cryo`) | azul clínico, painéis modulares | ciano e magenta (lavagens), verde de fluido | poeira em suspensão, monitores |
+| Hub, Casa Jhon | madeira (casa) + painéis (lab) | âmbar doméstico, ciano/magenta no laboratório | poeira, varredura holográfica |
+| Núcleo, chefe (`core_reactor`) | grafite escuro | carmesim do reator (pulsa), magenta contido | faíscas, aura do chefe |
 
 ## 3. Luz
 
@@ -153,6 +171,19 @@ Alvo: Android intermediário em GL Compatibility.
 | Overdraw aditivo | ≤ 15% da tela |
 
 Toda afirmação de FPS exige medição em aparelho.
+
+## 9.1 Sistemas reutilizáveis (implementados)
+
+| Sistema | Arquivo | Uso |
+|---|---|---|
+| Kit de pixel art | `tools/visual/pixelkit.py` | canvas com repetição, gradiente pontilhado, fonte 3×5, brilho, contorno, cone e radial |
+| Biomas | `tools/visual/biome_art.py` → `scene/biomes/visual/biome_styles.gd` | arte e tabela de estilos de cada bioma, de uma fonte única |
+| Tema de bioma | `scene/biomes/visual/biome_visual_theme.gd` | parallax, peles, névoa, props, clima e luzes por dados |
+| UI | `tools/visual/ui_art.py`, `assets/ui/theme/cyberfield_theme.tres` | painéis, ícones e fonte global |
+| Efeitos | `tools/visual/fx_art.py`, `scene/fx/combat_fx.gd` | faísca, explosão, cura, rastro de dash, tremor |
+| Qualidade | `scene/fx/visual_quality.gd` | COMPLETO / REDUZIDO / MÍNIMO |
+| Props | `tools/visual/props_art.py` | baús, portão de saída, teleporte |
+| Hub | `tools/visual/hub_art.py`, `scene/fx/hub_atmosphere.gd` | Casa Jhon estágio 0 |
 
 ## 10. Referências internas
 
