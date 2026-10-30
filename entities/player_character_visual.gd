@@ -6,11 +6,12 @@ const VISUAL_DASH_DURATION := 0.18
 const AIR_POSE_MIN_DURATION := 0.07
 const GROUND_SLAM_STARTUP_DURATION := 0.16
 const GROUND_SLAM_IMPACT_DURATION := 0.14
+# 30/10: sheets repacked by tools/visual/repack_wall_slide.py, one centred pose per cell.
 const WALL_SLIDE_CONTENT_CENTERS := {
-	&"jhon": [4.0, 0.0, -11.0, -6.5],
-	&"jackson": [2.0, 0.0, -14.0, -9.0],
-	&"kai": [7.0, 14.5, 0.0, -5.0],
-	&"spark": [4.5, 0.0, 0.0, -4.5],
+	&"jhon": [0.0, 0.0, 0.0, 0.0],
+	&"jackson": [0.0, 0.0, 0.0, 0.0],
+	&"kai": [0.0, 0.0, 0.0, 0.0],
+	&"spark": [0.0, 0.0, 0.0, 0.0],
 }
 const CHARACTER_IDS := {
 	&"player_1": &"jhon",

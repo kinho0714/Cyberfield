@@ -2,12 +2,6 @@ extends SceneTree
 
 const PLAYER_SCENE := preload("res://entities/player.tscn")
 const EXPECTED_CHARACTERS: Array[StringName] = [&"jhon", &"jackson", &"kai", &"spark"]
-const WALL_CENTERS := {
-	&"jhon": [4.0, 0.0, -11.0, -6.5],
-	&"jackson": [2.0, 0.0, -14.0, -9.0],
-	&"kai": [7.0, 14.5, 0.0, -5.0],
-	&"spark": [4.5, 0.0, 0.0, -4.5],
-}
 
 
 func _initialize() -> void:
@@ -55,15 +49,18 @@ func _test_character(index: int) -> void:
 
 
 func _test_wall_alignment(visual: PlayerCharacterVisual, character_id: StringName) -> void:
-	var centers: Array = WALL_CENTERS[character_id] as Array
+	# 30/10: measured from the sheet itself; every cell must hold one whole, centred pose.
 	visual.animation = &"wall_slide"
 	for is_flipped in [false, true]:
 		visual.flip_h = is_flipped
 		for frame_index in 4:
 			visual.frame = frame_index
 			visual._apply_frame_alignment(&"wall_slide")
-			var anchored_center := float(centers[frame_index]) + visual.offset.x
-			assert(absf(anchored_center) <= 0.01)
+			var image := visual.sprite_frames.get_frame_texture(&"wall_slide", frame_index).get_image()
+			var used := image.get_used_rect()
+			assert(used.position.x > 0 and used.end.x < image.get_width(), "%s wall_slide frame %d is cut by the cell" % [character_id, frame_index])
+			var content_center := used.position.x + used.size.x * 0.5 - image.get_width() * 0.5
+			assert(absf(content_center + visual.offset.x) <= 0.51)
 			assert(is_equal_approx(visual.offset.y, 1.0))
 
 
