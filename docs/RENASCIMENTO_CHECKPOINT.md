@@ -34,3 +34,18 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Laboratório (vazio), arena do chefe (escura), transições, lobby LAN/resultado,
   perfis de efeito. Restos antigos dependem de decisão do usuário (painel de
   depuração do hub, título provisório do chefe).
+
+## Alpha 0.5.0 — Missão 01: personagens (branch `dev/visual`, base `alpha-0.5.0` = e95e361)
+- Jogáveis reais: Jhon, Jackson, Kai, Spark (`entities/player_character_visual.gd`).
+  Não existe "Kayle" no projeto.
+- `tools/visual/character_refine.py` reconstrói as 44 folhas a partir da tag
+  `alpha-0.5.0` (idempotente): limpeza de fragmentos/rótulos/linhas, poça do idle
+  removida e reassentada, contorno de luz no acento do personagem (Jhon ciano,
+  Jackson âmbar, Kai turquesa, Spark amarelo), "caído" na proporção de pé.
+  Tamanhos e grade inalterados.
+- Sombra de contato em `PlayerCharacterVisual` (filha, atrás do sprite; oculta no
+  ar/parede). Sem mudança de gameplay.
+- Evidência: `tests/character_lineup_capture.gd` (todos os quadros na cena real
+  `player.tscn`, com cápsula e linha do chão; relata pés vs. chão) + captura de gameplay.
+- Pendente: redesenho real de poses (proporções do revive do Spark, borda cortada do
+  hurt do Jhon), escala 1.5× não inteira do sprite (distorce pixels), menu/ponte.

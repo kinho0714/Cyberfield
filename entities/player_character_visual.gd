@@ -74,10 +74,33 @@ var _was_ground_slamming := false
 var _air_pose := 0
 var _air_pose_elapsed := 0.0
 var _was_airborne := false
+var _contact_shadow: Sprite2D
 
 
 func _ready() -> void:
+	_build_contact_shadow()
 	_update_presentation(0.0)
+
+
+## One soft contact shadow for every grounded state (sheets no longer bake their own).
+## Drawn behind the character, in this node's space: feet sit at local y = 36.
+func _build_contact_shadow() -> void:
+	var gradient := Gradient.new()
+	gradient.set_color(0, Color(0.0, 0.0, 0.02, 0.42))
+	gradient.set_color(1, Color(0.0, 0.0, 0.02, 0.0))
+	var texture := GradientTexture2D.new()
+	texture.gradient = gradient
+	texture.fill = GradientTexture2D.FILL_RADIAL
+	texture.fill_from = Vector2(0.5, 0.5)
+	texture.fill_to = Vector2(1.0, 0.5)
+	texture.width = 32
+	texture.height = 8
+	_contact_shadow = Sprite2D.new()
+	_contact_shadow.name = "ContactShadow"
+	_contact_shadow.texture = texture
+	_contact_shadow.show_behind_parent = true
+	_contact_shadow.position = Vector2(0.0, 35.0)
+	add_child(_contact_shadow)
 
 
 func _process(delta: float) -> void:
@@ -119,6 +142,8 @@ func _update_presentation(delta: float = 0.0) -> void:
 	if visual_state != &"air":
 		_was_airborne = false
 	_apply_frame_alignment(visual_state)
+	if _contact_shadow != null:
+		_contact_shadow.visible = not visual_state in [&"air", &"wall_slide", &"wall_climb"]
 	if _content_profile != null:
 		offset = _content_profile.alignment(visual_state, offset)
 	_last_state = visual_state
