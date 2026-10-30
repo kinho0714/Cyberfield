@@ -1,14 +1,17 @@
 extends Node2D
-## Laboratory hub atmosphere (Operação Renascimento, 30/10/2026). Presentation only and
-## position-independent: it never moves or hides the approved lab kit. Coloured light
-## washes behind the actors, drifting dust in front, and a slow holographic sweep.
+## Hub atmosphere (Operação Renascimento, 30/10/2026). Presentation only: an additive
+## light layer that breathes, coloured washes behind the actors, drifting dust in front
+## and a slow holographic sweep. Configure room/washes/lights_texture before adding it.
 ## Obeys VisualQuality (no sweep or flicker outside FULL; dust scales with particles).
 
-const ROOM := Vector2(1280.0, 720.0)
 const CYAN := Color("39dff2")
 const MAGENTA := Color("ff4fb4")
 const SWEEP_PERIOD := 9.0
 
+var room := Vector2(1280.0, 720.0)
+var washes: Array = [[Vector2(180, 380), CYAN, 0.16], [Vector2(1100, 380), MAGENTA, 0.14]]
+var lights_texture: Texture2D
+var _lights: Sprite2D
 var _sweep: Polygon2D
 var _washes: Array[Sprite2D] = []
 var _clock := 0.0
@@ -21,7 +24,16 @@ func _ready() -> void:
 	var behind := Node2D.new()
 	behind.z_index = -4
 	add_child(behind)
-	for spec: Array in [[Vector2(180, 380), CYAN, 0.16], [Vector2(1100, 380), MAGENTA, 0.14], [Vector2(640, 90), CYAN, 0.08]]:
+	if lights_texture != null:
+		_lights = Sprite2D.new()
+		_lights.texture = lights_texture
+		_lights.centered = false
+		_lights.scale = room / lights_texture.get_size()
+		_lights.position = Vector2(0.0, -1.0)
+		_lights.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_lights.material = additive
+		behind.add_child(_lights)
+	for spec: Array in washes:
 		var wash := Sprite2D.new()
 		wash.texture = _radial(spec[1])
 		wash.position = spec[0]
@@ -32,7 +44,7 @@ func _ready() -> void:
 		_washes.append(wash)
 	if VisualQuality.profile() == VisualQuality.FULL:
 		_sweep = Polygon2D.new()
-		_sweep.polygon = PackedVector2Array([Vector2(0, 0), Vector2(ROOM.x, 0), Vector2(ROOM.x, 2), Vector2(0, 2)])
+		_sweep.polygon = PackedVector2Array([Vector2(0, 0), Vector2(room.x, 0), Vector2(room.x, 2), Vector2(0, 2)])
 		_sweep.color = Color(CYAN, 0.10)
 		_sweep.material = additive
 		behind.add_child(_sweep)
@@ -42,9 +54,9 @@ func _ready() -> void:
 		dust.amount = amount
 		dust.lifetime = 7.0
 		dust.preprocess = 7.0
-		dust.position = ROOM * 0.5
+		dust.position = room * 0.5
 		dust.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
-		dust.emission_rect_extents = ROOM * 0.5
+		dust.emission_rect_extents = room * 0.5
 		dust.direction = Vector2(0.3, -1.0)
 		dust.spread = 40.0
 		dust.gravity = Vector2(1.0, -2.0)
@@ -60,8 +72,10 @@ func _process(delta: float) -> void:
 	var breathe := 0.92 + 0.08 * sin(_clock * 0.9)
 	for wash in _washes:
 		wash.self_modulate.a = breathe
+	if _lights != null:
+		_lights.modulate.a = 0.94 + 0.06 * sin(_clock * 1.3) if VisualQuality.allows_flicker() else 1.0
 	if _sweep != null:
-		_sweep.position.y = fposmod(_clock, SWEEP_PERIOD) / SWEEP_PERIOD * ROOM.y
+		_sweep.position.y = fposmod(_clock, SWEEP_PERIOD) / SWEEP_PERIOD * room.y
 
 
 static func _radial(colour: Color) -> GradientTexture2D:

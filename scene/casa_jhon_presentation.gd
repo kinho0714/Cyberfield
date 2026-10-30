@@ -1,7 +1,9 @@
 extends Node2D
-## RECOMPOSITION: replaces the old decorative renderer completely.
-## Geometry, spawns, portal, terminal and progression remain in the unchanged hub scene.
-const TEMP_ENV = preload("res://scene/temporary_environment/painter.gd")
+## Operação Renascimento (30/10/2026): original Casa Jhon stage-0 composition
+## (tools/visual/hub_art.py), drawn at 2x. Replaces the temporary painter renderer.
+## Geometry, spawns, portal, terminal and progression remain in the unchanged hub scene;
+## lights and motion live in scene/fx/hub_atmosphere.gd.
+const ROOM_ART := preload("res://assets/environment/hub/hub_stage0_back.png")
 const FLOOR_Y := 643.0
 @export var visual_stage_id: StringName = &"hub_stage_00"
 var progression_state: Dictionary = {}
@@ -13,14 +15,13 @@ func set_progression_state(value: Dictionary) -> void:
 
 
 func _ready() -> void:
-	add_to_group("temporary_environment_view")
 	z_index = -20
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 
 func _draw() -> void:
-	TEMP_ENV.paint(self, "house")
-	TEMP_ENV.surface(self, Rect2(0, FLOOR_Y, 2560, 125), "floor")
+	# Native row 322 is the walkable edge: drawn at 2x with a -1 offset it lands on y=643.
+	draw_texture_rect(ROOM_ART, Rect2(0.0, -1.0, 2560.0, 768.0), false)
 	_draw_progression_deltas()
 
 
