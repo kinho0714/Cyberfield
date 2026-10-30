@@ -5,6 +5,8 @@ Original chests that replace the private third-party chest textures
     assets/props/chests/loot_chest.png       56x44  (BiomeLoot)
     assets/props/chests/attribute_chest.png  64x46  (AttributeChest)
     assets/props/chests/trap_chest.png       56x44  (TrapChest)
+    assets/props/gates/exit_gate.png         72x100 (BiomeExit, over the 68x96 door)
+    assets/props/gates/teleporter_pad.png    80x56  (BiomeTeleporter)
 Drawn 1:1 with the characters. The base metal and light strips are near-neutral on
 purpose: the chest scripts tint the sprite by state (amber, grey, green, red).
 
@@ -92,11 +94,53 @@ def trap_chest():
     return _outline(c)
 
 
+def exit_gate():
+    w, h = 72, 100
+    c = Canvas(w, h)
+    cyan = hexc("39dff2")
+    c.rect(0, 0, w - 1, h - 1, rgba(STEEL_LO))                                # frame
+    c.rect(2, 2, w - 3, h - 1, rgba(DARK))
+    c.rect(0, 0, w - 1, 1, rgba(STEEL_HI))
+    for x in (0, w - 1):
+        c.rect(x, 2, x, h - 1, rgba(cyan))                                    # lit jambs
+    c.rect(5, 6, w // 2 - 2, h - 2, rgba(mix(STEEL, DARK, 0.45)))             # two door leaves
+    c.rect(w // 2 + 1, 6, w - 6, h - 2, rgba(mix(STEEL, DARK, 0.45)))
+    c.rect(w // 2 - 1, 6, w // 2, h - 2, rgba(DARK))
+    for y in range(14, h - 10, 18):                                           # panel seams
+        c.rect(5, y, w - 6, y, rgba(STEEL_LO))
+    for i, y in enumerate((30, 44, 58)):                                      # glowing chevrons ">>"
+        for k in range(2):
+            x0 = 22 + k * 14
+            c.line([(x0, y - 6), (x0 + 7, y), (x0, y + 6)], rgba(cyan, 255 - i * 60), width=2)
+    c.rect(8, h - 8, w - 9, h - 6, rgba(WARN))
+    for x in range(8, w - 8, 6):
+        c.rect(x, h - 8, x + 2, h - 6, rgba(DARK))
+    return _outline(c)
+
+
+def teleporter_pad():
+    w, h = 80, 56
+    c = Canvas(w, h)
+    cyan = hexc("39dff2")
+    c.poly([(6, 40), (18, 30), (62, 30), (74, 40), (62, 50), (18, 50)], rgba(STEEL_LO))   # hex base
+    c.poly([(10, 40), (20, 33), (60, 33), (70, 40), (60, 47), (20, 47)], rgba(DARK))
+    c.d.ellipse((18, 34, 62, 46), outline=rgba(cyan), width=2)                             # emitter ring
+    c.d.ellipse((28, 37, 52, 43), outline=rgba(cyan, 150))
+    for k in range(4):                                                                     # rising holo lines
+        y = 26 - k * 7
+        c.rect(26 + k * 2, y, 54 - k * 2, y, rgba(cyan, 180 - k * 40))
+    return _outline(c)
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     chests = {"loot_chest": loot_chest(), "attribute_chest": attribute_chest(), "trap_chest": trap_chest()}
     for name, im in chests.items():
         im.save(OUT / f"{name}.png", optimize=True)
+    gates = ROOT / "assets/props/gates"
+    gates.mkdir(parents=True, exist_ok=True)
+    exit_gate().save(gates / "exit_gate.png", optimize=True)
+    teleporter_pad().save(gates / "teleporter_pad.png", optimize=True)
     if "--preview" in sys.argv:
         d = Path(sys.argv[sys.argv.index("--preview") + 1])
         d.mkdir(parents=True, exist_ok=True)

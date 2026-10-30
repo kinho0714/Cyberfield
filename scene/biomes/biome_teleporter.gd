@@ -9,6 +9,7 @@ var arrival_position := Vector2.ZERO
 var _active := false
 var _label: Label
 var _visual: Polygon2D
+var _pad: Sprite2D
 
 
 func _ready() -> void:
@@ -26,6 +27,13 @@ func _ready() -> void:
 	_visual = Polygon2D.new()
 	_visual.polygon = PackedVector2Array([Vector2(-34, 8), Vector2(-24, -14), Vector2(0, -26), Vector2(24, -14), Vector2(34, 8), Vector2(0, 22)])
 	add_child(_visual)
+	_visual.visible = false  # superseded by the pad art; kept for the active-state colour
+	_pad = Sprite2D.new()
+	_pad.name = "TeleporterPad"
+	_pad.texture = preload("res://assets/props/gates/teleporter_pad.png")
+	_pad.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_pad.position = Vector2(0, -12)
+	add_child(_pad)
 	_label = Label.new()
 	_label.position = Vector2(-82, -62)
 	_label.size = Vector2(164, 28)
@@ -61,6 +69,8 @@ func _refresh() -> void:
 	if _visual == null:
 		return
 	_visual.color = Color(0.2, 0.95, 1.0, 0.95) if _active else Color(0.18, 0.32, 0.4, 0.85)
+	if _pad != null:
+		_pad.modulate = Color(1.4, 1.4, 1.4) if _active else Color(0.45, 0.55, 0.6)
 	_label.text = "[E] TELEPORTAR" if _active else "[E] ATIVAR TELEPORTE"
 
 
