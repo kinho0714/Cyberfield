@@ -28,6 +28,7 @@ func _run() -> void:
 	var visual := enemy.get_node("EnemyCharacterVisual") as CanvasItem
 	assert(visual.self_modulate != Color.WHITE, "hit flash missing")
 	assert(world.get_child_count() > children_before, "hit sparks missing")
+	assert(not world.find_children("*", "AnimatedSprite2D", false, false).is_empty(), "pixel-art hit spark missing")
 	assert(camera.has_meta(CombatFx.SHAKE_META), "shake missing in FULL")
 	assert(enemy.health == health_before, "feedback must not change gameplay")
 	for i in 12:
@@ -39,7 +40,7 @@ func _run() -> void:
 	camera.remove_meta(CombatFx.SHAKE_META)
 	children_before = world.get_child_count()
 	CombatFx.enemy_hit(enemy, -1.0, true)
-	assert(world.get_child_count() == children_before, "MINIMAL spawns no particles")
+	assert(world.get_child_count() == children_before, "MINIMAL spawns no particles or sheets")
 	assert(not camera.has_meta(CombatFx.SHAKE_META), "MINIMAL never shakes")
 	assert(visual.self_modulate != Color.WHITE, "MINIMAL keeps the readable sprite flash")
 

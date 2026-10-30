@@ -1,7 +1,12 @@
 extends Node2D
 
 
+const HUB_ATMOSPHERE := preload("res://scene/fx/hub_atmosphere.gd")
+
+
 func _ready() -> void:
+	if get_node_or_null("HubAtmosphere") == null:
+		add_child(HUB_ATMOSPHERE.new())  # presentation only (Operação Renascimento)
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var summary := $LastRunSummary as Label
 	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression

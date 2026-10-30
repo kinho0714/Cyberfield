@@ -563,6 +563,7 @@ func _start_dash() -> void:
 	velocity.x = dash_direction * DASH_SPEED
 	dash_timer = DASH_DURATION * (1.0 + dash_duration_bonus)
 	dash_invulnerability_timer = dash_invulnerability_duration
+	CombatFx.dash_trail(self)
 	_dash_exceptions.clear()
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		if enemy is PhysicsBody2D:
@@ -822,6 +823,7 @@ func _complete_heal() -> void:
 	health = mini(max_health, health + roundi(CombatStats.heal_amount(max_health) * (1.0 + healing_bonus)))
 	heal_doses -= 1
 	_play_audio_event(&"player_heal")
+	CombatFx.heal(self)
 	is_healing = false
 	heal_progress = 0.0
 	_update_health_label()
