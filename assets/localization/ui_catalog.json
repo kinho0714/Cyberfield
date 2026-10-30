@@ -129,5 +129,9 @@
     "RESTANTE":  "REMAINING",
     "ROTA":  "ROUTE",
     "ARMAS":  "WEAPONS",
-    "STAGES":  "STAGES"
+    "STAGES":  "STAGES",
+    "EFEITOS VISUAIS":  "VISUAL EFFECTS",
+    "COMPLETO":  "FULL",
+    "REDUZIDO":  "REDUCED",
+    "MÍNIMO":  "MINIMAL"
 }

@@ -115,6 +115,14 @@ text = "ZOOM DA CÂMERA"
 custom_minimum_size = Vector2(560, 56)
 layout_mode = 2
 
+[node name="EffectsLabel" type="Label" parent="Overlay/Center/SettingsPage/Scroll/Content"]
+layout_mode = 2
+text = "EFEITOS VISUAIS"
+
+[node name="EffectsOption" type="OptionButton" parent="Overlay/Center/SettingsPage/Scroll/Content"]
+custom_minimum_size = Vector2(560, 56)
+layout_mode = 2
+
 [node name="TouchLabel" type="Label" parent="Overlay/Center/SettingsPage/Scroll/Content"]
 layout_mode = 2
 text = "TAMANHO DOS CONTROLES MOBILE"

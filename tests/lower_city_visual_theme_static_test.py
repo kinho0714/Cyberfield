@@ -23,12 +23,32 @@ class LowerCityVisualTheme(unittest.TestCase):
         paths = re.findall(r'preload\("res://([^"]+)"\)', text)
         self.assertGreaterEqual(len(paths), 13)
         for path in paths:
-            self.assertTrue(path.startswith("assets/experimental/lower_city_concept/"), path)
+            self.assertTrue(path.startswith(("assets/experimental/lower_city_concept/", "assets/environment/lower_city_v2/")), path)
             self.assertTrue((ROOT / path).is_file(), path)
+        v2 = ROOT / "assets/environment/lower_city_v2"
+        # Native-size backdrop (drawn at PLANE_SCALE 2): a quarter of the concept's texture memory.
+        self.assertEqual(png_size(v2 / "mid.png"), (1440, 360))
+        self.assertEqual(png_size(v2 / "far.png"), (640, 360))
+        self.assertEqual(png_size(v2 / "sky.png"), (320, 180))
         tiles = ROOT / "assets/experimental/lower_city_concept"
         self.assertEqual(png_size(tiles / "street_tile.png"), (64, 60))
         self.assertEqual(png_size(tiles / "catwalk_tile.png"), (64, 20))
         self.assertEqual(png_size(tiles / "wall_tile.png"), (18, 64))
+
+    def test_scenery_never_uses_threat_colour(self):
+        """docs/DIRECAO_VISUAL_CYBERFIELD.md 2.2: magenta/carmesim is for threats only."""
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        import colorsys
+        for name in ["mid_signs", "mid_glow", "mid", "far", "far_beacons", "puddles", "rail"]:
+            image = Image.open(ROOT / f"assets/environment/lower_city_v2/{name}.png").convert("RGBA")
+            for r, g, b, a in image.getdata():
+                if a < 40:
+                    continue
+                h, s, v = colorsys.rgb_to_hsv(r / 255, g / 255, b / 255)
+                self.assertFalse(s > 0.55 and v > 0.45 and (h > 0.86 or h < 0.02), f"{name}: threat-coloured pixel {(r, g, b, a)}")
 
     def test_presentation_only(self):
         text = THEME.read_text(encoding="utf-8")

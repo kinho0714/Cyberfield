@@ -464,7 +464,8 @@ func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multip
 		knockback_timer = KNOCKBACK_DURATION
 
 	is_hurt = true
-	anim.modulate = Color(1, 1, 1, 0.5)
+	# 30/10: a bright hit flash replaces the half-transparent blink (read as "vanished").
+	CombatFx.enemy_hit(self, knockback_direction, knockback_multiplier > 1.05)
 
 	await get_tree().create_timer(0.1).timeout
 
@@ -478,6 +479,7 @@ func _die() -> void:
 	if is_dead:
 		return
 	is_dead = true
+	CombatFx.enemy_death(self)
 	_play_audio_event(&"enemy_death")
 	is_attacking = false
 	is_hurt = false

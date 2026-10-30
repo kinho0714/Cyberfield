@@ -1,0 +1,111 @@
+class_name CombatFx
+extends RefCounted
+## Combat feedback (30/10/2026). Presentation only: no physics, timing or damage
+## changes. Every effect obeys VisualQuality and is skipped when off screen.
+## Colours follow docs/DIRECAO_VISUAL_CYBERFIELD.md (threat = carmesim, player = ciano).
+
+const THREAT := Color("ff2a6d")
+const CRITICAL := Color("ff3d5f")
+const SYSTEM := Color("39dff2")
+const FLASH_TIME := 0.07
+const SHAKE_META := &"combat_fx_shake"
+const VISUAL_NODES := [^"EnemyCharacterVisual", ^"PlayerCharacterVisual", ^"AnimatedSprite2D"]
+
+
+## Enemy took damage: bright flash and sparks thrown along the hit direction.
+static func enemy_hit(enemy: Node2D, direction: float, heavy := false) -> void:
+	_flash(enemy, Color(3.0, 3.0, 3.0) * VisualQuality.flash_strength() + Color(1, 1, 1) * (1.0 - VisualQuality.flash_strength()))
+	if not _on_screen(enemy):
+		return
+	var aim := Vector2(signf(direction) if direction != 0.0 else 0.0, -0.35).normalized()
+	_burst(enemy, enemy.global_position + Vector2(0.0, -34.0), THREAT, 8, aim, 55.0, Vector2(90.0, 210.0), 0.32, 380.0)
+	if heavy:
+		shake(enemy, 4.0, 0.12)
+
+
+## Enemy died: one pulse and falling fragments in its own colour.
+static func enemy_death(enemy: Node2D) -> void:
+	if not _on_screen(enemy):
+		return
+	_burst(enemy, enemy.global_position + Vector2(0.0, -30.0), THREAT, 14, Vector2.UP, 180.0, Vector2(60.0, 170.0), 0.55, 420.0)
+	_burst(enemy, enemy.global_position + Vector2(0.0, -30.0), Color(1.0, 0.85, 0.9), 4, Vector2.UP, 180.0, Vector2(20.0, 60.0), 0.25, 0.0)
+	shake(enemy, 2.0, 0.08)
+
+
+## Player took damage: red flash on the sprite; only a local player shakes the camera.
+static func player_hurt(player: Node2D, shake_camera: bool) -> void:
+	_flash(player, Color(2.4, 0.7, 0.8))
+	if _on_screen(player):
+		_burst(player, player.global_position + Vector2(0.0, -32.0), CRITICAL, 6, Vector2.UP, 160.0, Vector2(60.0, 150.0), 0.3, 360.0)
+	if shake_camera:
+		shake(player, 3.0, 0.1)
+
+
+## Small camera shake through Camera2D.offset (RoomManager only moves the position).
+static func shake(context: Node, strength: float, duration: float) -> void:
+	if not VisualQuality.allows_shake() or context == null or not context.is_inside_tree():
+		return
+	var camera := context.get_viewport().get_camera_2d()
+	if camera == null:
+		return
+	var running: Variant = camera.get_meta(SHAKE_META, null)
+	if running is Tween and (running as Tween).is_valid():
+		(running as Tween).kill()  # never stack shakes
+	var tween := camera.create_tween()
+	var step := duration / 4.0
+	for offset: Vector2 in [Vector2(1.0, 0.0), Vector2(-0.8, 0.5), Vector2(0.5, -0.4), Vector2.ZERO]:
+		tween.tween_property(camera, "offset", offset * strength, step)
+	camera.set_meta(SHAKE_META, tween)
+
+
+static func _flash(owner: Node2D, color: Color) -> void:
+	var visual: CanvasItem = null
+	for path: NodePath in VISUAL_NODES:
+		var candidate := owner.get_node_or_null(path) as CanvasItem
+		if candidate != null and candidate.visible:
+			visual = candidate
+			break
+	if visual == null or not visual.is_inside_tree():
+		return
+	# self_modulate multiplies on top of the modulate the visual copies every frame.
+	visual.self_modulate = color
+	var tween := visual.create_tween()
+	tween.tween_property(visual, "self_modulate", Color.WHITE, FLASH_TIME)
+
+
+static func _burst(anchor: Node2D, at: Vector2, color: Color, amount: int, direction: Vector2,
+		spread: float, speed: Vector2, lifetime: float, gravity: float) -> void:
+	var count := roundi(amount * VisualQuality.particle_scale())
+	var parent := anchor.get_parent()
+	if count <= 0 or parent == null or not anchor.is_inside_tree():
+		return
+	var burst := CPUParticles2D.new()
+	burst.one_shot = true
+	burst.explosiveness = 1.0
+	burst.amount = count
+	burst.lifetime = lifetime
+	burst.direction = direction
+	burst.spread = spread
+	burst.initial_velocity_min = speed.x
+	burst.initial_velocity_max = speed.y
+	burst.gravity = Vector2(0.0, gravity)
+	burst.scale_amount_min = 2.0
+	burst.scale_amount_max = 3.0
+	var ramp := Gradient.new()
+	ramp.set_color(0, color)
+	ramp.set_color(1, Color(color, 0.0))
+	burst.color_ramp = ramp
+	burst.z_index = 20
+	burst.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	parent.add_child(burst)
+	burst.global_position = at
+	burst.emitting = true
+	# Freed by time, not by signal: the timer connection dies with the node.
+	burst.get_tree().create_timer(lifetime + 0.3).timeout.connect(burst.queue_free)
+
+
+static func _on_screen(node: Node2D) -> bool:
+	if not node.is_inside_tree():
+		return false
+	var screen := node.get_global_transform_with_canvas().origin
+	return node.get_viewport_rect().grow(96.0).has_point(screen)

@@ -1143,6 +1143,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
 
 	is_hurt = true
 	anim.modulate = Color(1, 1, 1, 0.5)
+	CombatFx.player_hurt(self, not bool(network_remote_replica))
 
 	await get_tree().create_timer(0.1).timeout
 

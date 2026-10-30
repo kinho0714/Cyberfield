@@ -3,20 +3,22 @@ extends Node2D
 ## BiomeGenerator calls build() after layout, content and signature exist. Nothing here
 ## touches RNG, collision shapes, IDs or input; every choice derives from module indices,
 ## so LAN peers with the same layout see the same street. Art: original layers generated
-## by tools/experimental/lower_city_concept.py (no private or third-party pixels).
+## by tools/visual/lower_city_v2.py (backdrop, native size, drawn at 2x) and
+## tools/experimental/lower_city_concept.py (tiles, lamp, rain). No private pixels.
 
 const STREET := preload("res://assets/experimental/lower_city_concept/street_tile.png")
 const CATWALK := preload("res://assets/experimental/lower_city_concept/catwalk_tile.png")
 const WALL := preload("res://assets/experimental/lower_city_concept/wall_tile.png")
-const SKY := preload("res://assets/experimental/lower_city_concept/sky.png")
-const FAR := preload("res://assets/experimental/lower_city_concept/far.png")
-const FOG := preload("res://assets/experimental/lower_city_concept/fog.png")
-const MID := preload("res://assets/experimental/lower_city_concept/mid.png")
-const MID_GLOW := preload("res://assets/experimental/lower_city_concept/mid_glow.png")
-const MID_SIGNS := preload("res://assets/experimental/lower_city_concept/mid_signs.png")
-const RAIL := preload("res://assets/experimental/lower_city_concept/rail.png")
+const SKY := preload("res://assets/environment/lower_city_v2/sky.png")
+const FAR := preload("res://assets/environment/lower_city_v2/far.png")
+const FAR_BEACONS := preload("res://assets/environment/lower_city_v2/far_beacons.png")
+const FOG := preload("res://assets/environment/lower_city_v2/fog.png")
+const MID := preload("res://assets/environment/lower_city_v2/mid.png")
+const MID_GLOW := preload("res://assets/environment/lower_city_v2/mid_glow.png")
+const MID_SIGNS := preload("res://assets/environment/lower_city_v2/mid_signs.png")
+const RAIL := preload("res://assets/environment/lower_city_v2/rail.png")
+const PUDDLES := preload("res://assets/environment/lower_city_v2/puddles.png")
 const LAMP_CONE := preload("res://assets/experimental/lower_city_concept/lamp_cone.png")
-const PUDDLES := preload("res://assets/experimental/lower_city_concept/puddles.png")
 const RAIN_DROP := preload("res://assets/experimental/lower_city_concept/rain_drop.png")
 
 const FLOOR_TOP := 420.0
@@ -24,6 +26,8 @@ const MID_STREET_ROW := 660.0
 # Floor-to-camera offset of the 1280x720 concept framing (floor 420, camera 384).
 const REST_DEPTH := 36.0
 const BACKDROP_LAYER := -10
+# Backdrop textures are stored at native pixel size; every plane draws at this scale.
+const PLANE_SCALE := 2.0
 # Module cells were opaque and hid any backdrop; a light haze keeps room volume readable.
 const MODULE_HAZE := Color(0.02, 0.035, 0.06, 0.22)
 const MODULE_HAZE_DEEP := Color(0.02, 0.035, 0.06, 0.34)
@@ -37,6 +41,7 @@ const PUDDLE_REGIONS := [Rect2(420.0, 0.0, 140.0, 32.0), Rect2(1100.0, 0.0, 130.
 # The viaduct is tinted toward the sky: its deck must never read as a walkable platform.
 const PLANES := [
 	["far", -62.0, 0.15, 0.10, 0.0, Color(1.0, 1.0, 1.0, 1.0), false],
+	["far_beacons", -62.0, 0.15, 0.10, 0.0, Color(1.0, 1.0, 1.0, 1.0), true],
 	["fog", 245.0, 0.30, 0.20, -6.0, Color(1.0, 1.0, 1.0, 1.0), false],
 	["mid", -207.0, 0.45, 0.30, 0.0, Color(1.0, 1.0, 1.0, 1.0), false],
 	["mid_glow", -207.0, 0.45, 0.30, 0.0, Color(1.0, 1.0, 1.0, 1.0), true],
@@ -52,6 +57,7 @@ var _ground: Polygon2D
 var _planes: Array[Dictionary] = []
 var _signs: Sprite2D
 var _sign_glow: Sprite2D
+var _beacons: Sprite2D
 var _rain: Array[CPUParticles2D] = []
 var _clock := 0.0
 var _flicker_at := 4.0
@@ -197,7 +203,8 @@ func _build_backdrop() -> void:
 	_sky.texture = SKY
 	_sky.centered = false
 	root.add_child(_sky)
-	var textures := {"far": FAR, "fog": FOG, "mid": MID, "mid_glow": MID_GLOW, "mid_signs": MID_SIGNS, "rail": RAIL}
+	var textures := {"far": FAR, "far_beacons": FAR_BEACONS, "fog": FOG, "mid": MID, "mid_glow": MID_GLOW,
+		"mid_signs": MID_SIGNS, "rail": RAIL}
 	for plane: Array in PLANES:
 		if String(plane[0]) == "rail":
 			# Street level below the mid buildings: never an empty strip under the skyline.
@@ -210,6 +217,7 @@ func _build_backdrop() -> void:
 		sprite.centered = false
 		sprite.region_enabled = true
 		sprite.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+		sprite.scale = Vector2.ONE * PLANE_SCALE
 		sprite.modulate = plane[5]
 		if bool(plane[6]):
 			sprite.material = _add_material
@@ -219,13 +227,18 @@ func _build_backdrop() -> void:
 			_sign_glow = sprite
 		elif String(plane[0]) == "mid_signs":
 			_signs = sprite
+		elif String(plane[0]) == "far_beacons":
+			_beacons = sprite
 
 
 func _build_rain() -> void:
 	for config: Array in [[120, 520.0, 0.30, 0.9], [60, 780.0, 0.55, 1.0]]:
+		var amount := roundi(float(config[0]) * VisualQuality.particle_scale())
+		if amount <= 0:
+			continue  # MINIMAL profile: no rain particles
 		var rain := CPUParticles2D.new()
 		rain.texture = RAIN_DROP
-		rain.amount = int(config[0])
+		rain.amount = amount
 		rain.lifetime = 2.0
 		rain.preprocess = 2.0
 		rain.z_index = 30
@@ -252,8 +265,9 @@ func _update_backdrop(center: Vector2, zoom: float, view: Vector2, delta: float)
 		var sprite := plane.sprite as Sprite2D
 		var follow := plane.follow as Vector2
 		plane["drift"] = float(plane.drift) + float(plane.speed) * delta
-		# Whole pixels only: fractional offsets shimmer on nearest-filtered pixel art.
-		sprite.region_rect = Rect2(roundf(center.x * zoom * follow.x - float(plane.drift)), 0.0, view.x, sprite.texture.get_height())
+		# Whole texture pixels only: fractional offsets shimmer on nearest-filtered pixel art.
+		var scroll := (center.x * zoom * follow.x - float(plane.drift)) / PLANE_SCALE
+		sprite.region_rect = Rect2(roundf(scroll), 0.0, ceilf(view.x / PLANE_SCALE) + 1.0, sprite.texture.get_height())
 		sprite.position = Vector2(0.0, roundf(float(plane.top) + depth * follow.y))
 		if sprite.texture == MID:
 			_ground.position = Vector2(0.0, sprite.position.y + MID_STREET_ROW)
@@ -269,7 +283,7 @@ func _update_rain(center: Vector2, world_view: Vector2) -> void:
 func _update_lights(delta: float) -> void:
 	# Neon: steady glow with a rare, short brown-out; never a strobe. No RNG.
 	_flicker_at -= delta
-	if _flicker_at <= 0.0:
+	if _flicker_at <= 0.0 and VisualQuality.allows_flicker():
 		_flicker_left = 0.22
 		_flicker_at = 4.0 + fposmod(_clock * 7.31, 5.0)
 	var level := 1.0
@@ -278,6 +292,8 @@ func _update_lights(delta: float) -> void:
 		level = 0.35 if int(_flicker_left * 40.0) % 2 == 0 else 0.85
 	_signs.modulate.a = level
 	_sign_glow.modulate.a = level * (0.85 + 0.15 * sin(_clock * 1.7))
+	# Aviation beacons: slow 0.5 Hz blink; steady when flicker is disabled.
+	_beacons.modulate.a = 1.0 if not VisualQuality.allows_flicker() or fposmod(_clock, 2.0) < 1.0 else 0.25
 
 
 static func _slot_clear(x: float, markers: Array[float]) -> bool:

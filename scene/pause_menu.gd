@@ -7,6 +7,7 @@ const PANEL_PRESENTATION = preload("res://ui/menu_panel_presentation.gd")
 @onready var settings_page: VBoxContainer = $Overlay/Center/SettingsPage
 @onready var zoom_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/CameraZoom
 @onready var language_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/LanguageOption
+@onready var effects_option: OptionButton = $Overlay/Center/SettingsPage/Scroll/Content/EffectsOption
 @onready var touch_slider: HSlider = $Overlay/Center/SettingsPage/Scroll/Content/TouchScale
 @onready var touch_value: Label = $Overlay/Center/SettingsPage/Scroll/Content/TouchValue
 @onready var debug_toggle: CheckButton = $Overlay/Center/SettingsPage/Scroll/Content/DebugHud
@@ -45,6 +46,13 @@ func _ready() -> void:
 	language_option.add_item("English")
 	language_option.item_selected.connect(func(index: int) -> void:
 		local_settings.set_language("pt_BR" if index == 0 else "en"))
+	for profile: StringName in VisualQuality.PROFILES:
+		effects_option.add_item(String(VisualQuality.LABELS[profile]))
+		effects_option.set_item_metadata(effects_option.item_count - 1, profile)
+		if profile == VisualQuality.profile():
+			effects_option.select(effects_option.item_count - 1)
+	effects_option.item_selected.connect(func(index: int) -> void:
+		VisualQuality.set_profile(StringName(effects_option.get_item_metadata(index))))
 	touch_slider.value_changed.connect(_set_touch_scale)
 	debug_toggle.toggled.connect(_set_debug_hud)
 	for entry: Array in [["PRÓXIMO", &"close"], ["PADRÃO", &"default"], ["DISTANTE", &"distant"]]:
@@ -72,7 +80,7 @@ func _fit_settings_scroll() -> void:
 func _input(event: InputEvent) -> void:
 	if not overlay.visible and not get_parent().mode_selected:
 		return
-	if overlay.visible and (zoom_option.get_popup().visible or language_option.get_popup().visible):
+	if overlay.visible and (zoom_option.get_popup().visible or language_option.get_popup().visible or effects_option.get_popup().visible):
 		return
 	# B / Circle also performs dash. It may cancel an open menu, but must never
 	# open Pause from gameplay when the overlay is closed.
@@ -221,6 +229,8 @@ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 			zoom_option.show_popup()
 		elif _touch_hits(language_option, position):
 			language_option.show_popup()
+		elif _touch_hits(effects_option, position):
+			effects_option.show_popup()
 		elif _touch_hits(debug_toggle, position):
 			var next_debug_value: bool = not debug_toggle.button_pressed
 			debug_toggle.set_pressed_no_signal(next_debug_value)
@@ -426,7 +436,7 @@ func _category_touch(event: InputEvent, button: Button, index: int) -> void:
 func _select_category(index: int) -> void:
 	_cancel_options_gesture()
 	selected_category = index
-	var groups: Array = [["ZoomLabel", "CameraZoom", "DebugHud", "LanguageLabel", "LanguageOption"],
+	var groups: Array = [["ZoomLabel", "CameraZoom", "EffectsLabel", "EffectsOption", "DebugHud", "LanguageLabel", "LanguageOption"],
 		["TouchLabel", "TouchScale", "TouchValue"],
 		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "AmbienceLabel", "AmbienceVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
 	for child in settings_content.get_children():
