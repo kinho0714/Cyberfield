@@ -33,9 +33,8 @@ const TELEPORTER_MIN_GRAPH_DISTANCE := 3
 const TELEPORTER_MIN_WORLD_DISTANCE := 1240.0
 const TELEPORTER_RELAXED_GRAPH_DISTANCE := 2
 const TELEPORTER_RELAXED_WORLD_DISTANCE := 1040.0
-const VISUAL_THEMES := {
-	&"lower_city_night": preload("res://scene/biomes/lower_city/lower_city_visual_theme.gd"),
-}
+const VISUAL_THEME_SCRIPT := preload("res://scene/biomes/visual/biome_visual_theme.gd")
+const VISUAL_STYLES := preload("res://scene/biomes/visual/biome_styles.gd")
 
 @export var biome_definition: BiomeDefinition
 
@@ -700,11 +699,11 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 
 func _apply_visual_theme() -> void:
 	# Presentation only, after layout, content and signature: no RNG, physics or ID changes.
-	if biome_definition == null or not VISUAL_THEMES.has(biome_definition.visual_theme):
+	if biome_definition == null or not VISUAL_STYLES.STYLES.has(biome_definition.visual_theme):
 		return
-	var theme: Node2D = VISUAL_THEMES[biome_definition.visual_theme].new()
+	var theme: Node2D = VISUAL_THEME_SCRIPT.new()
 	add_child(theme)
-	theme.build(self)
+	theme.build(self, biome_definition.visual_theme)
 
 
 func _sync_runtime_debug_visibility() -> void:

@@ -26,3 +26,4 @@ generation_rules = {"direction_repeat_penalty": 0.58, "generator_version": 3, "h
 debug_draw_modules = true
 debug_draw_connectors = true
 debug_draw_sockets = false
+visual_theme = &"lab_cryo"

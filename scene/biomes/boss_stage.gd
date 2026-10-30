@@ -1,6 +1,7 @@
 extends Node2D
 
 const BOSS_SCENE := preload("res://entities/Enemy.tscn")
+const VISUAL_THEME_SCRIPT := preload("res://scene/biomes/visual/biome_visual_theme.gd")
 const ARENA_BOUNDS := Rect2(0.0, 0.0, 1600.0, 720.0)
 
 var run_manager: Node
@@ -9,6 +10,11 @@ var boss_spawned := false
 
 func setup(manager: Node) -> void:
 	run_manager = manager
+	# Presentation only: the core reactor theme skins the authored arena (no physics change).
+	if get_node_or_null("BiomeVisual") == null:
+		var theme: Node2D = VISUAL_THEME_SCRIPT.new()
+		add_child(theme)
+		theme.build(self, &"core_reactor", true)
 	var boss := BOSS_SCENE.instantiate()
 	boss.name = "PrototypeBoss"
 	boss.persistent_id = &"stage_06_boss"
