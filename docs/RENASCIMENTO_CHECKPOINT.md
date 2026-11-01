@@ -67,3 +67,11 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Relatório: `docs/NOTURNA_2026-10-31.md`. Âncoras de quadro (pivô/flip) nos 4 personagens,
   Laboratório mais denso, arena do chefe mais clara. Tudo validado no Godot; aguardando
   aprovação do usuário para commit em `dev/visual`.
+
+## Missão Visual 02 — cenários (01/11, mesma branch, sem push)
+- Casa reconstruída em escala (Jhon ≈ 47 px na arte 2×), andar de cima em corte acima da
+  laje (y < 316 no mundo, fora do alcance do pulo duplo), janela viva `scene/fx/hub_window_view.gd`.
+- Noturna 31/10 trazida para esta branch (cherry-pick do WIP).
+- `under_layer` e `lab_mid` com variedade; `scene/fx/transition_fx.gd`; HUD refinado.
+- Pendências: "LowerCityMid" não reproduzível aqui; escalada de parede nas bordas do hub
+  pode subir acima da laje (visual); toque/legibilidade no Android a confirmar.

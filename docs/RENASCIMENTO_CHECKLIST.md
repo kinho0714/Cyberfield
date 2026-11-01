@@ -85,3 +85,19 @@ bioma gerado → combate → morte → Casa, Godot 4.7.2; capturas com `-- <dir>
 | HUD de equipamento + botões touch | COMPROVADO (desktop) | `LoadoutHUD` visível na run; 2 botões touch criados — toque físico no Android PENDENTE |
 | Arte original (armas, projéteis, FX, ícones) | COMPROVADO / FRACO | aparece no jogo; arma sobreposta ao personagem é provisória (sem poses próprias) |
 | LAN | FRACO | só o host recebe o loadout; clientes não veem granadas/torreta |
+
+## Missão Visual 02 — cenários (01/11/2026)
+Evidência: Godot 4.7.2, Xvfb, 1560×720, fluxo real `main.tscn`; capturas antes/depois em
+sequência para chuva e parallax.
+| Sistema | Estado | Evidência / observação |
+|---|---|---|
+| Escala da Casa (porta, móveis, máquinas vs. Jhon ≈ 95 px) | CORRIGIDO | `hub_art.py` mede tudo contra o Jhon; antes balcão > Jhon, geladeira 2,5×, teto 6× |
+| Janela da Casa: paisagem da Cidade Baixa | COMPROVADO | `HubWindowView`: céu, 3 camadas, letreiros, carro voador, recorte na moldura |
+| Chuva na janela | CORRIGIDO | antes pintada no PNG; agora 2 camadas + gotas no vidro; 3,5–4,6 mil px mudam entre quadros |
+| Parallax da janela | CORRIGIDO | antes inexistente; câmera +88 px → camada distante desliza ~23 px na moldura, vizinho ~3 px |
+| Painel "LABORATÓRIO" no hub | CORRIGIDO | só com HUD de depuração (F4) |
+| Sob a rua (Cidade Baixa/Industrial/Lab) | CORRIGIDO | arcos irregulares com lojas, túneis, fornos, esteiras, escotilhas |
+| Paredes do Laboratório | COMPROVADO | painéis com recortes, pilastras iluminadas, eletrodutos |
+| Transição entre salas | COMPROVADO | varredura/scan/glitch sobre o fade (captura no meio do fade, alfa 0,52) |
+| HUD de equipamento | COMPROVADO | fontes maiores, munição grande, recarga sobre o ícone |
+| Teste "LowerCityMid" | PENDENTE | não existe em nenhum ref deste repositório (cópia do PC?) |
