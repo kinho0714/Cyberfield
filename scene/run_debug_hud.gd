@@ -102,6 +102,10 @@ func _update_session_summary(delta: float) -> void:
 		summary_in_hub = false
 		return
 	$Panel.hide() # Hub presentation is informational, never a second navigation menu.
+	# 01/11: o resumo "LABORATÓRIO" é ferramenta de desenvolvimento (F4 / opção de depuração).
+	if not local_settings.debug_hud_visible:
+		session_summary.hide()
+		return
 	if not summary_in_hub:
 		summary_in_hub = true
 		summary_dismissed = false
