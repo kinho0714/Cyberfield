@@ -229,17 +229,19 @@ func _dress_industrial(back: Node2D, front: Node2D, origin: Vector2, index: int,
 
 
 func _dress_lab(back: Node2D, front: Node2D, origin: Vector2, index: int, markers: Array[float], spans: Array[Vector2]) -> void:
-	var hx := 260.0 if index % 2 else 560.0
-	_sprite(back, "hang_lamp", origin + Vector2(hx, 0))
-	_sprite(back, "hang_cone", origin + Vector2(hx - 50, 136), true)
+	# 31/10: denser labs (only existing lab props): two ceiling lamps, paired tanks,
+	# terminals and rack rows in more modules. Sockets and floor spans still gate props.
+	for hx: float in ([200.0, 600.0] if index % 2 else [360.0, 760.0]):
+		_sprite(back, "hang_lamp", origin + Vector2(hx, 0))
+		_sprite(back, "hang_cone", origin + Vector2(hx - 50, 136), true)
 	if index % 3 != 1:
 		var lx: float = LAMP_SLOTS[index % 2]
-		_floor_prop(back, front, origin, lx, "tank", "tank_glow", Vector2(-17, -92), Vector2(-40, -106), markers, spans, &"pulse")
-	if index % 2 == 0:
-		_floor_prop(back, front, origin, 432.0, "terminal", "terminal_glow", Vector2(-32, -46), Vector2(-45, -70), markers, spans, &"blink")
-	if index % 3 == 1:
-		_floor_prop(back, front, origin, 635.0, "rack", "", Vector2(-15, -70), Vector2.ZERO, markers, spans)
-		_floor_prop(back, front, origin, 667.0, "rack", "", Vector2(-15, -70), Vector2.ZERO, markers, spans)
+		for pair: float in [0.0, 44.0]:
+			_floor_prop(back, front, origin, lx + pair, "tank", "tank_glow", Vector2(-17, -92), Vector2(-40, -106), markers, spans, &"pulse")
+	_floor_prop(back, front, origin, 432.0 if index % 2 == 0 else 300.0, "terminal", "terminal_glow", Vector2(-32, -46), Vector2(-45, -70), markers, spans, &"blink")
+	if index % 3 != 0:
+		for column in 3:
+			_floor_prop(back, front, origin, 540.0 + 32.0 * column, "rack", "", Vector2(-15, -70), Vector2.ZERO, markers, spans)
 
 
 func _dress_flat(root: Node2D) -> void:

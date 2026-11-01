@@ -1013,16 +1013,17 @@ STYLES = {
     "core_reactor": {
         "dir": "core",
         "planes": [
-            ["far", -62, 0.10, 0.06, 0.0, (1, 1, 1, 1), False, ""],
+            # 31/10: lifted (measured: the arena was the darkest scene, 39% near-black).
+            ["far", -62, 0.10, 0.06, 0.0, (1.35, 1.25, 1.3, 1), False, ""],
             ["far_beacons", -62, 0.10, 0.06, 0.0, (1, 1, 1, 1), True, "pulse"],
-            ["mist_far", 230, 0.30, 0.20, 6.0, (1, 1, 1, 1), False, ""],
-            ["mid", -207, 0.45, 0.30, 0.0, (1, 1, 1, 1), False, "anchor"],
+            ["mist_far", 230, 0.30, 0.20, 6.0, (1.2, 1.2, 1.2, 1), False, ""],
+            ["mid", -207, 0.45, 0.30, 0.0, (1.45, 1.3, 1.4, 1), False, "anchor"],
             ["mid_glow", -207, 0.45, 0.30, 0.0, (1, 1, 1, 0.8), True, "glow"],
             ["mid_signs", -207, 0.45, 0.30, 0.0, (1, 1, 1, 1), True, "signs"],
             ["under", 0, 0.55, 0.30, 0.0, (0.85, 0.8, 0.8, 1), False, "under"],
             ["mist_near", 300, 0.80, 0.80, -8.0, (1, 1, 1, 0.6), False, ""],
         ],
-        "ground_fill": (0.03, 0.015, 0.02), "haze": (0.05, 0.02, 0.03, 0.30), "haze_deep": (0.04, 0.015, 0.02, 0.40),
+        "ground_fill": (0.07, 0.03, 0.05), "haze": (0.05, 0.02, 0.03, 0.18), "haze_deep": (0.04, 0.015, 0.02, 0.28),
         "dressing": "core", "weather": "sparks",
     },
 }

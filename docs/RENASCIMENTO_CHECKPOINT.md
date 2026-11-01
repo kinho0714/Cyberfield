@@ -63,3 +63,7 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Achado no motor: `ShapeCast2D` para no 1º corpo; varredura de impacto usa consulta de área.
 - Próximo: playtest físico (toque nos botões F/G, legibilidade do HUD a 20:9, balanceamento),
   loadout por cliente na LAN, poses de personagem com armas.
+## Missão noturna 31/10 (branch local `visual-noturna-2026-10-31`, SEM commit)
+- Relatório: `docs/NOTURNA_2026-10-31.md`. Âncoras de quadro (pivô/flip) nos 4 personagens,
+  Laboratório mais denso, arena do chefe mais clara. Tudo validado no Godot; aguardando
+  aprovação do usuário para commit em `dev/visual`.

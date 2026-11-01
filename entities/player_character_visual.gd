@@ -13,6 +13,7 @@ const WALL_SLIDE_CONTENT_CENTERS := {
 	&"kai": [0.0, 0.0, 0.0, 0.0],
 	&"spark": [0.0, 0.0, 0.0, 0.0],
 }
+const FRAME_ANCHORS := preload("res://entities/player_frame_anchors.gd")
 const CHARACTER_IDS := {
 	&"player_1": &"jhon",
 	&"player_2": &"jackson",
@@ -357,6 +358,12 @@ func _apply_frame_alignment(visual_state: StringName) -> void:
 		var centers: Array = WALL_SLIDE_CONTENT_CENTERS.get(_active_character, []) as Array
 		if frame >= 0 and frame < centers.size():
 			offset.x = -float(centers[frame])
+		return
+	# Keep the torso over the collision capsule in both facings: offset is not mirrored by
+	# flip_h, so the correction changes sign when the sprite is flipped.
+	var anchors: Array = (FRAME_ANCHORS.ANCHORS.get(_active_character, {}) as Dictionary).get(visual_state, []) as Array
+	if frame >= 0 and frame < anchors.size():
+		offset.x = float(anchors[frame]) if flip_h else -float(anchors[frame])
 
 
 func _air_frame(vertical_velocity: float) -> int:
