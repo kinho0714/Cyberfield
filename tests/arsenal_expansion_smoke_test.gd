@@ -130,7 +130,14 @@ func _test_laboratory_flow() -> void:
 	_press("AcSlot1_portable_turret")
 	await process_frame
 	_check(meta.equipped_accessories == [&"ice_grenade", &"portable_turret"], "dois acessórios diferentes equipados")
-	await _capture("lab_bench")
+	await _capture("lab_top")
+	var scroll := lab.overlay.find_children("*", "ScrollContainer", true, false)[0] as ScrollContainer
+	scroll.ensure_control_visible(lab.equipment_root.get_child(0) as Control)
+	await _capture("lab_bench_arsenal")
+	scroll.scroll_vertical += 420
+	await _capture("lab_bench_cyber")
+	scroll.scroll_vertical += 420
+	await _capture("lab_bench_gadgets")
 	lab.close_terminal()
 	await process_frame
 	# Persistência: um perfil novo lendo o mesmo arquivo vê tudo.
@@ -199,11 +206,15 @@ func _test_run_flow() -> void:
 	for enemy in enemies:
 		_park(enemy, Vector2(0, -900) + Vector2(enemies.find(enemy) * 60, 0))
 	game.gameplay_camera.global_position = player.global_position
+	for i in 120:
+		if player.is_on_floor():
+			break
+		await physics_frame
 	# --- escopeta: chumbos somados num alvo ---
 	var target := enemies[0]
 	_park(target, Vector2(70, 0))
-	player.anim.flip_h = false
 	await create_timer(0.05).timeout
+	player.anim.flip_h = false
 	player.attack(0)
 	await create_timer(0.05).timeout
 	var pellet: int = player.get_ranged_damage(&"scrap_shotgun")
@@ -220,6 +231,7 @@ func _test_run_flow() -> void:
 	_park(enemies[1], Vector2(150, 0))
 	player.switch_weapon()
 	player.weapon_cooldowns.fill(0.0)
+	player.anim.flip_h = false
 	player.attack(1)
 	await create_timer(0.4).timeout
 	_check(int(enemies[0].get("health")) < 5000 and int(enemies[1].get("health")) < 5000, "rifle de pulso atravessa alvos")
@@ -251,6 +263,7 @@ func _test_run_flow() -> void:
 	_park(enemies[0], Vector2(18, 0))
 	_park(enemies[1], Vector2(20, 0))
 	player.combo_end_recovery_timer = 0.0
+	player.anim.flip_h = false
 	player.attack(0)
 	await create_timer(0.2).timeout
 	_check(int(enemies[0].get("health")) < 5000 and int(enemies[1].get("health")) < 5000, "bastão acerta mais de um alvo")

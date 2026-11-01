@@ -15,7 +15,7 @@ const SPECS := {
 }
 const DIR := "res://assets/arsenal/projectiles/"
 const IMPACT_FRAMES := 5
-const SCALE := 1.5
+const SCALE := 2.0
 
 static var _cache: Dictionary = {}
 
