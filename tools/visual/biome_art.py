@@ -218,32 +218,103 @@ def city_mid():
     return pk.haze(lay.im, CITY["haze"], 0.18), signs.im, pk.glow(signs.im, 3.5, 2.2)
 
 
-def under_layer(seed, wall, dark, pipe, lights, arch=True):
+def under_layer(seed, wall, dark, pipe, lights, arch=True, kind="city"):
     """Substructure under the street (640x180 native): retaining wall, arches, pipes,
     service lights. Anchored right below the street line so the lower half of the
-    screen is never an empty void."""
+    screen is never an empty void.
+    01/11 (Missão Visual 02): arcos irregulares e conteúdo por bioma, para a faixa não
+    repetir o mesmo arco a cada 120 px — Cidade Baixa: barracas/lojas acesas, túneis com
+    grade, cabos e pichações; Industrial: bocas de forno e esteiras; Laboratório/Núcleo:
+    corredor de manutenção com escotilhas e caixas de conduíte."""
     c = Canvas(640, 180, wrap=True)
     rnd = random.Random(seed)
+    hi = mix(wall, (255, 255, 255), 0.12)
     c.rect(0, 0, 639, 179, rgba(wall))
-    c.rect(0, 0, 639, 2, rgba(mix(wall, (255, 255, 255), 0.12)))
+    c.rect(0, 0, 639, 2, rgba(hi))
     for y in range(8, 180, 14):                                     # masonry / panel courses
         c.rect(0, y, 639, y, rgba(mix(wall, dark, 0.5)))
     if arch:
-        for ax in range(20, 640, 120):                              # arches / culverts
-            c.ellipse(ax, 40, ax + 76, 150, rgba(dark))
-            c.rect(ax, 95, ax + 76, 179, rgba(dark))
-            c.d.arc((ax, 40, ax + 76, 150), 180, 360, fill=rgba(mix(wall, (255, 255, 255), 0.18)))
+        x = rnd.randint(4, 20)
+        while x < 600:
+            aw = rnd.randint(58, 96)
+            top = rnd.randint(36, 48)
+            c.ellipse(x, top, x + aw, top + aw + 20, rgba(dark))
+            c.rect(x, top + aw // 2 + 6, x + aw, 179, rgba(dark))
+            c.d.arc((x, top, x + aw, top + aw + 20), 180, 360, fill=rgba(mix(wall, (255, 255, 255), 0.18)))
+            cx = x + aw // 2
+            roll = rnd.random()
+            if kind == "city" and roll < 0.45:                         # barraca/loja acesa no arco
+                warm = rnd.choice([hexc("ffb347"), hexc("ff8a5a"), hexc("4fe3f0")])
+                c.rect(x + 10, top + 30, x + aw - 10, top + 62, rgba(mix(warm, dark, 0.55)))
+                c.rect(x + 12, top + 32, x + aw - 12, top + 46, rgba(mix(warm, dark, 0.25)))
+                for sy in range(top + 32, top + 46, 3):                # persiana meio aberta
+                    c.rect(x + 12, sy, x + aw - 12, sy, rgba(mix(warm, dark, 0.6)))
+                c.rect(x + 8, top + 62, x + aw - 8, top + 64, rgba(pipe))
+                sign = rnd.choice(["24H", "RAMEN", "FIX", "CHIPS", "BAR"])
+                sx = cx - pk.text_width(sign) // 2
+                c.rect(sx - 2, top + 20, sx + pk.text_width(sign) + 1, top + 27, rgba(dark))
+                pk.text(c, sx, top + 21, sign, rgba(rnd.choice([hexc("ff4fb4"), hexc("4fe3f0"), hexc("ffb347")])))
+            elif kind == "city" and roll < 0.70:                       # túnel com grade
+                for gx in range(x + 8, x + aw - 6, 6):
+                    c.rect(gx, top + 26, gx, 120, rgba(mix(wall, dark, 0.3)))
+                c.ellipse(cx - 6, top + 46, cx + 6, top + 54, rgba(mix(lights[0], dark, 0.6)))
+            elif kind == "industrial" and roll < 0.40:                 # boca de forno
+                for k in range(6):
+                    glow = mix(hexc("ff4a1f"), dark, k / 6)
+                    c.rect(x + 12 + k, top + 40 + k * 3, x + aw - 12 - k, top + 60, rgba(glow))
+                c.rect(x + 10, top + 60, x + aw - 10, top + 63, rgba(pipe))
+                for k in range(4):
+                    c.px(x + 16 + rnd.randint(0, aw - 30), top + 34 + rnd.randint(0, 6), rgba(hexc("ffd27a")))
+            elif kind == "industrial" and roll < 0.65:                 # esteira com caixas
+                c.rect(x + 6, top + 54, x + aw - 6, top + 57, rgba(pipe))
+                for bx in range(x + 10, x + aw - 14, 16):
+                    c.rect(bx, top + 46, bx + 10, top + 53, rgba(mix(hexc("6a4a2a"), dark, 0.3)))
+            if kind == "city" and rnd.random() < 0.6:                  # cartaz no pilar
+                px_ = x + aw + rnd.randint(6, 18)
+                c.rect(px_, 46, px_ + 10, 62, rgba(rnd.choice([hexc("5a2a5a"), hexc("2a4a6a"), hexc("6a5a2a")])))
+                c.rect(px_ + 2, 49, px_ + 8, 50, rgba(mix(wall, (255, 255, 255), 0.4)))
+            if kind == "industrial" and rnd.random() < 0.5:            # faixa de perigo no pilar
+                px_ = x + aw + 8
+                for k in range(0, 14, 4):
+                    c.rect(px_ + k, 70, px_ + k + 1, 74, rgba(hexc("ffb347")))
+            x += aw + rnd.randint(26, 64)
+    else:                                                           # corredor de manutenção (lab/núcleo)
+        c.rect(0, 46, 639, 76, rgba(mix(wall, dark, 0.35)))
+        c.rect(0, 46, 639, 46, rgba(hi))
+        x = rnd.randint(6, 30)
+        while x < 620:
+            if rnd.random() < 0.55:                                     # escotilha iluminada
+                c.ellipse(x, 52, x + 16, 68, rgba(pipe))
+                c.ellipse(x + 3, 55, x + 13, 65, rgba(mix(lights[0], dark, 0.45)))
+                c.px(x + 6, 57, rgba(mix(lights[0], (255, 255, 255), 0.4)))
+            else:                                                       # caixa de conduíte
+                c.rect(x, 54, x + 18, 68, rgba(pipe))
+                c.rect(x + 2, 56, x + 16, 57, rgba(mix(pipe, (255, 255, 255), 0.2)))
+                c.px(x + 14, 64, rgba(rnd.choice(lights)))
+            x += rnd.randint(30, 70)
     for py in (26, 34, 120):                                        # pipe runs
         c.rect(0, py, 639, py + 4, rgba(pipe))
         c.rect(0, py, 639, py, rgba(mix(pipe, (255, 255, 255), 0.25)))
         for cx in range(rnd.randint(0, 40), 640, rnd.randint(70, 110)):
             c.rect(cx, py - 1, cx + 3, py + 5, rgba(dark))
+    if kind == "city":
+        for _ in range(7):                                          # cabos frouxos entre os canos
+            x0 = rnd.randint(0, 600)
+            span = rnd.randint(40, 90)
+            sag = rnd.randint(4, 9)
+            pts = [(x0 + k * span / 8, 18 + sag * math.sin(math.pi * k / 8)) for k in range(9)]
+            c.line(pts, rgba(mix(dark, wall, 0.3)))
+        for _ in range(5):                                          # pichações apagadas
+            gx, gy = rnd.randint(0, 620), rnd.randint(66, 84)
+            col = rnd.choice([hexc("ff4fb4"), hexc("4fe3f0"), hexc("ffb347")])
+            pts = [(gx + k * 3, gy + rnd.randint(-3, 3)) for k in range(6)]
+            c.line(pts, rgba(mix(col, wall, 0.5), 200))
     for lx in range(60, 640, 160):                                  # service lights
         col = lights[(lx // 160) % len(lights)]
         c.rect(lx, 12, lx + 5, 14, rgba(col))
     fade = Canvas(640, 180)
-    for y in range(60, 180):                                        # sinks into darkness
-        k = min(1.0, (y - 60) / 110)
+    for y in range(76, 180):                                        # sinks into darkness
+        k = min(1.0, (y - 76) / 100)
         fade.rect(0, y, 639, y, rgba(dark, int(255 * round(k * 5) / 5)))
     c.im.alpha_composite(fade.im)
     return c.im
@@ -653,7 +724,7 @@ def build_industrial():
     far, beacons = ind_far()
     mid, signs, glow_ = ind_mid()
     images = {"sky": ind_sky(), "far": far, "far_beacons": beacons, "mid": mid, "mid_signs": signs, "mid_glow": glow_,
-              "under": under_layer(251, hexc("1e1a17"), hexc("0c0a09"), hexc("3a3430"), [hexc("ffb347"), hexc("ff4a3a")]),
+              "under": under_layer(251, hexc("1e1a17"), hexc("0c0a09"), hexc("3a3430"), [hexc("ffb347"), hexc("ff4a3a")], kind="industrial"),
               "rail": ind_gantry(), "mist_far": mist(hexc("5a5048"), 261, (14, 34)), "mist_near": mist(hexc("8a6a50"), 262, (12, 30))}
     images.update(ind_props())
     images.update(ind_tiles())
@@ -721,6 +792,29 @@ def lab_mid():
         for y in range(top, STREET, 40):
             lay.rect(x, y, x + 47, y, rgba(LAB["seam"]))
             lay.rect(x + 1, y + 1, x + 46, y + 1, rgba(LAB["edge"]))
+    detail = random.Random(317)                                     # 01/11: arquitetura dos painéis (RNG próprio)
+    for x in range(0, W, 48):
+        for y in range(top, STREET - 40, 40):
+            roll = detail.random()
+            if roll < 0.45:                                         # painel com recorte interno
+                lay.rect(x + 6, y + 6, x + 41, y + 33, rgba(mix(LAB["panel"][0], hexc("05070e"), 0.35)))
+                lay.rect(x + 6, y + 6, x + 41, y + 6, rgba(LAB["edge"]))
+            elif roll < 0.60:                                       # grelha
+                for gy in range(y + 8, y + 32, 3):
+                    lay.rect(x + 10, gy, x + 37, gy, rgba(LAB["seam"]))
+            for bx, by in ((x + 3, y + 3), (x + 44, y + 3), (x + 3, y + 36), (x + 44, y + 36)):
+                lay.px(bx, by, rgba(LAB["edge"]))                   # parafusos
+            if detail.random() < 0.12:
+                lights.px(x + 40, y + 10, rgba(detail.choice([LAB["cyan"], LAB["green"], LAB["mag"]])))
+    for px_ in range(24, W, 192):                                   # pilastras com fita de luz
+        lay.rect(px_, top, px_ + 9, STREET, rgba(hexc("10162c")))
+        lay.rect(px_, top, px_, STREET, rgba(LAB["edge"]))
+        lights.rect(px_ + 4, top + 12, px_ + 5, STREET - 20, rgba(LAB["cyan"], 110))
+    for cy in (top + 22, STREET - 30):                              # eletrodutos horizontais
+        lay.rect(0, cy, W - 1, cy + 3, rgba(hexc("2a3660")))
+        lay.rect(0, cy, W - 1, cy, rgba(hexc("4a5a90")))
+        for bx in range(10, W, 64):
+            lay.rect(bx, cy - 1, bx + 2, cy + 4, rgba(hexc("0e1428")))
     lay.rect(0, top - 6, W - 1, top, rgba(hexc("0e1428")))
     for x in range(0, W, 96):                                       # ceiling fluorescent bars
         col = LAB["mag"] if (x // 96) % 3 == 0 else LAB["white"]
@@ -866,7 +960,7 @@ def build_lab():
     far, lights = lab_far()
     mid, signs, glow_ = lab_mid()
     images = {"sky": lab_sky(), "far": far, "far_beacons": lights, "mid": mid, "mid_signs": signs, "mid_glow": glow_,
-              "under": under_layer(331, hexc("141a30"), hexc("070a16"), hexc("2a3660"), [LAB["cyan"], LAB["mag"]], arch=False),
+              "under": under_layer(331, hexc("141a30"), hexc("070a16"), hexc("2a3660"), [LAB["cyan"], LAB["mag"]], arch=False, kind="lab"),
               "rail": lab_ceiling(), "mist_far": mist(hexc("4a3a8a"), 341, (8, 22)), "mist_near": mist(hexc("8a4aa0"), 342, (8, 22))}
     images.update(lab_props())
     images.update(lab_tiles())
@@ -951,7 +1045,7 @@ def build_core():
     far, lights = core_far()
     mid, signs, glow_ = core_mid()
     images = {"sky": core_sky(), "far": far, "far_beacons": lights, "mid": mid, "mid_signs": signs, "mid_glow": glow_,
-              "under": under_layer(411, hexc("140c10"), hexc("060304"), hexc("2a1e22"), [CORE["red"]], arch=False),
+              "under": under_layer(411, hexc("140c10"), hexc("060304"), hexc("2a1e22"), [CORE["red"]], arch=False, kind="core"),
               "mist_far": mist(hexc("6a1a2a"), 421, (10, 26)), "mist_near": mist(hexc("8a2a3a"), 422, (8, 20))}
     images.update(core_props())
     images.update(core_tiles())

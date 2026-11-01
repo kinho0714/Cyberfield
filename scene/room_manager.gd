@@ -49,6 +49,9 @@ func _ready() -> void:
 	add_to_group("room_manager")
 	run_manager.add_to_group("run_manager")
 	fade_rect.modulate.a = 0.0
+	var transition_fx := TransitionFx.new()
+	transition_fx.fade_rect = fade_rect
+	$TransitionLayer.add_child(transition_fx)
 	$RunDebugHUD.visible = false
 	mode_select.run_requested.connect(start_configured_run)
 	mode_select.lan_requested.connect(_show_lan_lobby)
