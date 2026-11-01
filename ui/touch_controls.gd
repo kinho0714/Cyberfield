@@ -17,6 +17,11 @@ extends CanvasLayer
 ]
 
 var menu_blocked := false
+## 01/11/2026: dois botões dos slots ativos (acessórios), criados aqui para não mexer
+## na cena; o ícone acompanha o acessório equipado no jogador local.
+const GADGET_FRAME := preload("res://assets/ui/gameplay_hud/assets/mobile/actions/action_frame_magenta.png")
+const GADGET_POSITIONS := [Vector2(190, 38), Vector2(305, 38)]
+var gadget_buttons: Array[Node2D] = []
 
 
 func _ready() -> void:
@@ -29,6 +34,7 @@ func _ready() -> void:
 	for state in ["normal", "hover", "pressed", "focus"]:
 		pause_button.add_theme_stylebox_override(state, pause_style)
 	add_child(preload("res://ui/mobile_presentation_feedback.gd").new())
+	_build_gadget_buttons()
 	# Keep this development overlay out of desktop builds that have no touch input.
 	visible = false
 	run_manager.state_changed.connect(_refresh_visibility)
@@ -38,6 +44,57 @@ func _ready() -> void:
 	_apply_safe_area()
 	_apply_control_scale()
 	_refresh_visibility()
+
+
+func _build_gadget_buttons() -> void:
+	for slot in GADGET_POSITIONS.size():
+		var button := preload("res://ui/mobile_action_button.gd").new() as Node2D
+		button.name = "Gadget%d" % (slot + 1)
+		button.set("action", StringName("gadget_%d" % (slot + 1)))
+		button.set("touch_radius", 38.0)
+		button.position = GADGET_POSITIONS[slot]
+		var frame := Sprite2D.new()
+		frame.name = "Visual"
+		frame.texture = GADGET_FRAME
+		frame.scale = Vector2(0.72, 0.72)
+		button.add_child(frame)
+		var icon := Sprite2D.new()
+		icon.name = "Icon"
+		icon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		icon.scale = Vector2(1.4, 1.4)
+		button.add_child(icon)
+		var label := Label.new()
+		label.name = "Label"
+		label.text = "ITEM %d" % (slot + 1)
+		label.position = Vector2(-40, 30)
+		label.size = Vector2(80, 20)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		label.add_theme_font_size_override("font_size", 14)
+		button.add_child(label)
+		right_cluster.add_child(button)
+		gadget_buttons.append(button)
+		action_buttons.append(button)
+
+
+func _process(_delta: float) -> void:
+	if not visible or gadget_buttons.is_empty():
+		return
+	var local_player: Node = null
+	for candidate in get_tree().get_nodes_in_group("player"):
+		if candidate.get("input_profile") == "p1" and not bool(candidate.get("network_remote_replica")):
+			local_player = candidate
+			break
+	var gadgets: PlayerGadgets = local_player.get("gadgets") if local_player != null else null
+	for slot in gadget_buttons.size():
+		var accessory_id: StringName = gadgets.slots[slot] if gadgets != null else &""
+		var button := gadget_buttons[slot]
+		button.visible = not accessory_id.is_empty()
+		if accessory_id.is_empty():
+			continue
+		(button.get_node("Icon") as Sprite2D).texture = AccessoryCatalog.icon(accessory_id)
+		button.modulate = Color.WHITE if gadgets.charges[slot] > 0 else Color(0.5, 0.5, 0.55, 0.8)
+		(button.get_node("Label") as Label).text = "%s %d" % [AccessoryCatalog.get_definition(accessory_id).get("short", "ITEM"), gadgets.charges[slot]]
 
 
 func _input(event: InputEvent) -> void:

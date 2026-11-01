@@ -12,6 +12,10 @@ const HEAVY_ENEMY_SCENE := preload("res://entities/HeavyEnemy.tscn")
 const MONEY_PICKUP_SCENE := preload("res://scene/interactables/dirty_money_pickup.tscn")
 const BANDAGE_PICKUP_SCRIPT := preload("res://scene/interactables/bandage_pickup.gd")
 const SCRAP_PICKUP_SCRIPT := preload("res://scene/interactables/scrap_pickup.gd")
+const CYBERWARE_PICKUP_SCRIPT := preload("res://scene/interactables/cyberware_pickup.gd")
+## Chance de cyberware por papel do inimigo (NORMAL, CHEFE, ELITE, PESADO). RNG próprio:
+## não consome o RNG dos drops existentes.
+const CYBERWARE_DROP_CHANCE_BY_ROLE := {0: 0.035, 1: 1.0, 2: 0.35, 3: 0.18}
 const BANDAGE_DROP_CHANCE_BY_DIFFICULTY := {
 	&"normal": 0.07,
 	&"hard": 0.065,
@@ -92,6 +96,8 @@ var run_elapsed_time := 0.0
 var total_money_earned := 0
 var total_scrap_earned := 0
 var weapons_found: Dictionary = {}
+var blueprints_found: Array[StringName] = []
+var cyberwares_found: Array[Dictionary] = []
 var last_run_results: Dictionary = {}
 var boss_defeated := false
 var trap_events_activated := 0
@@ -849,6 +855,12 @@ func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: in
 		"scrap_collected": scrap_amount == 0,
 		"scrap_position": scrap_position,
 	}
+	var cyberware := _roll_cyberware_drop(room_id, enemy_id, enemy_role)
+	if not cyberware.is_empty():
+		state.drops_rolled[enemy_id]["cyberware"] = cyberware
+		state.drops_rolled[enemy_id]["cyberware_collected"] = false
+		state.drops_rolled[enemy_id]["cyberware_position"] = _resolve_enemy_drop_position(death_position + Vector2(-20.0, 0.0), source_enemy)
+		_spawn_cyberware_pickup(room_id, enemy_id, cyberware, state.drops_rolled[enemy_id]["cyberware_position"])
 	if amount > 0:
 		_spawn_money_pickup(room_id, enemy_id, amount, settled_position)
 	if bandage:
@@ -856,6 +868,46 @@ func handle_enemy_drop(room_id: StringName, enemy_id: StringName, enemy_role: in
 	if scrap_amount > 0:
 		_spawn_scrap_pickup(room_id, enemy_id, scrap_amount, scrap_position)
 	state_changed.emit()
+
+
+func _roll_cyberware_drop(room_id: StringName, enemy_id: StringName, enemy_role: int) -> Dictionary:
+	var cyber_rng := RandomNumberGenerator.new()
+	cyber_rng.seed = seed_value + _stable_hash("cyberware:%s:%s" % [room_id, enemy_id])
+	if cyber_rng.randf() > float(CYBERWARE_DROP_CHANCE_BY_ROLE.get(enemy_role, 0.035)):
+		return {}
+	var line: StringName = CyberwareCatalog.LINE_ORDER[cyber_rng.randi_range(0, CyberwareCatalog.LINE_ORDER.size() - 1)]
+	var minimum := &"uncommon" if enemy_role == 1 else &"common"
+	var rarity := RarityTable.roll(cyber_rng, stage_index, minimum)
+	return CyberwareCatalog.make_instance(line, rarity, 1, "cw_run_%d_%s" % [seed_value, String(enemy_id)])
+
+
+func collect_cyberware_drop(room_id: StringName, drop_id: StringName) -> bool:
+	if not room_states.has(room_id):
+		return false
+	var drop: Dictionary = (room_states[room_id] as Dictionary).drops_rolled.get(drop_id, {})
+	if drop.is_empty() or bool(drop.get("cyberware_collected", true)):
+		return false
+	drop["cyberware_collected"] = true
+	state_changed.emit()
+	return true
+
+
+func _spawn_cyberware_pickup(room_id: StringName, drop_id: StringName, instance: Dictionary, position: Vector2, room_override: Node = null) -> void:
+	var room := room_override
+	if room == null:
+		var room_manager := get_tree().get_first_node_in_group("room_manager")
+		room = room_manager.current_room if room_manager else null
+	if room == null:
+		return
+	for existing in _find_nodes_in_group(room, &"cyberware_pickup"):
+		if existing.pickup_id == drop_id:
+			return
+	var pickup := CYBERWARE_PICKUP_SCRIPT.new() as CyberwarePickup
+	pickup.pickup_id = drop_id
+	pickup.room_id = room_id
+	pickup.instance = instance.duplicate(true)
+	room.add_child(pickup)
+	pickup.global_position = position + Vector2(0, -14)
 
 
 func _resolve_enemy_drop_position(death_position: Vector2, source_enemy: CollisionObject2D = null) -> Vector2:
@@ -1058,6 +1110,8 @@ func _spawn_pending_money(room_id: StringName, room: Node) -> void:
 				Vector2(drop.get("scrap_position", drop.position)),
 				room
 			)
+		if drop.has("cyberware") and not bool(drop.get("cyberware_collected", true)):
+			_spawn_cyberware_pickup(room_id, drop_id, drop.cyberware, Vector2(drop.get("cyberware_position", drop.position)), room)
 
 
 func _spawn_bandage_pickup(room_id: StringName, drop_id: StringName, position: Vector2, room_override: Node = null) -> void:
@@ -1227,6 +1281,13 @@ func record_weapon_found(participant_id: StringName, weapon_id: StringName) -> v
 	if not player_weapons.has(weapon_id):
 		player_weapons.append(weapon_id)
 	weapons_found[participant_id] = player_weapons
+	if not blueprints_found.has(weapon_id):
+		blueprints_found.append(weapon_id)
+
+
+func record_cyberware_found(instance: Dictionary) -> void:
+	if not instance.is_empty():
+		cyberwares_found.append(instance.duplicate(true))
 	state_changed.emit()
 
 
@@ -1253,6 +1314,8 @@ func _capture_run_results(completed: bool) -> void:
 		"stage_history": stage_history.duplicate(true),
 		"participants": participant_progress.duplicate(true),
 		"weapons_found": weapons_found.duplicate(true),
+		"blueprints_found": blueprints_found.duplicate(),
+		"cyberwares_found": cyberwares_found.duplicate(true),
 		"boss_defeated": boss_defeated,
 		"trap_events": {
 			"activated": trap_events_activated,
@@ -1268,6 +1331,8 @@ func _reset_run_quality_state() -> void:
 	total_money_earned = 0
 	total_scrap_earned = 0
 	weapons_found.clear()
+	blueprints_found.clear()
+	cyberwares_found.clear()
 	last_run_results.clear()
 	boss_defeated = false
 	trap_events_activated = 0

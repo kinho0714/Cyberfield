@@ -3,6 +3,9 @@ extends Area2D
 
 @export var pickup_id: StringName
 @export var weapon_id: StringName = &"breaker_maul"
+## Raridade da cópia encontrada. Vazia = sorteada de forma determinística pelo pickup_id
+## (mesmo resultado no host e nos clientes, sem consumir o RNG da geração do bioma).
+@export var rarity: StringName = &""
 var _claimed := false
 
 
@@ -16,19 +19,38 @@ func _ready() -> void:
 	shape.size = Vector2(58, 30)
 	collision.shape = shape
 	add_child(collision)
+	if rarity.is_empty():
+		var run_manager := get_tree().get_first_node_in_group("run_manager") if is_inside_tree() else null
+		rarity = roll_rarity(pickup_id, int(run_manager.seed_value) if run_manager != null else 0)
+	var rarity_glow := Polygon2D.new()
+	rarity_glow.name = "RarityGlow"
+	rarity_glow.polygon = PackedVector2Array([Vector2(-30, 6), Vector2(30, 6), Vector2(22, 12), Vector2(-22, 12)])
+	rarity_glow.color = Color(RarityTable.color(rarity), 0.55)
+	add_child(rarity_glow)
 	add_child(_build_temporary_weapon_visual())
 	var label := Label.new()
-	label.position = Vector2(-105, -60)
-	label.size = Vector2(210, 48)
+	label.position = Vector2(-120, -60)
+	label.size = Vector2(240, 48)
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	var data := WeaponCatalog.get_definition(weapon_id)
-	label.text = "%s\n[USAR] PEGAR // %s %d" % [WeaponCatalog.get_display_name(weapon_id), String(data.type).to_upper(), int(data.damage)]
+	label.add_theme_color_override("font_color", RarityTable.color(rarity))
+	var data := WeaponCatalog.stats_for(weapon_id, rarity)
+	label.text = "%s  [%s]\n[USAR] PEGAR // %s %d" % [WeaponCatalog.get_display_name(weapon_id), RarityTable.label(rarity), WeaponCatalog.category_label(weapon_id), int(data.damage)]
 	label.visible = false
 	add_child(label)
 	body_entered.connect(func(body: Node) -> void: if body.is_in_group("player"): label.visible = true)
 	body_exited.connect(func(body: Node) -> void:
 		if body.is_in_group("player"):
 			label.visible = get_overlapping_bodies().any(func(candidate: Node) -> bool: return candidate != body and candidate.is_in_group("player")))
+
+
+static func roll_rarity(id: StringName, run_seed: int = 0) -> StringName:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("weapon_rarity:%s:%d" % [String(id), run_seed])
+	var stage_bonus := 0
+	var digits := String(id).get_slice("_", 1)
+	if digits.is_valid_int():
+		stage_bonus = int(digits) / 2
+	return RarityTable.roll(rng, stage_bonus)
 
 
 func _build_temporary_weapon_visual() -> Node2D:
@@ -75,7 +97,7 @@ func interact(player: Node2D = null) -> void:
 func claim_authoritative(player: Node) -> bool:
 	if _claimed or player == null or global_position.distance_to(player.global_position) > 96.0:
 		return false
-	if not player.equip_weapon(weapon_id):
+	if not player.equip_weapon(weapon_id, -1, rarity):
 		return false
 	_claimed = true
 	var run_manager := get_tree().get_first_node_in_group("run_manager")

@@ -147,7 +147,28 @@ func _format_result(participant_id: StringName, result: Dictionary) -> String:
 		_format_time(float(result.get("elapsed_time", 0.0))), String(result.get("difficulty", "normal")).to_upper(), clampi(int(result.get("stage_index", 0)) + 1, 1, 6), int(result.get("money_earned", 0)),
 		_last_meta_reward, int(stats.get("intellect", 0)), int(stats.get("health", 0)), int(stats.get("strength", 0)), "\n  ".join(weapon_names) if not weapon_names.is_empty() else "NENHUMA",
 		"DERROTADO" if bool(result.get("boss_defeated", false)) else "NÃO DERROTADO", int(trap_events.get("activated", 0)), int(trap_events.get("cleared", 0)), int(trap_events.get("rewarded", 0)),
-	]
+	] + _format_equipment(result)
+
+
+## Blueprints sempre chegam ao terminal; cyberwares só ficam em vitória (senão viram sucata).
+func _format_equipment(result: Dictionary) -> String:
+	var lines: PackedStringArray = []
+	var blueprints: Array = result.get("blueprints_found", []) as Array
+	if not blueprints.is_empty():
+		var names: PackedStringArray = []
+		for value: Variant in blueprints:
+			names.append(WeaponCatalog.get_display_name(StringName(value)))
+		lines.append("\n\nBLUEPRINTS ENVIADOS AO TERMINAL\n  " + "\n  ".join(names))
+	var cyberwares: Array = result.get("cyberwares_found", []) as Array
+	if not cyberwares.is_empty():
+		var completed := bool(result.get("completed", false))
+		var names: PackedStringArray = []
+		for value: Variant in cyberwares:
+			var instance := CyberwareCatalog.normalize_instance(value)
+			if not instance.is_empty():
+				names.append("%s [%s]%s" % [CyberwareCatalog.display_name(instance), RarityTable.label(StringName(instance.rarity)), "" if completed else "  → ⚙%d" % CyberwareCatalog.salvage_value(instance)])
+		lines.append("\n\n%s\n  %s" % ["CYBERWARES EXTRAÍDOS" if completed else "CYBERWARES PERDIDOS (CONVERTIDOS EM SUCATA)", "\n  ".join(names)])
+	return "".join(lines)
 
 
 func _format_time(seconds: float) -> String:

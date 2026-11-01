@@ -118,6 +118,13 @@ var weapon_ammo: Dictionary = {}
 var weapon_reload_timers: Dictionary = {}
 var active_weapon_slot := 0
 var weapon_cooldowns: Array[float] = [0.0, 0.0]
+## Arsenal/cyberware/acessórios (01/11/2026). Raridade por arma possuída; cyberwares
+## instalados no laboratório + achados na run; dois slots ativos em PlayerGadgets.
+var weapon_rarity: Dictionary = {}
+var cyberware_instances: Array[Dictionary] = []
+var cyberware_mods: Dictionary = {}
+var gadgets: PlayerGadgets
+var _weapon_rng := RandomNumberGenerator.new()
 var _dash_exceptions: Array[Node] = []
 var revive_progress := 0.0
 var _revive_target: CharacterBody2D = null
@@ -146,6 +153,10 @@ func _ready() -> void:
 	attack_shape_cast.enabled = true
 	ground_slam_shape_cast.enabled = true
 	heal_doses = max_heal_doses
+	_weapon_rng.randomize()
+	gadgets = PlayerGadgets.new()
+	gadgets.name = "PlayerGadgets"
+	add_child(gadgets)
 	_ensure_weapon_ammo(&"scrap_blade")
 	_update_health_label()
 	call_deferred("_register_participant")
@@ -338,7 +349,7 @@ func _physics_process(delta: float) -> void:
 		if preserve_wall_impulse:
 			pass
 		elif direction:
-			velocity.x = direction * SPEED
+			velocity.x = direction * get_move_speed()
 		else:
 			velocity.x = move_toward(velocity.x, 0, SPEED)
 
@@ -477,13 +488,13 @@ func attack(slot: int = -1) -> void:
 	if weapon_id.is_empty() or weapon_cooldowns[requested_slot] > 0.0:
 		return
 	active_weapon_slot = requested_slot
-	var definition := WeaponCatalog.get_definition(weapon_id)
+	var definition := get_weapon_stats(weapon_id)
 	if StringName(definition.get("type", &"melee")) == &"ranged":
 		_fire_ranged_weapon(requested_slot, definition)
 		return
 	if is_attacking or combo_end_recovery_timer > 0.0 or is_downed or is_healing or not input_enabled:
 		return
-	weapon_cooldowns[requested_slot] = float(definition.get("cooldown", ATTACK_DURATION))
+	weapon_cooldowns[requested_slot] = float(definition.get("cooldown", ATTACK_DURATION)) * (1.0 - clampf(_mod("melee_haste"), 0.0, 0.5))
 	attack_shape_cast.target_position.x = (-1.0 if anim.flip_h else 1.0) * float(definition.get("range", 30.0))
 	_play_audio_event(&"player_attack")
 
@@ -505,6 +516,7 @@ func attack(slot: int = -1) -> void:
 	attack_shape_cast.enabled = true
 
 	anim.play("attack")
+	WeaponFx.swing(self, weapon_id, -1.0 if anim.flip_h else 1.0, get_weapon_rarity(weapon_id))
 
 	await get_tree().create_timer(ATTACK_HIT_DELAY).timeout
 
@@ -514,6 +526,9 @@ func attack(slot: int = -1) -> void:
 
 	attack_shape_cast.force_shapecast_update()
 
+	# Lâminas acertam um alvo; armas de impacto (bastão, cano, martelo) varrem até 3.
+	var max_targets := 3 if WeaponCatalog.category(weapon_id) == &"blunt" else 1
+	var targets_hit := 0
 	if not network_prediction_only and attack_shape_cast.is_colliding():
 		for i in attack_shape_cast.get_collision_count():
 			var body = attack_shape_cast.get_collider(i)
@@ -526,7 +541,20 @@ func attack(slot: int = -1) -> void:
 				last_attack_hit = true
 				var knockback_multiplier := (FINISHER_KNOCKBACK_MULTIPLIER if combo_step == MAX_COMBO_ATTACKS else 1.0) * get_weapon_knockback() * (1.0 + knockback_bonus)
 				body.take_damage(get_melee_damage(requested_slot), knockback_direction, knockback_multiplier)
+				targets_hit += 1
+				if targets_hit >= max_targets:
+					break
+	# Impacto (bastão/cano/martelo): o ShapeCast para no primeiro corpo, então a varredura
+	# consulta a área inteira do golpe e acerta quem ainda não levou dano.
+	if max_targets > 1 and not network_prediction_only and targets_hit < max_targets:
+		for body in _melee_area_bodies(float(get_weapon_stats(weapon_id).get("range", 30.0))):
+			if targets_hit >= max_targets:
 				break
+			if body.is_in_group("enemy") and body.has_method("take_damage") and not bool(body.get("is_hurt")):
+				last_attack_hit = true
+				var sweep_knockback := (FINISHER_KNOCKBACK_MULTIPLIER if combo_step == MAX_COMBO_ATTACKS else 1.0) * get_weapon_knockback() * (1.0 + knockback_bonus)
+				body.take_damage(get_melee_damage(requested_slot), signf(body.global_position.x - global_position.x), sweep_knockback)
+				targets_hit += 1
 	if combo_step == MAX_COMBO_ATTACKS and last_attack_hit:
 		dash_cancel_timer = dash_cancel_window
 
@@ -560,9 +588,9 @@ func _start_dash() -> void:
 	else:
 		_reset_combo()
 	var dash_direction := -1.0 if anim.flip_h else 1.0
-	velocity.x = dash_direction * DASH_SPEED
-	dash_timer = DASH_DURATION * (1.0 + dash_duration_bonus)
-	dash_invulnerability_timer = dash_invulnerability_duration
+	velocity.x = dash_direction * DASH_SPEED * (1.0 + _mod("dash_speed"))
+	dash_timer = DASH_DURATION * (1.0 + dash_duration_bonus + _mod("dash_duration"))
+	dash_invulnerability_timer = dash_invulnerability_duration * (1.0 + _mod("dash_iframes"))
 	CombatFx.dash_trail(self)
 	_dash_exceptions.clear()
 	for enemy in get_tree().get_nodes_in_group("enemy"):
@@ -617,54 +645,148 @@ func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 		return
 	var direction := Vector2.LEFT if player_anim.flip_h else Vector2.RIGHT
 	var origin := global_position + Vector2(direction.x * 28.0, -8.0)
-	# A tiny transient muzzle flash gives firing feedback without changing the
-	# official character spritesheet or adding a per-frame particle emitter.
-	var muzzle := Polygon2D.new()
-	muzzle.name = "TemporaryMuzzleFlash"
-	muzzle.polygon = PackedVector2Array([Vector2(0, -4), Vector2(13, -2), Vector2(24, 0), Vector2(13, 2), Vector2(0, 4)])
-	muzzle.color = Color("8deaff") if weapon_id == &"pulse_carbine" else Color("f1b8ff")
-	muzzle.scale.x = direction.x
-	muzzle.z_index = 8
-	get_parent().add_child(muzzle)
-	muzzle.global_position = origin
-	get_tree().create_timer(0.075).timeout.connect(muzzle.queue_free)
-	var projectile := RANGED_PROJECTILE_SCENE.instantiate()
-	get_parent().add_child(projectile)
-	var damage := maxi(1, roundi(float(definition.get("damage", 34)) * (1.0 + 0.10 * intellect + tech_damage_bonus)))
+	WeaponFx.fire(self, weapon_id, origin, direction)
+	var damage := get_ranged_damage(weapon_id, definition)
 	var projectile_speed := float(definition.get("projectile_speed", 620.0))
-	projectile.maximum_lifetime = float(definition.get("range", 360.0)) / projectile_speed
-	projectile.setup(origin, direction, self, projectile_speed, damage, &"enemy")
-	var lan_session := get_tree().get_first_node_in_group("lan_session") if is_inside_tree() else null
-	if lan_session != null:
-		projectile.network_id = lan_session.replicate_projectile_spawn(origin, direction, projectile_speed, damage, &"enemy")
+	var spread := float(definition.get("spread", 0.0)) * maxf(0.0, 1.0 - _mod("accuracy"))
+	var visual_id := StringName(definition.get("projectile", &"scrap_round"))
+	if WeaponCatalog.category(weapon_id) == &"shotgun":
+		_fire_pellets(origin, direction, definition, damage, spread, visual_id)
+	else:
+		var aim := direction.rotated(deg_to_rad(_weapon_rng.randf_range(-spread, spread)))
+		_spawn_player_projectile(origin, aim, projectile_speed, damage, float(definition.get("range", 360.0)) / projectile_speed, definition, visual_id, false)
 	await get_tree().create_timer(ATTACK_DURATION).timeout
 	if presentation_generation == attack_generation:
 		is_attacking = false
 
 
+func _spawn_player_projectile(origin: Vector2, aim: Vector2, speed: float, damage: int, lifetime: float, definition: Dictionary, visual_id: StringName, visual_only: bool) -> Node:
+	var projectile := RANGED_PROJECTILE_SCENE.instantiate()
+	projectile.network_visual_only = visual_only
+	get_parent().add_child(projectile)
+	projectile.maximum_lifetime = lifetime
+	projectile.setup(origin, aim, self, speed, damage, &"enemy")
+	projectile.apply_player_visual(visual_id)
+	projectile.gravity_accel = float(definition.get("gravity", 0.0))
+	projectile.pierce_left = int(definition.get("pierce", 0))
+	projectile.knockback_multiplier = float(definition.get("knockback", 1.0))
+	var lan_session := get_tree().get_first_node_in_group("lan_session") if is_inside_tree() else null
+	if lan_session != null:
+		projectile.network_id = lan_session.replicate_projectile_spawn(origin, aim, speed, damage, &"enemy", StringName("p_%s" % visual_id))
+		projectile.network_host_visual = visual_only
+	return projectile
+
+
+## Escopeta: cada chumbo é um raio contra o cenário/inimigos; o dano é somado por alvo
+## e aplicado uma vez (os inimigos ignoram golpes durante 0,1 s após serem atingidos).
+func _fire_pellets(origin: Vector2, direction: Vector2, definition: Dictionary, pellet_damage: int, spread: float, visual_id: StringName) -> void:
+	var pellet_count := maxi(int(definition.get("pellets", 6)), 1)
+	var weapon_range := float(definition.get("range", 200.0))
+	var speed := float(definition.get("projectile_speed", 560.0))
+	var space := get_world_2d().direct_space_state
+	var exclude: Array[RID] = []
+	for player_node in get_tree().get_nodes_in_group("player"):
+		if player_node is CollisionObject2D:
+			exclude.append((player_node as CollisionObject2D).get_rid())
+	var totals := {}
+	for index in pellet_count:
+		var offset := lerpf(-spread, spread, (float(index) + _weapon_rng.randf_range(0.2, 0.8)) / float(pellet_count))
+		var aim := direction.rotated(deg_to_rad(offset))
+		var query := PhysicsRayQueryParameters2D.create(origin, origin + aim * weapon_range, 1 | 2, exclude)
+		var hit := space.intersect_ray(query)
+		var travel := weapon_range
+		if not hit.is_empty():
+			travel = origin.distance_to(hit.position)
+			var collider := hit.collider as Node
+			if collider != null and collider.is_in_group("enemy"):
+				totals[collider] = int(totals.get(collider, 0)) + pellet_damage
+		_spawn_player_projectile(origin, aim, speed, 0, travel / speed, definition, visual_id, true)
+	for enemy: Variant in totals:
+		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
+			# Quanto mais chumbos acertam, mais forte o empurrão.
+			var share := float(totals[enemy]) / float(pellet_damage * pellet_count)
+			enemy.take_damage(int(totals[enemy]), signf((enemy as Node2D).global_position.x - global_position.x), float(definition.get("knockback", 1.0)) * (0.5 + share))
+
+
+func _melee_area_bodies(reach: float) -> Array[Node2D]:
+	var result: Array[Node2D] = []
+	var base_shape := attack_shape_cast.shape as RectangleShape2D
+	var height := base_shape.size.y if base_shape != null else 40.0
+	var width := reach + (base_shape.size.x if base_shape != null else 20.0)
+	var query := PhysicsShapeQueryParameters2D.new()
+	var area := RectangleShape2D.new()
+	area.size = Vector2(width, height)
+	query.shape = area
+	var facing := -1.0 if anim.flip_h else 1.0
+	query.transform = Transform2D(0.0, attack_shape_cast.global_position + Vector2(facing * width * 0.5, 0.0))
+	query.collision_mask = attack_shape_cast.collision_mask
+	query.exclude = [get_rid()]
+	for hit: Dictionary in get_world_2d().direct_space_state.intersect_shape(query, 16):
+		var body := hit.collider as Node2D
+		if body != null and not result.has(body):
+			result.append(body)
+	result.sort_custom(func(a: Node2D, b: Node2D) -> bool: return absf(a.global_position.x - global_position.x) < absf(b.global_position.x - global_position.x))
+	return result
+
+
+func get_weapon_rarity(weapon_id: StringName) -> StringName:
+	return RarityTable.normalize(weapon_rarity.get(weapon_id, &"common"))
+
+
+func get_weapon_stats(weapon_id: StringName) -> Dictionary:
+	return WeaponCatalog.stats_for(weapon_id, get_weapon_rarity(weapon_id))
+
+
+func _mod(key: String) -> float:
+	return float(cyberware_mods.get(key, 0.0))
+
+
+func get_move_speed() -> float:
+	return SPEED * (1.0 + _mod("move_speed"))
+
+
+func get_ranged_damage(weapon_id: StringName, definition: Dictionary = {}) -> int:
+	if definition.is_empty():
+		definition = get_weapon_stats(weapon_id)
+	var bonus := 0.10 * intellect + tech_damage_bonus + _mod("ranged_damage")
+	if WeaponCatalog.category(weapon_id) in [&"pistol", &"shotgun"]:
+		bonus += _mod("physical_damage")
+	return maxi(1, roundi(float(definition.get("damage", 34)) * (1.0 + bonus)))
+
+
 func get_melee_damage(slot: int = -1) -> int:
 	var weapon_id := get_active_weapon_id() if slot < 0 else equipped_weapons[clampi(slot, 0, 1)]
-	var weapon_damage := int(WeaponCatalog.get_definition(weapon_id).get("damage", CombatStats.PLAYER_BASE_MELEE_DAMAGE))
-	return maxi(1, roundi(weapon_damage * (1.0 + CombatStats.STRENGTH_DAMAGE_PER_LEVEL * strength)))
+	if weapon_id.is_empty():
+		weapon_id = &"scrap_blade"
+	var weapon_damage := int(get_weapon_stats(weapon_id).get("damage", CombatStats.PLAYER_BASE_MELEE_DAMAGE))
+	return maxi(1, roundi(weapon_damage * (1.0 + CombatStats.STRENGTH_DAMAGE_PER_LEVEL * strength) * (1.0 + _mod("physical_damage"))))
 
 
 func get_slam_damage() -> int:
-	return maxi(1, roundi(CombatStats.player_slam_damage(strength) * (1.0 + slam_damage_bonus)))
+	return maxi(1, roundi(CombatStats.player_slam_damage(strength) * (1.0 + slam_damage_bonus + _mod("slam_damage") + _mod("physical_damage"))))
 
 
 func get_weapon_knockback() -> float:
-	return float(WeaponCatalog.get_definition(get_active_weapon_id()).get("knockback", 1.0))
+	return float(WeaponCatalog.get_definition(get_active_weapon_id()).get("knockback", 1.0)) * (1.0 + _mod("knockback"))
 
 
 func get_active_weapon_id() -> StringName:
 	return equipped_weapons[active_weapon_slot] if not equipped_weapons[active_weapon_slot].is_empty() else &"scrap_blade"
 
 
-func equip_weapon(weapon_id: StringName, replace_slot: int = -1) -> bool:
+func equip_weapon(weapon_id: StringName, replace_slot: int = -1, rarity: StringName = &"") -> bool:
 	if weapon_id.is_empty() or not WeaponCatalog.WEAPONS.has(weapon_id):
 		return false
 	if equipped_weapons.has(weapon_id):
+		# Cópia melhor da mesma arma: só sobe a raridade (não duplica o slot).
+		if not rarity.is_empty() and RarityTable.is_better(rarity, get_weapon_rarity(weapon_id)):
+			_set_weapon_rarity(weapon_id, rarity)
+			_play_audio_event(&"weapon_equip")
+			_sync_progress()
+			return true
 		return false
+	if not rarity.is_empty() and (not owned_weapons.has(weapon_id) or RarityTable.is_better(rarity, get_weapon_rarity(weapon_id))):
+		_set_weapon_rarity(weapon_id, rarity)
 	var target_slot := replace_slot
 	if target_slot < 0:
 		target_slot = equipped_weapons.find(&"")
@@ -705,10 +827,21 @@ func unequip_weapon(slot: int) -> bool:
 	return true
 
 
+func _set_weapon_rarity(weapon_id: StringName, rarity: StringName) -> void:
+	var previous := get_weapon_stats(weapon_id)
+	weapon_rarity[weapon_id] = RarityTable.normalize(rarity)
+	if weapon_ammo.has(weapon_id):
+		# Carregador maior: completa a diferença em vez de recarregar de graça.
+		var ammo: Dictionary = weapon_ammo[weapon_id]
+		var current := get_weapon_stats(weapon_id)
+		ammo["reserve"] = int(ammo.get("reserve", 0)) + maxi(int(current.get("reserve", 0)) - int(previous.get("reserve", 0)), 0)
+		weapon_ammo[weapon_id] = ammo
+
+
 func _ensure_weapon_ammo(weapon_id: StringName) -> void:
 	if not WeaponCatalog.is_ranged(weapon_id) or weapon_ammo.has(weapon_id):
 		return
-	var data := WeaponCatalog.get_definition(weapon_id)
+	var data := get_weapon_stats(weapon_id)
 	weapon_ammo[weapon_id] = {"clip": int(data.get("magazine", 0)), "reserve": int(data.get("reserve", 0))}
 
 
@@ -719,9 +852,9 @@ func reload_weapon(slot: int = -1) -> bool:
 		return false
 	_ensure_weapon_ammo(weapon_id)
 	var ammo: Dictionary = weapon_ammo[weapon_id]
-	if weapon_reload_timers.has(weapon_id) or int(ammo.get("reserve", 0)) <= 0 or int(ammo.get("clip", 0)) >= int(WeaponCatalog.get_definition(weapon_id).get("magazine", 0)):
+	if weapon_reload_timers.has(weapon_id) or int(ammo.get("reserve", 0)) <= 0 or int(ammo.get("clip", 0)) >= int(get_weapon_stats(weapon_id).get("magazine", 0)):
 		return false
-	weapon_reload_timers[weapon_id] = float(WeaponCatalog.get_definition(weapon_id).get("reload_time", 1.5))
+	weapon_reload_timers[weapon_id] = float(get_weapon_stats(weapon_id).get("reload_time", 1.5)) / (1.0 + _mod("reload_speed"))
 	_play_audio_event(&"weapon_reload")
 	return true
 
@@ -731,7 +864,7 @@ func _finish_weapon_reload(weapon_id: StringName) -> void:
 	if not weapon_ammo.has(weapon_id):
 		return
 	var ammo: Dictionary = weapon_ammo[weapon_id]
-	var needed := maxi(int(WeaponCatalog.get_definition(weapon_id).get("magazine", 0)) - int(ammo.get("clip", 0)), 0)
+	var needed := maxi(int(get_weapon_stats(weapon_id).get("magazine", 0)) - int(ammo.get("clip", 0)), 0)
 	var supplied := mini(needed, int(ammo.get("reserve", 0)))
 	ammo["clip"] = int(ammo.get("clip", 0)) + supplied
 	ammo["reserve"] = int(ammo.get("reserve", 0)) - supplied
@@ -768,7 +901,7 @@ func add_attribute(attribute: StringName) -> bool:
 		&"health":
 			var previous_max_health := max_health
 			health_attribute += 1
-			max_health = CombatStats.player_max_hp(health_attribute)
+			max_health = _max_health_for(health_attribute)
 			# Preserve missing HP instead of turning an attribute choice into a full heal.
 			health = mini(max_health, health + max_health - previous_max_health)
 			_update_health_label()
@@ -820,7 +953,7 @@ func _start_heal() -> void:
 func _complete_heal() -> void:
 	if not is_healing:
 		return
-	health = mini(max_health, health + roundi(CombatStats.heal_amount(max_health) * (1.0 + healing_bonus)))
+	health = mini(max_health, health + roundi(CombatStats.heal_amount(max_health) * (1.0 + healing_bonus + _mod("heal_efficiency"))))
 	heal_doses -= 1
 	_play_audio_event(&"player_heal")
 	CombatFx.heal(self)
@@ -874,6 +1007,11 @@ func reset_for_new_run() -> void:
 	owned_weapons = [&"scrap_blade"]
 	weapon_ammo.clear()
 	weapon_reload_timers.clear()
+	weapon_rarity.clear()
+	cyberware_instances.clear()
+	cyberware_mods.clear()
+	if gadgets != null:
+		gadgets.configure([])
 	active_weapon_slot = 0
 	weapon_cooldowns = [0.0, 0.0]
 	max_wall_climb_duration = WALL_CLIMB_DURATION
@@ -916,6 +1054,86 @@ func reset_for_new_run() -> void:
 	_revive_target = null
 	_update_participant_state(true)
 	_sync_progress()
+
+
+func _max_health_for(health_level: int) -> int:
+	return maxi(1, roundi(CombatStats.player_max_hp(health_level) * (1.0 + _mod("max_hp"))))
+
+
+## Equipamento preparado na Casa do Jhon (MetaProgression.get_run_loadout()).
+func apply_loadout(loadout: Dictionary) -> void:
+	var weapons: Array = loadout.get("weapons", []) as Array
+	if not weapons.is_empty():
+		equipped_weapons = [&"", &""]
+		owned_weapons.clear()
+		weapon_ammo.clear()
+		weapon_reload_timers.clear()
+		weapon_rarity.clear()
+		for index in mini(weapons.size(), 2):
+			var entry: Array = weapons[index] as Array
+			var weapon_id := StringName(entry[0])
+			if not WeaponCatalog.WEAPONS.has(weapon_id) or owned_weapons.has(weapon_id):
+				continue
+			weapon_rarity[weapon_id] = RarityTable.normalize(entry[1] if entry.size() > 1 else &"common")
+			equipped_weapons[index] = weapon_id
+			owned_weapons.append(weapon_id)
+			_ensure_weapon_ammo(weapon_id)
+		if equipped_weapons[0].is_empty():
+			equipped_weapons = [equipped_weapons[1], &""] if not equipped_weapons[1].is_empty() else [&"scrap_blade", &""]
+			if not owned_weapons.has(equipped_weapons[0]):
+				owned_weapons.append(equipped_weapons[0])
+		active_weapon_slot = 0
+	cyberware_instances.clear()
+	for value: Variant in loadout.get("cyberwares", []) as Array:
+		var instance := CyberwareCatalog.normalize_instance(value)
+		if not instance.is_empty():
+			cyberware_instances.append(instance)
+	_recompute_cyberware(true)
+	if gadgets != null:
+		gadgets.configure(loadout.get("accessories", []) as Array)
+	_sync_progress()
+
+
+## Cyberware encontrado na run: instala se o slot estiver livre ou se for melhor.
+func add_run_cyberware(instance: Dictionary) -> bool:
+	var normalized := CyberwareCatalog.normalize_instance(instance)
+	if normalized.is_empty():
+		return false
+	var slot := CyberwareCatalog.slot_for(StringName(normalized.line))
+	for index in cyberware_instances.size():
+		var current := cyberware_instances[index]
+		if CyberwareCatalog.slot_for(StringName(current.line)) != slot:
+			continue
+		if _cyberware_score(normalized) <= _cyberware_score(current):
+			return false
+		cyberware_instances[index] = normalized
+		_recompute_cyberware(false)
+		return true
+	cyberware_instances.append(normalized)
+	_recompute_cyberware(false)
+	return true
+
+
+func get_cyberware_in_slot(slot: StringName) -> Dictionary:
+	for instance: Dictionary in cyberware_instances:
+		if CyberwareCatalog.slot_for(StringName(instance.line)) == slot:
+			return instance
+	return {}
+
+
+func _cyberware_score(instance: Dictionary) -> float:
+	var total := 0.0
+	for value: Variant in CyberwareCatalog.effects(instance).values():
+		total += float(value)
+	return total
+
+
+func _recompute_cyberware(refill_health: bool) -> void:
+	cyberware_mods = CyberwareCatalog.compute_modifiers(cyberware_instances)
+	var previous_max := max_health
+	max_health = _max_health_for(health_attribute)
+	health = max_health if refill_health else clampi(health + max_health - previous_max, 1, max_health)
+	_update_health_label()
 
 
 func ground_slam_impact() -> void:
@@ -1042,6 +1260,9 @@ func get_network_state() -> Dictionary:
 		"weapon_reload_timers": weapon_reload_timers.duplicate(true),
 		"active_weapon_slot": active_weapon_slot,
 		"acquired_upgrades": acquired_upgrades.duplicate(true),
+		"weapon_rarity": weapon_rarity.duplicate(),
+		"cyberware_instances": cyberware_instances.duplicate(true),
+		"gadgets": gadgets.get_state() if gadgets != null else {},
 	}
 
 
@@ -1118,6 +1339,16 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false, snaps
 	if not predicted_local:
 		active_weapon_slot = clampi(int(state.get("active_weapon_slot", active_weapon_slot)), 0, 1)
 	acquired_upgrades = (state.get("acquired_upgrades", acquired_upgrades) as Dictionary).duplicate(true)
+	weapon_rarity = (state.get("weapon_rarity", weapon_rarity) as Dictionary).duplicate()
+	if state.has("cyberware_instances"):
+		cyberware_instances.clear()
+		for value: Variant in state.get("cyberware_instances", []) as Array:
+			var instance := CyberwareCatalog.normalize_instance(value)
+			if not instance.is_empty():
+				cyberware_instances.append(instance)
+		cyberware_mods = CyberwareCatalog.compute_modifiers(cyberware_instances)
+	if gadgets != null and state.has("gadgets"):
+		gadgets.apply_state(state.get("gadgets", {}) as Dictionary)
 	_update_health_label()
 
 
@@ -1300,4 +1531,6 @@ func _sync_progress() -> void:
 			"equipped_weapons": equipped_weapons.duplicate(),
 			"active_weapon_slot": active_weapon_slot,
 			"upgrades": acquired_upgrades.duplicate(true),
+			"weapon_rarity": weapon_rarity.duplicate(),
+			"cyberwares": cyberware_instances.duplicate(true),
 		})

@@ -53,3 +53,13 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Push para `origin/dev/visual` bloqueado: 403 (app GitHub sem acesso de escrita).
 - Pendente: redesenho real de poses (proporções do revive do Spark, borda cortada do
   hurt do Jhon), escala 1.5× não inteira do sprite (distorce pixels), menu/ponte.
+
+## Missão arsenal/cyberwares 01/11 (branch local `claude/cyberfield-patch-integration-7ek1p2`)
+- Base `dev/visual` (`ce3fae3`). Noturna 31/10 preservada em commit WIP na branch local
+  `visual-noturna-2026-10-31`; branch local antiga de 29/10 renomeada para
+  `backup/claude-patch-integration-2026-10-29`. Sem push.
+- Relatório: `docs/ARSENAL_CYBERWARE_2026-11-01.md`. Teste: `tests/arsenal_expansion_smoke_test.gd`.
+- Achado no motor: o cenário dos biomas está na camada 1 (não 2) — granadas atravessavam o chão.
+- Achado no motor: `ShapeCast2D` para no 1º corpo; varredura de impacto usa consulta de área.
+- Próximo: playtest físico (toque nos botões F/G, legibilidade do HUD a 20:9, balanceamento),
+  loadout por cliente na LAN, poses de personagem com armas.

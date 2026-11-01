@@ -276,6 +276,7 @@ func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) 
 	for candidate in get_players():
 		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
+	apply_meta_loadout()
 	if not _load_lower_city_biome(run_seed):
 		run_manager.prepare_hub()
 		_load_laboratory_hub()
@@ -569,7 +570,22 @@ func _load_laboratory_hub() -> bool:
 	_update_hub_camera(0.0)
 	gameplay_camera.reset_smoothing()
 	_set_music_context(&"house", 0.35)
+	apply_meta_loadout()
 	return true
+
+
+## Arsenal/cyberwares/acessórios preparados na Casa do Jhon. Em LAN só o host aplica,
+## e só ao próprio jogador (o perfil salvo é local a cada aparelho).
+func apply_meta_loadout() -> void:
+	var meta := get_tree().get_first_node_in_group("meta_progression") as MetaProgression
+	if meta == null or lan_session.is_client():
+		return
+	var loadout := meta.get_run_loadout()
+	for candidate in get_players():
+		if lan_session.is_network_game() and candidate.participant_id != lan_session.get_local_participant_id():
+			continue
+		if candidate.has_method("apply_loadout"):
+			candidate.apply_loadout(loadout)
 
 
 func _show_latest_run_results() -> void:

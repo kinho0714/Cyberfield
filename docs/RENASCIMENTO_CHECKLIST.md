@@ -70,3 +70,18 @@ antigo ainda em uso).
 ## Ainda não verificado no aparelho
 Se o preto relatado no R2 estava só nos módulos abaixo da rua e na arena do chefe.
 Pedir ao usuário uma captura do ponto exato.
+
+## Arsenal, cyberwares e slots ativos (01/11/2026)
+Evidência: `tests/arsenal_expansion_smoke_test.gd` no fluxo real `main.tscn` → Casa (terminal) →
+bioma gerado → combate → morte → Casa, Godot 4.7.2; capturas com `-- <dir>` sob Xvfb.
+| Sistema | Estado | Evidência / observação |
+|---|---|---|
+| 12 armas, 7 categorias com comportamento próprio | COMPROVADO | escopeta soma chumbos, rifle perfura 2, flecha cai em arco, bastão acerta 2 alvos |
+| Raridade (Comum/Incomum/Raro, tiers superiores desligados) | COMPROVADO | atributos reais mudam; pickup sorteia raridade; fabricação escolhe raridade |
+| Blueprint → estudo → fabricação → loadout | COMPROVADO | terminal da Casa, botões reais; loadout aplicado no hub e na run seguinte |
+| Cyberwares (6 linhas, MK1–3, 4 slots) | COMPROVADO | vida máx., cura, dash, dano físico medidos no jogador; drop do chefe instalado |
+| Persistência (save v4) | COMPROVADO | perfil novo lendo o mesmo arquivo vê arsenal, implantes e acessórios |
+| Dois slots ativos (gelo, fogo, torreta) | COMPROVADO | tecla F usa granada; congela, queima com dano contínuo, torreta acerta sozinha |
+| HUD de equipamento + botões touch | COMPROVADO (desktop) | `LoadoutHUD` visível na run; 2 botões touch criados — toque físico no Android PENDENTE |
+| Arte original (armas, projéteis, FX, ícones) | COMPROVADO / FRACO | aparece no jogo; arma sobreposta ao personagem é provisória (sem poses próprias) |
+| LAN | FRACO | só o host recebe o loadout; clientes não veem granadas/torreta |

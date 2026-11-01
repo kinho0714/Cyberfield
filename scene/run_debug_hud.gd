@@ -2,7 +2,9 @@ extends CanvasLayer
 
 const OFFICIAL_HUD = preload("res://ui/gameplay_hud_presentation.gd")
 const RUN_END_PRESENTATION = preload("res://ui/run_end_presentation.gd")
+const LOADOUT_HUD = preload("res://ui/loadout_hud.gd")
 var official_hud: Control
+var loadout_hud: Control
 var _end_view: Dictionary = {}
 var _end_view_shown := false
 
@@ -48,6 +50,9 @@ var local_settings: LocalSettings
 func _ready() -> void:
 	official_hud = OFFICIAL_HUD.new()
 	gameplay_hud.add_child(official_hud)
+	loadout_hud = LOADOUT_HUD.new()
+	loadout_hud.name = "LoadoutHUD"
+	gameplay_hud.add_child(loadout_hud)
 	$GameplayHUD/PlayerPanel.hide()
 	run_manager = get_parent().get_node("RunManager")
 	local_settings = get_parent().get_node("LocalSettings")
@@ -198,6 +203,7 @@ func _process(_delta: float) -> void:
 	var partner_player := _get_partner_player(players, local_player)
 	gameplay_hud.visible = run_manager.is_gameplay_context_active() and local_player != null and not end_overlay.visible
 	official_hud.update_state(local_player, run_manager.dirty_money, gameplay_hud.visible and visible)
+	loadout_hud.update_state(local_player, gameplay_hud.visible and visible)
 	if end_overlay.visible:
 		revive_panel.visible = false
 		$Panel.visible = false

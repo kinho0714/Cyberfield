@@ -2,7 +2,8 @@ class_name LocalCoopInput
 extends RefCounted
 
 
-const P1_GAMEPLAY_ACTIONS: Array[StringName] = [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon", &"reload"]
+const P1_GAMEPLAY_ACTIONS: Array[StringName] = [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon", &"reload", &"gadget_1", &"gadget_2"]
+const GADGET_KEYS := {&"gadget_1": KEY_F, &"gadget_2": KEY_G}
 
 
 static func ensure_player_one_actions(device_id: int) -> void:
@@ -13,6 +14,11 @@ static func ensure_player_one_actions(device_id: int) -> void:
 	reload_key.physical_keycode = KEY_R
 	if not InputMap.action_has_event(&"reload", reload_key):
 		InputMap.action_add_event(&"reload", reload_key)
+	for gadget_action: StringName in GADGET_KEYS:
+		var gadget_key := InputEventKey.new()
+		gadget_key.physical_keycode = GADGET_KEYS[gadget_action]
+		if not InputMap.action_has_event(gadget_action, gadget_key):
+			InputMap.action_add_event(gadget_action, gadget_key)
 	if device_id < 0:
 		return
 	_add_axis(&"left", JOY_AXIS_LEFT_X, -1.0, device_id)
@@ -31,6 +37,8 @@ static func ensure_player_one_actions(device_id: int) -> void:
 	_add_button(&"heal", JOY_BUTTON_LEFT_SHOULDER, device_id)
 	_add_button(&"switch_weapon", JOY_BUTTON_LEFT_STICK, device_id)
 	_add_button(&"reload", JOY_BUTTON_RIGHT_STICK, device_id)
+	_add_axis(&"gadget_1", JOY_AXIS_TRIGGER_LEFT, 1.0, device_id)
+	_add_button(&"gadget_2", JOY_BUTTON_DPAD_UP, device_id)
 
 
 static func ensure_player_two_actions(device_id: int) -> void:
@@ -49,8 +57,10 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_action(&"p2_heal")
 	_add_action(&"p2_switch_weapon")
 	_add_action(&"p2_reload")
+	_add_action(&"p2_gadget_1")
+	_add_action(&"p2_gadget_2")
 
-	for action in [&"p2_left", &"p2_right", &"p2_down", &"p2_jump", &"p2_attack", &"p2_attack_slot_1", &"p2_attack_slot_2", &"p2_dash", &"p2_interact", &"p2_heal", &"p2_switch_weapon", &"p2_reload"]:
+	for action in [&"p2_left", &"p2_right", &"p2_down", &"p2_jump", &"p2_attack", &"p2_attack_slot_1", &"p2_attack_slot_2", &"p2_dash", &"p2_interact", &"p2_heal", &"p2_switch_weapon", &"p2_reload", &"p2_gadget_1", &"p2_gadget_2"]:
 		InputMap.action_erase_events(action)
 
 	_add_axis(&"p2_left", JOY_AXIS_LEFT_X, -1.0, device_id)
@@ -69,6 +79,8 @@ static func ensure_player_two_actions(device_id: int) -> void:
 	_add_button(&"p2_heal", JOY_BUTTON_LEFT_SHOULDER, device_id)
 	_add_button(&"p2_switch_weapon", JOY_BUTTON_LEFT_STICK, device_id)
 	_add_button(&"p2_reload", JOY_BUTTON_RIGHT_STICK, device_id)
+	_add_axis(&"p2_gadget_1", JOY_AXIS_TRIGGER_LEFT, 1.0, device_id)
+	_add_button(&"p2_gadget_2", JOY_BUTTON_DPAD_UP, device_id)
 
 
 static func ensure_network_player_two_actions() -> void:
@@ -76,7 +88,7 @@ static func ensure_network_player_two_actions() -> void:
 
 
 static func ensure_network_player_actions(profile: StringName) -> void:
-	for base_action: StringName in [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon", &"reload"]:
+	for base_action: StringName in [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon", &"reload", &"gadget_1", &"gadget_2"]:
 		var action := StringName("%s_%s" % [profile, base_action])
 		_add_action(action, 0.25 if base_action in [&"left", &"right", &"down"] else 0.2)
 

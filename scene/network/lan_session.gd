@@ -19,7 +19,7 @@ const MAX_PLAYERS := 4
 const DISCOVERY_INTERVAL := 0.75
 const ROOM_EXPIRY := 2.5
 const SNAPSHOT_INTERVAL := 0.05
-const INPUT_ACTIONS := [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon"]
+const INPUT_ACTIONS := [&"left", &"right", &"down", &"jump", &"attack", &"attack_slot_1", &"attack_slot_2", &"dash", &"interact", &"heal", &"switch_weapon", &"gadget_1", &"gadget_2"]
 
 var role: Role = Role.OFFLINE
 var room_name := "Cyberfield LAN"
@@ -513,6 +513,8 @@ func _send_local_input() -> void:
 		"interact": Input.is_action_pressed(&"interact"),
 		"heal": Input.is_action_pressed(&"heal"),
 		"switch_weapon": Input.is_action_pressed(&"switch_weapon"),
+		"gadget_1": InputMap.has_action(&"gadget_1") and Input.is_action_pressed(&"gadget_1"),
+		"gadget_2": InputMap.has_action(&"gadget_2") and Input.is_action_pressed(&"gadget_2"),
 		"sequence": _input_sequence,
 	}
 	var comparable_state: Dictionary = state.duplicate()
@@ -832,6 +834,8 @@ func _spawn_network_projectile(projectile_id: int, origin: Vector2, direction: V
 	projectile.network_visual_only = true
 	room_manager.current_room.add_child(projectile)
 	projectile.setup(origin, direction, null, speed, damage, StringName(target_group))
+	if projectile_type.begins_with("p_") and projectile.has_method("apply_player_visual"):
+		projectile.apply_player_visual(StringName(projectile_type.trim_prefix("p_")))
 	_client_projectiles[projectile_id] = projectile
 
 

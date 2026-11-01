@@ -14,6 +14,13 @@ var spent := false
 var network_id := 0
 var network_visual_only := false
 var target_group: StringName = &"player"
+## Arsenal do jogador (01/11/2026): arco em parábola, perfuração e empurrão por arma.
+var gravity_accel := 0.0
+var pierce_left := 0
+var knockback_multiplier := 1.0
+var player_visual_id: StringName = &""
+## Chumbo visual criado pelo host: também avisa os clientes quando some.
+var network_host_visual := false
 
 
 func _ready() -> void:
@@ -65,6 +72,11 @@ func _physics_process(delta: float) -> void:
 	if lifetime >= maximum_lifetime:
 		_despawn_networked()
 		return
+	if gravity_accel != 0.0:
+		var arc_velocity := direction * speed + Vector2(0.0, gravity_accel * delta)
+		speed = arc_velocity.length()
+		direction = arc_velocity / maxf(speed, 0.001)
+		rotation = direction.angle()
 	if network_visual_only:
 		global_position += direction * speed * delta
 		return
@@ -74,8 +86,33 @@ func _physics_process(delta: float) -> void:
 	var collider := collision.get_collider()
 	if collider is Node and collider.is_in_group(target_group) and (target_group != &"player" or not collider.is_downed):
 		var knockback_direction := signf(direction.x)
-		collider.take_damage(damage, knockback_direction)
+		if target_group == &"enemy":
+			collider.take_damage(damage, knockback_direction, knockback_multiplier)
+			if pierce_left > 0 and collider is PhysicsBody2D:
+				pierce_left -= 1
+				add_collision_exception_with(collider)
+				if projectile_visual != null and projectile_visual.has_method("show_pierce"):
+					projectile_visual.show_pierce()
+				return
+		else:
+			collider.take_damage(damage, knockback_direction)
 	_begin_impact(global_position)
+
+
+## Troca a arte inimiga pela arte do projétil do jogador (também usada pelos clientes LAN).
+func apply_player_visual(visual_id: StringName) -> void:
+	player_visual_id = visual_id
+	var replacement := PlayerProjectileVisual.new()
+	replacement.visual_id = visual_id
+	replacement.name = "PlayerProjectileVisual"
+	replacement.z_index = 4
+	var old := get_node_or_null("ProjectileVisual")
+	if old != null:
+		old.queue_free()
+	add_child(replacement)
+	projectile_visual = replacement
+	if gravity_accel == 0.0:
+		gravity_accel = PlayerProjectileVisual.gravity_for(visual_id)
 
 
 func _begin_impact(impact_position: Vector2) -> void:
@@ -113,7 +150,7 @@ func show_network_impact(impact_position: Vector2) -> void:
 func _despawn_networked() -> void:
 	if is_queued_for_deletion():
 		return
-	if not network_visual_only and network_id > 0:
+	if (not network_visual_only or network_host_visual) and network_id > 0:
 		var lan_session := get_tree().get_first_node_in_group("lan_session")
 		if lan_session != null:
 			lan_session.replicate_projectile_despawn(network_id)

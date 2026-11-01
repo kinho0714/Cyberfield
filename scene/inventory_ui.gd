@@ -282,7 +282,8 @@ func _refresh() -> void:
 		slot_buttons[index].icon = WeaponCatalog.get_visual_texture(weapon_id, "inventory_icon")
 		slot_buttons[index].disabled = false
 		PANEL_PRESENTATION.mark_equipped(slot_buttons[index], player.active_weapon_slot == index)
-		slot_buttons[index].text = "%sSLOT %d\n%s\n%s" % ["▶ " if player.active_weapon_slot == index else "", index + 1, tr(data.name), tr(String(data.type).to_upper())]
+		slot_buttons[index].text = "%sSLOT %d\n%s\n%s // %s" % ["▶ " if player.active_weapon_slot == index else "", index + 1, tr(data.name), WeaponCatalog.category_label(weapon_id), RarityTable.label(player.get_weapon_rarity(weapon_id))]
+		slot_buttons[index].add_theme_color_override("font_color", RarityTable.color(player.get_weapon_rarity(weapon_id)))
 	_refresh_armory(player)
 	_update_weapon_detail(player)
 
@@ -400,7 +401,7 @@ func _update_weapon_detail(player: Node) -> void:
 	if not player.owned_weapons.has(weapon_id):
 		weapon_id = player.get_active_weapon_id()
 		_selected_weapon_id = weapon_id
-	var data := WeaponCatalog.get_definition(weapon_id)
+	var data: Dictionary = player.get_weapon_stats(weapon_id)
 	var equipped_slots: Array[String] = []
 	for index in 2:
 		if player.equipped_weapons[index] == weapon_id:
@@ -412,7 +413,7 @@ func _update_weapon_detail(player: Node) -> void:
 		ammo_text = "MUNIÇÃO %d/%d  |  RESERVA %d" % [int(ammo.get("clip", 0)), int(data.get("magazine", 0)), int(ammo.get("reserve", 0))]
 		if player.weapon_reload_timers.has(weapon_id):
 			ammo_text += "  |  RECARREGANDO"
-	_details.text = "%s  //  %s\n%s\nDANO %d  |  CADÊNCIA %.2fs  |  ALCANCE %d\n%s\n%s" % [WeaponCatalog.get_display_name(weapon_id), tr(String(data.rarity).to_upper()), tr(String(data.get("description", ""))), int(data.damage), float(data.cooldown), int(data.range), ammo_text, status]
+	_details.text = "%s  //  %s  //  %s\n%s\nDANO %d  |  CADÊNCIA %.2fs  |  ALCANCE %d\n%s\n%s" % [WeaponCatalog.get_display_name(weapon_id), RarityTable.label(player.get_weapon_rarity(weapon_id)), WeaponCatalog.category_label(weapon_id), tr(String(data.get("description", ""))), int(data.damage), float(data.cooldown), int(data.range), ammo_text, status]
 	for button in _equip_slot_buttons:
 		button.disabled = not player.owned_weapons.has(weapon_id)
 	_unequip_button.disabled = player.equipped_weapons[1 - player.active_weapon_slot].is_empty()
@@ -431,6 +432,15 @@ func _show_inventory_tab(index: int) -> void:
 	var player := _local_player()
 	if index == 1 and player != null:
 		_summary.text = "%s\n\n%s  %d / %d\n%s  %d\n%s  %d\n%s  %d\n%s  %d / %d" % [tr("STATUS"), tr("VIDA"), player.health, player.max_health, tr("SAÚDE"), player.health_attribute, tr("INTELIGÊNCIA"), player.intellect, tr("FORÇA"), player.strength, tr("DOSES"), player.heal_doses, player.max_heal_doses]
+		_summary.text += "\n\nCYBERWARES ATIVOS"
+		for instance: Dictionary in player.cyberware_instances:
+			_summary.text += "\n• %s [%s] — %s" % [CyberwareCatalog.display_name(instance), RarityTable.label(StringName(instance.rarity)), CyberwareCatalog.describe(instance)]
+		if player.cyberware_instances.is_empty():
+			_summary.text += "\nNenhum implante. Fabrique no terminal da Casa ou encontre na run."
+		_summary.text += "\n\nSLOTS ATIVOS (F / G)"
+		for slot in AccessoryCatalog.SLOT_COUNT:
+			var accessory_id: StringName = player.gadgets.slots[slot]
+			_summary.text += "\n%d. %s" % [slot + 1, "%s — cargas %d/%d" % [AccessoryCatalog.display_name(accessory_id), player.gadgets.charges[slot], player.gadgets.max_charges(slot)] if not accessory_id.is_empty() else "VAZIO"]
 	elif index == 2:
 		var hud := get_parent().get_node_or_null("RunDebugHUD")
 		var run := get_parent().get_node_or_null("RunManager")
@@ -446,7 +456,7 @@ func _show_inventory_tab(index: int) -> void:
 			_summary.text += "ARSENAL ENCONTRADO\n"
 			for weapon_id: StringName in player.owned_weapons:
 				var equipped := " [EM USO]" if player.equipped_weapons.has(weapon_id) else ""
-				_summary.text += "• %s%s\n" % [WeaponCatalog.get_display_name(weapon_id), equipped]
+				_summary.text += "• %s [%s]%s\n" % [WeaponCatalog.get_display_name(weapon_id), RarityTable.label(player.get_weapon_rarity(weapon_id)), equipped]
 			_summary.text += "\nCONSUMÍVEIS\nFRASCOS DE CURA  %d / %d\n\nOUTROS ITENS\n" % [player.heal_doses, player.max_heal_doses]
 			for item: Dictionary in cargo.items:
 				_summary.text += "%s × %d\n" % [tr(String(item.get("name_key", item.get("id", "")))), int(item.get("quantity", 0))]

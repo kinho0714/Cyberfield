@@ -3,7 +3,7 @@ extends Node
 
 signal profile_changed
 
-const SAVE_VERSION := 3
+const SAVE_VERSION := 4
 const DEFAULT_SAVE_PATH := "user://cyberfield_meta_v1.json"
 const CREDIT_RATE := 0.20
 const PURCHASES := {
@@ -25,6 +25,15 @@ var processed_run_ids: Array[String] = []
 var recovered_models: Array[StringName] = []
 var blueprints: Array[StringName] = []
 var house_stage := 0
+## v4 (01/11/2026): arsenal fabricado (id -> raridade), loadout de partida, cyberwares
+## (estoque + instalados por slot) e os dois acessórios ativos. Saves v1-v3 carregam
+## com esses campos vazios; nada antigo é descartado.
+var armory: Dictionary = {&"scrap_blade": &"common"}
+var loadout_weapons: Array[StringName] = [&"scrap_blade", &""]
+var cyberwares: Array[Dictionary] = []
+var installed_cyberwares: Dictionary = {}
+var owned_accessories: Array[StringName] = []
+var equipped_accessories: Array[StringName] = [&"", &""]
 var hub_progression: Dictionary = {
 	&"workshop": 0,
 	&"infrastructure": 0,
@@ -73,6 +82,12 @@ func to_dictionary() -> Dictionary:
 		"blueprints": blueprints.duplicate(),
 		"house_stage": house_stage,
 		"hub_progression": hub_progression.duplicate(true),
+		"armory": _string_dictionary(armory),
+		"loadout_weapons": _string_array(loadout_weapons),
+		"cyberwares": _serialize_cyberwares(),
+		"installed_cyberwares": _string_dictionary(installed_cyberwares),
+		"owned_accessories": _string_array(owned_accessories),
+		"equipped_accessories": _string_array(equipped_accessories),
 	}
 
 
@@ -84,6 +99,8 @@ func record_run(result: Dictionary) -> int:
 		return 0
 	processed_run_ids.append(run_id)
 	_record_extracted_models(result)
+	_record_found_blueprints(result)
+	_record_found_cyberwares(result)
 	if processed_run_ids.size() > 80:
 		processed_run_ids.pop_front()
 	var multiplier := 1.10 if unlocked_upgrades.has(&"salvage_protocol") else 1.0
@@ -174,7 +191,179 @@ func get_run_weapon_pool() -> Array[StringName]:
 	for weapon_id: StringName in unlocked_weapons:
 		if weapon_id != &"scrap_blade" and WeaponCatalog.WEAPONS.has(weapon_id):
 			result.append(weapon_id)
+	# Protótipos descobríveis aparecem nas runs para que o blueprint possa ser recuperado.
+	for weapon_id: StringName in WeaponCatalog.discoverable_ids():
+		if not result.has(weapon_id):
+			result.append(weapon_id)
 	return result if not result.is_empty() else [&"scrap_blade"]
+
+
+# --- Arsenal: blueprint -> estudo -> fabricação -> loadout -------------------------
+
+func is_blueprint_known(weapon_id: StringName) -> bool:
+	return weapon_id == &"scrap_blade" or blueprints.has(weapon_id) or unlocked_weapons.has(weapon_id)
+
+
+func armory_rarity(weapon_id: StringName) -> StringName:
+	return RarityTable.normalize(armory.get(weapon_id, &"common"))
+
+
+func can_fabricate_weapon(weapon_id: StringName, rarity: StringName) -> bool:
+	if not WeaponCatalog.WEAPONS.has(weapon_id) or not is_blueprint_known(weapon_id):
+		return false
+	if not RarityTable.enabled_tiers().has(rarity):
+		return false
+	if armory.has(weapon_id) and not RarityTable.is_better(rarity, armory_rarity(weapon_id)):
+		return false
+	return scrap >= WeaponCatalog.craft_cost(weapon_id, rarity)
+
+
+func fabricate_weapon(weapon_id: StringName, rarity: StringName) -> bool:
+	if not can_fabricate_weapon(weapon_id, rarity):
+		return false
+	scrap -= WeaponCatalog.craft_cost(weapon_id, rarity)
+	armory[weapon_id] = RarityTable.normalize(rarity)
+	_commit()
+	return true
+
+
+func set_loadout_weapon(slot: int, weapon_id: StringName) -> bool:
+	if slot < 0 or slot > 1:
+		return false
+	if weapon_id.is_empty():
+		if slot == 0 or loadout_weapons[1 - slot].is_empty():
+			return false
+		loadout_weapons[slot] = &""
+		_commit()
+		return true
+	if not armory.has(weapon_id):
+		return false
+	var other := loadout_weapons.find(weapon_id)
+	if other >= 0 and other != slot:
+		loadout_weapons[other] = loadout_weapons[slot]
+	loadout_weapons[slot] = weapon_id
+	if loadout_weapons[0].is_empty():
+		loadout_weapons = [loadout_weapons[1], &""]
+	_commit()
+	return true
+
+
+# --- Cyberwares --------------------------------------------------------------------
+
+func find_cyberware(uid: String) -> Dictionary:
+	for instance: Dictionary in cyberwares:
+		if String(instance.uid) == uid:
+			return instance
+	return {}
+
+
+func fabricate_cyberware(line: StringName, rarity: StringName) -> Dictionary:
+	var cost := CyberwareCatalog.fabricate_cost(rarity)
+	if not CyberwareCatalog.has_line(line) or not RarityTable.enabled_tiers().has(rarity) or scrap < cost:
+		return {}
+	scrap -= cost
+	var instance := CyberwareCatalog.make_instance(line, rarity, 1)
+	cyberwares.append(instance)
+	_commit()
+	return instance
+
+
+func upgrade_cyberware(uid: String) -> bool:
+	var instance := find_cyberware(uid)
+	var cost := CyberwareCatalog.upgrade_cost(instance)
+	if instance.is_empty() or cost < 0 or scrap < cost:
+		return false
+	scrap -= cost
+	instance["level"] = int(instance.level) + 1
+	_commit()
+	return true
+
+
+func install_cyberware(uid: String) -> bool:
+	var instance := find_cyberware(uid)
+	if instance.is_empty():
+		return false
+	var slot := CyberwareCatalog.slot_for(StringName(instance.line))
+	if String(installed_cyberwares.get(slot, "")) == uid:
+		return false
+	installed_cyberwares[slot] = uid
+	_commit()
+	return true
+
+
+func uninstall_cyberware(slot: StringName) -> bool:
+	if not installed_cyberwares.has(slot):
+		return false
+	installed_cyberwares.erase(slot)
+	_commit()
+	return true
+
+
+func is_cyberware_installed(uid: String) -> bool:
+	return installed_cyberwares.values().has(uid)
+
+
+func salvage_cyberware(uid: String) -> int:
+	var instance := find_cyberware(uid)
+	if instance.is_empty() or is_cyberware_installed(uid):
+		return 0
+	var value := CyberwareCatalog.salvage_value(instance)
+	cyberwares.erase(instance)
+	scrap += value
+	_commit()
+	return value
+
+
+func get_installed_cyberware_instances() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for slot: StringName in GameplayProgressionFoundation.CYBERWARE_SLOTS:
+		var instance := find_cyberware(String(installed_cyberwares.get(slot, "")))
+		if not instance.is_empty():
+			result.append(instance.duplicate(true))
+	return result
+
+
+# --- Acessórios ativos (2 slots) -----------------------------------------------------
+
+func fabricate_accessory(accessory_id: StringName) -> bool:
+	var cost := AccessoryCatalog.craft_cost(accessory_id)
+	if not AccessoryCatalog.has_accessory(accessory_id) or owned_accessories.has(accessory_id) or scrap < cost:
+		return false
+	scrap -= cost
+	owned_accessories.append(accessory_id)
+	if equipped_accessories.has(&""):
+		equipped_accessories[equipped_accessories.find(&"")] = accessory_id
+	_commit()
+	return true
+
+
+func equip_accessory(slot: int, accessory_id: StringName) -> bool:
+	if slot < 0 or slot >= AccessoryCatalog.SLOT_COUNT:
+		return false
+	if not accessory_id.is_empty() and not owned_accessories.has(accessory_id):
+		return false
+	var other := equipped_accessories.find(accessory_id) if not accessory_id.is_empty() else -1
+	if other >= 0 and other != slot:
+		equipped_accessories[other] = equipped_accessories[slot]
+	equipped_accessories[slot] = accessory_id
+	_commit()
+	return true
+
+
+## Pacote aplicado ao jogador ao entrar no hub/começar uma run.
+func get_run_loadout() -> Dictionary:
+	var weapons: Array = []
+	for weapon_id: StringName in loadout_weapons:
+		if not weapon_id.is_empty() and armory.has(weapon_id):
+			weapons.append([weapon_id, armory_rarity(weapon_id)])
+	if weapons.is_empty():
+		weapons.append([&"scrap_blade", &"common"])
+	return {"weapons": weapons, "cyberwares": get_installed_cyberware_instances(), "accessories": equipped_accessories.duplicate()}
+
+
+func _commit() -> void:
+	save_profile()
+	profile_changed.emit()
 
 
 func _apply_save(data: Dictionary) -> void:
@@ -205,6 +394,7 @@ func _apply_save(data: Dictionary) -> void:
 		if WeaponCatalog.WEAPONS.has(blueprint_id) and not blueprints.has(blueprint_id):
 			blueprints.append(blueprint_id)
 	house_stage = clampi(int(data.get("house_stage", 0)), 0, 3)
+	_apply_equipment_save(data)
 	var stored_hub: Variant = data.get("hub_progression", {})
 	if stored_hub is Dictionary:
 		for axis: StringName in hub_progression.keys():
@@ -221,6 +411,12 @@ func _reset_defaults() -> void:
 	recovered_models.clear()
 	blueprints.clear()
 	house_stage = 0
+	armory = {&"scrap_blade": &"common"}
+	loadout_weapons = [&"scrap_blade", &""]
+	cyberwares.clear()
+	installed_cyberwares.clear()
+	owned_accessories.clear()
+	equipped_accessories = [&"", &""]
 	hub_progression = {&"workshop": 0, &"infrastructure": 0, &"operations": 0, &"storage": 0, &"spark": 0}
 
 
@@ -235,6 +431,86 @@ func _record_extracted_models(result: Dictionary) -> void:
 			var model_id := StringName(weapon_value)
 			if WeaponCatalog.WEAPONS.has(model_id) and not recovered_models.has(model_id):
 				recovered_models.append(model_id)
+
+
+## Blueprints viajam pelo link de dados do Jhon: valem mesmo em derrota.
+func _record_found_blueprints(result: Dictionary) -> void:
+	for value: Variant in _as_array(result.get("blueprints_found", [])):
+		var model_id := StringName(value)
+		if WeaponCatalog.WEAPONS.has(model_id) and not recovered_models.has(model_id) and not is_blueprint_known(model_id):
+			recovered_models.append(model_id)
+
+
+## Cyberware achado: extraído em vitória; em derrota vira sucata reaproveitável.
+func _record_found_cyberwares(result: Dictionary) -> void:
+	var completed := bool(result.get("completed", false))
+	for value: Variant in _as_array(result.get("cyberwares_found", [])):
+		var instance := CyberwareCatalog.normalize_instance(value)
+		if instance.is_empty() or not find_cyberware(String(instance.uid)).is_empty():
+			continue
+		if completed:
+			cyberwares.append(instance)
+		else:
+			scrap += CyberwareCatalog.salvage_value(instance)
+
+
+func _apply_equipment_save(data: Dictionary) -> void:
+	var stored_armory: Variant = data.get("armory", {})
+	if stored_armory is Dictionary:
+		for key: Variant in stored_armory:
+			var weapon_id := StringName(str(key))
+			if WeaponCatalog.WEAPONS.has(weapon_id):
+				armory[weapon_id] = RarityTable.normalize((stored_armory as Dictionary)[key])
+	var stored_loadout := _as_array(data.get("loadout_weapons", []))
+	if stored_loadout.size() == 2:
+		var parsed: Array[StringName] = []
+		for value: Variant in stored_loadout:
+			var weapon_id := StringName(str(value))
+			parsed.append(weapon_id if armory.has(weapon_id) and not parsed.has(weapon_id) else &"")
+		if not parsed[0].is_empty():
+			loadout_weapons = parsed
+	for value: Variant in _as_array(data.get("cyberwares", [])):
+		var instance := CyberwareCatalog.normalize_instance(value)
+		if not instance.is_empty() and find_cyberware(String(instance.uid)).is_empty():
+			cyberwares.append(instance)
+	var stored_installed: Variant = data.get("installed_cyberwares", {})
+	if stored_installed is Dictionary:
+		for key: Variant in stored_installed:
+			var slot := StringName(str(key))
+			var uid := String((stored_installed as Dictionary)[key])
+			var instance := find_cyberware(uid)
+			if GameplayProgressionFoundation.is_supported_cyberware_slot(slot) and not instance.is_empty() and CyberwareCatalog.slot_for(StringName(instance.line)) == slot:
+				installed_cyberwares[slot] = uid
+	for value: Variant in _as_array(data.get("owned_accessories", [])):
+		var accessory_id := StringName(str(value))
+		if AccessoryCatalog.has_accessory(accessory_id) and not owned_accessories.has(accessory_id):
+			owned_accessories.append(accessory_id)
+	var stored_equipped := _as_array(data.get("equipped_accessories", []))
+	for slot in mini(stored_equipped.size(), AccessoryCatalog.SLOT_COUNT):
+		var accessory_id := StringName(str(stored_equipped[slot]))
+		if owned_accessories.has(accessory_id) and not equipped_accessories.has(accessory_id):
+			equipped_accessories[slot] = accessory_id
+
+
+func _serialize_cyberwares() -> Array:
+	var result: Array = []
+	for instance: Dictionary in cyberwares:
+		result.append({"uid": String(instance.uid), "line": String(instance.line), "rarity": String(instance.rarity), "level": int(instance.level)})
+	return result
+
+
+func _string_dictionary(source: Dictionary) -> Dictionary:
+	var result := {}
+	for key: Variant in source:
+		result[String(key)] = String(source[key])
+	return result
+
+
+func _string_array(source: Array) -> Array:
+	var result: Array = []
+	for value: Variant in source:
+		result.append(String(value))
+	return result
 
 
 func _result_id(result: Dictionary) -> String:
