@@ -84,3 +84,20 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Projétil: colisão na altura de sempre; só o desenho sai do cano (hitboxes dos inimigos ~30 px).
 - Testes antigos que fixavam escala 1,5/11 animações do Jhon foram atualizados para o novo contrato.
 - Próximo: playtest Android; folhas para revive/parede/mergulho e RELOAD_RIFLE correta.
+
+## Missão P0+P1 (02/11, mesma branch, sem push) — relatório `docs/MISSAO_P0_P1_2026-11-02.md`
+- Base exata `4798b78` (árvore `3ce08be2…`) = `b3bf6ab` do aparelho (`cyberfield-jhonb-2026-11-02`).
+- P0-A terminal de blueprints: lista longa sem rolagem por toque (emulação de mouse desligada) →
+  abas + `ui/touch_scroll_router.gd` (toque ao soltar, arrasto rola, recorte respeitado).
+- P1-A baús trap: inimigo entrava na árvore antes de ser posicionado → dano de queda fantasma.
+  Corrigido no baú e com re-ancoragem do spawn no 1º tick (`Enemy`/`RangedEnemy`).
+- P1-B: `scene/weapons/weapon_loot_table.gd` (sequência por estágio, afinidade de bioma, baús com
+  arma, raridade por estágio de verdade) + 8 armas novas. Geração byte a byte idêntica.
+- P0-B: `scene/dev/dev_mode.gd` + `dev_mode_panel.gd`; perfil de teste isolado
+  (`<save>_dev_sandbox.json`); opção nas Configurações; botão DEV no HUD; F9.
+- P1-C: escada de serviço nos poços do caminho crítico; `scene/interactables/dash_passage.gd`
+  + alcova secreta por bioma; saída A alterna bioma, B aprofunda/atalho; rótulos reais.
+- Testes novos: blueprint_menu_touch, trap_chest_spawn, weapon_loot_distribution, dev_mode,
+  exploration_routes. Entrega: patch + instalador Termux testado em clones (scratchpad).
+- Próximo: playtest físico (toque no terminal/painel Dev, botão DEV, passagens de dash, escada
+  de serviço, rótulos de saída), balancear as armas novas, arte própria da passagem de dash.

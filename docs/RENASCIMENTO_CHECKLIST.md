@@ -118,3 +118,21 @@ por SHA-256 contra o manifesto do pacote).
 | Revive, parede, mergulho | ANTIGO | sem folha aprovada: continuam com as folhas v2 (outro design) |
 | Retrato do HUD | COMPROVADO | recortado do IDLE oficial |
 | Android físico | PENDENTE | export inclui tudo (`all_resources`); não testado no aparelho |
+
+## Missão P0+P1 (02/11/2026)
+Evidência: Godot 4.7.2 oficial, cena real `main.tscn`, headless + Xvfb (1600×720, 1280×720,
+960×540); toques como eventos de tela reais (`Input.parse_input_event`, emulação de mouse
+desligada como no aparelho). Nenhum item testado no Android físico.
+| Sistema | Estado | Evidência / observação |
+|---|---|---|
+| Terminal de blueprints por toque | CORRIGIDO | antes: 1488 px de lista em 528 px, sem rolagem por toque, blueprint fora da tela (reproduzido); depois: `blueprint_menu_touch_smoke_test` (abrir por INTERAGIR, estudar/fabricar/S2/raridade por toque, arrasto, recorte, abas, mouse, teclado, voltar) |
+| Baús trap | CORRIGIDO | antes: 25 falhas (mortos em 150 quadros na Cidade Baixa/Lab; 333/686 no Industrial); depois: `trap_chest_spawn_smoke_test` 0 falhas, 7 baús, 14 inimigos, 3 biomas |
+| Modo Dev | COMPROVADO (desktop/toque simulado) | `dev_mode_smoke_test`: opção por toque, botão DEV por toque, todas as abas, perfil real idêntico byte a byte; toque físico PENDENTE |
+| Distribuição de armas | COMPROVADO | `weapon_loot_distribution_smoke_test`: 1,49 ofertas/estágio (antes ~0,38), 19/19 armas, baús soltam pickup real, chefe dá projeto; geração idêntica à base |
+| 8 armas novas | COMPROVADO / FRACO | comportamento por categoria real; arte original; reutilizam projéteis/FX; balanceamento sem playtest |
+| Escada de serviço nos poços | COMPROVADO | `exploration_routes_smoke_test`: 156/156 poços críticos; robô sobe só pulando com escalada desligada, não sobe sem a escada, descer continua livre |
+| Passagem de dash + baú secreto | COMPROVADO / FRACO (arte) | 30/30 biomas; andar/pular não abrem, dash abre, registrado no mapa; baú solta arma mín. incomum |
+| Progressão por saída (A alterna, B aprofunda/atalho) | COMPROVADO | só saídas A = sequência antiga; B da Cidade Baixa → Laboratório no jogo real; rótulos com destino real |
+| Jhon Design B, arsenal, cyberwares, acessórios | SEM REGRESSÃO | testes antigos (`jhon_design_b_animation`, `arsenal_expansion`, `mega_pass_arsenal_sfx_ui`) aprovados |
+| Suíte Godot completa | SEM REGRESSÃO | 48/53 aprovados; as 5 falhas são as mesmas da base `413b508` (43/48) |
+| Instalador Termux | COMPROVADO (clones) | 25/25: instala na base simulada (mesma árvore, hash diferente, sem identidade git), detecta já instalado, `--rollback`, recusa alteração local/base errada/arquivo solto/patch corrompido, `--verificar` não altera, avisa recursos privados; aparelho PENDENTE |

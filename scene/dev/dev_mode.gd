@@ -158,6 +158,8 @@ func _on_settings_changed() -> void:
 
 
 func _physics_process(_delta: float) -> void:
+	if not is_enabled():
+		return
 	# Invencível não pode cair para sempre: volta ao último chão seguro.
 	var player := local_player()
 	if player == null or not bool(player.get("dev_invincible")):
