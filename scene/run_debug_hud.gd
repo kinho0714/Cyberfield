@@ -143,6 +143,11 @@ func _input(event: InputEvent) -> void:
 		return
 	if bool(get_parent().is_transitioning) or get_parent().get_node("PauseMenu/Overlay").visible:
 		return
+	# Painéis modais por cima do HUD (terminal da Casa, Modo Dev) recebem o toque primeiro.
+	for modal_group: StringName in [&"meta_lab_ui", &"dev_mode_panel"]:
+		var modal := get_tree().get_first_node_in_group(modal_group)
+		if modal != null and modal.has_method("is_open") and bool(modal.is_open()):
+			return
 	if event is InputEventScreenTouch and event.pressed:
 		if session_summary_close.get_global_rect().has_point(event.position):
 			get_viewport().set_input_as_handled()
