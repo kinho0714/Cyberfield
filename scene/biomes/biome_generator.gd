@@ -67,6 +67,9 @@ var _content_modules: Dictionary = {
 var _content_entries: Array[Dictionary] = []
 var _teleporter_entries: Array[Dictionary] = []
 var _trap_event_ids: Array[StringName] = []
+## P1-B: armas ofertadas neste estágio (id do conteúdo -> arma) e cache da sequência.
+var _weapon_offers: Dictionary = {}
+var _weapon_offer_cache: Array[StringName] = []
 var _heavy_enemy_ids: Array[StringName] = []
 var _reserved_event_marker_ids: Dictionary = {}
 var _room_director: RoomDirector
@@ -149,6 +152,7 @@ func get_generation_report() -> Dictionary:
 		"heavy_enemy_ids": _heavy_enemy_ids.duplicate(),
 		"trap_chest_count": spawned_trap_chest_count,
 		"trap_event_ids": _trap_event_ids.duplicate(),
+		"weapon_offers": _weapon_offers.duplicate(),
 		"combat_module_count": combat_modules.size(),
 		"max_empty_sequence": maximum_empty_sequence,
 		"auxiliary_platform_count": auxiliary_platform_count,
@@ -675,6 +679,8 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	invalid_platform_clearance_count = 0
 	minimum_platform_clearance = INF
 	_trap_event_ids.clear()
+	_weapon_offers.clear()
+	_weapon_offer_cache.clear()
 	_heavy_enemy_ids.clear()
 	_reserved_event_marker_ids.clear()
 	_content_modules = {"loot": [], "attribute": [], "exit": [], "enemy": [], "weapon": []}
@@ -1154,11 +1160,42 @@ func _spawn_loot(rng: RandomNumberGenerator, run_manager: Node, stage_prefix: St
 			ordinary_loot.loot_id = loot_id
 			ordinary_loot.amount = 15 + run_manager.extra_enemy_count * 5
 			loot = ordinary_loot
+		_assign_chest_weapon(loot, loot_id, &"trap_reward" if spawn_trap else &"chest", run_manager)
 		add_child(loot)
 		loot.global_position = _grounded_content_position(marker, 44.0, 26.0)
 		spawned_loot_count += 1
 		(_content_modules.loot as Array).append(module_index)
 		_content_entries.append({"kind": &"loot", "content_id": loot_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
+
+
+## P1-B: baús podem conter arma (sequência do estágio no índice do baú). Usa RNG próprio.
+func _assign_chest_weapon(loot: Node, loot_id: StringName, source: StringName, run_manager: Node) -> void:
+	if run_manager == null or not WeaponLootTable.source_rolls_weapon(source, _run_seed(run_manager), loot_id):
+		return
+	var offers := _weapon_offer_sequence(run_manager)
+	var index := WeaponLootTable.loot_index(loot_id)
+	if index <= 0 or index >= offers.size():
+		return
+	loot.set("reward_weapon_id", offers[index])
+	loot.set("reward_rarity", WeaponLootTable.rarity_for(source, _run_seed(run_manager), loot_id, _stage_index(run_manager)))
+	_weapon_offers[loot_id] = offers[index]
+
+
+func _weapon_offer_sequence(run_manager: Node) -> Array[StringName]:
+	if not _weapon_offer_cache.is_empty() or run_manager == null:
+		return _weapon_offer_cache
+	var pool: Array = run_manager.get("run_weapon_pool") as Array
+	var history: Array = run_manager.get("weapon_offer_history") as Array if run_manager.get("weapon_offer_history") != null else []
+	_weapon_offer_cache = WeaponLootTable.stage_sequence(_run_seed(run_manager), _stage_index(run_manager), biome_definition.biome_id, pool if pool != null else [], history, 6)
+	return _weapon_offer_cache
+
+
+func _run_seed(run_manager: Node) -> int:
+	return int(run_manager.get("seed_value")) if run_manager != null and run_manager.get("seed_value") != null else 0
+
+
+func _stage_index(run_manager: Node) -> int:
+	return int(run_manager.get("stage_index")) if run_manager != null and run_manager.get("stage_index") != null else 0
 
 
 func _trap_event_markers_for_loot(loot_marker: Marker2D) -> Array[Marker2D]:
@@ -1201,7 +1238,13 @@ func _spawn_weapon_pickups(rng: RandomNumberGenerator, run_manager: Node, stage_
 		configured_pool = run_manager.get("run_weapon_pool") as Array
 	if not configured_pool.is_empty():
 		weapon_pool.assign(configured_pool)
-	pickup.weapon_id = weapon_pool[rng.randi_range(0, weapon_pool.size() - 1)]
+	# O sorteio antigo continua sendo consumido (RNG da geração preservado); a arma agora
+	# vem da sequência ponderada do estágio (WeaponLootTable, índice 0).
+	var legacy_pick: StringName = weapon_pool[rng.randi_range(0, weapon_pool.size() - 1)]
+	var offers := _weapon_offer_sequence(run_manager)
+	pickup.weapon_id = offers[0] if not offers.is_empty() else legacy_pick
+	pickup.rarity = WeaponLootTable.rarity_for(&"biome_pickup", _run_seed(run_manager), pickup.pickup_id, _stage_index(run_manager))
+	_weapon_offers[pickup.pickup_id] = pickup.weapon_id
 	add_child(pickup)
 	pickup.global_position = _grounded_content_position(marker, 44.0, 15.0)
 	var module_index := int(marker.get_meta("module_index"))
@@ -1554,6 +1597,8 @@ func _clear_generated_children() -> void:
 	_content_entries.clear()
 	_teleporter_entries.clear()
 	_trap_event_ids.clear()
+	_weapon_offers.clear()
+	_weapon_offer_cache.clear()
 	_heavy_enemy_ids.clear()
 	_reserved_event_marker_ids.clear()
 	_structural_metrics.clear()

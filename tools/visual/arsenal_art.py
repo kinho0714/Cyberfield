@@ -8,7 +8,7 @@ Pixel art original e determinística (nada de terceiros). Gera:
   assets/cyberware/frames/<raridade>.png        moldura 36x36 por raridade
   assets/accessories/*.png                      ícones e sprites de mundo dos acessórios
 
-    python3 -I tools/visual/arsenal_art.py [--preview DIR]
+    python3 -I tools/visual/arsenal_art.py [--preview DIR] [--only id1,id2]
 """
 from __future__ import annotations
 
@@ -130,6 +130,84 @@ WEAPONS = {
         "..VvVD..........",
         "...VvV..........",
         "....VV..........",
+    ],
+    # --- 02/11/2026 (P1-B): armas novas ---
+    "police_baton": [
+        ".....DD..........................",
+        "............................ccC..",
+        "TtTtDDDDDDDDDDDDDDDDDDDDDDDDDCCCc",
+        "tTtTMMMMMMMMMMMMMMMMMMMMMMMMMCCCC",
+        "TtTtDDDDDDDDDDDDDDDDDDDDDDDDDCCCc",
+        "............................ccC..",
+    ],
+    "hydraulic_hammer": [
+        ".............................MMMMMMMMMMM",
+        ".............................MLLLLLLLLLM",
+        "..........................DDDMLYYYYYYYLM",
+        "TtTtTtLLLLLLLLLLLLLLLLLLLLLLLMLYKYKYKYLM",
+        "tTtTtTMMMMMMMMMMMMMMMMMMMMMMMMLYYYYYYYLM",
+        "..........................DDDMLLLLLLLLLM",
+        ".............................MMMMMMMMMMM",
+    ],
+    "plasma_katana": [
+        "........MM.....................................",
+        "PpPpPpPpMMccccccccccccccccccccccccccccccccc....",
+        "pPpPpPpPMMWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWc..",
+        "........MMCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCc",
+        "........MM.....................................",
+    ],
+    "heavy_revolver": [
+        "...MMMMMMMMMMMMMMMMMMMMMMMMM.",
+        "..MLLLLLLLLLLLLLLLLLLLLLLLLLK",
+        "..MDDDLLLLLDDDDDDDDDDDDDDDDD.",
+        "..MDLWLWLWLD.................",
+        "...DDLLLLLDD.rRr.............",
+        "...DBbBbD....................",
+        "...DbBbBD....................",
+        "...DBbBbD....................",
+        "....DDDD.....................",
+    ],
+    "gang_smg": [
+        "....DDDDDDDDDDDDDDDDDDDDDD....",
+        "...DMMMMMMMMMMMMMMMMMMMMMMMDDK",
+        "...DMLLLLLLLLLLSSLLLLLLLLLMDD.",
+        "MMMDMMMMMMMMMMMMMMMMMMMMMMM...",
+        "M..DDDDD.DDD..................",
+        "M...DtD..DMD..................",
+        "MM..DTD..DMD..................",
+        ".....DD..DMD..................",
+        "..........DD..................",
+    ],
+    "riot_shotgun": [
+        "..............DDDDDDDDDDDDDDDDDDDDDDDDDDDDK.",
+        "DDDD..........MLLLLLLLLLLLLLLLLLLLLLLLLLLLLM",
+        "DMMMDDD.......MDDDDDDDDDDDDDDDDDDDDDDDDDDDDM",
+        "DMMMMMMDDDDDDDMNNNNNNNCCNNNNNNNNNNNNNNNNNNNM",
+        "DMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.",
+        "..DDDMMMMMMMMMDDMLMMMMMMM..................",
+        "......DDDDDDDDDDDDD........................",
+    ],
+    "rivet_gun": [
+        "......YYYYYYYYYYYYYYYYYY......",
+        ".....YyYYYYYYYYYYYYYYYYYYMMMM.",
+        ".....YYYYYYYYYYYYYYYYYYYYMLLLK",
+        ".....DDDDDDDDDDDDDDDDDDDDMMMM.",
+        "......DDMD.LWLWLWLWLW.........",
+        "......DMMD....................",
+        "......DMMD....................",
+        ".......DD.....................",
+    ],
+    "gauss_rifle": [
+        "...................DDDDDDDDDD...............................",
+        "...................DCcCcCcCcD...............................",
+        "DDDD...........DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD...",
+        "DMMMDDD........MLLLLLLLLLLLLLLLLVVLLLVVLLLVVLLLVVLLLLLLLLLM..",
+        "DMMMMMMDDDDDDDDMCCCCCCCCCCCCCCCCVvVLLVvVLLVvVLLVvVLLLLLLLLLLK",
+        "DMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMVVMMMVVMMMVVMMMVVMMMMMMMMMMM.",
+        ".DDMMMMMMMDDDD.DDDDDD...DM..................................",
+        "...DDDDDDD.....DMMMMD...DM..................................",
+        "...............DMCMMD.......................................",
+        "...............DDDDDD.......................................",
     ],
 }
 
@@ -511,7 +589,10 @@ def build() -> dict[str, Image.Image]:
 
 def main() -> None:
     images = build()
+    only = sys.argv[sys.argv.index("--only") + 1].split(",") if "--only" in sys.argv else []
     for rel, im in images.items():
+        if only and Path(rel).stem not in only:
+            continue
         path = ROOT / rel
         path.parent.mkdir(parents=True, exist_ok=True)
         im.save(path, optimize=True)

@@ -105,6 +105,10 @@ var trap_events_cleared := 0
 var trap_events_rewarded := 0
 var completion_rewards: Dictionary = {}
 var run_weapon_pool: Array[StringName] = [&"scrap_blade"]
+## P1-B: tipo do bioma atual (lower_city/industrial/lab) e armas já ofertadas nesta run
+## (determinístico pela geração; usado para não repetir armas entre estágios).
+var current_biome_kind: StringName = &""
+var weapon_offer_history: Array[StringName] = []
 
 
 func _process(delta: float) -> void:
@@ -171,6 +175,8 @@ func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false
 	stage_index = 0
 	current_stage_id = &"lower_city"
 	stage_history.clear()
+	weapon_offer_history.clear()
+	current_biome_kind = &""
 	_clear_biome_state()
 	_reset_run_quality_state()
 	for room_data in RUN_SEQUENCE:
@@ -292,6 +298,10 @@ func prepare_room(room_id: StringName, room: Node) -> void:
 
 func enter_generated_biome(report: Dictionary) -> void:
 	var definition_id := StringName(report.get("biome_id", &"lower_city"))
+	current_biome_kind = definition_id
+	for offered: Variant in (report.get("weapon_offers", {}) as Dictionary).values():
+		if not weapon_offer_history.has(StringName(offered)):
+			weapon_offer_history.append(StringName(offered))
 	current_biome_id = current_stage_id if not current_stage_id.is_empty() else definition_id
 	current_biome_name = String(report.get("display_name", "CIDADE BAIXA"))
 	generated_module_count = int(report.get("module_count", 0))
@@ -478,6 +488,7 @@ func finish_run() -> void:
 		return
 	boss_defeated = get_current_room_id() == &"boss_stage_06" and get_alive_boss_count() == 0
 	_grant_boss_completion_reward()
+	_grant_boss_blueprint()
 	_capture_run_results(true)
 	run_state = RunState.COMPLETED
 	run_active = false
@@ -1352,3 +1363,25 @@ func _grant_boss_completion_reward() -> void:
 	total_money_earned += amount
 	scrap += scrap_amount
 	total_scrap_earned += scrap_amount
+
+
+## P1-B: vencer o guardião entrega o projeto de uma arma ainda desconhecida do perfil.
+func _grant_boss_blueprint() -> void:
+	if not boss_defeated or completion_rewards.has("boss_blueprint"):
+		return
+	var known: Array = []
+	var meta := get_tree().get_first_node_in_group("meta_progression") if is_inside_tree() else null
+	if meta != null:
+		known.append_array(meta.recovered_models)
+		known.append_array(meta.blueprints)
+		known.append_array(meta.unlocked_weapons)
+	known.append_array(blueprints_found)
+	var pool: Array = run_weapon_pool.duplicate()
+	for id: StringName in WeaponCatalog.discoverable_ids():
+		if not pool.has(id):
+			pool.append(id)
+	var weapon_id := WeaponLootTable.boss_blueprint(seed_value, pool, known)
+	if weapon_id.is_empty():
+		return
+	completion_rewards.boss_blueprint = String(weapon_id)
+	blueprints_found.append(weapon_id)

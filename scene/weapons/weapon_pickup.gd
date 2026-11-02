@@ -21,7 +21,7 @@ func _ready() -> void:
 	add_child(collision)
 	if rarity.is_empty():
 		var run_manager := get_tree().get_first_node_in_group("run_manager") if is_inside_tree() else null
-		rarity = roll_rarity(pickup_id, int(run_manager.seed_value) if run_manager != null else 0)
+		rarity = roll_rarity(pickup_id, int(run_manager.seed_value) if run_manager != null else 0, int(run_manager.stage_index) if run_manager != null else -1)
 	var rarity_glow := Polygon2D.new()
 	rarity_glow.name = "RarityGlow"
 	rarity_glow.polygon = PackedVector2Array([Vector2(-30, 6), Vector2(30, 6), Vector2(22, 12), Vector2(-22, 12)])
@@ -43,12 +43,16 @@ func _ready() -> void:
 			label.visible = get_overlapping_bodies().any(func(candidate: Node) -> bool: return candidate != body and candidate.is_in_group("player")))
 
 
-static func roll_rarity(id: StringName, run_seed: int = 0) -> StringName:
+static func roll_rarity(id: StringName, run_seed: int = 0, stage_index: int = -1) -> StringName:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = hash("weapon_rarity:%s:%d" % [String(id), run_seed])
 	var stage_bonus := 0
+	# 02/11/2026: os ids reais (lower_city_weapon_01, next_biome_a_stage_02_...) nunca tinham
+	# número nessa posição, então o bônus de estágio não era aplicado. Usa o estágio da run.
 	var digits := String(id).get_slice("_", 1)
-	if digits.is_valid_int():
+	if stage_index >= 0:
+		stage_bonus = stage_index / 2
+	elif digits.is_valid_int():
 		stage_bonus = int(digits) / 2
 	return RarityTable.roll(rng, stage_bonus)
 

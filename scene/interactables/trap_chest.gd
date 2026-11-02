@@ -5,9 +5,13 @@ const COMMON_SCENE := preload("res://entities/Enemy.tscn")
 const RANGED_SCENE := preload("res://entities/RangedEnemy.tscn")
 const HEAVY_SCENE := preload("res://entities/HeavyEnemy.tscn")
 const CHEST_TEXTURE := preload("res://assets/props/chests/trap_chest.png")
+const BiomeLootPlaceholderScript := preload("res://scene/biomes/biome_loot_placeholder.gd")
 
 @export var trap_id: StringName
 @export var event_spawn_positions: Array[Vector2] = []
+## P1-B: "recompensa melhorada" pode incluir arma (mín. incomum), definida na geração.
+@export var reward_weapon_id: StringName = &""
+@export var reward_rarity: StringName = &""
 
 var _event_spawned := false
 
@@ -79,6 +83,7 @@ func _refresh() -> void:
 			_chest_sprite.modulate = Color(0.62, 1.0, 0.72, 1.0)
 			label.text = "[USAR] COLETAR RECOMPENSA MELHORADA"
 		BiomeMapState.TRAP_REWARDED:
+			BiomeLootPlaceholderScript.spawn_weapon_reward(self, reward_weapon_id, reward_rarity, StringName("%s_weapon" % trap_id))
 			queue_free()
 		_:
 			# It deliberately looks like ordinary loot before activation.

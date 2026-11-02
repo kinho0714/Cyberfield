@@ -748,6 +748,8 @@ func _apply_authoritative_snapshot(snapshot: Dictionary) -> void:
 	var collected_loot: Array = snapshot.get("collected_loot", []) as Array
 	for loot in get_tree().get_nodes_in_group("biome_loot"):
 		if collected_loot.has(loot.loot_id):
+			if loot.has_method("release_contents"):
+				loot.release_contents()
 			loot.queue_free()
 	room_manager.run_manager.dirty_money = int(snapshot.get("dirty_money", room_manager.run_manager.dirty_money))
 	room_manager.run_manager.scrap = int(snapshot.get("scrap", room_manager.run_manager.scrap))

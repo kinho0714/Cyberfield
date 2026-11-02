@@ -4,6 +4,9 @@ const CHEST_TEXTURE := preload("res://assets/props/chests/loot_chest.png")
 
 @export var loot_id: StringName
 @export var amount := 20
+## P1-B: arma guardada no baú (definida na geração pela WeaponLootTable; vazio = só loot).
+@export var reward_weapon_id: StringName = &""
+@export var reward_rarity: StringName = &""
 
 var _collected := false
 
@@ -39,7 +42,34 @@ func interact(_interactor: Node2D = null) -> void:
 		return
 	_collected = true
 	_play_audio_event(&"loot_open")
+	release_contents()
 	queue_free()
+
+
+## Solta a arma do baú como pickup real. Também chamado no cliente LAN quando o snapshot
+## do host marca o baú como coletado (mesma arma/id: decisão determinística da geração).
+func release_contents() -> WeaponPickup:
+	return spawn_weapon_reward(self, reward_weapon_id, reward_rarity, StringName("%s_weapon" % loot_id))
+
+
+static func spawn_weapon_reward(source: Node2D, weapon_id: StringName, rarity: StringName, pickup_id: StringName) -> WeaponPickup:
+	if weapon_id.is_empty() or source == null or source.get_parent() == null or not WeaponCatalog.has_weapon(weapon_id):
+		return null
+	var tree := source.get_tree()
+	var run_manager := tree.get_first_node_in_group("run_manager") if tree != null else null
+	if run_manager != null and run_manager.get_current_map_state().collected_weapon_ids.has(pickup_id):
+		return null
+	for existing in tree.get_nodes_in_group("weapon_pickup"):
+		if StringName(existing.pickup_id) == pickup_id:
+			return existing
+	var pickup := WeaponPickup.new()
+	pickup.pickup_id = pickup_id
+	pickup.weapon_id = weapon_id
+	pickup.rarity = rarity
+	var parent_2d := source.get_parent() as Node2D
+	pickup.position = parent_2d.to_local(source.global_position) if parent_2d != null else source.global_position
+	source.get_parent().add_child(pickup)
+	return pickup
 
 
 func _play_audio_event(event_id: StringName) -> void:
