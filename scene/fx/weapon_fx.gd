@@ -58,6 +58,15 @@ static func fire(player: Node2D, weapon_id: StringName, origin: Vector2, directi
 	if not _ready_for(player):
 		return
 	var parent := player.get_parent()
+	# Personagens com conjunto oficial já empunham a arma na mão (PlayerCharacterVisual):
+	# só o clarão, na ponta do cano.
+	var visual := player.get_node_or_null("PlayerCharacterVisual")
+	if visual != null and visual.has_method("muzzle_global_position"):
+		var muzzle_at: Vector2 = visual.muzzle_global_position()
+		if muzzle_at != Vector2.INF:
+			var muzzle_kind := StringName((WeaponCatalog.CATEGORIES.get(WeaponCatalog.category(weapon_id), {}) as Dictionary).get("muzzle", &"small"))
+			muzzle(player, muzzle_at, direction, muzzle_kind, WeaponCatalog.category_color(weapon_id))
+			return
 	var texture := WeaponCatalog.get_visual_texture(weapon_id, "world")
 	if texture != null:
 		var held := Sprite2D.new()

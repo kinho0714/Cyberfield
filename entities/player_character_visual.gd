@@ -14,6 +14,22 @@ const WALL_SLIDE_CONTENT_CENTERS := {
 	&"spark": [0.0, 0.0, 0.0, 0.0],
 }
 const FRAME_ANCHORS := preload("res://entities/player_frame_anchors.gd")
+## 02/11: conjuntos oficiais por personagem (Jhon Design B). Estados sem folha aprovada
+## (revive, wall_slide/climb, ground_slam) continuam com as folhas antigas.
+const ANIMATION_SETS := preload("res://entities/character_animation_sets.gd")
+const LEGACY_SCALE := 1.5
+## Duração visual (só apresentação) dos estados de quadro manual do conjunto oficial.
+const SET_TIMELINES := {&"hurt": 0.32, &"get_up": 0.55, &"land": 0.22, &"dash": 0.2,
+	&"shoot_pistol": 0.24, &"shoot_rifle": 0.24, &"shoot_bow": 0.30, &"melee_punch_01": 0.24}
+const AIM_HOLD := 0.6
+const RUN_SPEED_MIN := 170.0
+## Família de animação por categoria de arma (WeaponCatalog.CATEGORIES). Novas famílias
+## (lâmina, impacto, socos/chutes, combos) entram aqui sem mexer no resto.
+const WEAPON_FAMILY := {&"pistol": &"pistol", &"semi_auto": &"rifle", &"rifle": &"rifle", &"shotgun": &"rifle", &"bow": &"bow",
+	&"blunt": &"impact", &"blade": &"blade"}
+const MELEE_STRIKE := {&"impact": &"melee_punch_01", &"blade": &"melee_punch_01", &"unarmed": &"melee_punch_01"}
+const READY_STANCE := {&"impact": &"melee_ready_impact"}
+const LEGACY_STATES: Array[StringName] = [&"revive", &"wall_slide", &"wall_climb", &"ground_slam"]
 const CHARACTER_IDS := {
 	&"player_1": &"jhon",
 	&"player_2": &"jackson",
@@ -76,6 +92,20 @@ var _air_pose := 0
 var _air_pose_elapsed := 0.0
 var _was_airborne := false
 var _contact_shadow: Sprite2D
+var _set: Dictionary = {}
+var _set_state: StringName = &""
+var _set_elapsed := 0.0
+var _hurt_elapsed := -1.0
+var _get_up_elapsed := -1.0
+var _land_elapsed := -1.0
+var _aim_hold := 0.0
+var _air_elapsed := 0.0
+var _was_hurt := false
+var _was_downed := false
+var _was_on_floor := true
+var _shot_family: StringName = &""
+var _recoil := 0.0
+var _held_weapon: Sprite2D
 
 
 func _ready() -> void:
@@ -114,6 +144,9 @@ func _update_presentation(delta: float = 0.0) -> void:
 		visible = false
 		return
 	_ensure_character(StringName(player.get("participant_id")))
+	if not _set.is_empty():
+		_update_set_presentation(player, delta)
+		return
 	_advance_visual_timers(player, delta)
 	var visual_state := _resolve_state(player)
 	visible = sprite_frames != null and sprite_frames.has_animation(visual_state)
@@ -183,9 +216,16 @@ func _resolve_state(player: CharacterBody2D) -> StringName:
 	return &"idle"
 
 
+## Atualiza a pose na hora (o disparo acontece antes do _process deste nó).
+func refresh_now() -> void:
+	_update_presentation(0.0)
+
+
 func get_presentation_state() -> StringName:
 	var player := get_parent() as CharacterBody2D
-	return _resolve_state(player) if player != null else &"idle"
+	if player == null:
+		return &"idle"
+	return _resolve_set_state(player) if not _set.is_empty() else _resolve_state(player)
 
 
 func get_content_portrait(fallback: Texture2D) -> Texture2D:
@@ -197,12 +237,16 @@ func _ensure_character(participant_id: StringName) -> void:
 	if character_id == _active_character:
 		return
 	_content_profile = ContentRegistry.entry_profile(ContentRegistry.character(character_id))
+	_set = (ANIMATION_SETS.SETS.get(character_id, {}) as Dictionary)
+	scale = Vector2.ONE * LEGACY_SCALE
 	var cached: Variant = _frame_cache.get(character_id)
 	if cached is SpriteFrames:
 		sprite_frames = cached as SpriteFrames
 	else:
 		var generated := VisualSpriteFactory.build_sprite_frames(_build_definitions(character_id))
-		if _content_profile != null:
+		if not _set.is_empty():
+			_add_set_animations(generated)
+		elif _content_profile != null:
 			generated = _content_profile.merge_frames(generated)
 		_frame_cache[character_id] = generated
 		sprite_frames = generated
@@ -215,6 +259,235 @@ func _ensure_character(participant_id: StringName) -> void:
 	_ground_slam_impact_timer = 0.0
 	_was_airborne = false
 	offset = Vector2.ZERO
+
+
+# ---------------------------------------------------------------- conjunto oficial (Design B)
+
+func _add_set_animations(frames: SpriteFrames) -> void:
+	var dir := String(_set.get("dir", ""))
+	var anims: Dictionary = _set.get("anims", {})
+	for name_value: Variant in anims:
+		var spec: Dictionary = anims[name_value]
+		var texture := load(dir + String(spec.file)) as Texture2D
+		var anim_name := StringName("b_" + String(name_value))
+		if texture != null:
+			VisualSpriteFactory.add_sheet_animation(frames, anim_name, texture, int(spec.frames), float(spec.fps), bool(spec.loop))
+
+
+func has_set_animation(state: StringName) -> bool:
+	return (_set.get("anims", {}) as Dictionary).has(state) and sprite_frames != null and sprite_frames.has_animation(StringName("b_" + String(state)))
+
+
+func _weapon_family(player: CharacterBody2D) -> StringName:
+	var weapon_id: StringName = player.call("get_active_weapon_id") if player.has_method("get_active_weapon_id") else &""
+	return WEAPON_FAMILY.get(WeaponCatalog.category(weapon_id), &"unarmed") if not weapon_id.is_empty() else &"unarmed"
+
+
+func _resolve_set_state(player: CharacterBody2D) -> StringName:
+	var remote_state := StringName(player.get("network_visual_state"))
+	if bool(player.get("network_remote_replica")) and not remote_state.is_empty():
+		return remote_state
+	if bool(player.get("is_downed")):
+		return &"downed"
+	if _get_up_elapsed >= 0.0 and _get_up_elapsed < float(SET_TIMELINES[&"get_up"]) and absf(player.velocity.x) < 12.0:
+		return &"get_up"
+	if _hurt_elapsed >= 0.0 and _hurt_elapsed < float(SET_TIMELINES[&"hurt"]):
+		return &"hurt"
+	if bool(player.get("is_ground_slamming")) or _ground_slam_impact_timer > 0.0:
+		return &"ground_slam"
+	var revive_target: Variant = player.get("_revive_target")
+	if (revive_target is Node and is_instance_valid(revive_target)) or (bool(player.get("network_prediction_only")) and bool(player.get("network_is_reviving"))):
+		return &"revive"
+	if float(player.get("dash_timer")) > 0.0 or (_dash_visual_elapsed >= 0.0 and _dash_visual_elapsed < float(SET_TIMELINES[&"dash"])):
+		return &"dash"
+	var family := _weapon_family(player)
+	if bool(player.get("is_attacking")) or (_attack_visual_elapsed >= 0.0 and _attack_visual_elapsed < VISUAL_ATTACK_DURATION):
+		var weapon_id: StringName = player.call("get_active_weapon_id")
+		if WeaponCatalog.is_ranged(weapon_id):
+			_shot_family = family
+			return StringName("shoot_" + String(family))
+		return MELEE_STRIKE.get(family, &"melee_punch_01")
+	if _is_wall_climb_state(player):
+		return &"wall_climb"
+	if _is_wall_slide_state(player):
+		return &"wall_slide"
+	if not player.is_on_floor():
+		return &"jump" if player.velocity.y < 0.0 else &"fall"
+	var moving := absf(player.velocity.x) > 12.0
+	if _land_elapsed >= 0.0 and _land_elapsed < float(SET_TIMELINES[&"land"]) and not moving:
+		return &"land"
+	var weapon_id: StringName = player.call("get_active_weapon_id")
+	if WeaponCatalog.is_ranged(weapon_id) and (player.get("weapon_reload_timers") as Dictionary).has(weapon_id):
+		var reload_state := StringName("reload_" + String(family))
+		if has_set_animation(reload_state) and not moving:
+			return reload_state
+	if moving:
+		return &"run" if absf(player.velocity.x) >= RUN_SPEED_MIN else &"walk"
+	if _aim_hold > 0.0 and WeaponCatalog.is_ranged(weapon_id):
+		return StringName("aim_" + String(family))
+	if READY_STANCE.has(family):
+		return READY_STANCE[family]
+	return &"idle"
+
+
+func _update_set_presentation(player: CharacterBody2D, delta: float) -> void:
+	_advance_visual_timers(player, delta)
+	_advance_set_timers(player, delta)
+	var state := _resolve_set_state(player)
+	var legacy := state in LEGACY_STATES or not has_set_animation(state)
+	var anim_name := state if legacy else StringName("b_" + String(state))
+	visible = sprite_frames != null and sprite_frames.has_animation(anim_name)
+	_fallback_visual.visible = not visible
+	if not visible:
+		return
+	scale = Vector2.ONE * (LEGACY_SCALE if legacy else float(_set.get("scale", 1.0)))
+	flip_h = _state_source.flip_h
+	if not bool(player.get("network_remote_replica")) and state in [&"wall_slide", &"wall_climb"]:
+		_apply_wall_facing(player)
+	modulate = Color(1.0, 1.0, 1.0, _state_source.modulate.a)
+	if state != _set_state:
+		_set_elapsed = 0.0
+	else:
+		_set_elapsed += delta
+	if legacy:
+		_present_legacy_state(player, state, delta)
+	elif bool(player.get("network_remote_replica")) and SET_TIMELINES.has(state):
+		_set_manual_frame(anim_name, int(player.get("network_visual_frame")))
+	elif SET_TIMELINES.has(state):
+		var elapsed := _set_timeline_elapsed(state)
+		_set_manual_frame(anim_name, _timeline_frame(elapsed, float(SET_TIMELINES[state]), sprite_frames.get_frame_count(anim_name)))
+	elif state == &"jump":
+		# Quadros 0-2 são o agachamento no chão; no ar o pulo é instantâneo: começa no 3.
+		var count := sprite_frames.get_frame_count(anim_name)
+		_set_manual_frame(anim_name, clampi(3 + floori(_air_elapsed * 14.0), 3, count - 1))
+	elif state == &"fall":
+		_set_manual_frame(anim_name, clampi(floori(_set_elapsed * 12.0), 0, sprite_frames.get_frame_count(anim_name) - 1))
+	elif state.begins_with("reload_"):
+		_set_manual_frame(anim_name, _reload_frame(player, sprite_frames.get_frame_count(anim_name)))
+	elif animation != anim_name or (_is_looping(anim_name) and not is_playing()):
+		play(anim_name)
+	if not legacy:
+		offset = Vector2.ZERO
+	if _contact_shadow != null:
+		_contact_shadow.visible = not state in [&"jump", &"fall", &"wall_slide", &"wall_climb"]
+		_contact_shadow.position = Vector2(0.0, 35.0 * LEGACY_SCALE / scale.y)
+	_set_state = state
+	_last_state = state
+	_update_held_weapon(player, state, legacy, delta)
+
+
+func _present_legacy_state(player: CharacterBody2D, state: StringName, delta: float) -> void:
+	if state == &"ground_slam":
+		_set_manual_frame(&"ground_slam", _ground_slam_frame())
+	elif animation != state or (_is_looping(state) and not is_playing()):
+		play(state)
+	_apply_frame_alignment(state)
+
+
+func _advance_set_timers(player: CharacterBody2D, delta: float) -> void:
+	var hurt_now := bool(player.get("is_hurt")) or (bool(player.get("network_prediction_only")) and bool(player.get("network_is_hurt")))
+	if hurt_now and not _was_hurt:
+		_hurt_elapsed = 0.0
+	elif _hurt_elapsed >= 0.0:
+		_hurt_elapsed += delta
+	_was_hurt = hurt_now
+	var downed_now := bool(player.get("is_downed"))
+	if _was_downed and not downed_now:
+		_get_up_elapsed = 0.0
+	elif _get_up_elapsed >= 0.0:
+		_get_up_elapsed += delta
+	if downed_now:
+		_hurt_elapsed = -1.0
+	_was_downed = downed_now
+	var on_floor := player.is_on_floor()
+	if not on_floor:
+		_air_elapsed = 0.0 if _was_on_floor else _air_elapsed + delta
+		_land_elapsed = -1.0
+	elif not _was_on_floor:
+		_land_elapsed = 0.0
+	elif _land_elapsed >= 0.0:
+		_land_elapsed += delta
+	_was_on_floor = on_floor
+	if bool(player.get("is_attacking")) and WeaponCatalog.is_ranged(player.call("get_active_weapon_id")):
+		_aim_hold = AIM_HOLD
+		if _attack_visual_elapsed >= 0.0 and _attack_visual_elapsed < delta * 1.5:
+			_recoil = 1.0
+	else:
+		_aim_hold = maxf(_aim_hold - delta, 0.0)
+	_recoil = maxf(_recoil - delta * 10.0, 0.0)
+
+
+func _set_timeline_elapsed(state: StringName) -> float:
+	match state:
+		&"hurt": return _hurt_elapsed
+		&"get_up": return _get_up_elapsed
+		&"land": return _land_elapsed
+		&"dash": return _dash_visual_elapsed
+	return _attack_visual_elapsed
+
+
+func _reload_frame(player: CharacterBody2D, frame_count: int) -> int:
+	var weapon_id: StringName = player.call("get_active_weapon_id")
+	var remaining := float((player.get("weapon_reload_timers") as Dictionary).get(weapon_id, 0.0))
+	var total := float(player.call("get_weapon_stats", weapon_id).get("reload_time", 1.5)) if player.has_method("get_weapon_stats") else 1.5
+	var progress := 1.0 - clampf(remaining / maxf(total, 0.01), 0.0, 1.0)
+	return clampi(floori(progress * frame_count), 0, frame_count - 1)
+
+
+## Âncora da mão no quadro atual, em coordenadas locais deste nó (já espelhada).
+func hand_local() -> Vector2:
+	if _set.is_empty() or _set_state.is_empty():
+		return Vector2.INF
+	var spec: Dictionary = (_set.get("anims", {}) as Dictionary).get(_set_state, {})
+	var hands: Array = spec.get("hands", [])
+	if hands.is_empty():
+		return Vector2.INF
+	var hand: Vector2 = hands[clampi(frame, 0, hands.size() - 1)]
+	if hand == Vector2.ZERO:
+		return Vector2.INF
+	return Vector2(-hand.x if flip_h else hand.x, hand.y)
+
+
+## Ponta do cano da arma empunhada (mundo), para clarão e desenho do projétil.
+func muzzle_global_position() -> Vector2:
+	if _held_weapon == null or not _held_weapon.visible or _held_weapon.texture == null:
+		return Vector2.INF
+	var half := _held_weapon.texture.get_width() * 0.5 * absf(_held_weapon.scale.x)
+	return _held_weapon.to_global(Vector2(half if not _held_weapon.flip_h else -half, 0.0) / _held_weapon.scale)
+
+
+func _update_held_weapon(player: CharacterBody2D, state: StringName, legacy: bool, delta: float) -> void:
+	var show := not legacy and (String(state).begins_with("aim_") or String(state).begins_with("shoot_") or String(state).begins_with("reload_"))
+	var weapon_id: StringName = player.call("get_active_weapon_id") if player.has_method("get_active_weapon_id") else &""
+	var hand := hand_local()
+	if not show or hand == Vector2.INF or not WeaponCatalog.is_ranged(weapon_id):
+		if _held_weapon != null:
+			_held_weapon.visible = false
+		return
+	if _held_weapon == null:
+		_held_weapon = Sprite2D.new()
+		_held_weapon.name = "HeldWeapon"
+		_held_weapon.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		add_child(_held_weapon)
+	var texture := WeaponCatalog.get_visual_texture(weapon_id, "world")
+	_held_weapon.texture = texture
+	_held_weapon.visible = texture != null
+	if texture == null:
+		return
+	var facing := -1.0 if flip_h else 1.0
+	var bow := WeaponCatalog.category(weapon_id) == &"bow"
+	var size := texture.get_size()
+	# Empunhadura: arcos pelo meio; armas de fogo pelo terço traseiro.
+	var grip := Vector2(0.0 if bow else size.x * 0.18, 0.0)
+	_held_weapon.flip_h = flip_h
+	_held_weapon.scale = Vector2.ONE * minf(1.0, 44.0 / maxf(size.x, 1.0))
+	var kick := -2.0 * _recoil * facing
+	_held_weapon.position = hand + Vector2((size.x * 0.5 - grip.x) * _held_weapon.scale.x * facing + kick, 0.0)
+	_held_weapon.z_index = 1
+	if state.begins_with("reload_") and frame < 3:
+		_held_weapon.rotation = 0.5 * facing                  # arma inclinada enquanto troca o pente
+	else:
+		_held_weapon.rotation = 0.0
 
 
 func _build_definitions(character_id: StringName) -> Dictionary:

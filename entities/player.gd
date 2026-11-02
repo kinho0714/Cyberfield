@@ -645,6 +645,9 @@ func _fire_ranged_weapon(slot: int, definition: Dictionary) -> void:
 		return
 	var direction := Vector2.LEFT if player_anim.flip_h else Vector2.RIGHT
 	var origin := global_position + Vector2(direction.x * 28.0, -8.0)
+	var character_visual := get_node_or_null("PlayerCharacterVisual")
+	if character_visual != null and character_visual.has_method("refresh_now"):
+		character_visual.refresh_now()
 	WeaponFx.fire(self, weapon_id, origin, direction)
 	var damage := get_ranged_damage(weapon_id, definition)
 	var projectile_speed := float(definition.get("projectile_speed", 620.0))
@@ -667,6 +670,7 @@ func _spawn_player_projectile(origin: Vector2, aim: Vector2, speed: float, damag
 	projectile.maximum_lifetime = lifetime
 	projectile.setup(origin, aim, self, speed, damage, &"enemy")
 	projectile.apply_player_visual(visual_id)
+	_align_projectile_visual_to_muzzle(projectile, origin)
 	projectile.gravity_accel = float(definition.get("gravity", 0.0))
 	projectile.pierce_left = int(definition.get("pierce", 0))
 	projectile.knockback_multiplier = float(definition.get("knockback", 1.0))
@@ -727,6 +731,19 @@ func _melee_area_bodies(reach: float) -> Array[Node2D]:
 			result.append(body)
 	result.sort_custom(func(a: Node2D, b: Node2D) -> bool: return absf(a.global_position.x - global_position.x) < absf(b.global_position.x - global_position.x))
 	return result
+
+
+## Só apresentação: o projétil colide na altura de sempre (hitboxes dos inimigos ficam na
+## cintura), mas o desenho sai do cano da arma na mão do sprite oficial.
+func _align_projectile_visual_to_muzzle(projectile: Node, origin: Vector2) -> void:
+	var visual := get_node_or_null("PlayerCharacterVisual")
+	var drawn := projectile.get_node_or_null("PlayerProjectileVisual") as Node2D
+	if visual == null or drawn == null or not visual.has_method("muzzle_global_position"):
+		return
+	var muzzle: Vector2 = visual.muzzle_global_position()
+	if muzzle == Vector2.INF:
+		return
+	drawn.position = (muzzle - origin).rotated(-float(projectile.get("rotation")))
 
 
 func get_weapon_rarity(weapon_id: StringName) -> StringName:
