@@ -74,6 +74,8 @@ var patrol_rng := RandomNumberGenerator.new()
 var network_target_position := Vector2.ZERO
 var network_presentation_state: StringName = &""
 var _fall_origin_y := 0.0
+## Ver Enemy.gd: âncora do spawn refeita no 1º tick de física (P1-A, 02/11/2026).
+var _spawn_anchored := false
 var _was_on_floor := false
 var _target_memory_timer := 0.0
 var _last_seen_target_position := Vector2.ZERO
@@ -169,10 +171,19 @@ func apply_network_state(network_state: Dictionary) -> void:
 	_update_health_label()
 
 
+func anchor_spawn_position() -> void:
+	_spawn_anchored = true
+	patrol_origin = global_position
+	network_target_position = global_position
+	_fall_origin_y = global_position.y
+
+
 func _physics_process(delta: float) -> void:
 	if state == State.DEAD:
 		velocity = Vector2.ZERO
 		return
+	if not _spawn_anchored:
+		anchor_spawn_position()
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 	if (run_manager and not run_manager.run_active) or (room_manager and room_manager.is_transitioning):

@@ -70,6 +70,9 @@ var network_target_position := Vector2.ZERO
 var network_presentation_state: StringName = &""
 var _fall_origin_y := 0.0
 var _was_on_floor := false
+## Âncora do spawn (queda, patrulha, alvo de rede) refeita no 1º tick de física: quem
+## posiciona o inimigo depois do `add_child` não pode gerar uma "queda" fantasma.
+var _spawn_anchored := false
 
 
 func _ready() -> void:
@@ -181,10 +184,19 @@ func apply_network_state(state: Dictionary) -> void:
 	_update_health_label()
 
 
+func anchor_spawn_position() -> void:
+	_spawn_anchored = true
+	patrol_origin = global_position
+	network_target_position = global_position
+	_fall_origin_y = global_position.y
+
+
 func _physics_process(delta: float) -> void:
 	if is_dead:
 		velocity = Vector2.ZERO
 		return
+	if not _spawn_anchored:
+		anchor_spawn_position()
 	var run_manager := get_tree().get_first_node_in_group("run_manager")
 	var room_manager := get_tree().get_first_node_in_group("room_manager")
 

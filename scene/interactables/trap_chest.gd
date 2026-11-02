@@ -110,8 +110,12 @@ func _spawn_event_enemies() -> void:
 		enemy.name = String(enemy_ids[index]).to_pascal_case()
 		enemy.persistent_id = enemy_ids[index]
 		enemy.required_for_completion = true
+		# 02/11/2026 (P1-A): posicionar ANTES de entrar na árvore. Antes o `_ready()` do
+		# inimigo rodava na origem do pai (y≈0) e o primeiro pouso no ponto da emboscada
+		# contava como queda de centenas de px — dano de queda letal ou de ~50% da vida.
+		var parent_2d := parent as Node2D
+		enemy.position = parent_2d.to_local(event_spawn_positions[index]) if parent_2d != null else event_spawn_positions[index]
 		parent.add_child(enemy)
-		enemy.global_position = event_spawn_positions[index]
 		manager.register_trap_event_enemy(enemy, trap_id)
 		if lan_session != null and lan_session.is_client():
 			enemy.network_target_position = enemy.global_position
