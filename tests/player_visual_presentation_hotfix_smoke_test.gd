@@ -33,12 +33,20 @@ func _test_character(index: int) -> void:
 	var original_slam_transform := slam_cast.transform
 	var original_slam_shape := slam_cast.shape
 	assert(StringName(visual.get("_active_character")) == EXPECTED_CHARACTERS[index])
-	assert(is_equal_approx(visual.scale.x, 1.5) and is_equal_approx(visual.scale.y, 1.5))
 	assert(is_equal_approx(visual.position.y, -34.5))
-	var rendered_opaque_height := 64.0 * visual.scale.y
-	assert(is_equal_approx(rendered_opaque_height, 96.0))
-	var idle_feet_y := visual.position.y + (69.0 - 36.0) * visual.scale.y
-	assert(is_equal_approx(idle_feet_y, 15.0))
+	# 02/11: personagens com conjunto oficial (Jhon Design B) usam células 160x100 a 1,0x
+	# com os pés na última linha; os demais mantêm as folhas antigas a 1,5x.
+	if not (visual.get("_set") as Dictionary).is_empty():
+		visual._update_presentation(0.0)
+		assert(is_equal_approx(visual.scale.x, 1.0) and String(visual.animation).begins_with("b_"))
+		var cell_height := float(visual.sprite_frames.get_frame_texture(&"b_idle", 0).get_height())
+		assert(absf(visual.position.y + cell_height * 0.5 * visual.scale.y - 15.0) <= 1.0)
+	else:
+		assert(is_equal_approx(visual.scale.x, 1.5) and is_equal_approx(visual.scale.y, 1.5))
+		var rendered_opaque_height := 64.0 * visual.scale.y
+		assert(is_equal_approx(rendered_opaque_height, 96.0))
+		var idle_feet_y := visual.position.y + (69.0 - 36.0) * visual.scale.y
+		assert(is_equal_approx(idle_feet_y, 15.0))
 	_test_wall_alignment(visual, EXPECTED_CHARACTERS[index])
 	_test_stable_state_and_action_timelines(player, visual)
 	assert(player.global_position == original_player_position)
@@ -70,7 +78,12 @@ func _test_stable_state_and_action_timelines(player: CharacterBody2D, visual: Pl
 	visual.play(&"idle")
 	visual.frame = 2
 	visual._update_presentation(0.016)
-	assert(visual.animation == &"idle" and visual.frame == 2)
+	var idle_name := &"b_idle" if not (visual.get("_set") as Dictionary).is_empty() else &"idle"
+	if idle_name == &"b_idle":
+		visual.play(idle_name)
+		visual.frame = 2
+		visual._update_presentation(0.016)
+	assert(visual.animation == idle_name and visual.frame == 2)
 	player.network_remote_replica = false
 	player.network_visual_state = &""
 	player.is_attacking = true

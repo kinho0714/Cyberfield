@@ -30,7 +30,8 @@ func _test_players() -> void:
 		var visual := player.get_node("PlayerCharacterVisual") as PlayerCharacterVisual
 		assert(StringName(visual.get("_active_character")) == character_ids[index])
 		assert(visual.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST)
-		assert(visual.sprite_frames.get_animation_names().size() == 11)
+		# 02/11: o Jhon ganhou o conjunto oficial (b_*) além das 11 animações anteriores.
+		assert(visual.sprite_frames.get_animation_names().size() == (30 if index == 0 else 11))
 		assert(visual.sprite_frames.get_frame_count(&"attack") == (5 if index == 0 else 6))
 		for animation_name in [&"idle", &"walk", &"air", &"attack", &"dash", &"ground_slam", &"hurt", &"downed", &"revive", &"wall_slide", &"wall_climb"]:
 			assert(visual.sprite_frames.has_animation(animation_name))
@@ -44,11 +45,11 @@ func _test_players() -> void:
 		player.is_ground_slamming = false
 		player.is_hurt = true
 		visual._update_presentation()
-		assert(visual.animation == &"hurt")
+		assert(visual.animation in [&"hurt", &"b_hurt"])  # 02/11: Jhon Design B usa b_*
 		player.is_hurt = false
 		player.is_downed = true
 		visual._update_presentation()
-		assert(visual.animation == &"downed")
+		assert(visual.animation in [&"downed", &"b_downed"])
 		player.is_downed = false
 		var ally := CharacterBody2D.new()
 		root.add_child(ally)

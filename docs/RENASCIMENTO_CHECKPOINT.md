@@ -75,3 +75,12 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - `under_layer` e `lab_mid` com variedade; `scene/fx/transition_fx.gd`; HUD refinado.
 - Pendências: "LowerCityMid" não reproduzível aqui; escalada de parede nas bordas do hub
   pode subir acima da laje (visual); toque/legibilidade no Android a confirmar.
+
+## Jhon Design B (02/11, mesma branch, sem push)
+- Importador genérico `tools/visual/character_sheet_import.py` (config por personagem; originais
+  fora do repositório, SHA-256 registrado). Saída `assets/players/jhon/design_b/` (160×100, 1,0×).
+- `PlayerCharacterVisual`: caminho de "conjunto oficial" dirigido por dados
+  (`entities/character_animation_sets.gd`); Jackson/Kai/Spark seguem no caminho antigo.
+- Projétil: colisão na altura de sempre; só o desenho sai do cano (hitboxes dos inimigos ~30 px).
+- Testes antigos que fixavam escala 1,5/11 animações do Jhon foram atualizados para o novo contrato.
+- Próximo: playtest Android; folhas para revive/parede/mergulho e RELOAD_RIFLE correta.

@@ -98,7 +98,8 @@ func _test_player_color_variants() -> void:
 		await process_frame
 		var visual := player.get_node("PlayerCharacterVisual") as PlayerCharacterVisual
 		assert(StringName(visual.get("_active_character")) == expected_characters[participant_index])
-		assert(visual.scale.is_equal_approx(Vector2(1.5, 1.5)))
+		# 02/11: Jhon Design B é exibido a 1,0x (células maiores); os outros seguem a 1,5x.
+		assert(visual.scale.is_equal_approx(Vector2(1.0, 1.0) if participant_index == 0 else Vector2(1.5, 1.5)))
 		assert(visual.position.is_equal_approx(Vector2(0.0, -34.5)))
 		assert(visual.texture_filter == CanvasItem.TEXTURE_FILTER_NEAREST)
 		expected_frames[&"attack"] = 5 if participant_index == 0 else 6
@@ -112,8 +113,9 @@ func _test_player_color_variants() -> void:
 		state_source.animation = &"jump"
 		player.velocity = Vector2(0.0, -180.0)
 		visual._update_presentation()
-		assert(visual.visible and visual.animation == &"air")
+		# 02/11: Jhon Design B separa subida (b_jump) e queda (b_fall).
+		assert(visual.visible and visual.animation in [&"air", &"b_jump"])
 		player.velocity.y = 180.0
 		visual._update_presentation()
-		assert(visual.visible and visual.animation == &"air")
+		assert(visual.visible and visual.animation in [&"air", &"b_fall"])
 		player.free()

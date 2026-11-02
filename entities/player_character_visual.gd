@@ -291,6 +291,9 @@ func _resolve_set_state(player: CharacterBody2D) -> StringName:
 		return remote_state
 	if bool(player.get("is_downed")):
 		return &"downed"
+	var reviving_target: Variant = player.get("_revive_target")
+	if (reviving_target is Node and is_instance_valid(reviving_target)) or (bool(player.get("network_prediction_only")) and bool(player.get("network_is_reviving"))):
+		return &"revive"  # ação de reviver um aliado vence a animação de levantar
 	if _get_up_elapsed >= 0.0 and _get_up_elapsed < float(SET_TIMELINES[&"get_up"]) and absf(player.velocity.x) < 12.0:
 		return &"get_up"
 	if _hurt_elapsed >= 0.0 and _hurt_elapsed < float(SET_TIMELINES[&"hurt"]):

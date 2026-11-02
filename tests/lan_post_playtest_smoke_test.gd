@@ -53,7 +53,8 @@ func _run() -> void:
 			state.presentation_frame = 1
 			player.apply_network_state(state, false, 1)
 			visual._update_presentation()
-			assert(visual.animation == animation_name)
+			# 02/11: estados com conjunto oficial tocam a versão b_* (Jhon Design B).
+			assert(visual.animation == animation_name or visual.animation == StringName("b_" + String(animation_name)))
 		player.free()
 	for path: String in ["res://entities/Enemy.tscn", "res://entities/RangedEnemy.tscn", "res://entities/HeavyEnemy.tscn"]:
 		var scene: PackedScene = load(path)

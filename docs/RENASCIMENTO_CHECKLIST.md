@@ -101,3 +101,20 @@ sequência para chuva e parallax.
 | Transição entre salas | COMPROVADO | varredura/scan/glitch sobre o fade (captura no meio do fade, alfa 0,52) |
 | HUD de equipamento | COMPROVADO | fontes maiores, munição grande, recarga sobre o ícone |
 | Teste "LowerCityMid" | PENDENTE | não existe em nenhum ref deste repositório (cópia do PC?) |
+
+## Jhon Jhones Design B — animações oficiais (02/11/2026)
+Evidência: `tests/jhon_design_b_animation_smoke_test.gd` no fluxo real (main.tscn → Casa → run),
+headless e com Xvfb; importação por `tools/visual/character_sheet_import.py` (fontes conferidas
+por SHA-256 contra o manifesto do pacote).
+| Item | Estado | Evidência / observação |
+|---|---|---|
+| IDLE, WALK, RUN, JUMP, FALL, LAND, DASH (rolamento) | COMPROVADO | estados observados no jogo: idle→run→jump→fall→land, dash |
+| HURT, DOWNED, GET_UP | COMPROVADO | dano, queda e reviver; GET_UP só aparece em co-op (no solo cair encerra a run) |
+| AIM/SHOOT pistola, rifle, arco | COMPROVADO | tiro → shoot_*, depois aim_* por 0,6 s; arma separada na mão |
+| RELOAD_PISTOL | COMPROVADO / CONFERIR | quadros seguem o tempo real de recarga; mapeamento do pacote marcado "conferir" |
+| MELEE_READY_IMPACT / MELEE_PUNCH_01 | COMPROVADO | postura com arma de impacto; golpe corpo a corpo genérico até haver animação por arma |
+| RELOAD_RIFLE | NÃO INTEGRADO | o arquivo mostra o Jhon desabando (variação de DOWNED), não recarga |
+| RELOAD_SHOTGUN, DOUBLE_JUMP | FORA DO PACOTE | não inventados |
+| Revive, parede, mergulho | ANTIGO | sem folha aprovada: continuam com as folhas v2 (outro design) |
+| Retrato do HUD | COMPROVADO | recortado do IDLE oficial |
+| Android físico | PENDENTE | export inclui tudo (`all_resources`); não testado no aparelho |
