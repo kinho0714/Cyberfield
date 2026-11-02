@@ -109,6 +109,8 @@ var run_weapon_pool: Array[StringName] = [&"scrap_blade"]
 ## (determinístico pela geração; usado para não repetir armas entre estágios).
 var current_biome_kind: StringName = &""
 var weapon_offer_history: Array[StringName] = []
+## Modo Dev: sessão de teste marcada (resultados não vão para o perfil legítimo).
+var dev_session := false
 
 
 func _process(delta: float) -> void:
@@ -177,6 +179,7 @@ func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false
 	stage_history.clear()
 	weapon_offer_history.clear()
 	current_biome_kind = &""
+	dev_session = false
 	_clear_biome_state()
 	_reset_run_quality_state()
 	for room_data in RUN_SEQUENCE:
@@ -1334,6 +1337,7 @@ func _capture_run_results(completed: bool) -> void:
 			"rewarded": trap_events_rewarded,
 		},
 		"completion_rewards": completion_rewards.duplicate(true),
+		"dev_session": dev_session,
 	}
 
 
@@ -1385,3 +1389,48 @@ func _grant_boss_blueprint() -> void:
 		return
 	completion_rewards.boss_blueprint = String(weapon_id)
 	blueprints_found.append(weapon_id)
+
+
+# --- Modo Dev (02/11/2026) ---------------------------------------------------------
+
+## Marca a run como sessão de teste: o resultado nunca entra no perfil legítimo.
+func mark_dev_session() -> void:
+	if not dev_session:
+		dev_session = true
+		state_changed.emit()
+
+
+## Salta direto para um estágio (0 Cidade Baixa, 1/3 Industrial, 2/4 Laboratório, 5 chefe).
+## Cada salto gera um layout novo (id de estágio próprio); a run fica marcada como teste.
+func dev_set_stage(target: int) -> bool:
+	if not run_active or run_state != RunState.ACTIVE:
+		return false
+	mark_dev_session()
+	stage_index = clampi(target, 0, 5)
+	current_stage_id = &"lower_city" if stage_index == 0 else StringName("dev_stage_%02d_%d" % [stage_index, Time.get_ticks_msec() % 1000000])
+	current_biome_id = &""
+	current_biome_name = ""
+	generated_module_count = 0
+	state_changed.emit()
+	return true
+
+
+## Esquece o estado do estágio atual (inimigos mortos, baús, mapa) para recriá-lo igual.
+func dev_reset_current_stage_state() -> void:
+	mark_dev_session()
+	var map_id := current_stage_id if not current_stage_id.is_empty() else current_biome_id
+	room_states.erase(current_biome_id)
+	map_states.erase(map_id)
+	collected_biome_loot.clear()
+	current_biome_id = &""
+	state_changed.emit()
+
+
+## Modo Dev: inimigo gerado fora da geração recebe a escala de dificuldade real da sala,
+## sem bloquear a conclusão da sala.
+func configure_spawned_enemy(enemy: Node) -> void:
+	var room_id := get_current_room_id()
+	if not room_states.has(room_id):
+		room_states[room_id] = _new_room_state()
+	enemy.run_room_id = room_id
+	_configure_enemy_stats(enemy)

@@ -19,8 +19,17 @@ func setup(manager: Node) -> void:
 	var boss := BOSS_SCENE.instantiate()
 	boss.name = "PrototypeBoss"
 	boss.persistent_id = &"stage_06_boss"
-	boss.enemy_role = 1
 	boss.required_for_completion = true
+	configure_prototype_boss(boss)
+	boss.position = $BossSpawn.position
+	$Entities.add_child(boss)
+	boss.add_child(BOSS_AURA.new())  # presentation only; dedicated boss art still pending
+	boss_spawned = true
+
+
+## Configuração do guardião protótipo (também usada pelo Modo Dev para gerar o chefe).
+static func configure_prototype_boss(boss: Node) -> void:
+	boss.enemy_role = 1
 	boss.visual_scale = 1.65
 	var temporary_visual := boss.get_node_or_null("TempPixelVisual") as TempPixelVisual
 	if temporary_visual != null:
@@ -30,10 +39,6 @@ func setup(manager: Node) -> void:
 	boss.attack_recovery = 0.40
 	boss.attack_cooldown = 0.55
 	boss.attack_telegraph_color = Color(1.0, 0.16, 0.35, 1.0)
-	boss.position = $BossSpawn.position
-	$Entities.add_child(boss)
-	boss.add_child(BOSS_AURA.new())  # presentation only; dedicated boss art still pending
-	boss_spawned = true
 
 
 func _process(_delta: float) -> void:

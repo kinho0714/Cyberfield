@@ -15,6 +15,8 @@ const CAMERA_ZOOM_VALUES := {
 var camera_zoom_preference: StringName = &"default"
 var touch_control_scale := 1.0
 var debug_hud_visible := false
+## Modo Dev (02/11/2026): ferramentas de teste no jogo. Desligado por padrão.
+var dev_mode_enabled := false
 var language := "pt_BR"
 const LOCALIZATION = preload("res://ui/localization.gd")
 const AUDIO_BUSES: Array[StringName] = [&"Master", &"Music", &"Ambience", &"SFX", &"Dialogue"]
@@ -34,6 +36,7 @@ func load_settings() -> void:
 		camera_zoom_preference = &"default"
 	touch_control_scale = clampf(float(config.get_value("mobile", "control_scale", 1.0)), 0.8, 1.5)
 	debug_hud_visible = bool(config.get_value("debug", "hud_visible", false))
+	dev_mode_enabled = bool(config.get_value("debug", "dev_mode", false))
 	language = String(config.get_value("ui", "language", "pt_BR"))
 	if language not in ["pt_BR", "en"]:
 		language = "pt_BR"
@@ -54,6 +57,7 @@ func save_settings() -> void:
 	config.set_value("camera", "zoom", String(camera_zoom_preference))
 	config.set_value("mobile", "control_scale", touch_control_scale)
 	config.set_value("debug", "hud_visible", debug_hud_visible)
+	config.set_value("debug", "dev_mode", dev_mode_enabled)
 	config.set_value("ui", "language", language)
 	var error := config.save(settings_path)
 	if error != OK:
@@ -89,6 +93,14 @@ func set_touch_control_scale(value: float) -> void:
 
 func set_debug_hud_visible(value: bool) -> void:
 	debug_hud_visible = value
+	save_settings()
+	settings_changed.emit()
+
+
+func set_dev_mode_enabled(value: bool) -> void:
+	if dev_mode_enabled == value:
+		return
+	dev_mode_enabled = value
 	save_settings()
 	settings_changed.emit()
 

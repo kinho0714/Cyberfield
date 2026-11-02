@@ -96,6 +96,8 @@ var last_wall_jump_normal_x := 0.0
 var input_enabled = true
 var is_downed := false
 var is_invulnerable := false
+## Modo Dev: invencibilidade de teste (não salva, não existe fora do Modo Dev).
+var dev_invincible := false
 var invulnerability_timer := 0.0
 var dash_invulnerability_timer := 0.0
 var heal_doses := 4
@@ -1010,6 +1012,7 @@ func apply_bandage(heal_ratio: float = 0.10) -> bool:
 
 
 func reset_for_new_run() -> void:
+	dev_invincible = false
 	intellect = 0
 	health_attribute = 0
 	strength = 0
@@ -1370,7 +1373,7 @@ func apply_network_state(state: Dictionary, predicted_local: bool = false, snaps
 
 
 func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
-	if is_hurt or is_downed or is_invulnerable or dash_invulnerability_timer > 0.0:
+	if dev_invincible or is_hurt or is_downed or is_invulnerable or dash_invulnerability_timer > 0.0:
 		return
 
 	_cancel_heal()
@@ -1406,7 +1409,7 @@ func take_damage(amount: int, knockback_direction: float = 0.0) -> void:
 
 
 func enter_downed() -> void:
-	if is_downed:
+	if is_downed or dev_invincible:
 		return
 
 	health = 0

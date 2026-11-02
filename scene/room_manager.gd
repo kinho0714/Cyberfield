@@ -471,6 +471,49 @@ func restart_current_run() -> void:
 	return_to_laboratory()
 
 
+## Modo Dev: carrega o estágio escolhido. Na Casa, começa uma run antes.
+func dev_load_stage(target: int) -> bool:
+	if is_transitioning or lan_session.is_network_game() or not mode_selected:
+		return false
+	if not run_manager.run_active:
+		if not current_is_hub:
+			return false
+		await _begin_run_from_hub(0)
+		if not run_manager.run_active:
+			return false
+		run_manager.mark_dev_session()
+		if target <= 0:
+			return true
+	is_transitioning = true
+	_set_all_player_input(false)
+	await _fade_to(1.0)
+	var loaded: bool = run_manager.dev_set_stage(target) and _load_current_stage(run_manager.get_stage_seed())
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	_set_all_player_input(true)
+	is_transitioning = false
+	return loaded
+
+
+## Modo Dev: recria o estágio atual do zero (mesmo layout, inimigos e baús de volta).
+func dev_restart_stage() -> bool:
+	if is_transitioning or lan_session.is_network_game() or not run_manager.run_active:
+		return false
+	is_transitioning = true
+	_set_all_player_input(false)
+	await _fade_to(1.0)
+	run_manager.dev_reset_current_stage_state()
+	for candidate in get_players():
+		if candidate.is_downed:
+			candidate.revive()
+	var loaded := _load_current_stage(run_manager.get_stage_seed())
+	await get_tree().process_frame
+	await _fade_to(0.0)
+	_set_all_player_input(true)
+	is_transitioning = false
+	return loaded
+
+
 func _load_room(room_path: String, entry_id: StringName) -> bool:
 	var packed_room := load(room_path) as PackedScene
 	if packed_room == null:

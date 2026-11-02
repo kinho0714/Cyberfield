@@ -15,6 +15,11 @@ const PURCHASES := {
 }
 
 @export var save_path := DEFAULT_SAVE_PATH
+## Modo Dev: perfil de teste separado. Enquanto ativo, TODA gravação vai para o arquivo
+## `<save>_dev_sandbox.json`; o perfil legítimo nunca é escrito. Ver `scene/dev/dev_mode.gd`.
+const DEV_SANDBOX_SUFFIX := "_dev_sandbox.json"
+var dev_sandbox_active := false
+var _legit_save_path := ""
 
 var credits := 0
 var scrap := 0
@@ -94,6 +99,9 @@ func to_dictionary() -> Dictionary:
 func record_run(result: Dictionary) -> int:
 	if result.is_empty():
 		return 0
+	# Run que usou ferramentas do Modo Dev nunca entra no perfil legítimo.
+	if bool(result.get("dev_session", false)) and not dev_sandbox_active:
+		return 0
 	var run_id := _result_id(result)
 	if processed_run_ids.has(run_id):
 		return 0
@@ -122,6 +130,55 @@ func record_run(result: Dictionary) -> int:
 	save_profile()
 	profile_changed.emit()
 	return reward
+
+
+# --- Modo Dev: perfil de teste isolado ---------------------------------------------
+
+func legit_save_path() -> String:
+	return _legit_save_path if dev_sandbox_active else save_path
+
+
+func dev_sandbox_path() -> String:
+	return legit_save_path().get_basename() + DEV_SANDBOX_SUFFIX
+
+
+## Passa a gravar no perfil de teste. Continua o perfil de teste anterior se existir;
+## senão começa como cópia do perfil atual (o arquivo legítimo não é tocado).
+func begin_dev_sandbox() -> void:
+	if dev_sandbox_active:
+		return
+	var sandbox := dev_sandbox_path()
+	_legit_save_path = save_path
+	dev_sandbox_active = true
+	save_path = sandbox
+	if FileAccess.file_exists(sandbox):
+		load_profile()
+	else:
+		save_profile()
+	profile_changed.emit()
+
+
+## Volta ao perfil legítimo (recarregado do disco, intacto).
+func end_dev_sandbox() -> void:
+	if not dev_sandbox_active:
+		return
+	save_profile()
+	save_path = _legit_save_path
+	_legit_save_path = ""
+	dev_sandbox_active = false
+	load_profile()
+	profile_changed.emit()
+
+
+## Recomeça o perfil de teste como cópia fiel do perfil legítimo.
+func reset_dev_sandbox_from_legit() -> void:
+	if not dev_sandbox_active:
+		return
+	save_path = _legit_save_path
+	load_profile()
+	save_path = dev_sandbox_path()
+	save_profile()
+	profile_changed.emit()
 
 
 func study_blueprint(model_id: StringName) -> bool:

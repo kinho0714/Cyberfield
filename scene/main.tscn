@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://b3x4ydn1pkenx"]
+[gd_scene load_steps=24 format=3 uid="uid://b3x4ydn1pkenx"]
 
 [ext_resource type="Script" path="res://scene/main_menu_alive.gd" id="menu_alive"]
 
@@ -25,6 +25,7 @@
 [ext_resource type="PackedScene" path="res://scene/animated_menu_background.tscn" id="animated_menu"]
 
 [ext_resource type="Script" path="res://scene/menu_environment.gd" id="menu_environment"]
+[ext_resource type="Script" path="res://scene/dev/dev_mode.gd" id="dev_mode"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_manager")
@@ -596,3 +597,6 @@ text = "P2 perto do P1"
 
 [node name="PauseEnemies" type="Button" parent="CoopDebugPanel/Panel/Margin/VBox"]
 text = "Pausar inimigos"
+
+[node name="DevMode" type="Node" parent="."]
+script = ExtResource("dev_mode")

@@ -29,6 +29,8 @@ var selected_category: int = 0
 const AUDIO_LABELS: Array[String] = ["Volume Geral", "Música", "Ambiente", "Efeitos Sonoros", "Diálogos"]
 @onready var settings_scroll: ScrollContainer = $Overlay/Center/SettingsPage/Scroll
 @onready var settings_content: VBoxContainer = $Overlay/Center/SettingsPage/Scroll/Content
+## 02/11/2026: Modo Dev (ferramentas de teste). Criado aqui para não mexer na cena.
+var dev_mode_toggle: CheckButton
 
 
 func _ready() -> void:
@@ -55,6 +57,13 @@ func _ready() -> void:
 		VisualQuality.set_profile(StringName(effects_option.get_item_metadata(index))))
 	touch_slider.value_changed.connect(_set_touch_scale)
 	debug_toggle.toggled.connect(_set_debug_hud)
+	dev_mode_toggle = CheckButton.new()
+	dev_mode_toggle.name = "DevMode"
+	dev_mode_toggle.text = "MODO DEV (FERRAMENTAS DE TESTE)"
+	settings_content.add_child(dev_mode_toggle)
+	settings_content.move_child(dev_mode_toggle, debug_toggle.get_index() + 1)
+	dev_mode_toggle.set_pressed_no_signal(local_settings.dev_mode_enabled)
+	dev_mode_toggle.toggled.connect(func(value: bool) -> void: local_settings.set_dev_mode_enabled(value))
 	for entry: Array in [["PRÓXIMO", &"close"], ["PADRÃO", &"default"], ["DISTANTE", &"distant"]]:
 		zoom_option.add_item(String(entry[0]))
 		zoom_option.set_item_metadata(zoom_option.item_count - 1, entry[1])
@@ -204,6 +213,10 @@ func _show_main() -> void:
 
 func _show_settings() -> void:
 	_cancel_options_gesture()
+	dev_mode_toggle.set_pressed_no_signal(local_settings.dev_mode_enabled)
+	# Mesmo tamanho de letra/linha da opção vizinha (definidos pela apresentação do menu).
+	dev_mode_toggle.add_theme_font_size_override("font_size", debug_toggle.get_theme_font_size("font_size"))
+	dev_mode_toggle.custom_minimum_size = debug_toggle.get_combined_minimum_size()
 	main_page.visible = not title_settings
 	settings_page.visible = true
 	_select_category(0)
@@ -235,6 +248,8 @@ func _handle_screen_touch_pressed(event: InputEventScreenTouch) -> void:
 			var next_debug_value: bool = not debug_toggle.button_pressed
 			debug_toggle.set_pressed_no_signal(next_debug_value)
 			_set_debug_hud(next_debug_value)
+		elif dev_mode_toggle != null and _touch_hits(dev_mode_toggle, position):
+			dev_mode_toggle.button_pressed = not dev_mode_toggle.button_pressed
 		else:
 			return
 	else:
@@ -436,7 +451,7 @@ func _category_touch(event: InputEvent, button: Button, index: int) -> void:
 func _select_category(index: int) -> void:
 	_cancel_options_gesture()
 	selected_category = index
-	var groups: Array = [["ZoomLabel", "CameraZoom", "EffectsLabel", "EffectsOption", "DebugHud", "LanguageLabel", "LanguageOption"],
+	var groups: Array = [["ZoomLabel", "CameraZoom", "EffectsLabel", "EffectsOption", "DebugHud", "DevMode", "LanguageLabel", "LanguageOption"],
 		["TouchLabel", "TouchScale", "TouchValue"],
 		["MasterLabel", "MasterVolume", "MusicLabel", "MusicVolume", "AmbienceLabel", "AmbienceVolume", "SFXLabel", "SFXVolume", "DialogueLabel", "DialogueVolume"]]
 	for child in settings_content.get_children():
