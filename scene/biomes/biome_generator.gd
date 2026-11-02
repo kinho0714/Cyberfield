@@ -27,6 +27,16 @@ const SPAWN_EDGE_CLEARANCE := 72.0
 const TRAP_CHEST_CHANCE := 0.12
 const VERTICAL_SHAFT_INNER_WIDTH := 136.0
 const VERTICAL_SHAFT_WALL_THICKNESS := 18.0
+## P1-C (02/11/2026): escada de serviço (plataformas de passagem alternadas) nos poços do
+## caminho crítico. Um pulo simples (~81 px) alcança o próximo degrau; a escalada de parede
+## continua valendo (mais rápida). Poços de ramos laterais seguem só com escalada (parkour).
+const SHAFT_STEP_SPACING := 72.0
+const SHAFT_STEP_WIDTH := 58.0
+const SHAFT_STEP_THICKNESS := 12.0
+## P1-C: alcova secreta atrás de parede que só abre com dash (DashPassage).
+const DASH_PASSAGE_SCRIPT := preload("res://scene/interactables/dash_passage.gd")
+const DASH_ALCOVE_WIDTH := 220.0
+const DASH_WALL_THICKNESS := 26.0
 const MINIMUM_TRAVERSAL_CLEARANCE := 112.0
 const MINIMUM_STACKED_PASSAGE_OVERLAP := 32.0
 const TELEPORTER_MIN_GRAPH_DISTANCE := 3
@@ -70,6 +80,10 @@ var _trap_event_ids: Array[StringName] = []
 ## P1-B: armas ofertadas neste estágio (id do conteúdo -> arma) e cache da sequência.
 var _weapon_offers: Dictionary = {}
 var _weapon_offer_cache: Array[StringName] = []
+var service_step_count := 0
+var service_shaft_count := 0
+var dash_passage_count := 0
+var _dash_passage_entries: Array[Dictionary] = []
 var _heavy_enemy_ids: Array[StringName] = []
 var _reserved_event_marker_ids: Dictionary = {}
 var _room_director: RoomDirector
@@ -153,6 +167,10 @@ func get_generation_report() -> Dictionary:
 		"trap_chest_count": spawned_trap_chest_count,
 		"trap_event_ids": _trap_event_ids.duplicate(),
 		"weapon_offers": _weapon_offers.duplicate(),
+		"service_shaft_count": service_shaft_count,
+		"service_step_count": service_step_count,
+		"dash_passage_count": dash_passage_count,
+		"dash_passages": _dash_passage_entries.duplicate(true),
 		"combat_module_count": combat_modules.size(),
 		"max_empty_sequence": maximum_empty_sequence,
 		"auxiliary_platform_count": auxiliary_platform_count,
@@ -686,6 +704,10 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	_content_modules = {"loot": [], "attribute": [], "exit": [], "enemy": [], "weapon": []}
 	_content_entries.clear()
 	_teleporter_entries.clear()
+	service_step_count = 0
+	service_shaft_count = 0
+	dash_passage_count = 0
+	_dash_passage_entries.clear()
 	generation_signature = _build_generation_signature()
 	var modules_root := Node2D.new()
 	modules_root.name = "Modules"
@@ -693,6 +715,7 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	for index in _nodes.size():
 		_build_module(modules_root, index)
 	_build_vertical_connections()
+	_build_shaft_service_steps()
 	_build_outer_safety()
 	_start_position = Vector2(140.0, FLOOR_TOP - 36.0)
 	_spawn_teleporters(run_manager)
@@ -940,17 +963,157 @@ func _build_vertical_connections() -> void:
 			rejected_micro_ledge_count += 1
 
 
+## Arestas (menor:maior) nos caminhos mais curtos do início até cada saída.
+func _critical_path_edges() -> Dictionary:
+	var previous := {0: -1}
+	var queue: Array[int] = [0]
+	while not queue.is_empty():
+		var current: int = queue.pop_front()
+		for neighbor_value: Variant in _nodes[current].neighbors:
+			var neighbor := int(neighbor_value)
+			if not previous.has(neighbor):
+				previous[neighbor] = current
+				queue.append(neighbor)
+	var edges := {}
+	for exit_index in _exit_module_indices:
+		var current := exit_index
+		while previous.has(current) and int(previous[current]) >= 0:
+			var parent := int(previous[current])
+			edges["%d:%d" % [mini(current, parent), maxi(current, parent)]] = true
+			current = parent
+	return edges
+
+
+func _build_shaft_service_steps() -> void:
+	var steps := Node2D.new()
+	steps.name = "ShaftServiceSteps"
+	add_child(steps)
+	var critical := _critical_path_edges()
+	var shaft_half_width := VERTICAL_SHAFT_INNER_WIDTH * 0.5
+	for index in _nodes.size():
+		var origin_grid: Vector2i = _nodes[index].grid
+		for neighbor_value: Variant in _nodes[index].neighbors:
+			var neighbor_index := int(neighbor_value)
+			if neighbor_index <= index:
+				continue
+			var neighbor_grid: Vector2i = _nodes[neighbor_index].grid
+			if origin_grid.x != neighbor_grid.x or not critical.has("%d:%d" % [index, neighbor_index]):
+				continue
+			var upper_floor := float(mini(origin_grid.y, neighbor_grid.y)) * CELL_SIZE.y + FLOOR_TOP
+			var lower_floor := float(maxi(origin_grid.y, neighbor_grid.y)) * CELL_SIZE.y + FLOOR_TOP
+			var center_x := float(origin_grid.x) * CELL_SIZE.x + CELL_SIZE.x * 0.5
+			var y := lower_floor - SHAFT_STEP_SPACING
+			var left_side := true
+			while y > upper_floor + 20.0:
+				var x := center_x - shaft_half_width if left_side else center_x + shaft_half_width - SHAFT_STEP_WIDTH
+				_add_static_rect(steps, Rect2(x, y, SHAFT_STEP_WIDTH, SHAFT_STEP_THICKNESS), Color(0.12, 0.3, 0.34, 1.0), true)
+				var step := steps.get_child(steps.get_child_count() - 1)
+				step.set_meta("service_step", true)
+				service_step_count += 1
+				y -= SHAFT_STEP_SPACING
+				left_side = not left_side
+			service_shaft_count += 1
+
+
+## Alcova secreta numa borda selada de módulo fora do caminho crítico, fechada por uma
+## DashPassage, com baú garantido (arma da sequência do estágio, mín. incomum).
+func _spawn_dash_passages(run_manager: Node, stage_prefix: String) -> void:
+	if _nodes.size() < 6:
+		return
+	var critical_modules := {}
+	for key: Variant in _critical_path_edges():
+		for part in String(key).split(":"):
+			critical_modules[int(part)] = true
+	var candidates: Array[Dictionary] = []
+	for index in range(1, _nodes.size()):
+		if _exit_module_indices.has(index):
+			continue
+		var connectors: Array = _nodes[index].required_connectors as Array
+		for side: StringName in [&"right", &"left"]:
+			if connectors.has(side):
+				continue
+			var zone := _dash_alcove_zone(index, side)
+			if not _zone_is_free(zone):
+				continue
+			candidates.append({"index": index, "side": side, "zone": zone, "secondary": not critical_modules.has(index)})
+	if candidates.is_empty():
+		return
+	var rng := RandomNumberGenerator.new()
+	rng.seed = hash("dash_passage:%s" % generation_signature)
+	var secondary := candidates.filter(func(entry: Dictionary) -> bool: return bool(entry.secondary))
+	var pool: Array = secondary if not secondary.is_empty() else candidates
+	var chosen: Dictionary = pool[rng.randi_range(0, pool.size() - 1)]
+	_build_dash_alcove(chosen, run_manager, stage_prefix, 1)
+
+
+func _dash_alcove_zone(index: int, side: StringName) -> Rect2:
+	var origin := Vector2(_nodes[index].grid) * CELL_SIZE
+	var x := origin.x + CELL_SIZE.x - DASH_ALCOVE_WIDTH if side == &"right" else origin.x
+	return Rect2(x, origin.y, DASH_ALCOVE_WIDTH, FLOOR_TOP)
+
+
+func _zone_is_free(zone: Rect2) -> bool:
+	var grown := zone.grow(24.0)
+	# Só conteúdo realmente gerado (baús, saídas, pickups, inimigos); sockets vazios não contam.
+	for node in find_children("*", "", true, false):
+		if node is Area2D or node is CharacterBody2D:
+			if grown.has_point((node as Node2D).global_position):
+				return false
+	for entry_value: Variant in _teleporter_entries:
+		if grown.has_point(Vector2((entry_value as Dictionary).position)):
+			return false
+	return true
+
+
+func _build_dash_alcove(entry: Dictionary, run_manager: Node, stage_prefix: String, number: int) -> void:
+	var zone: Rect2 = entry.zone
+	var side: StringName = entry.side
+	var root := Node2D.new()
+	root.name = "DashAlcove%02d" % number
+	add_child(root)
+	var wall_x := zone.position.x + DASH_WALL_THICKNESS * 0.5 if side == &"right" else zone.end.x - DASH_WALL_THICKNESS * 0.5
+	# A parede sobe acima do topo da célula: plataformas do módulo não servem para pular por cima.
+	var wall_top := zone.position.y - 60.0
+	var wall_bottom := zone.position.y + FLOOR_TOP
+	var passage := DASH_PASSAGE_SCRIPT.new() as DashPassage
+	passage.name = "DashPassage"
+	passage.passage_id = StringName("%s_dash_%02d" % [stage_prefix, number])
+	passage.size = Vector2(DASH_WALL_THICKNESS, wall_bottom - wall_top)
+	passage.dash_direction = 1.0 if side == &"right" else -1.0
+	passage.position = Vector2(wall_x, (wall_top + wall_bottom) * 0.5)
+	root.add_child(passage)
+	var secret_id := StringName("%s_secret_%02d" % [stage_prefix, number])
+	var loot := LOOT_SCENE.instantiate()
+	loot.name = "SecretLoot%02d" % number
+	loot.loot_id = secret_id
+	loot.amount = 40 + (int(run_manager.get("extra_enemy_count")) * 5 if run_manager != null and run_manager.get("extra_enemy_count") != null else 0)
+	var offers := _weapon_offer_sequence(run_manager)
+	if offers.size() > 4:
+		loot.reward_weapon_id = offers[4]
+		loot.reward_rarity = WeaponLootTable.rarity_for(&"trap_reward", _run_seed(run_manager), secret_id, _stage_index(run_manager))
+		_weapon_offers[secret_id] = offers[4]
+	loot.add_to_group("secret_loot")
+	var chest_x := zone.position.x + DASH_WALL_THICKNESS + (DASH_ALCOVE_WIDTH - DASH_WALL_THICKNESS) * 0.5 if side == &"right" else zone.position.x + (DASH_ALCOVE_WIDTH - DASH_WALL_THICKNESS) * 0.5
+	root.add_child(loot)
+	loot.global_position = Vector2(chest_x, zone.position.y + FLOOR_TOP - 26.0)
+	dash_passage_count += 1
+	_dash_passage_entries.append({"passage_id": String(passage.passage_id), "secret_id": String(secret_id), "module_index": int(entry.index), "side": String(side), "position": passage.global_position, "reward_position": loot.global_position, "secondary_route": bool(entry.secondary)})
+	# Segredo: fora das entradas de conteúdo do mapa (não aparece no minimapa).
+
+
 func _spawn_required_content(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	var stage_prefix := String(run_manager.current_stage_id) if not String(run_manager.current_stage_id).is_empty() else "lower_city"
 	var exit_a: StringName = biome_definition.possible_exits[0] if biome_definition.possible_exits.size() > 0 else &"exit_a"
 	var exit_b: StringName = biome_definition.possible_exits[1] if biome_definition.possible_exits.size() > 1 else &"exit_b"
-	_spawn_exit(0, _exit_module_indices[0], exit_a, &"next_biome_a")
-	_spawn_exit(1, _exit_module_indices[1], exit_b, &"next_biome_b")
+	_spawn_exit(0, _exit_module_indices[0], exit_a, &"next_biome_a", run_manager)
+	_spawn_exit(1, _exit_module_indices[1], exit_b, &"next_biome_b", run_manager)
 	_spawn_attribute_reward(0, _exit_module_indices[0], stage_prefix)
 	_spawn_attribute_reward(1, _exit_module_indices[1], stage_prefix)
 	_spawn_loot(rng, run_manager, stage_prefix)
 	_spawn_weapon_pickups(rng, run_manager, stage_prefix)
 	_spawn_enemies(rng, run_manager, stage_prefix)
+	# Depois de todo o conteúdo e sem o RNG da geração: layout e conteúdo intactos.
+	_spawn_dash_passages(run_manager, stage_prefix)
 
 
 func _spawn_teleporters(run_manager: Node) -> void:
@@ -1051,7 +1214,7 @@ func _module_instance_id(index: int) -> StringName:
 	return StringName("module_%02d" % index)
 
 
-func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, destination: StringName) -> void:
+func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, destination: StringName, run_manager: Node = null) -> void:
 	var marker := _find_socket_for_module(&"exit", module_index)
 	if marker == null:
 		return
@@ -1064,7 +1227,15 @@ func _spawn_exit(socket_order: int, module_index: int, exit_id: StringName, dest
 	(_content_modules.exit as Array).append(module_index)
 	_content_entries.append({"kind": &"exit", "content_id": exit_id, "module_instance_id": _module_instance_id(module_index), "module_index": module_index})
 	var exit_label := "A" if socket_order == 0 else "B"
-	exit.get_node("Label").text = "EXIT %s → %s" % [exit_label, destination]
+	# P1-C: rótulo com o destino real (antes mostrava o id interno "next_biome_a").
+	var destination_text := String(destination)
+	if run_manager != null and run_manager.has_method("preview_exit_biome"):
+		var kind: StringName = run_manager.preview_exit_biome(destination)
+		destination_text = String(run_manager.BIOME_KIND_LABELS.get(kind, kind))
+		if socket_order == 1 and kind != &"boss":
+			destination_text += "  (APROFUNDAR)" if kind == run_manager.get_stage_biome_kind() else "  (ATALHO)"
+		exit.set_meta("destination_biome", kind)
+	exit.get_node("Label").text = "SAÍDA %s → %s" % [exit_label, destination_text]
 
 
 func _spawn_attribute_reward(reward_index: int, module_index: int, stage_prefix: String) -> void:

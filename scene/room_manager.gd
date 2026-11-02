@@ -568,12 +568,13 @@ func _load_generated_biome(scene: PackedScene, generation_seed: int, label: Stri
 
 
 func _load_current_stage(generation_seed: int) -> bool:
-	match run_manager.stage_index:
-		1, 3:
+	# P1-C: o bioma vem da saída escolhida (A = sequência padrão, B = rota alternativa).
+	match run_manager.get_stage_biome_kind():
+		&"industrial":
 			return _load_generated_biome(INDUSTRIAL_BIOME_SCENE, generation_seed, "Industrial")
-		2, 4:
+		&"lab":
 			return _load_generated_biome(LAB_BIOME_SCENE, generation_seed, "Lab")
-		5:
+		&"boss":
 			return _load_boss_stage()
 		_:
 			return _load_lower_city_biome(generation_seed)

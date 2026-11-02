@@ -109,6 +109,11 @@ var run_weapon_pool: Array[StringName] = [&"scrap_blade"]
 ## (determinístico pela geração; usado para não repetir armas entre estágios).
 var current_biome_kind: StringName = &""
 var weapon_offer_history: Array[StringName] = []
+## P1-C: progressão por saída. A saída A segue a sequência padrão; a saída B é a rota
+## alternativa (Industrial <-> Laboratório) no mesmo estágio. Chefe continua no estágio 5.
+const STAGE_DEFAULT_KINDS: Array[StringName] = [&"lower_city", &"industrial", &"lab", &"industrial", &"lab", &"boss"]
+const BIOME_KIND_LABELS := {&"lower_city": "CIDADE BAIXA", &"industrial": "INDUSTRIAL", &"lab": "LABORATÓRIO", &"boss": "ARENA DO GUARDIÃO"}
+var stage_biome_kinds: Dictionary = {}
 ## Modo Dev: sessão de teste marcada (resultados não vão para o perfil legítimo).
 var dev_session := false
 
@@ -178,6 +183,7 @@ func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false
 	current_stage_id = &"lower_city"
 	stage_history.clear()
 	weapon_offer_history.clear()
+	stage_biome_kinds.clear()
 	current_biome_kind = &""
 	dev_session = false
 	_clear_biome_state()
@@ -361,6 +367,7 @@ func advance_stage(exit_id: StringName, destination_id: StringName) -> bool:
 		"exit_id": exit_id,
 		"destination_id": destination_id,
 	})
+	stage_biome_kinds[stage_index + 1] = preview_exit_biome(destination_id)
 	stage_index += 1
 	current_stage_id = StringName("%s_stage_%02d" % [destination_id, stage_index])
 	current_biome_id = &""
@@ -368,6 +375,29 @@ func advance_stage(exit_id: StringName, destination_id: StringName) -> bool:
 	generated_module_count = 0
 	state_changed.emit()
 	return true
+
+
+static func default_stage_kind(stage: int) -> StringName:
+	return STAGE_DEFAULT_KINDS[clampi(stage, 0, STAGE_DEFAULT_KINDS.size() - 1)]
+
+
+## Bioma ao qual uma saída do estágio atual leva (rótulo da saída e avanço).
+## A = alterna (Cidade Baixa/Laboratório → Industrial, Industrial → Laboratório): só saídas
+## A reproduzem a sequência antiga LC, IND, LAB, IND, LAB, chefe.
+## B = aprofundar: fica no mesmo tipo de bioma (da Cidade Baixa, atalho ao Laboratório).
+func preview_exit_biome(destination_id: StringName, from_stage: int = -1) -> StringName:
+	var origin := stage_index if from_stage < 0 else from_stage
+	if origin + 1 >= STAGE_DEFAULT_KINDS.size() - 1:
+		return &"boss"
+	var current := get_stage_biome_kind(origin)
+	if destination_id == &"next_biome_b":
+		return &"lab" if current == &"lower_city" else current
+	return &"lab" if current == &"industrial" else &"industrial"
+
+
+func get_stage_biome_kind(stage: int = -1) -> StringName:
+	var target := stage_index if stage < 0 else stage
+	return StringName(stage_biome_kinds.get(target, default_stage_kind(target)))
 
 
 func enter_boss_stage() -> void:
@@ -1407,6 +1437,7 @@ func dev_set_stage(target: int) -> bool:
 		return false
 	mark_dev_session()
 	stage_index = clampi(target, 0, 5)
+	stage_biome_kinds[stage_index] = default_stage_kind(stage_index)
 	current_stage_id = &"lower_city" if stage_index == 0 else StringName("dev_stage_%02d_%d" % [stage_index, Time.get_ticks_msec() % 1000000])
 	current_biome_id = &""
 	current_biome_name = ""

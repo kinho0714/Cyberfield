@@ -622,12 +622,12 @@ func teleport_points() -> Array[Dictionary]:
 			label = "SAÍDA %s" % String(node.destination_id).to_upper()
 		elif node is TrapChest:
 			label = "BAÚ TRAP"
+		elif node.is_in_group("secret_loot"):
+			label = "BAÚ SECRETO (atrás da passagem de dash)"
 		elif node.is_in_group("biome_loot"):
 			label = "BAÚ"
 		elif node is WeaponPickup:
 			label = "ARMA %s" % WeaponCatalog.get_display_name(node.weapon_id)
-		elif node.is_in_group("dash_passage"):
-			label = "PASSAGEM DE DASH"
 		if label.is_empty():
 			continue
 		var key := "%s_%d" % [label, int(node.global_position.x)]
@@ -635,6 +635,12 @@ func teleport_points() -> Array[Dictionary]:
 			continue
 		seen[key] = true
 		result.append({"id": String(node.name).to_snake_case(), "label": label, "position": node.global_position})
+	for passage in room.find_children("*", "StaticBody2D", true, false):
+		if passage is DashPassage:
+			var side := -1.0 if float(passage.dash_direction) > 0.0 else 1.0
+			# Ponto de chão em frente à parede, do lado do módulo (para testar o dash).
+			var front := Vector2(passage.global_position.x + side * 90.0, passage.global_position.y + float(passage.size.y) * 0.5 - 30.0)
+			result.append({"id": "dash_%s" % String(passage.passage_id), "label": "PASSAGEM DE DASH %s" % ("(ABERTA)" if passage.is_open else ""), "position": front})
 	return result
 
 

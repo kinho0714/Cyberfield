@@ -23,6 +23,8 @@ var collected_bandage_ids: Dictionary = {}
 var discovered_teleporter_ids: Dictionary = {}
 var active_teleporter_ids: Dictionary = {}
 var trap_event_states: Dictionary = {}
+## P1-C: passagens secretas abertas por dash (DashPassage).
+var opened_passage_ids: Dictionary = {}
 
 
 func _init(value: StringName = &"") -> void:
@@ -53,6 +55,10 @@ func collect_content(kind: StringName, content_id: StringName) -> bool:
 		return false
 	changed.emit()
 	return true
+
+
+func is_content_collected(kind: StringName, content_id: StringName) -> bool:
+	return _dictionary_for_kind(kind, true).has(content_id)
 
 
 func activate_teleporter(teleporter_id: StringName) -> bool:
@@ -122,6 +128,7 @@ func to_dictionary() -> Dictionary:
 		"discovered_teleporter_ids": _sorted_strings(discovered_teleporter_ids),
 		"active_teleporter_ids": _sorted_strings(active_teleporter_ids),
 		"trap_event_states": _serialized_trap_events(),
+		"opened_passage_ids": _sorted_strings(opened_passage_ids),
 	}
 
 
@@ -141,6 +148,7 @@ func apply_dictionary(value: Dictionary) -> void:
 	_apply_array(discovered_teleporter_ids, value.get("discovered_teleporter_ids", []))
 	_apply_array(active_teleporter_ids, value.get("active_teleporter_ids", []))
 	_apply_trap_events(value.get("trap_event_states", []))
+	_apply_array(opened_passage_ids, value.get("opened_passage_ids", []))
 	changed.emit()
 
 
@@ -158,6 +166,7 @@ func _dictionary_for_kind(kind: StringName, collected: bool) -> Dictionary:
 		&"weapon": return collected_weapon_ids if collected else discovered_weapon_ids
 		&"bandage": return collected_bandage_ids if collected else discovered_bandage_ids
 		&"teleporter": return active_teleporter_ids if collected else discovered_teleporter_ids
+		&"passage": return opened_passage_ids
 	return {}
 
 
