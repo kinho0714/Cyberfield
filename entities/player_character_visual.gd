@@ -229,6 +229,8 @@ func get_presentation_state() -> StringName:
 
 
 func get_content_portrait(fallback: Texture2D) -> Texture2D:
+	if not _set.is_empty():
+		return fallback  # retrato do perfil antigo mostraria o design anterior
 	return _content_profile.texture("portrait", fallback) if _content_profile != null else fallback
 
 

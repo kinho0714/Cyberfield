@@ -90,7 +90,20 @@ func update_state(player: Node, money: int, hud_visible: bool) -> void:
 	var visual := player.get_node_or_null("PlayerCharacterVisual") as AnimatedSprite2D
 	if visual != null and visual.sprite_frames != _portrait_frames:
 		_portrait_frames = visual.sprite_frames
-		if _portrait_frames != null and _portrait_frames.has_animation(&"idle"):
+		if _portrait_frames != null and _portrait_frames.has_animation(&"b_idle"):
+			# 02/11: conjunto oficial (Jhon Design B): rosto recortado do idle novo.
+			var official: Texture2D = _portrait_frames.get_frame_texture(&"b_idle", 0)
+			var official_face := AtlasTexture.new()
+			var used := official.get_image().get_used_rect()
+			var origin := Vector2.ZERO
+			if official is AtlasTexture:
+				origin = (official as AtlasTexture).region.position
+				official_face.atlas = (official as AtlasTexture).atlas
+			else:
+				official_face.atlas = official
+			official_face.region = Rect2(origin + Vector2(used.position.x + used.size.x * 0.12, used.position.y), Vector2(used.size.x * 0.76, used.size.x * 0.76))
+			_portrait = official_face
+		elif _portrait_frames != null and _portrait_frames.has_animation(&"idle"):
 			var body: Texture2D = _portrait_frames.get_frame_texture(&"idle", 0)
 			var face := AtlasTexture.new()
 			face.atlas = body
