@@ -1,5 +1,7 @@
 extends Node
 
+signal gameplay_event(type: String, event_id: String, payload: Dictionary)
+
 signal state_changed
 signal run_completed
 signal run_lost
@@ -501,7 +503,10 @@ func register_enemy_death(room_id: StringName, enemy_id: StringName) -> void:
 	if not run_active or not room_states.has(room_id) or enemy_id.is_empty():
 		return
 	var state: Dictionary = room_states[room_id]
+	if state.dead_enemies.has(enemy_id):
+		return
 	state.dead_enemies[enemy_id] = true
+	gameplay_event.emit("enemy_defeated", "%d:%s:%s" % [seed_value, room_id, enemy_id], {"target": String(enemy_id)})
 	_update_trap_event_completion(room_id, enemy_id)
 	_update_room_completion(room_id)
 	state_changed.emit()
@@ -996,6 +1001,7 @@ func collect_money_drop(room_id: StringName, drop_id: StringName) -> bool:
 	var collected_amount := int(drops[drop_id].amount)
 	dirty_money += collected_amount
 	total_money_earned += collected_amount
+	gameplay_event.emit("item_collected", "%d:%s:%s" % [seed_value, room_id, drop_id], {"target": "dirty_money", "amount": collected_amount})
 	state_changed.emit()
 	return true
 

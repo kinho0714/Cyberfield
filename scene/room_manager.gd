@@ -319,6 +319,8 @@ func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) 
 func request_biome_advance(exit_id: StringName, destination_id: StringName) -> void:
 	if is_transitioning or not run_manager.run_active:
 		return
+	if campaigns != null:
+		campaigns.geography.remember_current_area()
 	is_transitioning = true
 	_set_all_player_input(false)
 	await _fade_to(1.0)

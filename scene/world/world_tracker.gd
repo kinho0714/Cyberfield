@@ -1,11 +1,17 @@
 class_name WorldTracker
 extends Node
+signal mission_states_changed
+signal visited_areas_changed
 const WORLD := preload("res://scene/world/world_state.gd")
 const ROUTES := preload("res://scene/world/region_routes.gd")
 const CATALOG := preload("res://scene/world/world_catalog.gd")
 var controller: Node
 var catalog: WorldCatalog = CATALOG.new()
 var elapsed := 0.0
+
+
+func _ready() -> void:
+	controller.game.run_manager.gameplay_event.connect(record_gameplay_event)
 
 
 func _process(delta: float) -> void:
@@ -43,6 +49,7 @@ func sample() -> void:
 			room_id = "%d_%s" % [int(game.run_manager.seed_value), String(modules[index].instance_id)]
 	if WORLD.visit(world, neighborhood, room_id, players[0].global_position):
 		controller.dirty = true
+		record_gameplay_event("location_discovered", "discover:" + neighborhood + "/" + room_id, {"target": neighborhood})
 
 
 func current_neighborhood() -> String:
@@ -121,6 +128,8 @@ func advance_route(exit_id: StringName) -> void:
 		return
 	world.location = {"neighborhood_id": target, "room_id": "", "position": Vector2.ZERO}
 	game.run_manager.stage_biome_kinds[game.run_manager.stage_index] = selected_biome()
+	# Transition runs under the manager guard; consume only trusted local game events.
+	preload("res://scene/missions/mission_ledger.gd").consume(world, "region_transition", "%d:%d:%s" % [int(game.run_manager.seed_value), int(game.run_manager.stage_index), target], {"target": target})
 	controller.dirty = true
 
 
@@ -157,3 +166,110 @@ func preview_route(destination_id: StringName) -> StringName:
 		return &""
 	var parent: String = String(world.locations[target].parent_id)
 	return StringName(world.locations[parent].get("biome_kind", ""))
+
+
+func remember_current_area() -> String:
+	if not _gameplay_writable() or controller.game.current_is_hub:
+		return ""
+	sample()
+	var snapshot: Dictionary = preload("res://scene/persistence/session_snapshot.gd").capture(controller.game)
+	if snapshot.is_empty():
+		return ""
+	var id: String = preload("res://scene/world/area_journal.gd").remember(controller.active.world, snapshot, controller.active.world.location)
+	controller.dirty = true
+	visited_areas_changed.emit()
+	return id
+
+
+func visited_areas() -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if controller.active.is_empty():
+		return result
+	for id: String in controller.active.world.get("visited_areas", {}):
+		var entry: Dictionary = controller.active.world.visited_areas[id]
+		if int(entry.session.run.seed_value) == int(controller.game.run_manager.seed_value):
+			result.append({"area_id": id, "location": entry.location.duplicate(true)})
+	return result
+
+
+func revisit_area(id: String) -> bool:
+	if not _gameplay_writable() or controller.game.current_is_hub or controller.game.run_manager.stage_index >= 5:
+		return false
+	var game: Node = controller.game
+	var snapshot_script: Script = preload("res://scene/persistence/session_snapshot.gd")
+	var live: Dictionary = snapshot_script.capture(game)
+	if live.is_empty() or preload("res://scene/world/area_journal.gd").key(live) == id:
+		return false
+	var target: Dictionary = preload("res://scene/world/area_journal.gd").prepare(controller.active.world, id, live)
+	if target.is_empty():
+		return false
+	remember_current_area()
+	var location: Dictionary = controller.active.world.visited_areas[id].location.duplicate(true)
+	game.is_transitioning = true
+	game._set_all_player_input(false)
+	var restored: bool = snapshot_script.restore(game, target)
+	if not restored:
+		snapshot_script.restore(game, live)
+	else:
+		controller.active.world.location = location
+	game.is_transitioning = false
+	game._set_all_player_input(true)
+	controller.dirty = true
+	if restored:
+		controller.save_now()
+	return restored
+
+
+func _gameplay_writable() -> bool:
+	return not controller.active.is_empty() and not controller.restoring and not controller.game.is_transitioning and not controller.game.get_node("MetaProgression").dev_sandbox_active and not controller.game.run_manager.dev_session and not controller.game.lan_session.is_network_game()
+
+
+func register_mission(definition: Dictionary) -> bool:
+	if not _gameplay_writable():
+		return false
+	var result: bool = preload("res://scene/missions/mission_ledger.gd").register(controller.active.world, definition)
+	controller.dirty = controller.dirty or result
+	if result:
+		mission_states_changed.emit()
+	return result
+
+
+func activate_mission(id: String) -> bool:
+	if not _gameplay_writable():
+		return false
+	var result: bool = preload("res://scene/missions/mission_ledger.gd").activate(controller.active.world, id)
+	controller.dirty = controller.dirty or result
+	if result:
+		mission_states_changed.emit()
+	return result
+
+
+func record_gameplay_event(type: String, event_id: String, payload: Dictionary = {}) -> void:
+	if not _gameplay_writable():
+		return
+	if preload("res://scene/missions/mission_ledger.gd").consume(controller.active.world, type, event_id, payload):
+		controller.dirty = true
+		mission_states_changed.emit()
+
+
+func claim_mission_reward(id: String) -> bool:
+	if not _gameplay_writable() or not controller.save_now():
+		return false
+	# Reward and receipt are committed in the same campaign revision before applying runtime credit.
+	var next: Dictionary = controller.active.duplicate(true)
+	if not preload("res://scene/missions/mission_ledger.gd").claim(next, id):
+		return false
+	if not controller.store.save_campaign(next):
+		controller.last_error = controller.store.last_error
+		return false
+	controller.active = next
+	mission_states_changed.emit()
+	controller.game.get_node("MetaProgression").credits = int(next.permanent.credits)
+	controller.game.get_node("MetaProgression").profile_changed.emit()
+	return true
+
+
+func mission_states() -> Dictionary:
+	if controller.active.is_empty():
+		return {}
+	return controller.active.world.get("missions", {}).duplicate(true)
