@@ -351,7 +351,7 @@ func _on_detection_area_body_exited(body: Node2D) -> void:
 		player = null
 
 		if is_attacking:
-			is_attacking = false
+			cancel_attack()
 			anim.play("idle")
 
 
@@ -375,6 +375,8 @@ func _select_active_player() -> void:
 		if current_distance <= target_detection_range and current_distance <= nearest_distance + TARGET_SWITCH_MARGIN:
 			return
 
+	if player != nearest and is_attacking:
+		cancel_attack()
 	player = nearest
 
 
@@ -391,7 +393,18 @@ func _try_special_attack(_target_offset: Vector2) -> bool:
 	return false
 
 
+func cancel_attack() -> void:
+	attack_generation += 1
+	is_attacking = false
+	attack_telegraph_active = false
+	attack_cooldown_timer = maxf(attack_cooldown_timer, attack_cooldown)
+	anim.modulate = _default_visual_modulate()
+
+
 func attack() -> void:
+	var status: EnemyStatus = get_node_or_null("EnemyStatus") as EnemyStatus
+	if status != null and status.is_frozen():
+		return
 	if not player:
 		return
 
@@ -412,6 +425,9 @@ func attack() -> void:
 	anim.play("attack")
 
 	await get_tree().create_timer(attack_windup).timeout
+	# A stale coroutine must not clear telegraph/recovery owned by a newer attack.
+	if this_attack != attack_generation or is_dead:
+		return
 	attack_telegraph_active = false
 	anim.modulate = _default_visual_modulate()
 
@@ -421,6 +437,9 @@ func attack() -> void:
 		return
 
 	var offset := player.global_position - global_position
+	if absf(offset.x) > attack_horizontal_range or absf(offset.y) > attack_vertical_range:
+		cancel_attack()
+		return
 	attack_shape_cast.target_position = Vector2(
 		clamp(offset.x, -attack_horizontal_range, attack_horizontal_range),
 		clamp(offset.y, -attack_vertical_range, attack_vertical_range)

@@ -289,6 +289,9 @@ func _update_combat_choice(offset: Vector2) -> void:
 
 
 func _begin_melee() -> void:
+	var status: EnemyStatus = get_node_or_null("EnemyStatus") as EnemyStatus
+	if status != null and status.is_frozen():
+		return
 	if is_attacking or state == State.AIM or state == State.SHOOT or state == State.RECOVERY:
 		return
 	state = State.MELEE_WINDUP
@@ -356,6 +359,9 @@ func _cancel_melee(apply_cooldown: bool) -> void:
 
 
 func _begin_aim() -> void:
+	var status: EnemyStatus = get_node_or_null("EnemyStatus") as EnemyStatus
+	if status != null and status.is_frozen():
+		return
 	if is_attacking or state == State.MELEE_WINDUP or state == State.MELEE_IMPACT or state == State.MELEE_RECOVERY:
 		return
 	state = State.AIM
@@ -626,3 +632,8 @@ func _stable_hash(value: String) -> int:
 	for byte in value.to_utf8_buffer():
 		result = int((result ^ byte) * 16777619) & 0x7fffffff
 	return result
+
+
+func cancel_attack() -> void:
+	_cancel_melee(true)
+	_cancel_aim(true)

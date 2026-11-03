@@ -43,6 +43,9 @@ func configure_damage(melee_value: int, projectile_value: int = CombatStats.HEAV
 
 
 func _try_special_attack(target_offset: Vector2) -> bool:
+	var status: EnemyStatus = get_node_or_null("EnemyStatus") as EnemyStatus
+	if status != null and status.is_frozen():
+		return false
 	if ranged_phase != RangedPhase.READY:
 		return true
 	if shoot_cooldown_timer > 0.0 or is_hurt or knockback_timer > 0.0 or not _is_valid_target(player):
@@ -136,3 +139,8 @@ func _cancel_ranged_attack(apply_cooldown: bool) -> void:
 func take_damage(amount: int, knockback_direction: float = 0.0, knockback_multiplier: float = 1.0) -> void:
 	_cancel_ranged_attack(true)
 	super.take_damage(amount, knockback_direction, knockback_multiplier)
+
+
+func cancel_attack() -> void:
+	_cancel_ranged_attack(true)
+	super.cancel_attack()

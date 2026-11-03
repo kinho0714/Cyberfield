@@ -46,6 +46,8 @@ static func freeze(enemy: Node, duration: float, after_slow: float, after_slow_t
 	var status := of(enemy)
 	if status == null or not is_alive(enemy):
 		return
+	if enemy.has_method("cancel_attack"):
+		enemy.call("cancel_attack")
 	status.freeze_timer = maxf(status.freeze_timer, duration)
 	status.slow_factor = minf(status.slow_factor if status.slow_timer > 0.0 else 1.0, after_slow)
 	status.slow_timer = maxf(status.slow_timer, duration + after_slow_time)
