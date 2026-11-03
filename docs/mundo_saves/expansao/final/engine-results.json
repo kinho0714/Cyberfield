@@ -1,0 +1,51 @@
+[
+  {
+    "test": "campaign_store_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "campaign_store_smoke_test.gd.log"
+  },
+  {
+    "test": "campaign_session_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "campaign_session_smoke_test.gd.log"
+  },
+  {
+    "test": "world_persistence_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "world_persistence_smoke_test.gd.log"
+  },
+  {
+    "test": "region_routes_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "region_routes_smoke_test.gd.log"
+  },
+  {
+    "test": "local_profile_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "local_profile_smoke_test.gd.log"
+  },
+  {
+    "test": "dev_mode_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "dev_mode_smoke_test.gd.log"
+  },
+  {
+    "test": "exploration_routes_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "exploration_routes_smoke_test.gd.log"
+  }
+]

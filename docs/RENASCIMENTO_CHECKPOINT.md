@@ -154,3 +154,17 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - world_persistence, region_routes e campaign_session integrados: failures=0 no
   motor headless isolado. Relatório `expansao/MARCOS_2_3.md`. Android/Windows e
   progressão geográfica completa permanecem pendentes.
+
+### Expansão — perfis e protótipo privado (continuidade final)
+- M1: d1f79b0. Mundo/rotas: 7e622a6. Perfil/cliente/UI: 0c21fc8.
+- Perfil local offline persistente, dados públicos/privados separados, contatos
+  não verificados, bloqueios e backup; sem autenticação online fictícia.
+- Relay de jogo WSS loopback e cliente Godot reais; convites-capacidades expiráveis,
+  quatro assentos, autoridade host, revisão, reconexão e caches separados.
+- Sockets TLS e um host Godot + três clientes Python foram testados; não são quatro
+  jogadores/APKs. Nenhuma publicação/túnel. Sem conta/backend de amigos configurado.
+- Regressão: DEV iniciado no hub não altera contador/seed/áreas reais; baú não
+  reaparece, transição/prévia e derrota/recompensa foram incluídas no teste de sessão.
+- Relatório geral `docs/mundo_saves/expansao/RELATORIO_RODADA.md`, segurança e roteiro
+  Android no mesmo diretório. Próximo: validação física, avisos de cleanup, ponte
+  de gameplay WSS, backend e implantação autorizada. Não declarar marcos completos.

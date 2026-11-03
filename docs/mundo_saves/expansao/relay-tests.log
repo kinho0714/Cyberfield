@@ -1,0 +1,14 @@
+test_four_authorized_tls_connections_and_authority (__main__.RelayTests.test_four_authorized_tls_connections_and_authority) ... ok
+test_godot_wss_client (__main__.RelayTests.test_godot_wss_client) ... Executing <Task pending name='Task-64' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.187 seconds
+ok
+test_host_loss_timeout_and_backup (__main__.RelayTests.test_host_loss_timeout_and_backup) ... ok
+test_invites_single_use_and_exact_four (__main__.RelayTests.test_invites_single_use_and_exact_four) ... Executing <Task pending name='Task-175' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.229 seconds
+ok
+test_rate_limit (__main__.RelayTests.test_rate_limit) ... Executing <Task pending name='Task-200' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.106 seconds
+ok
+test_unauthorized_and_invalid_messages (__main__.RelayTests.test_unauthorized_and_invalid_messages) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 3.349s
+
+OK

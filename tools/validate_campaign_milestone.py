@@ -4,14 +4,16 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS = sorted((ROOT / "scene/persistence").glob("*.gd")) + [
-    ROOT / p for p in (
+SCRIPTS = sorted((ROOT / "scene/persistence").glob("*.gd")) + sorted((ROOT / "scene/world").glob("*.gd")) + sorted((ROOT / "scene/social").glob("*.gd")) + [
+    ROOT / "scene/network/private_session_client.gd",
+    ROOT / "tests/world_persistence_smoke_test.gd", ROOT / "tests/region_routes_smoke_test.gd",
+    ROOT / "tests/local_profile_smoke_test.gd", ROOT / "tests/private_transport_smoke_test.gd",
+] + [ROOT / p for p in (
         "scene/room_manager.gd", "scene/meta_progression.gd", "scene/dev/dev_mode.gd",
         "tests/campaign_store_smoke_test.gd", "tests/campaign_session_smoke_test.gd",
     )
@@ -59,10 +61,9 @@ for script in ("mega_pass_priority1_static_test.py", "pass6_hotfix2_static_test.
 
 completed = subprocess.run(["git", "diff", "--check"], cwd=ROOT, capture_output=True, text=True)
 result("git diff --check", "PASS" if completed.returncode == 0 else "FAIL", completed.stdout + completed.stderr)
-engine = shutil.which("godot") or shutil.which("godot4")
-# Runtime tests are deliberately opt-in: running the real scene writes only their
-# unique test namespaces, but can import assets into .godot. Never claim a run here.
-result("Godot runtime", "PENDING", engine or "No Godot executable in PATH")
+# This script checks grammar/regressions only. Runtime evidence is produced by
+# validate_integrated_expansion.py and private_relay_test.py, not inferred here.
+result("Godot runtime", "NOT_RUN_BY_THIS_SCRIPT", "See expansion engine logs; grammar is not compilation")
 result("Android physical tests", "PENDING", "suspension, kill/reopen, touch, storage failure")
 print(json.dumps(results, indent=2, ensure_ascii=False))
 sys.exit(1 if any(r["status"] == "FAIL" for r in results) else 0)
