@@ -25,10 +25,45 @@ MAX_SNAPSHOT = 64 * 1024
 RECONNECT_SECONDS = 600
 INVITE_SECONDS = 600
 ACTIONS = {"left", "right", "down", "jump", "attack", "attack_slot_1", "attack_slot_2", "dash", "interact", "heal", "switch_weapon", "gadget_1", "gadget_2"}
+AVATARS = {"jhon", "jackson", "kai", "spark"}
+NAME_LIMIT = 24
+MAX_FRIEND_REQUESTS = 12  # per seat and session; social spam stays bounded
 
 
 class ProtocolError(Exception):
     pass
+
+
+def clean_name(value: Any) -> str:
+    """Display names only: drop control, bidi and invisible characters, then truncate."""
+    if not isinstance(value, str):
+        return ""
+    kept = []
+    for char in value[:256]:
+        code = ord(char)
+        if code < 32 or code == 127 or 0x80 <= code < 0xA0 or 0x200B <= code <= 0x200F \
+                or 0x202A <= code <= 0x202E or 0x2066 <= code <= 0x2069 or code in (0xFEFF, 0x2028, 0x2029):
+            continue
+        kept.append(char)
+    return "".join(kept).strip()[:NAME_LIMIT]
+
+
+def seat_card(value: Any) -> tuple[str, str]:
+    """Optional public card sent in the hello: never an identity, only what others see."""
+    if not isinstance(value, dict):
+        return "", "jhon"
+    avatar = value.get("avatar")
+    return clean_name(value.get("name")), avatar if avatar in AVATARS else "jhon"
+
+
+def social_card(value: Any) -> dict:
+    if not isinstance(value, dict) or set(value) - {"public_id", "name", "avatar"}:
+        raise ProtocolError("invalid_card")
+    public_id = value.get("public_id")
+    if not isinstance(public_id, str) or len(public_id) != 16 or any(c not in "0123456789abcdef" for c in public_id):
+        raise ProtocolError("invalid_card")
+    name, avatar = seat_card(value)
+    return {"public_id": public_id, "name": name, "avatar": avatar}
 
 
 def digest(secret: str) -> str:
@@ -75,6 +110,9 @@ class Seat:
     resume_hash: str
     socket: Any = None
     last_sequence: int = 0
+    name: str = ""
+    avatar: str = "jhon"
+    friend_requests: int = 0
 
 
 @dataclass
@@ -91,13 +129,17 @@ class Room:
     ever_started: bool = False
     last_checkpoint: float = float("-inf")
     required_players: int = 4
+    # (from_peer, to_peer) friend requests awaiting an answer; memory only.
+    pending_friends: set = field(default_factory=set)
 
     def public(self, now: float | None = None) -> dict:
         now = time.monotonic() if now is None else now
         return {"op": "lobby", "room_id": self.room_id, "status": self.status,
                 "connected": [p for p, s in self.seats.items() if s.socket is not None],
                 "required_players": self.required_players, "revision": self.revision,
-                "reconnect_seconds": max(0, int(self.deadline - now)) if self.deadline else 0}
+                "reconnect_seconds": max(0, int(self.deadline - now)) if self.deadline else 0,
+                "roster": [{"peer": p, "name": s.name, "avatar": s.avatar, "connected": s.socket is not None}
+                           for p, s in sorted(self.seats.items())]}
 
 
 class SnapshotStore:
@@ -279,7 +321,7 @@ class Relay:
                 raise ProtocolError("invalid_player_count")
             room = Room(secrets.token_hex(16), campaign, required_players=required)
             resume = secrets.token_urlsafe(32)
-            seat = Seat(1, digest(resume), socket)
+            seat = Seat(1, digest(resume), socket, 0, *seat_card(message.get("card")))
             room.seats[1] = seat
             invitations = [secrets.token_urlsafe(32) for _ in range(required - 1)]
             room.invites = {digest(t): self.clock() + INVITE_SECONDS for t in invitations}
@@ -300,7 +342,7 @@ class Relay:
             del room.invites[hashed]  # single use, enforced on server
             peer = next(i for i in range(2, 5) if i not in room.seats)
             resume = secrets.token_urlsafe(32)
-            seat = Seat(peer, digest(resume), socket)
+            seat = Seat(peer, digest(resume), socket, 0, *seat_card(message.get("card")))
             room.seats[peer] = seat
         elif op == "resume":
             seat = next((s for s in room.seats.values() if hmac.compare_digest(s.resume_hash, hashed)), None)
@@ -327,6 +369,15 @@ class Relay:
             if room.snapshot:
                 self.store.write(room)
             await seat.socket.close(1000, "saved")
+            return
+        if op in ("friend_request", "friend_response"):
+            await self.social(room, seat, op, message)
+            return
+        if op == "revoke_invites":
+            if seat.peer != 1:
+                raise ProtocolError("not_authorized")
+            room.invites.clear()
+            await self.send(seat.socket, {"op": "invites_revoked"})
             return
         if op == "start":
             if seat.peer != 1 or len(room.seats) != room.required_players or not all(s.socket is not None for s in room.seats.values()):
@@ -382,6 +433,34 @@ class Relay:
             await self.broadcast(room, {"op": "event_ack", "event_id": event_id, "duplicate": False})
             return
         raise ProtocolError("unsupported_operation")  # Chat and arbitrary RPCs disabled.
+
+    async def social(self, room: Room, seat: Seat, op: str, message: dict) -> None:
+        """Forward a friend request/answer between two connected seats of this room only.
+
+        The relay never stores the social graph; cards are self-declared, not accounts."""
+        target = message.get("to")
+        if room.status == "suspended" or not integer(target, 1, 4) or target == seat.peer:
+            raise ProtocolError("invalid_social_target")
+        destination = room.seats.get(target)
+        if destination is None or destination.socket is None:
+            raise ProtocolError("social_target_offline")
+        if op == "friend_request":
+            card = social_card(message.get("card"))
+            if seat.friend_requests >= MAX_FRIEND_REQUESTS:
+                raise ProtocolError("social_rate_limited")
+            seat.friend_requests += 1
+            room.pending_friends.add((seat.peer, target))
+            await self.send(destination.socket, {"op": "friend_request", "from": seat.peer, "card": card})
+            return
+        accepted = message.get("accepted")
+        if type(accepted) is not bool or (target, seat.peer) not in room.pending_friends:
+            raise ProtocolError("no_pending_request")
+        # A refusal reveals nothing about the person who refused.
+        reply = {"op": "friend_response", "from": seat.peer, "accepted": accepted}
+        if accepted:
+            reply["card"] = social_card(message.get("card"))
+        room.pending_friends.discard((target, seat.peer))
+        await self.send(destination.socket, reply)
 
     async def sweep(self) -> None:
         for room in self.rooms.values():

@@ -13,6 +13,12 @@ var services: CanvasLayer
 const SERVICES := preload("res://scene/persistence/campaign_services.gd")
 const PANEL := preload("res://scene/persistence/campaign_panel.gd")
 const UI_KIT := preload("res://ui/cyber_ui.gd")
+const SOCIAL_BRIDGE := preload("res://scene/social/social_bridge.gd")
+const SOCIAL_PANEL := preload("res://scene/social/social_panel.gd")
+const PRIVATE_PANEL := preload("res://scene/network/private_session_panel.gd")
+var social: Node
+var social_panel: CanvasLayer
+var private_panel: CanvasLayer
 var store := STORE.new()
 var active: Dictionary = {}
 var autosave_seconds := 30.0
@@ -45,19 +51,27 @@ func _ready() -> void:
 	panel.name = "CampaignPanel"
 	panel.controller = self
 	add_child(panel)
+	social = SOCIAL_BRIDGE.new()
+	social.name = "SocialBridge"
+	add_child(social)
+	social.setup(profile, private_session)
+	social_panel = SOCIAL_PANEL.new()
+	social_panel.name = "SocialPanel"
+	social_panel.controller = self
+	add_child(social_panel)
+	private_panel = PRIVATE_PANEL.new()
+	private_panel.name = "PrivateSessionPanel"
+	private_panel.controller = self
+	add_child(private_panel)
 	# 03/11: o menu inicial é dono da navegação (JOGAR → CAMPANHA SOLO / COOPERATIVO,
 	# SOCIAL); este controlador só atende às intenções. Nenhum botão é injetado.
 	var menu: Node = game.mode_select
 	menu.solo_state_provider = solo_menu_state
 	menu.social_state_provider = social_menu_state
 	menu.campaign_requested.connect(_on_campaign_requested)
-	# Etapa B: SOCIAL e sessão privada ainda abrem o painel existente do Codex.
-	menu.social_requested.connect(func(_tab: StringName) -> void:
-		services.open()
-		services.show_profile())
-	menu.private_session_requested.connect(func(_tab: StringName) -> void:
-		services.open()
-		services.show_private())
+	menu.social_requested.connect(func(tab: StringName) -> void: social_panel.open(String(tab), &"social", _social_focus(tab)))
+	menu.private_session_requested.connect(func(tab: StringName) -> void:
+		private_panel.open("room" if tab == &"create" and private_session.status not in ["offline", "error"] else String(tab), &"coop", _private_focus(tab)))
 	var status_layer: CanvasLayer = CanvasLayer.new()
 	status_layer.layer = 35
 	add_child(status_layer)
@@ -98,17 +112,18 @@ func meta_changed() -> bool:
 
 ## Estado da página CAMPANHA SOLO: campanha mais recente e se CONTINUAR é possível.
 func solo_menu_state() -> Dictionary:
-	var latest := latest_campaign()
+	# Uma leitura só: cada listagem decodifica as revisões de todos os slots.
+	var summaries: Array[Dictionary] = store.list_campaigns()
+	var latest := latest_campaign(summaries)
 	if latest.is_empty():
-		var count: int = store.list_campaigns().size()
-		return {"continue": false, "status": "NENHUMA CAMPANHA SALVA" if count == 0 else "NENHUM SAVE ÍNTEGRO PARA CONTINUAR"}
+		return {"continue": false, "status": "NENHUMA CAMPANHA SALVA" if summaries.is_empty() else "NENHUM SAVE ÍNTEGRO PARA CONTINUAR"}
 	return {"continue": true, "status": "ÚLTIMA: %s • %s" % [String(latest.display_name).left(22), UI_KIT.local_time(String(latest.get("last_played_at", "")))]}
 
 
 func social_menu_state() -> Dictionary:
 	if not profile.initialize():
 		return {"status": "PERFIL INDISPONÍVEL • ARQUIVOS PRESERVADOS"}
-	var waiting: int = profile.data.get("incoming", {}).size()
+	var waiting: int = profile.data.incoming.size()
 	var friends: int = profile.data.friends.size()
 	var status := "%s • %s" % [String(profile.data.display_name).left(18), "1 AMIGO" if friends == 1 else "%d AMIGOS" % friends]
 	if waiting > 0:
@@ -117,9 +132,11 @@ func social_menu_state() -> Dictionary:
 
 
 ## Campanha íntegra jogada por último (por `last_played_at`, carimbo UTC ISO).
-func latest_campaign() -> Dictionary:
+func latest_campaign(summaries: Array[Dictionary] = []) -> Dictionary:
+	if summaries.is_empty():
+		summaries = store.list_campaigns()
 	var best: Dictionary = {}
-	for summary: Dictionary in store.list_campaigns():
+	for summary: Dictionary in summaries:
 		if summary.has("error"):
 			continue
 		if best.is_empty() or String(summary.get("last_played_at", "")) > String(best.get("last_played_at", "")):
@@ -149,6 +166,14 @@ func _on_campaign_requested(action: StringName) -> void:
 			panel.open("create")
 		&"manage":
 			panel.open("slots")
+
+
+func _social_focus(tab: StringName) -> StringName:
+	return {&"profile": &"Profile", &"friends": &"Friends", &"requests": &"Requests", &"blocked": &"Blocked"}.get(tab, &"Profile")
+
+
+func _private_focus(tab: StringName) -> StringName:
+	return {&"create": &"PrivateCreate", &"join": &"PrivateJoin", &"invites": &"Invites"}.get(tab, &"PrivateCreate")
 
 
 func save_now(clean_exit := false) -> bool:
