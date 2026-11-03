@@ -8,6 +8,7 @@ const KEEP_REVISIONS := 3
 const MAX_BYTES := 32 * 1024 * 1024
 var root_path := "user://campaigns_v1"
 var last_error := ""
+var recovery_info: Dictionary = {}
 
 
 func new_id() -> String:
@@ -50,6 +51,8 @@ func save_campaign(data: Dictionary) -> bool:
 	next.revision = int(data.get("revision", 0)) + 1
 	next.last_played_at = Time.get_datetime_string_from_system(true)
 	var folder := root_path.path_join(id)
+	if FileAccess.file_exists(root_path):
+		return _fail("directory_failed")
 	if DirAccess.make_dir_recursive_absolute(folder) != OK:
 		return _fail("directory_failed")
 	var payload := Marshalls.raw_to_base64(var_to_bytes(next))
@@ -66,7 +69,11 @@ func save_campaign(data: Dictionary) -> bool:
 	var file := FileAccess.open(temporary, FileAccess.WRITE)
 	if file == null:
 		return _fail("open_failed")
-	file.store_string(JSON.stringify(envelope))
+	var serialized: String = JSON.stringify(envelope)
+	if serialized.to_utf8_buffer().size() > MAX_BYTES:
+		file.close()
+		return _fail("snapshot_too_large")
+	file.store_string(serialized)
 	file.flush()
 	var write_error := file.get_error()
 	file.close()
@@ -84,25 +91,35 @@ func save_campaign(data: Dictionary) -> bool:
 
 
 func load_campaign(id: String) -> Dictionary:
+	var revisions: Array[Dictionary] = load_revisions(id)
+	return revisions[0] if not revisions.is_empty() else {}
+
+
+func load_revisions(id: String) -> Array[Dictionary]:
 	last_error = ""
+	recovery_info = {}
+	var result: Array[Dictionary] = []
 	if not valid_id(id):
 		_fail("invalid_id")
-		return {}
-	var folder := root_path.path_join(id)
-	var files := _revision_files(folder)
-	var best: Dictionary = {}
+		return result
+	var folder: String = root_path.path_join(id)
+	var files: PackedStringArray = _revision_files(folder)
+	var damaged := 0
 	for filename in files:
-		var value := _read_revision(folder.path_join(filename), id)
-		# Never silently downgrade a campaign written by a newer game.
+		var value: Dictionary = _read_revision(folder.path_join(filename), id)
 		if last_error == "future_schema":
-			return {}
-		if not value.is_empty() and int(value.revision) > int(best.get("revision", 0)):
-			best = value
-	if best.is_empty():
+			return []
+		if value.is_empty():
+			damaged += 1
+		else:
+			result.append(value)
+	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return int(a.revision) > int(b.revision))
+	if result.is_empty():
 		_fail("no_valid_snapshot")
 	else:
 		last_error = ""
-	return best
+		recovery_info = {"damaged_revisions": damaged, "selected_revision": result[0].revision}
+	return result
 
 
 func list_campaigns() -> Array[Dictionary]:
@@ -118,7 +135,7 @@ func list_campaigns() -> Array[Dictionary]:
 			else:
 				result.append({"campaign_id": id, "display_name": data.display_name,
 					"mode": data.mode, "revision": data.revision, "interrupted": data.interrupted,
-					"last_played_at": data.last_played_at})
+					"last_played_at": data.last_played_at, "recovery": recovery_info.duplicate(true)})
 	return result
 
 
@@ -134,7 +151,10 @@ func delete_campaign(id: String, confirmed_id: String) -> bool:
 	if not valid_id(id) or confirmed_id != id:
 		return _fail("confirmation_required")
 	# Isolated soft deletion retains all snapshots, including damaged versions.
-	return DirAccess.rename_absolute(root_path.path_join(id), root_path.path_join("deleted_" + id + "_" + new_id())) == OK
+	if DirAccess.rename_absolute(root_path.path_join(id), root_path.path_join("deleted_" + id + "_" + new_id())) != OK:
+		return _fail("delete_failed")
+	last_error = ""
+	return true
 
 
 func record_event(data: Dictionary, event_id: String, value: Dictionary) -> bool:
@@ -162,7 +182,10 @@ func _read_revision(path: String, id: String) -> Dictionary:
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null or file.get_length() > MAX_BYTES:
 		return {}
-	var parsed: Variant = JSON.parse_string(file.get_as_text())
+	var json: JSON = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return {}
+	var parsed: Variant = json.data
 	if parsed is not Dictionary:
 		return {}
 	var envelope: Dictionary = parsed

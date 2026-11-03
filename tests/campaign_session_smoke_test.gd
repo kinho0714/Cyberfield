@@ -16,13 +16,13 @@ func check(condition: bool, message: String) -> void:
 
 func _run() -> void:
 	var game: Node = load("res://scene/main.tscn").instantiate()
-	var namespace := "user://test_session_" + Crypto.new().generate_random_bytes(12).hex_encode()
-	DirAccess.make_dir_recursive_absolute(namespace)
-	game.get_node("MetaProgression").save_path = namespace.path_join("legacy.json")
-	game.get_node("LocalSettings").settings_path = namespace.path_join("settings.cfg")
+	var test_namespace := "user://test_session_" + Crypto.new().generate_random_bytes(12).hex_encode()
+	DirAccess.make_dir_recursive_absolute(test_namespace)
+	game.get_node("MetaProgression").save_path = test_namespace.path_join("legacy.json")
+	game.get_node("LocalSettings").settings_path = test_namespace.path_join("settings.cfg")
 	root.add_child(game)
 	await process_frame
-	game.campaigns.store.root_path = namespace.path_join("campaigns")
+	game.campaigns.store.root_path = test_namespace.path_join("campaigns")
 	check(await game.campaigns.start_new("A"), "new campaign enters actual hub")
 	var first_id: String = game.campaigns.active.campaign_id
 	var player: Node = game.get_players()[0]
@@ -52,6 +52,12 @@ func _run() -> void:
 	game.run_manager.scrap = 4
 	player = game.get_players()[0]
 	player.health = 59
+	check(player.equip_weapon(&"pulse_carbine", 1, &"uncommon"), "equip real ranged weapon")
+	player.weapon_ammo[&"pulse_carbine"] = {"clip": 3, "reserve": 17}
+	player.weapon_reload_timers[&"pulse_carbine"] = 0.75
+	var enemy: Node = get_first_node_in_group("enemy")
+	var enemy_id: StringName = enemy.persistent_id
+	enemy.health = 51
 	var position: Vector2 = player.global_position
 	var snapshot := SNAPSHOT.capture(game)
 	check(not snapshot.is_empty(), "capture actual procedural scene")
@@ -62,7 +68,21 @@ func _run() -> void:
 	check(game.run_manager.seed_value == 1947 and game.run_manager.dirty_money == 37 and game.run_manager.scrap == 4, "run seed and temporary economy restored")
 	check(player.health == 59 and player.global_position.distance_to(position) < 2, "run position and life restored")
 	check(not game.run_manager.run_is_lost, "interruption is not death")
+	check(player.owned_weapons.has(&"pulse_carbine") and player.weapon_ammo[&"pulse_carbine"].clip == 3, "equipment and ammunition restored")
+	var restored_enemy: Node = null
+	for actor in get_nodes_in_group("enemy"):
+		if actor.persistent_id == enemy_id:
+			restored_enemy = actor
+	check(restored_enemy != null and restored_enemy.health == 51, "enemy state restored by stable ID")
 	await game.return_to_main_menu()
-	check(not FileAccess.file_exists(namespace.path_join("legacy.json")), "campaigns never write legacy profile")
-	print("CAMPAIGN_SESSION_REPORT failures=", failures, " test_namespace=", namespace)
+	var incompatible: Dictionary = game.campaigns.store.load_campaign(first_id)
+	incompatible.session.signature = "incompatible_test_signature"
+	check(game.campaigns.store.save_campaign(incompatible), "write disposable semantically incompatible revision")
+	check(await game.campaigns.continue_campaign(first_id), "recover previous compatible revision")
+	check(bool(game.campaigns.recovery_status.get("used_backup", false)), "semantic backup recovery recorded")
+	await game.return_to_main_menu()
+	check(not FileAccess.file_exists(test_namespace.path_join("legacy.json")), "campaigns never write legacy profile")
+	print("CAMPAIGN_SESSION_REPORT failures=", failures, " test_namespace=", test_namespace)
+	game.free()
+	await process_frame
 	quit(0 if failures == 0 else 1)

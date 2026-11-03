@@ -79,13 +79,16 @@ func _refresh() -> void:
 		var id := String(summary.campaign_id)
 		var label := Label.new()
 		label.text = "%s • %s" % [summary.display_name, "RECUPERÁVEL / INTERROMPIDA" if summary.get("interrupted", false) else "SOLO"]
+		if int(summary.get("recovery", {}).get("damaged_revisions", 0)) > 0:
+			label.text += " • BACKUP ÍNTEGRO DISPONÍVEL"
+		label.text += " • revisão %d" % int(summary.get("revision", 0))
 		rows.add_child(label)
 		if not summary.has("error"):
 			_button(rows, "CONTINUAR", _continue.bind(id))
 			_button(rows, "RENOMEAR COM O NOME DIGITADO", _rename.bind(id))
 		else:
 			var error := Label.new()
-			error.text = String(summary.error)
+			error.text = controller.error_message(String(summary.error))
 			rows.add_child(error)
 		_button(rows, "CONFIRMAR EXCLUSÃO DESTE SLOT" if pending_delete == id else "EXCLUIR ESTE SLOT…", _delete.bind(id))
 
@@ -94,7 +97,7 @@ func _create() -> void:
 	visible = false
 	if not await controller.start_new(display_name.text if not display_name.text.strip_edges().is_empty() else "Campanha"):
 		visible = true
-		title.text = "Não foi possível salvar: " + controller.last_error
+		title.text = controller.error_message(controller.last_error)
 		_refresh()
 
 
@@ -103,11 +106,12 @@ func _continue(id: String) -> void:
 	if not await controller.continue_campaign(id):
 		controller.game.mode_select.visible = false
 		visible = true
-		title.text = "Não foi possível continuar: " + controller.last_error
+		title.text = controller.error_message(controller.last_error)
 
 
 func _rename(id: String) -> void:
-	controller.store.rename_campaign(id, display_name.text)
+	if not controller.store.rename_campaign(id, display_name.text):
+		title.text = "Informe um nome válido e verifique o armazenamento."
 	_refresh()
 
 
@@ -115,7 +119,8 @@ func _delete(id: String) -> void:
 	if pending_delete != id:
 		pending_delete = id
 	else:
-		controller.store.delete_campaign(id, pending_delete)
+		if not controller.store.delete_campaign(id, pending_delete):
+			title.text = "Não foi possível excluir o slot. Dados preservados."
 		pending_delete = ""
 	_refresh()
 
@@ -132,5 +137,5 @@ func _import() -> void:
 	visible = false
 	if not await controller.import_legacy(display_name.text if not display_name.text.strip_edges().is_empty() else "Perfil importado"):
 		visible = true
-		title.text = "Não foi possível importar: " + controller.last_error
+		title.text = controller.error_message(controller.last_error)
 		_refresh()

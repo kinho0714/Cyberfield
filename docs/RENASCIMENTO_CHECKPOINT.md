@@ -136,3 +136,12 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   morte/antiduplicação, gatilhos de autosave, suspensão, Windows e desempenho.
 - Marco completo ainda em validação parcial. Não avançar ao Marco 2. Nesta revisão,
   somente documentação alterada; saves, código e assets permanecem preservados.
+
+### Expansão integrada autorizada — base real 2fafe47
+- Nova missão permite Marcos 1–5, inclusive partes independentes enquanto testes
+  externos estiverem pendentes. Revoga a pausa anterior no Marco 2.
+- M1: store/session/DEV executados no Godot oficial 4.7.2 Linux ARM64 headless via
+  PRoot no temporário, projeto e dados isolados. Todos failures=0. Relatório
+  `docs/mundo_saves/expansao/MARCO_1_RODADA.md`; avisos de recursos na saída registrados.
+- Proprietário confirmou também recuperação de interrompida e independência de A/B.
+- Próximo: catálogo/hierarquia/distribuição reservada e exploração persistentes.

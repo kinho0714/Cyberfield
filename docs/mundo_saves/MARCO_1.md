@@ -238,3 +238,13 @@ das campanhas reais e sem alterar os saves existentes:
 
 Marco 1 permanece em validação parcial. Nenhum código, save, asset ou sistema foi
 alterado para registrar esta evidência. Marco 2 continua não autorizado nesta etapa.
+
+## Rodada de expansão autorizada
+
+A nova missão autoriza avançar nas partes independentes dos Marcos 2–5, preservando
+as pendências. O proprietário também confirmou recuperação de campanha interrompida
+e dois slots sem sobreposição observada. Agora há testes automatizados executados
+no Godot oficial 4.7.2 headless em ambiente temporário isolado: store, sessão real e
+DEV passaram. Detalhes, correções e limites em `expansao/MARCO_1_RODADA.md`.
+Esta evidência atualiza a indisponibilidade histórica do motor; não equivale a
+Windows ou à execução do APK Android. Marco completo continua com pendências.

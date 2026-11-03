@@ -117,7 +117,8 @@ func record_run(result: Dictionary) -> int:
 	_record_extracted_models(result)
 	_record_found_blueprints(result)
 	_record_found_cyberwares(result)
-	if processed_run_ids.size() > 80:
+	var campaign_controller: Node = _campaign_controller()
+	if processed_run_ids.size() > 80 and (campaign_controller == null or campaign_controller.active.is_empty()):
 		processed_run_ids.pop_front()
 	var multiplier := 1.10 if unlocked_upgrades.has(&"salvage_protocol") else 1.0
 	var reward := maxi(0, floori(float(result.get("money_earned", 0)) * CREDIT_RATE * multiplier))

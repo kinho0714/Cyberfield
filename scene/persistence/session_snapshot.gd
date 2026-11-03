@@ -43,7 +43,7 @@ static func restore(game: Node, snapshot: Dictionary) -> bool:
 	# Remove immediately from tree before regeneration, avoiding stale group members.
 	if is_instance_valid(game.current_room):
 		game.current_room.get_parent().remove_child(game.current_room)
-		game.current_room.queue_free()
+		game.current_room.free()
 		game.current_room = null
 	var loaded: bool = game._load_laboratory_hub() if snapshot.hub else game._load_current_stage(manager.get_stage_seed())
 	if not loaded:
@@ -243,7 +243,7 @@ static func _restore_world(root: Node, world: Array) -> bool:
 		var node := root.get_node_or_null(NodePath(data.path))
 		if node != null and node != root and not retained.has(node):
 			node.get_parent().remove_child(node)
-			node.queue_free()
+			node.free()
 	return true
 
 

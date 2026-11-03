@@ -1,0 +1,13 @@
+libfontconfig.so.1: cannot open shared object file: No such file or directory
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+DEV_MODE Perfil de teste ativo: 64443e2c50e0eb198b8a444e192dd92a_dev_sandbox.json (o perfil real não será gravado)
+DEV_MODE Vida +20 → 1000/1000
+DEV_MODE Dinheiro da run +100 → $100
+DEV_MODE Créditos (perfil de teste) +100 → ◈142
+DEV_MODE Sessão anterior ao DEV restaurada; perfil de teste separado.
+CAMPAIGN_SESSION_REPORT failures=0 test_namespace=user://test_session_10c05fff8916663197697d74
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

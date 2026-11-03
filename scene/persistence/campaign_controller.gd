@@ -10,6 +10,8 @@ var elapsed := 0.0
 var dirty := false
 var restoring := false
 var last_error := ""
+var recovery_status: Dictionary = {}
+var save_status: Label
 var panel: CanvasLayer
 var game: Node
 
@@ -27,10 +29,20 @@ func _ready() -> void:
 	game.mode_select.main_page.add_child(button)
 	game.mode_select.main_page.move_child(button, 1)
 	button.pressed.connect(panel.open)
+	var status_layer: CanvasLayer = CanvasLayer.new()
+	status_layer.layer = 35
+	add_child(status_layer)
+	save_status = Label.new()
+	save_status.position = Vector2(20, 8)
+	save_status.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	status_layer.add_child(save_status)
 	game.run_manager.state_changed.connect(func() -> void: dirty = true)
 
 
 func _process(delta: float) -> void:
+	if save_status != null:
+		save_status.visible = not active.is_empty() and not last_error.is_empty()
+		save_status.text = error_message(last_error)
 	if active.is_empty() or restoring:
 		return
 	elapsed += delta
@@ -46,7 +58,9 @@ func _notification(what: int) -> void:
 func meta_changed() -> bool:
 	dirty = true
 	# During transitions defer the complete transaction until the next stable frame.
-	if game.is_transitioning or restoring:
+	if restoring:
+		return true
+	if game.is_transitioning:
 		return _save_permanent()
 	if save_now():
 		return true
@@ -102,31 +116,44 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 func continue_campaign(id: String) -> bool:
 	if game.mode_selected or restoring:
 		return false
-	var candidate: Dictionary = store.load_campaign(id)
-	if candidate.is_empty() or candidate.get("mode", "") != "solo":
-		last_error = store.last_error if candidate.is_empty() else "unsupported_mode"
+	var revisions: Array[Dictionary] = store.load_revisions(id)
+	if revisions.is_empty():
+		last_error = store.last_error
 		return false
-	if not SNAPSHOT.valid(candidate.session) or candidate.session.players.size() != 1 or bool(candidate.session.run.get("dev_session", false)):
-		last_error = "invalid_session"
+	var newest: Dictionary = revisions[0]
+	if newest.get("mode", "") != "solo":
+		last_error = "unsupported_mode"
 		return false
-	candidate.session.permanent = candidate.permanent.duplicate(true)
+	autosave_seconds = clampf(float(newest.get("autosave_seconds", 30.0)), 5.0, 300.0)
+	recovery_status = store.recovery_info.duplicate(true)
 	restoring = true
-	active = candidate
-	_apply_permanent(candidate.permanent)
-	await game.start_configured_run(&"solo", StringName(candidate.session.run.get("difficulty", "normal")), -1)
-	game.is_transitioning = true
-	var restored: bool = bool(game.mode_selected) and SNAPSHOT.restore(game, candidate.session)
-	game.is_transitioning = false
+	active = newest.duplicate(true)
+	_apply_permanent(newest.permanent)
+	await game.start_configured_run(&"solo", &"normal", -1)
+	var restored: bool = false
+	for candidate: Dictionary in revisions:
+		if not SNAPSHOT.valid(candidate.session) or candidate.session.players.size() != 1 or bool(candidate.session.run.get("dev_session", false)):
+			continue
+		# Keep the latest permanent ledger even when recovering an older run snapshot.
+		var session: Dictionary = candidate.session.duplicate(true)
+		session.permanent = newest.permanent.duplicate(true)
+		game.is_transitioning = true
+		restored = bool(game.mode_selected) and SNAPSHOT.restore(game, session)
+		game.is_transitioning = false
+		if restored:
+			recovery_status.restored_revision = candidate.revision
+			recovery_status.used_backup = int(candidate.revision) != int(newest.revision) or int(recovery_status.get("damaged_revisions", 0)) > 0
+			break
 	restoring = false
 	if not restored:
 		last_error = "session_restore_failed"
-		# Preserve every stored revision. Never save a failed reconstruction.
 		active = {}
 		await game._clear_run_and_show_menu()
 		_apply_legacy()
 		return false
 	game._set_all_player_input(true)
-	return save_now()
+	save_now()
+	return true
 
 
 func leave() -> void:
@@ -185,3 +212,30 @@ func _save_permanent() -> bool:
 		return false
 	active = next
 	return true
+
+
+func set_autosave_interval(seconds: float) -> bool:
+	if active.is_empty() or restoring:
+		return false
+	var next: Dictionary = active.duplicate(true)
+	next.autosave_seconds = clampf(seconds, 5.0, 300.0)
+	if not store.save_campaign(next):
+		last_error = store.last_error
+		return false
+	active = next
+	autosave_seconds = next.autosave_seconds
+	return true
+
+
+static func error_message(code: String) -> String:
+	var messages: Dictionary = {
+		"": "", "waiting_for_consistent_frame": "Salvamento aguardando fim do combate/efeito.",
+		"future_schema": "Save de uma versão mais nova. Atualize o jogo.",
+		"no_valid_snapshot": "Nenhuma revisão íntegra disponível. Os arquivos foram preservados.",
+		"session_restore_failed": "Não foi possível reconstruir esta sessão. Saves preservados.",
+		"invalid_session": "Snapshot incompatível. Saves preservados.",
+		"revision_conflict": "O save mudou desde a leitura. Reabra a campanha.",
+		"invalid_legacy_version": "Perfil legado ausente, inválido ou de versão mais nova.",
+		"unsupported_mode": "Este tipo de campanha ainda não pode ser continuado aqui.",
+	}
+	return String(messages.get(code, "Falha ao gravar/acessar o save. Verifique o armazenamento; revisões anteriores preservadas."))
