@@ -49,6 +49,13 @@ func run() -> void:
 	player.set_input_enabled(true)
 	player.dash_sequence.advance(0.75)
 	check(player.get_dash_available() == 3, "interruption recovery")
+	player.dash_used = 2
+	player.dash_idle_seconds = 0.3
+	var snapshot_properties: Dictionary = preload("res://scene/persistence/session_snapshot.gd").properties(player)
+	check(snapshot_properties.has("dash_used") and snapshot_properties.has("dash_idle_seconds"), "budget has data-only persistence fields")
+	player.dash_sequence.reset()
+	preload("res://scene/persistence/session_snapshot.gd").apply_properties(player, snapshot_properties)
+	check(player.get_dash_available() == 1 and is_equal_approx(player.dash_idle_seconds, 0.3), "budget restored without refilling")
 	await create_timer(0.35).timeout
 	player.queue_free()
 	await process_frame

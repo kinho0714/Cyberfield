@@ -12,6 +12,18 @@ signal revive_progress_changed(progress: float)
 @export_range(0.01, 5.0, 0.01) var dash_recovery_delay := 0.75
 var dash_sequence := preload("res://scene/combat/dash_sequence.gd").new()
 
+# Scalar accessors also participate in the existing data-only session serializer.
+var dash_used: int:
+	get:
+		return dash_sequence.used
+	set(value):
+		dash_sequence.used = clampi(value, 0, dash_capacity)
+var dash_idle_seconds: float:
+	get:
+		return dash_sequence.idle_seconds
+	set(value):
+		dash_sequence.idle_seconds = maxf(value, 0.0)
+
 @export var participant_id: StringName = &"player_1"
 @export_enum("p1", "p2", "p3", "p4") var input_profile := "p1"
 @export var joypad_device_id := -1
@@ -478,6 +490,8 @@ func reset_network_presentation(authoritative_position: Vector2, authoritative_v
 func get_network_debug_state() -> Dictionary:
 	return {
 		"participant_id": participant_id,
+		"dash_used": dash_used,
+		"dash_idle_seconds": dash_idle_seconds,
 		"local_predicted": network_prediction_only,
 		"remote_replica": network_remote_replica,
 		"world_epoch": network_world_epoch,
@@ -1327,6 +1341,9 @@ func get_network_state() -> Dictionary:
 
 
 func apply_network_state(state: Dictionary, predicted_local: bool = false, snapshot_epoch: int = 0) -> void:
+	if not predicted_local:
+		dash_used = int(state.get("dash_used", dash_used))
+		dash_idle_seconds = float(state.get("dash_idle_seconds", dash_idle_seconds))
 	if snapshot_epoch < network_world_epoch:
 		return
 	if snapshot_epoch > network_world_epoch:

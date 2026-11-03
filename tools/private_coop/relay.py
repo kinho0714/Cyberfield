@@ -90,12 +90,13 @@ class Room:
     deadline: float | None = None
     ever_started: bool = False
     last_checkpoint: float = float("-inf")
+    required_players: int = 4
 
     def public(self, now: float | None = None) -> dict:
         now = time.monotonic() if now is None else now
         return {"op": "lobby", "room_id": self.room_id, "status": self.status,
                 "connected": [p for p, s in self.seats.items() if s.socket is not None],
-                "required_players": 4, "revision": self.revision,
+                "required_players": self.required_players, "revision": self.revision,
                 "reconnect_seconds": max(0, int(self.deadline - now)) if self.deadline else 0}
 
 
@@ -108,7 +109,10 @@ class SnapshotStore:
     def write(self, room: Room) -> None:
         payload = json.dumps({"schema_version": 1, "room_id": room.room_id,
                               "campaign_id": room.campaign_id, "revision": room.revision,
-                              "snapshot": room.snapshot, "event_ids": sorted(room.event_ids)},
+                              "snapshot": room.snapshot, "event_ids": sorted(room.event_ids),
+                              "required_players": room.required_players, "ever_started": room.ever_started,
+                              "checkpoint_wall": time.time(), "suspended": room.status == "suspended",
+                              "resume_seats": {str(p): {"resume_hash": seat.resume_hash, "last_sequence": seat.last_sequence} for p, seat in room.seats.items()}},
                              sort_keys=True, separators=(",", ":"), allow_nan=False)
         envelope = json.dumps({"payload": payload, "checksum": digest(payload)})
         if len(envelope.encode()) > MAX_MESSAGE * 2:
@@ -159,6 +163,49 @@ class Relay:
         self.clock = clock
         self.max_connections = 12
         self.connections = 0
+        self._recover_rooms()
+
+    def _recover_rooms(self) -> None:
+        """Resume capabilities are persisted as hashes only; recovered sessions start paused."""
+        for folder in sorted(self.store.directory.iterdir()):
+            if not folder.is_dir() or len(folder.name) != 32 or any(c not in "0123456789abcdef" for c in folder.name):
+                continue
+            for path in sorted(folder.glob("*.json"), reverse=True):
+                data = self.store.read(path)
+                if not data or data.get("room_id") != folder.name:
+                    continue
+                seats = data.get("resume_seats", {})
+                required = data.get("required_players", 4)
+                campaign = data.get("campaign_id", "")
+                if (not integer(required, 2, 4) or not isinstance(seats, dict) or
+                    not 1 <= len(seats) <= required or not isinstance(campaign, str) or
+                    len(campaign) != 32 or any(c not in "0123456789abcdef" for c in campaign) or
+                    not integer(data.get("revision"), 0, 2**31-1) or not isinstance(data.get("snapshot"), dict)):
+                    continue
+                valid = True
+                recovered = {}
+                for peer, saved in seats.items():
+                    if (peer not in {"1", "2", "3", "4"} or not isinstance(saved, dict) or
+                        not isinstance(saved.get("resume_hash"), str) or len(saved["resume_hash"]) != 64 or
+                        any(c not in "0123456789abcdef" for c in saved["resume_hash"]) or
+                        not integer(saved.get("last_sequence"), 0, 2**31-1)):
+                        valid = False
+                        break
+                    recovered[int(peer)] = Seat(int(peer), saved["resume_hash"], last_sequence=saved["last_sequence"])
+                events = data.get("event_ids", [])
+                if (not valid or 1 not in recovered or not isinstance(events, list) or len(events) > 1024 or
+                    any(not isinstance(e, str) or not 1 <= len(e) <= 96 for e in events)):
+                    continue
+                wall = data.get("checkpoint_wall", 0)
+                expired = (not isinstance(wall, (int, float)) or not math.isfinite(wall) or
+                           time.time() - wall > RECONNECT_SECONDS or bool(data.get("suspended", False)))
+                self.rooms[folder.name] = Room(folder.name, campaign, seats=recovered,
+                    revision=data["revision"], snapshot=data["snapshot"], event_ids=set(events),
+                    status="suspended" if expired else "paused", deadline=self.clock() + RECONNECT_SECONDS,
+                    ever_started=bool(data.get("ever_started", False)), required_players=required)
+                break
+            if len(self.rooms) >= 8:
+                break
 
     async def send(self, socket, data: dict) -> None:
         try:
@@ -227,11 +274,14 @@ class Relay:
             campaign = message.get("campaign_id", "")
             if not isinstance(campaign, str) or len(campaign) != 32 or any(c not in "0123456789abcdef" for c in campaign):
                 raise ProtocolError("invalid_campaign")
-            room = Room(secrets.token_hex(16), campaign)
+            required = message.get("required_players", 4)
+            if not integer(required, 2, 4):
+                raise ProtocolError("invalid_player_count")
+            room = Room(secrets.token_hex(16), campaign, required_players=required)
             resume = secrets.token_urlsafe(32)
             seat = Seat(1, digest(resume), socket)
             room.seats[1] = seat
-            invitations = [secrets.token_urlsafe(32) for _ in range(3)]
+            invitations = [secrets.token_urlsafe(32) for _ in range(required - 1)]
             room.invites = {digest(t): self.clock() + INVITE_SECONDS for t in invitations}
             self.rooms[room.room_id] = room
             return room, seat, {"op": "welcome", "peer": 1, "room_id": room.room_id,
@@ -245,7 +295,7 @@ class Relay:
         hashed = digest(supplied)
         if op == "join":
             expiry = room.invites.get(hashed)
-            if expiry is None or self.clock() >= expiry or len(room.seats) >= 4 or room.ever_started:
+            if expiry is None or self.clock() >= expiry or len(room.seats) >= room.required_players or room.ever_started:
                 raise ProtocolError("invite_invalid_or_expired")
             del room.invites[hashed]  # single use, enforced on server
             peer = next(i for i in range(2, 5) if i not in room.seats)
@@ -261,7 +311,7 @@ class Relay:
             seat.socket = socket
         else:
             raise ProtocolError("authorization_required")
-        if len(room.seats) == 4 and all(s.socket is not None for s in room.seats.values()):
+        if len(room.seats) == room.required_players and all(s.socket is not None for s in room.seats.values()):
             room.deadline = None
             room.status = "active" if room.ever_started else "lobby"
         return room, seat, {"op": "welcome", "peer": seat.peer, "room_id": room.room_id,
@@ -279,7 +329,7 @@ class Relay:
             await seat.socket.close(1000, "saved")
             return
         if op == "start":
-            if seat.peer != 1 or len(room.seats) != 4 or not all(s.socket is not None for s in room.seats.values()):
+            if seat.peer != 1 or len(room.seats) != room.required_players or not all(s.socket is not None for s in room.seats.values()):
                 raise ProtocolError("exactly_four_authorized_connections_required")
             room.status = "active"
             room.ever_started = True
@@ -307,7 +357,7 @@ class Relay:
                 raise ProtocolError("snapshot_too_large")
             # Checkpoint the first snapshot and then at most once per two seconds.
             # Network revisions remain monotonic; disconnect/event paths force a checkpoint.
-            candidate = Room(room.room_id, room.campaign_id, revision=room.revision + 1,
+            candidate = Room(room.room_id, room.campaign_id, seats=room.seats, required_players=room.required_players, ever_started=room.ever_started, revision=room.revision + 1,
                              snapshot=payload, event_ids=set(room.event_ids))
             if not room.snapshot or self.clock() - room.last_checkpoint >= 2:
                 self.store.write(candidate)
@@ -325,7 +375,7 @@ class Relay:
                 return
             if len(room.event_ids) >= 1024:
                 raise ProtocolError("event_ledger_full")
-            candidate = Room(room.room_id, room.campaign_id, revision=room.revision,
+            candidate = Room(room.room_id, room.campaign_id, seats=room.seats, required_players=room.required_players, ever_started=room.ever_started, revision=room.revision,
                              snapshot=room.snapshot, event_ids=room.event_ids | {event_id})
             self.store.write(candidate)
             room.event_ids = candidate.event_ids

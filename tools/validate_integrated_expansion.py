@@ -8,6 +8,12 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = {
+    "dash_sequence_smoke_test.gd": "DASH_SEQUENCE_REPORT failures=0",
+    "enemy_interruption_smoke_test.gd": "ENEMY_INTERRUPTION_REPORT failures=0",
+    "gameplay_progression_smoke_test.gd": "GAMEPLAY_PROGRESSION_REPORT failures=0",
+    "gameplay_wire_smoke_test.gd": "GAMEPLAY_WIRE_REPORT failures=0",
+    "jhon_design_b_animation_smoke_test.gd": "JHON_B_REPORT failures=0",
+    "arsenal_expansion_smoke_test.gd": "ARSENAL_REPORT failures=0",
     "campaign_store_smoke_test.gd": "CAMPAIGN_STORE_REPORT failures=0",
     "campaign_session_smoke_test.gd": "CAMPAIGN_SESSION_REPORT failures=0",
     "world_persistence_smoke_test.gd": "WORLD_PERSISTENCE_REPORT failures=0",

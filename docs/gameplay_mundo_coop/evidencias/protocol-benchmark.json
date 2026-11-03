@@ -1,0 +1,9 @@
+{
+  "kind": "offline_microbenchmark_not_gameplay",
+  "architecture": "aarch64",
+  "parse_messages": 10000,
+  "parse_seconds": 0.18943623098311946,
+  "checkpoint_count": 20,
+  "checkpoint_mean_ms": 5.438871149090119,
+  "process_peak_rss_kib": 24100
+}

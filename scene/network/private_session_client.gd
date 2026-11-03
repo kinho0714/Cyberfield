@@ -32,7 +32,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-func connect_session(url: String, operation: String, token: String, session_id: String = "", owned_campaign: String = "", tls_options: TLSOptions = null) -> Error:
+func connect_session(url: String, operation: String, token: String, session_id: String = "", owned_campaign: String = "", tls_options: TLSOptions = null, required_players: int = 4) -> Error:
 	if not url.begins_with("wss://") or url.length() > 512 or "@" in url or "?" in url or "#" in url:
 		last_error = "secure_endpoint_required"
 		return ERR_INVALID_PARAMETER
@@ -45,6 +45,7 @@ func connect_session(url: String, operation: String, token: String, session_id: 
 	_hello = {"op": operation, "token": token, "protocol": 1}
 	if operation == "create":
 		_hello.campaign_id = owned_campaign
+		_hello.required_players = required_players
 	else:
 		_hello.room_id = session_id
 	socket = WebSocketPeer.new()
@@ -120,6 +121,8 @@ func _receive(message: Dictionary) -> void:
 		_reconnect_until = 0
 		status = String(message.get("status", "lobby"))
 		status_changed.emit()
+		if message.get("snapshot") is Dictionary and not message.snapshot.is_empty():
+			state_received.emit(revision, message.snapshot)
 	elif operation == "lobby":
 		if message.get("room_id", "") != room_id or message.get("connected") is not Array or message.connected.size() > 4:
 			_fail("invalid_lobby")

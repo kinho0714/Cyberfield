@@ -11,6 +11,10 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = sorted((ROOT / "scene/persistence").glob("*.gd")) + sorted((ROOT / "scene/world").glob("*.gd")) + sorted((ROOT / "scene/social").glob("*.gd")) + [
     ROOT / "scene/network/private_session_client.gd",
+    ROOT / "scene/network/private_gameplay_bridge.gd", ROOT / "scene/network/gameplay_wire.gd",
+    ROOT / "scene/missions/mission_ledger.gd", ROOT / "scene/combat/dash_sequence.gd",
+    ROOT / "tests/dash_sequence_smoke_test.gd", ROOT / "tests/gameplay_progression_smoke_test.gd",
+    ROOT / "tests/enemy_interruption_smoke_test.gd", ROOT / "tests/gameplay_wire_smoke_test.gd",
     ROOT / "tests/world_persistence_smoke_test.gd", ROOT / "tests/region_routes_smoke_test.gd",
     ROOT / "tests/local_profile_smoke_test.gd", ROOT / "tests/private_transport_smoke_test.gd",
 ] + [ROOT / p for p in (

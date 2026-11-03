@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from websockets.asyncio.client import connect
 from websockets.asyncio.server import serve
 
@@ -192,6 +193,31 @@ class RelayTests(unittest.IsolatedAsyncioTestCase):
             if process.returncode is None:
                 process.kill()
                 await process.wait()
+
+    async def test_restore_hashed_capabilities_after_service_restart(self):
+        host, guests, tokens, welcome = await self.four()
+        payload = {"world_state": {"fixture": True}, "player_states": {}, "story_state": {}, "inventory_state": {}}
+        await host.send(json.dumps({"op": "snapshot", "base_revision": 0, "state": payload}))
+        await self.until(host, "snapshot")
+        recovered = relay_module.Relay(self.owner_key, self.path / "snapshots", clock=lambda: self.now)
+        room = recovered.rooms[welcome["room_id"]]
+        self.assertEqual(room.status, "paused")
+        self.assertEqual(room.snapshot, payload)
+        self.assertTrue(all(seat.socket is None for seat in room.seats.values()))
+        for index, token in enumerate([welcome["resume_token"], *tokens], 1):
+            _, seat, response = recovered.authorize({"op": "resume", "room_id": room.room_id, "token": token}, object())
+            self.assertEqual(seat.peer, index)
+            self.assertNotEqual(response["resume_token"], token)
+        self.assertEqual(room.status, "active")
+        future = relay_module.time.time() + 601
+        with patch.object(relay_module.time, "time", return_value=future):
+            expired = relay_module.Relay(self.owner_key, self.path / "snapshots", clock=lambda: self.now)
+        self.assertEqual(expired.rooms[room.room_id].status, "suspended")
+        with self.assertRaises(relay_module.ProtocolError):
+            expired.authorize({"op": "resume", "room_id": room.room_id, "token": tokens[0]}, object())
+        text = "".join(p.read_text() for p in (self.path / "snapshots" / room.room_id).glob("*.json"))
+        for token in [self.owner_key, welcome["resume_token"], *tokens]:
+            self.assertNotIn(token, text)
 
     async def test_unauthorized_and_invalid_messages(self):
         bad = await self.client({"op": "create", "token": secrets.token_urlsafe(32), "campaign_id": "a" * 32})

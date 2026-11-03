@@ -1,0 +1,63 @@
+test_two_real_godot_gameplay_clients (__main__.PrivateGameplayTests.test_two_real_godot_gameplay_clients) ... Executing <Task pending name='Task-1' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:35> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.248 seconds
+GODOT_HOST_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=host failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+GODOT_GUEST2_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=guest2 failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+ok
+test_four_real_godot_gameplay_clients (__main__.PrivateGameplayTests.test_four_real_godot_gameplay_clients) ... Executing <Task pending name='Task-104' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:35> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.550 seconds
+GODOT_HOST_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=host failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+GODOT_GUEST2_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=guest2 failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+GODOT_GUEST3_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=guest3 failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+GODOT_GUEST4_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+PRIVATE_GAMEPLAY_REPORT role=guest4 failures=0
+WARNING: 9 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 144.001s
+
+OK

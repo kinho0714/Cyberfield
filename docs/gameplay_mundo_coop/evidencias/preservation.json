@@ -1,0 +1,8 @@
+{
+  "checked_files": 50,
+  "privacy_alerts": [],
+  "six_private_assets_hashes_preserved": true,
+  "original_branch_preserved": true,
+  "tests_use_disposable_namespaces": true,
+  "no_push_or_deploy": true
+}
