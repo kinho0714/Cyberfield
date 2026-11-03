@@ -1,0 +1,142 @@
+[
+  {
+    "test": "integration_session_lifecycle_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "integration_session_lifecycle_smoke_test.gd.log"
+  },
+  {
+    "test": "social_menu_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "social_menu_smoke_test.gd.log"
+  },
+  {
+    "test": "social_profile_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "social_profile_smoke_test.gd.log"
+  },
+  {
+    "test": "focused_stabilization_input_audio_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "focused_stabilization_input_audio_test.gd.log"
+  },
+  {
+    "test": "phase8_lan_lobby_touch_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "phase8_lan_lobby_touch_smoke_test.gd.log"
+  },
+  {
+    "test": "android_touch_hud_modal_hotfix_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "android_touch_hud_modal_hotfix_smoke_test.gd.log"
+  },
+  {
+    "test": "visual_pass3_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "visual_pass3_smoke_test.gd.log"
+  },
+  {
+    "test": "dash_sequence_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "dash_sequence_smoke_test.gd.log"
+  },
+  {
+    "test": "enemy_interruption_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "enemy_interruption_smoke_test.gd.log"
+  },
+  {
+    "test": "gameplay_progression_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "gameplay_progression_smoke_test.gd.log"
+  },
+  {
+    "test": "gameplay_wire_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "gameplay_wire_smoke_test.gd.log"
+  },
+  {
+    "test": "jhon_design_b_animation_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "jhon_design_b_animation_smoke_test.gd.log"
+  },
+  {
+    "test": "arsenal_expansion_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "arsenal_expansion_smoke_test.gd.log"
+  },
+  {
+    "test": "campaign_store_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "campaign_store_smoke_test.gd.log"
+  },
+  {
+    "test": "campaign_session_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "campaign_session_smoke_test.gd.log"
+  },
+  {
+    "test": "world_persistence_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "world_persistence_smoke_test.gd.log"
+  },
+  {
+    "test": "region_routes_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "region_routes_smoke_test.gd.log"
+  },
+  {
+    "test": "local_profile_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "local_profile_smoke_test.gd.log"
+  },
+  {
+    "test": "dev_mode_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": false,
+    "log": "dev_mode_smoke_test.gd.log"
+  },
+  {
+    "test": "exploration_routes_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "exploration_routes_smoke_test.gd.log"
+  }
+]

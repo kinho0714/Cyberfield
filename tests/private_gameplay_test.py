@@ -14,7 +14,13 @@ class PrivateGameplayTests(RelayTests):
     async def test_four_real_godot_gameplay_clients(self):
         await self.exercise(4)
 
-    async def exercise(self, count):
+    async def test_integrated_menu_two_godot_clients(self):
+        await self.exercise(2, True)
+
+    async def test_integrated_menu_four_godot_clients(self):
+        await self.exercise(4, True)
+
+    async def exercise(self, count, integrated=False):
         launcher = os.environ.get("CYBERFIELD_GODOT")
         project = os.environ.get("CYBERFIELD_TEST_PROJECT")
         if not launcher or not project:
@@ -26,7 +32,7 @@ class PrivateGameplayTests(RelayTests):
 
         async def launch(role, token, room_id="", peer=1):
             fixture = self.path / f"{role}.json"
-            fixture.write_text(json.dumps({"role": role, "token": token, "room_id": room_id, "peer": peer, "count": count,
+            fixture.write_text(json.dumps({"role": role, "token": token, "room_id": room_id, "peer": peer, "count": count, "integrated": integrated,
                 "url": self.url, "cert": str(self.path / "cert.pem"), "root": str(self.path / role),
                 "output": str(output)}))
             fixture.chmod(0o600)

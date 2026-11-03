@@ -238,10 +238,7 @@ func _process(_delta: float) -> void:
 
 
 func _get_local_player(players: Array[Node]) -> Node:
-	var local_participant := &"player_1"
-	var lan_session := get_tree().get_first_node_in_group("lan_session")
-	if lan_session != null and lan_session.is_network_game():
-		local_participant = lan_session.get_local_participant_id()
+	var local_participant: StringName = get_parent().get_local_gameplay_participant_id()
 	for player in players:
 		if player.participant_id == local_participant and player.visible:
 			return player

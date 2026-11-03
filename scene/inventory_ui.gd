@@ -261,7 +261,7 @@ func close_inventory() -> void:
 func _select_slot(index: int) -> void:
 	var player := _local_player()
 	if player != null and not player.equipped_weapons[index].is_empty():
-		if player.active_weapon_slot != index:
+		if player.active_weapon_slot != index and not _private_read_only():
 			player.switch_weapon()
 		_selected_weapon_id = player.equipped_weapons[index]
 		_refresh()
@@ -295,7 +295,7 @@ func _local_player() -> Node:
 		return null
 	var lan: LanSession = room_manager.get_node("LanSession")
 	for player in room_manager.get_players():
-		if not lan.is_network_game() or player.participant_id == lan.get_local_participant_id():
+		if player.participant_id == room_manager.get_local_gameplay_participant_id():
 			return player
 	return null
 
@@ -377,6 +377,8 @@ func _select_owned_weapon(weapon_id: StringName) -> void:
 
 
 func _equip_selected(slot: int) -> void:
+	if _private_read_only():
+		return
 	var player := _local_player()
 	if player != null and player.equip_owned_weapon(_selected_weapon_id, slot):
 		_preview_index = slot
@@ -384,12 +386,16 @@ func _equip_selected(slot: int) -> void:
 
 
 func _unequip_active() -> void:
+	if _private_read_only():
+		return
 	var player := _local_player()
 	if player != null and player.unequip_weapon(player.active_weapon_slot):
 		_refresh()
 
 
 func _reload_active() -> void:
+	if _private_read_only():
+		return
 	var player := _local_player()
 	if player != null and WeaponCatalog.is_ranged(player.get_active_weapon_id()):
 		close_inventory()
@@ -415,9 +421,11 @@ func _update_weapon_detail(player: Node) -> void:
 			ammo_text += "  |  RECARREGANDO"
 	_details.text = "%s  //  %s  //  %s\n%s\nDANO %d  |  CADÊNCIA %.2fs  |  ALCANCE %d\n%s\n%s" % [WeaponCatalog.get_display_name(weapon_id), RarityTable.label(player.get_weapon_rarity(weapon_id)), WeaponCatalog.category_label(weapon_id), tr(String(data.get("description", ""))), int(data.damage), float(data.cooldown), int(data.range), ammo_text, status]
 	for button in _equip_slot_buttons:
-		button.disabled = not player.owned_weapons.has(weapon_id)
-	_unequip_button.disabled = player.equipped_weapons[1 - player.active_weapon_slot].is_empty()
-	_reload_button.disabled = not WeaponCatalog.is_ranged(player.get_active_weapon_id())
+		button.disabled = _private_read_only() or not player.owned_weapons.has(weapon_id)
+	_unequip_button.disabled = _private_read_only() or player.equipped_weapons[1 - player.active_weapon_slot].is_empty()
+	_reload_button.disabled = _private_read_only() or not WeaponCatalog.is_ranged(player.get_active_weapon_id())
+	if _private_read_only():
+		_details.text += "\nCOOP: consulta do seu equipamento; alterações pelo inventário ainda indisponíveis."
 
 
 func _show_inventory_tab(index: int) -> void:
@@ -502,3 +510,8 @@ func _sidebar_action(index: int) -> void:
 		pause._abandon_run()
 	elif index == 4:
 		pause._return_to_main_menu()
+
+
+func _private_read_only() -> bool:
+	var manager := get_tree().get_first_node_in_group("room_manager")
+	return manager != null and manager.is_private_guest()

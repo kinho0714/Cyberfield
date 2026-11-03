@@ -113,6 +113,9 @@ func is_available() -> bool:
 	var room_manager := _room_manager()
 	if not is_enabled() or room_manager == null or not bool(room_manager.mode_selected):
 		return false
+	var campaigns: Node = room_manager.campaigns
+	if campaigns != null and campaigns.private_gameplay != null and (campaigns.private_gameplay.running or campaigns._private_starting):
+		return false
 	var lan := room_manager.get_node_or_null("LanSession")
 	if lan != null and lan.is_network_game():
 		return false

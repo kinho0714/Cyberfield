@@ -1,0 +1,16 @@
+{
+  "engine_suites_passed": 20,
+  "integrated_real_godot_scenarios_passed": [
+    2,
+    4
+  ],
+  "relay_social_tests_passed": 14,
+  "static_pass": 43,
+  "workspace_matches_frozen_code": true,
+  "frozen_code_files": 413,
+  "privacy_alerts": [],
+  "private_assets_preserved_and_untracked": true,
+  "physical_android_validation": "pending",
+  "push": "not_performed",
+  "android_project_copy": "not_performed"
+}

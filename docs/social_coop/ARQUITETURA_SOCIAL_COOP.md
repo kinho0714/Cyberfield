@@ -41,20 +41,24 @@ guardadas com Keystore (Android)/DPAPI (Windows) — nunca em texto puro no `use
 A interface já separa "local", "pela sessão" e "pela internet" para receber isso sem
 reescrever telas.
 
-## Gameplay cooperativo: o que falta para 4 jogadores reais
+## Gameplay cooperativo integrado (Codex + Claude)
 
-O protocolo valida sala, inputs rotulados pelo servidor, snapshots com revisão e
-eventos idempotentes, mas **não move personagens**. Ponte proposta (incremental):
-1. Anfitrião: ao `active`, instanciar participantes 2–4 como na LAN atual
-   (`room_manager._create_network_players`) e alimentar o input deles com
-   `PrivateSessionClient.input_received` (ações já filtradas pelo relay).
-2. Anfitrião publica um snapshot compacto (posições/estado/vida) a 10–15 Hz com
-   `publish_snapshot`; convidados aplicam com interpolação, como o cliente LAN faz.
-3. Transições de sala e recompensas como `publish_event` (ledger idempotente).
-4. Persistência coop separada das campanhas solo (já é: `user://coop_received_v1`).
-5. Só então testar quatro APKs em redes reais.
-Reaproveitar a predição/autoridade da LAN (`scene/network/lan_session.gd`) é preferível
-a criar uma segunda pilha de replicação.
+O controlador de campanhas agora conecta a sala do Claude à PrivateGameplayBridge
+quando o relay confirma active. O botão INICIAR COOPERATIVO solicita início; todos
+os aparelhos autorizados iniciam o gameplay. O host Godot simula, o relay autoriza e
+encaminha; não existe servidor dedicado Python de física. Dash/IA/missões e código
+novo do Codex foram preservados. O convidado permanece uma réplica passiva.
+
+Retorno ao menu ou SAIR DA SESSÃO para a ponte antes de restaurar o perfil individual.
+Campanha solo e sessão privada não abrem simultaneamente. DEV é recusado em coop.
+Solicitações de amizade continuam possíveis entre assentos autorizados e persistem
+somente nos perfis locais, sem contaminar o estado compartilhado de gameplay.
+
+Ainda faltam interações/mapa/projéteis completos, retomada de host morto, backend de
+contas e quatro APKs em redes reais. Não declarar coop completo/homologado.
+Contrato e evidências atuais: ../integracao_2026-11-03/RELATORIO.md e
+../gameplay_mundo_coop/COOP_CONTRATO.md. As evidências originais deste diretório são
+históricas da base 9b8d843; não equivalem a testes da integração atual.
 
 ## Criptografia ponta a ponta (estudo; não implementada)
 

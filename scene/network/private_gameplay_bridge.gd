@@ -20,6 +20,7 @@ var _game_process_mode := Node.PROCESS_MODE_INHERIT
 var _input_age: Dictionary = {}
 var _input_sequences: Dictionary = {}
 var _legacy_path := ""
+var _has_legacy_state := false
 var _legacy_state: Dictionary = {}
 var _owned_snapshot: Dictionary = {}
 
@@ -30,6 +31,15 @@ func _ready() -> void:
 func bind_gameplay(target: Node, client: PrivateSessionClient) -> Error:
 	if running or game != null or target.mode_selected or not target.campaigns.active.is_empty() or target.lan_session.is_network_game():
 		return ERR_ALREADY_IN_USE
+	_has_legacy_state = false
+	last_applied = 0
+	_elapsed = 0.0
+	_awaiting_ack = false
+	_world_key = ""
+	_input_age.clear()
+	_input_sequences.clear()
+	_owned_snapshot.clear()
+	_transport_paused = false
 	game = target
 	transport = client
 	transport.input_received.connect(_host_input)
@@ -46,6 +56,7 @@ func begin() -> Error:
 	var meta: Node = game.get_node("MetaProgression")
 	_legacy_path = meta.save_path
 	_legacy_state = meta.to_dictionary().duplicate(true)
+	_has_legacy_state = true
 	# Any existing progression API writes only to the independent cooperative scope.
 	meta.save_path = "user://coop_authority_v1/" + transport.room_id + "/profile.json"
 	DirAccess.make_dir_recursive_absolute(meta.save_path.get_base_dir())
@@ -55,6 +66,7 @@ func begin() -> Error:
 		meta.save_path = _legacy_path
 		meta._reset_defaults()
 		meta._apply_save(_legacy_state)
+		_has_legacy_state = false
 		_starting = false
 		return ERR_CANT_CREATE
 	game.run_manager.configure_run(&"lan", &"normal", -1, count)
@@ -216,9 +228,13 @@ func stop() -> void:
 		_release_peer(peer)
 	await game.return_to_main_menu()
 	var meta: Node = game.get_node("MetaProgression")
-	meta.save_path = _legacy_path
-	meta._reset_defaults()
-	meta._apply_save(_legacy_state)
+	if _has_legacy_state:
+		meta.save_path = _legacy_path
+		meta._reset_defaults()
+		meta._apply_save(_legacy_state)
+	_has_legacy_state = false
 	transport.input_received.disconnect(_host_input)
 	transport.state_received.disconnect(_receive_snapshot)
 	game = null
+	_legacy_state.clear()
+	_legacy_path = ""

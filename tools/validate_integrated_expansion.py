@@ -8,6 +8,13 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 TESTS = {
+    "integration_session_lifecycle_smoke_test.gd": "INTEGRATION_LIFECYCLE_REPORT failures=0",
+    "social_menu_smoke_test.gd": "SOCIAL_MENU_REPORT failures=0",
+    "social_profile_smoke_test.gd": "SOCIAL_PROFILE_REPORT failures=0",
+    "focused_stabilization_input_audio_test.gd": "FOCUSED_STABILIZATION_INPUT_AUDIO_TEST_OK",
+    "phase8_lan_lobby_touch_smoke_test.gd": "PHASE8_LAN_LOBBY_TOUCH_SMOKE_TEST_PASSED",
+    "android_touch_hud_modal_hotfix_smoke_test.gd": "ANDROID_TOUCH_HUD_MODAL_HOTFIX_SMOKE_TEST_OK",
+    "visual_pass3_smoke_test.gd": "VISUAL_PASS3_SMOKE_TEST_OK",
     "dash_sequence_smoke_test.gd": "DASH_SEQUENCE_REPORT failures=0",
     "enemy_interruption_smoke_test.gd": "ENEMY_INTERRUPTION_REPORT failures=0",
     "gameplay_progression_smoke_test.gd": "GAMEPLAY_PROGRESSION_REPORT failures=0",

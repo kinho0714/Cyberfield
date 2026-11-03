@@ -1,7 +1,7 @@
 extends "res://ui/cyber_modal.gd"
 ## Sessão privada (03/11): criar, entrar por código de convite, convites e sala.
-## Usa o PrivateSessionClient real (WSS/TLS validado). Não inicia gameplay sincronizado:
-## o gameplay em rede deste protocolo ainda não existe (ver docs). Segredos (chave do
+## Usa transporte real e a ponte PrivateGameplayBridge do Codex (protótipo jogável).
+## Quatro APKs pela internet ainda não homologados. Segredos (chave do
 ## anfitrião, convites, retomada) ficam só em memória; só o endereço wss:// é lembrado.
 const INVITE_CODE := preload("res://scene/network/private_invite_code.gd")
 var controller: Node
@@ -24,7 +24,7 @@ const STATUS := {
 	"offline": ["OFFLINE", "Sem conexão com o servidor de jogo."],
 	"connecting": ["CONECTANDO", "Abrindo conexão segura (WSS/TLS)…"],
 	"lobby": ["NA SALA", "Conectado. Aguardando os quatro assentos."],
-	"active": ["PROTOCOLO ATIVO", "Quatro conexões validadas. Gameplay sincronizado ainda não disponível."],
+	"active": ["EM PARTIDA", "Gameplay privado em validação. Host simula; convidados recebem o estado."],
 	"paused": ["PAUSADA", "Alguém caiu. Assentos reservados por até 10 minutos."],
 	"reconnecting": ["RECONECTANDO", "Conexão perdida. Nova tentativa automática a cada 3 s, por até 10 min."],
 	"suspended": ["SUSPENSA", "Tempo de reconexão esgotado. O estado recebido foi preservado."],
@@ -160,11 +160,11 @@ func _render_room() -> void:
 	actions.add_child(UI.heading("AÇÕES", UI.MAGENTA))
 	var connected: int = client.lobby.get("connected", []).size()
 	if client.is_connected_session() and int(client.peer_id) == 1:
-		var start := UI.button("VALIDAR 4 CONEXÕES (%d/4)" % connected, _start, "primary")
+		var start := UI.button("INICIAR COOPERATIVO (%d/%d)" % [connected, int(client.lobby.get("required_players", 4))], _start, "primary")
 		start.name = "Start"
-		start.disabled = connected < 4 or client.status == "active"
+		start.disabled = connected < int(client.lobby.get("required_players", 4)) or client.status == "active"
 		actions.add_child(start)
-		actions.add_child(UI.label("Valida o protocolo com os quatro assentos. Ainda não inicia uma partida sincronizada.", UI.META_SIZE, UI.DIM))
+		actions.add_child(UI.label("Inicia o protótipo de gameplay com todos os assentos autorizados. Quatro APKs pela internet ainda não homologados.", UI.META_SIZE, UI.DIM))
 	if client.status != "offline":
 		var leave := UI.button("SAIR DA SESSÃO", _leave, "danger")
 		leave.name = "Leave"
@@ -350,6 +350,9 @@ func _card() -> Dictionary:
 
 
 func _create() -> void:
+	if controller.game.mode_selected:
+		notify("Saia da campanha atual para criar, entrar ou iniciar uma sessão privada.", "warn")
+		return
 	var endpoint := endpoint_field.text.strip_edges()
 	var key := key_field.text.strip_edges()
 	key_field.clear()
@@ -392,6 +395,9 @@ func _join_manual() -> void:
 
 
 func _join(endpoint: String, room: String, token: String) -> void:
+	if controller.game.mode_selected:
+		notify("Saia da campanha atual para criar, entrar ou iniciar uma sessão privada.", "warn")
+		return
 	var result: Error = session().connect_session(endpoint, "join", token, room, "", null, _card())
 	if result != OK:
 		notify(error_text(String(session().last_error)) if not String(session().last_error).is_empty() else "Não foi possível iniciar a conexão.", "error")
@@ -463,14 +469,17 @@ func _revoke() -> void:
 
 
 func _start() -> void:
+	if controller.game.mode_selected:
+		notify("Saia da campanha atual para criar, entrar ou iniciar uma sessão privada.", "warn")
+		return
 	if session().start_session() != OK:
 		notify(ERRORS.exactly_four_authorized_connections_required, "error")
 	else:
-		notify("Validação solicitada ao servidor.", "busy")
+		notify("Início solicitado ao servidor.", "busy")
 
 
 func _leave() -> void:
-	session().leave()
+	await controller.end_private_gameplay()
 	invite_targets.clear()
 	refresh()
 	notify("Você saiu da sessão. Estado recebido preservado neste aparelho.", "info")

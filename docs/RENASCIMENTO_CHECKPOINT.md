@@ -188,3 +188,20 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Godot: binário oficial 4.7.2 (SHA-512 conferido) reaproveitado do scratchpad anterior.
 - Próximo: playtest Android (roteiro no relatório), ponte de gameplay WSS reutilizando a LAN,
   backend de contas, escolher túnel e publicar SÓ com autorização.
+
+### Integração Codex + Claude — posterior ao patch UI de 03/11
+
+- Branch: `codex/integracao-gameplay-ui-amizades-2026-11-03`, a partir de `7426f3b`.
+- Patch de três commits do Claude conferido por SHA-256 e árvores originais;
+  aplicado por `git am --3way`, sem executar o instalador da base antiga.
+- Commits aplicados: `42152f6`, `413d924`, `07bb47e`. Gameplay/dash/IA/missões do
+  Codex preservados. O commit seguinte reúne a composição e suas regressões.
+- O controller agora conecta a UI da sala à `PrivateGameplayBridge`: ao confirmar
+  início no relay, os assentos entram no gameplay real; não criar outra ponte.
+- Retorno/saída restaura perfil individual e limpa pausas dos modais/inventário.
+  HUD/inventário usam o assento autorizado; convidado tem inventário em consulta.
+  DEV e abertura concorrente de campanha solo/sessão privada são protegidos.
+- Relatório atual: `docs/integracao_2026-11-03/RELATORIO.md`, com evidências finais
+  em cópia congelada, diferenças e pendências. Relatórios anteriores são históricos.
+- Sem push, merge compartilhado, deploy ou cópia para o Godot Android nesta operação.
+  Validação física e conclusão das partes ainda parciais do coop permanecem pendentes.

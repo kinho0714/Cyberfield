@@ -351,6 +351,8 @@ class Relay:
             resume = secrets.token_urlsafe(32)  # rotate after successful reconnect
             seat.resume_hash = digest(resume)
             seat.socket = socket
+            if "card" in message:
+                seat.name, seat.avatar = seat_card(message["card"])
         else:
             raise ProtocolError("authorization_required")
         if len(room.seats) == room.required_players and all(s.socket is not None for s in room.seats.values()):

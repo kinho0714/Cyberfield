@@ -11,7 +11,7 @@ var was_paused := false
 func _build() -> void:
 	layer = 94
 	title_label.text = "MUNDO / SESSÃO"
-	subtitle_label.text = "Campanha solo • o jogo fica pausado enquanto este painel está aberto"
+	subtitle_label.text = "Mundo e sessão • fechar restaura o estado anterior da pausa"
 	add_tab("world", "MUNDO")
 	add_tab("social", "SOCIAL")
 	add_tab("coop", "COOP PRIVADO")
@@ -28,7 +28,7 @@ func _build() -> void:
 
 
 func _process(delta: float) -> void:
-	hub_button.visible = controller.game.mode_selected and controller.game.current_is_hub and not controller.active.is_empty() and not is_open() and not get_tree().paused
+	hub_button.visible = controller.game.mode_selected and controller.game.current_is_hub and (not controller.active.is_empty() or controller.private_gameplay.running) and not is_open() and not get_tree().paused
 	super._process(delta)
 
 
@@ -148,7 +148,7 @@ func _render_coop() -> void:
 	var card := UI.card(list, true)
 	card.add_child(UI.heading("COOPERATIVO PRIVADO"))
 	card.add_child(UI.label("Conexão: %s • %d/4 conectados" % [controller.private_panel.status_text(String(client.status)), client.lobby.get("connected", []).size()], UI.BODY_SIZE, controller.private_panel.status_color(String(client.status))))
-	card.add_child(UI.label("Protótipo de transporte: criar/entrar/convites funcionam com um servidor autorizado; o gameplay sincronizado ainda não existe.", UI.META_SIZE, UI.DIM))
+	card.add_child(UI.label("Protótipo de gameplay privado integrado ao host Godot. Saia da campanha solo antes de entrar; quatro APKs pela internet ainda não homologados.", UI.META_SIZE, UI.DIM))
 	var actions := UI.actions(card)
 	for pair in [["room", "SALA"], ["create", "CRIAR SESSÃO"], ["join", "ENTRAR"], ["invites", "CONVITES"]]:
 		var item := UI.button(pair[1], _open_private.bind(pair[0]), "normal", 200.0)

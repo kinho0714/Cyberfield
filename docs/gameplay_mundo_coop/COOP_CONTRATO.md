@@ -1,5 +1,13 @@
 # Coop privado — ponte de gameplay para o Claude
 
+## Composição atual após integração com o Claude
+
+CampaignController agora possui private_gameplay e inicia a ponte ao receber active.
+Não criar uma segunda ponte na UI: usar begin_private_gameplay()/end_private_gameplay().
+O painel do Claude inicia/encerra o fluxo; solo, DEV e réplicas locais são protegidos.
+O contrato manual abaixo continua válido para harnesses/componentes independentes.
+Ver ../integracao_2026-11-03/RELATORIO.md para evidências e limites atuais.
+
 ## Integração explícita, sem UI paralela
 
 PrivateSessionClient continua compatível com chamadas existentes. connect_session

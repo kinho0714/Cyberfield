@@ -158,3 +158,15 @@ como eventos de tela reais; relay em TLS de loopback. Nada testado no Android f�
 | E2EE | NÃO IMPLEMENTADO | interface diz que TLS não é ponta a ponta; chat desativado |
 | Android físico (toque, teclado virtual, 20:9) | PENDENTE | roteiro no relatório |
 | Instalador Termux (patch base `9b8d843`) | COMPROVADO (clones) | 25/25 casos; aparelho PENDENTE |
+
+## Integração Codex + Claude — 03/11/2026
+
+- [x] Preservar `7426f3b` e aplicar os três commits UI/social em branch independente.
+- [x] Conferir SHA-256 e reconstruir as três árvores da base original do patch.
+- [x] Integrar sala/amizades à ponte real, mantendo perfis e saves separados.
+- [x] Executar vinte suítes headless na cópia congelada (ver relatório de integração).
+- [ ] Validar no Android físico: teclado, toque, 16:9/20:9, CONTINUAR e dash.
+- [ ] Após endpoint autorizado: validar dois e quatro APKs reais, queda/retomada,
+      saída com modais/inventário abertos, retorno a solo e desempenho no G14.
+- [ ] Completar interações/mapa/projéteis e recuperação integral de host morto;
+      backend de contas/amigos continua pendente. Não declarar coop completo.

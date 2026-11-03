@@ -5,6 +5,11 @@ const SNAPSHOT := preload("res://scene/persistence/session_snapshot.gd")
 const WORLD := preload("res://scene/world/world_state.gd")
 const TRACKER := preload("res://scene/world/world_tracker.gd")
 var geography: Node
+var private_gameplay: Node
+var _private_starting := false
+var _private_stopping := false
+var private_gameplay_error := ""
+const GAMEPLAY := preload("res://scene/network/private_gameplay_bridge.gd")
 var private_session: Node
 const PRIVATE_SESSION := preload("res://scene/network/private_session_client.gd")
 var profile: Node
@@ -63,6 +68,10 @@ func _ready() -> void:
 	private_panel.name = "PrivateSessionPanel"
 	private_panel.controller = self
 	add_child(private_panel)
+	private_gameplay = GAMEPLAY.new()
+	private_gameplay.name = "PrivateGameplay"
+	add_child(private_gameplay)
+	private_session.status_changed.connect(_private_status_changed)
 	# 03/11: o menu inicial é dono da navegação (JOGAR → CAMPANHA SOLO / COOPERATIVO,
 	# SOCIAL); este controlador só atende às intenções. Nenhum botão é injetado.
 	var menu: Node = game.mode_select
@@ -203,6 +212,9 @@ func save_now(clean_exit := false) -> bool:
 
 
 func start_new(display_name: String, imported: Dictionary = {}) -> bool:
+	if private_session.status in ["connecting", "lobby", "active", "paused", "reconnecting"]:
+		last_error = "private_session_open"
+		return false
 	if game.mode_selected or restoring:
 		return false
 	var defaults := MetaProgression.new()
@@ -228,6 +240,9 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 
 
 func continue_campaign(id: String) -> bool:
+	if private_session.status in ["connecting", "lobby", "active", "paused", "reconnecting"]:
+		last_error = "private_session_open"
+		return false
 	if game.mode_selected or restoring:
 		return false
 	var revisions: Array[Dictionary] = store.load_revisions(id)
@@ -358,5 +373,75 @@ static func error_message(code: String) -> String:
 		"revision_conflict": "O save mudou desde a leitura. Reabra a campanha.",
 		"invalid_legacy_version": "Perfil legado ausente, inválido ou de versão mais nova.",
 		"unsupported_mode": "Este tipo de campanha ainda não pode ser continuado aqui.",
+		"private_session_open": "Saia da sessão privada antes de abrir uma campanha solo.",
 	}
 	return String(messages.get(code, "Falha ao gravar/acessar o save. Verifique o armazenamento; revisões anteriores preservadas."))
+
+
+func _private_status_changed() -> void:
+	if private_session.status == "active" and not private_gameplay.running and not _private_starting and not _private_stopping:
+		begin_private_gameplay()
+	elif private_session.status in ["offline", "error", "suspended"] and private_gameplay.running and not _private_stopping:
+		end_private_gameplay(false)
+
+
+func begin_private_gameplay() -> bool:
+	if _private_starting or _private_stopping or private_gameplay.running:
+		return false
+	if private_session.status != "active" or game.mode_selected or not active.is_empty():
+		private_gameplay_error = "Encerre a campanha atual antes de iniciar o cooperativo."
+		return false
+	_private_starting = true
+	private_gameplay_error = ""
+	if services.is_open():
+		services.close()
+	for modal in [panel, social_panel, private_panel]:
+		if modal.is_open():
+			modal.hide_modal()
+	var result: Error = private_gameplay.bind_gameplay(game, private_session)
+	if result == OK:
+		result = await private_gameplay.begin()
+	_private_starting = false
+	if result != OK:
+		private_gameplay_error = "Não foi possível iniciar a partida privada. Campanhas preservadas."
+		if private_gameplay.game != null:
+			await private_gameplay.stop()
+		private_panel.open("room", &"coop", &"PrivateCreate")
+		private_panel.notify(private_gameplay_error, "error")
+		return false
+	# A disconnect may have arrived during the asynchronous scene transition.
+	if private_session.status in ["offline", "error", "suspended"]:
+		await end_private_gameplay(false)
+		return false
+	return true
+
+
+func end_private_gameplay(disconnect := true) -> void:
+	if _private_stopping:
+		return
+	_private_stopping = true
+	# Release each UI-owned pause before awaiting scene/tween cleanup.
+	var inventory: Node = game.get_node_or_null("InventoryUI")
+	if inventory != null and inventory.overlay.visible:
+		inventory._return_to_pause = false
+		inventory.close_inventory()
+	if services.is_open():
+		services.close()
+	for modal in [panel, social_panel, private_panel]:
+		if modal.is_open():
+			modal.hide_modal()
+	var pause_menu: Node = game.get_node_or_null("PauseMenu")
+	if pause_menu != null and pause_menu.overlay.visible:
+		pause_menu.close_menu()
+	var full_map: Node = get_tree().get_first_node_in_group("full_map")
+	if full_map != null and full_map.visible:
+		full_map.close_map()
+	while _private_starting:
+		await get_tree().process_frame
+	if private_gameplay.game != null:
+		await private_gameplay.stop()
+	if disconnect:
+		private_session.leave()
+	elif not game.mode_selected:
+		private_panel.open("room", &"coop", &"PrivateCreate")
+	_private_stopping = false

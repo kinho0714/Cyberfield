@@ -1,0 +1,26 @@
+{
+  "patch_sha256": "a8035327f0204d29122cdc8d70a472e3a060ac608017573ecae427582e9d0e7d",
+  "installer_not_executed": true,
+  "three_original_trees_verified": [
+    "a5dea12716cdd868969f6d8610e4ae4c2b38e4ab",
+    "a4b35346ec30d8c46681c6a5ba508082eb4bbadd",
+    "58442617b746718fbfd1641cc30ab8ac947eac41"
+  ],
+  "critical_codex_sources_byte_identical": [
+    "entities/player.gd",
+    "entities/Enemy.gd",
+    "entities/RangedEnemy.gd",
+    "entities/HeavyEnemy.gd",
+    "scene/combat/dash_sequence.gd",
+    "scene/missions/mission_ledger.gd",
+    "scene/world/world_tracker.gd",
+    "scene/world/area_journal.gd"
+  ],
+  "six_private_assets_unchanged": true,
+  "original_branch_unchanged": true,
+  "method": "git am --3way in new integration branch",
+  "resolved_conflicts": [
+    "scene/network/private_session_client.gd",
+    "tools/private_coop/relay.py"
+  ]
+}

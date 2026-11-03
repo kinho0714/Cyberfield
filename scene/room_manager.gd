@@ -418,6 +418,9 @@ func _return_to_laboratory_local() -> void:
 
 
 func abandon_current_run() -> void:
+	if campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running:
+		await campaigns.end_private_gameplay()
+		return
 	if is_transitioning or not mode_selected:
 		return
 	if lan_session.is_network_game():
@@ -439,6 +442,9 @@ func return_to_mode_selection() -> void:
 
 
 func return_to_main_menu() -> void:
+	if campaigns != null and campaigns.private_gameplay != null and (campaigns.private_gameplay.running or campaigns._private_starting) and not campaigns._private_stopping:
+		await campaigns.end_private_gameplay()
+		return
 	if is_transitioning:
 		return
 	await _clear_run_and_show_menu()
@@ -1000,6 +1006,8 @@ func _reset_camera_for_room() -> void:
 
 
 func _set_all_player_input(enabled: bool) -> void:
+	if enabled and campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running and campaigns.private_session.peer_id != 1:
+		enabled = false
 	if not enabled:
 		var choice_ui := get_tree().get_first_node_in_group("attribute_choice_ui")
 		if choice_ui:
@@ -1096,3 +1104,13 @@ func _fade_to(alpha: float) -> void:
 	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.tween_property(fade_rect, "modulate:a", alpha, fade_duration)
 	await tween.finished
+
+
+func is_private_guest() -> bool:
+	return campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running and campaigns.private_session.peer_id != 1
+
+
+func get_local_gameplay_participant_id() -> StringName:
+	if campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running:
+		return StringName("player_%d" % int(campaigns.private_session.peer_id))
+	return lan_session.get_local_participant_id() if lan_session.is_network_game() else &"player_1"

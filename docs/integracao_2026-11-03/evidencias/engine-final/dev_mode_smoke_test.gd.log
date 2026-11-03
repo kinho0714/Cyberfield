@@ -1,0 +1,32 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+DEV_MODE Perfil de teste ativo: meta_dev_sandbox.json (o perfil real não será gravado)
+DEV_MODE Vida -50 → 950/1000
+DEV_MODE Vida e doses de cura cheias.
+DEV_MODE Invencibilidade: LIGADA
+DEV_MODE Invencibilidade: DESLIGADA
+DEV_MODE Créditos (perfil de teste) +100 → ◈421
+DEV_MODE Sucata (perfil de teste) +50 → ⚙95
+DEV_MODE Equipada RIFLE GAUSS no slot 1 [RARO]
+DEV_MODE Equipada MARRETA HIDRÁULICA no slot 2 [RARO]
+DEV_MODE Implante SERVO-IMPACTO MK3 MK3 [RARO] no slot BRAÇOS.
+DEV_MODE Acessório GRANADA INCENDIÁRIA no slot A2 (cargas cheias).
+DEV_MODE Todos os 20 blueprints concedidos (perfil de teste).
+DEV_MODE Carregando estágio 1…
+DEV_MODE Teleporte para (4900, 1204).
+DEV_MODE Teleporte para (140, 384).
+DEV_MODE 3 × CORPO A CORPO NORMAL (CIDADE BAIXA) gerado(s).
+DEV_MODE 1 × CORPO A CORPO ELITE (LABORATÓRIO) gerado(s).
+DEV_MODE 1 × CORPO A CORPO CHEFE (LABORATÓRIO) gerado(s).
+DEV_MODE 1 × À DISTÂNCIA NORMAL (LABORATÓRIO) gerado(s).
+DEV_MODE 1 × PESADO NORMAL (LABORATÓRIO) gerado(s).
+DEV_MODE 7 inimigo(s) do Modo Dev removido(s).
+DEV_MODE Baú trap gerado com SUBMETRALHADORA DE GANGUE.
+DEV_MODE Baú comum gerado com MARTELO QUEBRADOR.
+DEV_MODE Tabela INDUSTRIAL/estágio 1: MARTELO QUEBRADOR 22%  BASTÃO DE BEISEBOL 12%  CASSETETE DE CHOQUE 12%  MARRETA HIDRÁULICA 8%  PISTOLA CORPORATIVA 8%  CANO DE FERRO 6%  (baú 30% · trap 75% · pickup 38%)
+Enemy health: 0
+DEV_MODE LowerCityEnemy04 derrotado: drops pelo caminho real.
+DEV_MODE Sala reiniciada (mesmo layout, estado zerado).
+DEV_MODE Sessão anterior ao DEV restaurada; perfil de teste separado.
+DEV_MODE_REPORT failures=0 []
+DEV_MODE_SMOKE_TEST_OK
