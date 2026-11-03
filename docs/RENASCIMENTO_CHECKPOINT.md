@@ -101,3 +101,16 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   exploration_routes. Entrega: patch + instalador Termux testado em clones (scratchpad).
 - Próximo: playtest físico (toque no terminal/painel Dev, botão DEV, passagens de dash, escada
   de serviço, rótulos de saída), balancear as armas novas, arte própria da passagem de dash.
+
+## Missão mundo/saves — 03/11/2026 (Codex, Termux)
+- Missão externa lida integralmente; Bíblia de Lore encontrada e consultada.
+- Base real `dbffe33`; branch nova `codex/mundo-saves-marcos-0-1-2026-11-03`.
+- Marco 0: auditoria commit `803fa10`, relatório `docs/mundo_saves/MARCO_0.md`.
+- Marco 1: implementação PARCIAL em `scene/persistence/`, integração de campanhas
+  solo e rollback DEV. Relatório `docs/mundo_saves/MARCO_1.md`; evidência estática
+  `docs/mundo_saves/validation.json`. Não homologado/concluído.
+- Sem Godot executável neste ambiente: NÃO executar nem afirmar resultados dos
+  smoke tests novos. Próximo passo é rodar store/session/DEV no motor 4.7.2 e corrigir
+  a integração; depois validar Android/Windows. Não avançar ao Marco 2 ainda.
+- Saves não escritos nesta execução; seis assets privados não rastreados preservados
+  com hashes verificados. Sem reset, limpeza, checkout forçado ou push.

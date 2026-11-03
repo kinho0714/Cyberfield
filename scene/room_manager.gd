@@ -33,6 +33,8 @@ const CAMERA_ZOOM_MAX := 1.22
 @onready var lan_lobby: CanvasLayer = $LanLobby
 @onready var local_settings: LocalSettings = $LocalSettings
 
+var campaigns: Node
+
 var current_room: Node = null
 var is_transitioning := false
 var mode_selected := false
@@ -57,6 +59,9 @@ func _ready() -> void:
 	mode_select.lan_requested.connect(_show_lan_lobby)
 	lan_lobby.close_requested.connect(_show_mode_selection)
 	Input.joy_connection_changed.connect(_on_joy_connection_changed)
+	campaigns = preload("res://scene/persistence/campaign_controller.gd").new()
+	campaigns.name = "Campaigns"
+	add_child(campaigns)
 	_set_music_context(&"main_menu")
 
 
@@ -426,6 +431,8 @@ func return_to_main_menu() -> void:
 
 
 func _clear_run_and_show_menu() -> void:
+	if campaigns != null:
+		campaigns.leave()
 	is_transitioning = true
 	_set_all_player_input(false)
 	await _fade_to(1.0)

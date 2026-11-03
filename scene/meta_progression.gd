@@ -55,6 +55,10 @@ func _ready() -> void:
 
 func load_profile() -> void:
 	_reset_defaults()
+	var campaigns := _campaign_controller()
+	if not dev_sandbox_active and campaigns != null and not campaigns.active.is_empty():
+		_apply_save(campaigns.active.permanent)
+		return
 	if not FileAccess.file_exists(save_path):
 		return
 	var file := FileAccess.open(save_path, FileAccess.READ)
@@ -67,6 +71,9 @@ func load_profile() -> void:
 
 
 func save_profile() -> bool:
+	var campaigns := _campaign_controller()
+	if not dev_sandbox_active and campaigns != null and not campaigns.active.is_empty():
+		return campaigns.meta_changed()
 	var file := FileAccess.open(save_path, FileAccess.WRITE)
 	if file == null:
 		return false
@@ -77,6 +84,7 @@ func save_profile() -> bool:
 func to_dictionary() -> Dictionary:
 	return {
 		"version": SAVE_VERSION,
+		"dev_sandbox": dev_sandbox_active,
 		"credits": credits,
 		"scrap": scrap,
 		"unlocked_weapons": unlocked_weapons.duplicate(),
@@ -139,6 +147,9 @@ func legit_save_path() -> String:
 
 
 func dev_sandbox_path() -> String:
+	var campaigns := _campaign_controller()
+	if campaigns != null and not campaigns.active.is_empty():
+		return campaigns.store.root_path.path_join("dev_profiles").path_join(String(campaigns.active.campaign_id) + DEV_SANDBOX_SUFFIX)
 	return legit_save_path().get_basename() + DEV_SANDBOX_SUFFIX
 
 
@@ -148,6 +159,7 @@ func begin_dev_sandbox() -> void:
 	if dev_sandbox_active:
 		return
 	var sandbox := dev_sandbox_path()
+	DirAccess.make_dir_recursive_absolute(sandbox.get_base_dir())
 	_legit_save_path = save_path
 	dev_sandbox_active = true
 	save_path = sandbox
@@ -585,3 +597,7 @@ func _as_array(value: Variant) -> Array:
 	if value == null:
 		return []
 	return [value]
+
+
+func _campaign_controller() -> Node:
+	return get_parent().get_node_or_null("Campaigns") if is_inside_tree() else null

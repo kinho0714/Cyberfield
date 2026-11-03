@@ -1,0 +1,107 @@
+[
+  {
+    "check": "private_asset:assets/audio/menu/Efeito_sonoro_Trovoadas.wav",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/ambiente_chuva.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/ambiente_urbano.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/menu soundtrack.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/temporary_environment/architecture/industrial_details.png",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/temporary_environment/architecture/outpost_services.png",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_controller.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_panel.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_store.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/session_snapshot.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/room_manager.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/meta_progression.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/dev/dev_mode.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/campaign_store_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/campaign_session_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "mega_pass_priority1_static_test.py",
+    "status": "PASS",
+    "detail": "MEGA_PASS_PRIORITY1_STATIC_TEST_OK"
+  },
+  {
+    "check": "pass6_hotfix2_static_test.py",
+    "status": "PASS",
+    "detail": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.002s\n\nOK"
+  },
+  {
+    "check": "menu_pass6_static_test.py",
+    "status": "PASS",
+    "detail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.003s\n\nOK"
+  },
+  {
+    "check": "git diff --check",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "Godot runtime",
+    "status": "PENDING",
+    "detail": "No Godot executable in PATH"
+  },
+  {
+    "check": "Android physical tests",
+    "status": "PENDING",
+    "detail": "suspension, kill/reopen, touch, storage failure"
+  }
+]

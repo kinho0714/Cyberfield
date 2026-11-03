@@ -44,6 +44,8 @@ var dev_ai_paused := false
 var log_lines: PackedStringArray = []
 var _sections: Array[Dictionary] = []
 var _counter := 0
+var _legit_session: Dictionary = {}
+const SESSION_SNAPSHOT := preload("res://scene/persistence/session_snapshot.gd")
 var _last_safe_position := Vector2.INF
 
 
@@ -123,9 +125,17 @@ func is_sandbox_active() -> bool:
 
 
 ## Toda ferramenta passa por aqui antes de mexer no jogo.
-func taint() -> void:
+func taint() -> bool:
 	var meta := _meta()
-	if meta != null and not meta.dev_sandbox_active:
+	if meta == null:
+		return false
+	if not meta.dev_sandbox_active:
+		var game := _room_manager()
+		_legit_session = SESSION_SNAPSHOT.capture(game) if game != null else {}
+		if _legit_session.is_empty():
+			_log("Aguarde o fim do ataque/efeito antes de iniciar o teste DEV.")
+			return false
+		# Capture before the first artificial change.
 		meta.begin_dev_sandbox()
 		_log("Perfil de teste ativo: %s (o perfil real não será gravado)" % meta.save_path.get_file())
 		var room_manager := _room_manager()
@@ -134,16 +144,25 @@ func taint() -> void:
 	var run_manager := _run_manager()
 	if run_manager != null and bool(run_manager.run_active):
 		run_manager.mark_dev_session()
+	return true
 
 
 func end_session() -> void:
 	var meta := _meta()
 	if meta != null and meta.dev_sandbox_active:
 		meta.end_dev_sandbox()
-		_log("Perfil real recarregado do disco.")
-		var room_manager := _room_manager()
-		if room_manager != null and bool(room_manager.current_is_hub):
-			room_manager.apply_meta_loadout()
+		var game := _room_manager()
+		if game != null and not _legit_session.is_empty():
+			game.is_transitioning = true
+			var restored := SESSION_SNAPSHOT.restore(game, _legit_session)
+			game.is_transitioning = false
+			if restored:
+				_log("Sessão anterior ao DEV restaurada; perfil de teste separado.")
+			else:
+				# Remain tainted; never bank a partially restored DEV session.
+				game.run_manager.mark_dev_session()
+				push_error("DEV restoration failed; campaign autosave blocked")
+		_legit_session = {}
 	for player in _players():
 		player.set("dev_invincible", false)
 
@@ -208,7 +227,8 @@ func change_health(amount: int) -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	if bool(player.is_downed) and amount > 0:
 		player.revive()
 	player.health = clampi(int(player.health) + amount, 1, int(player.max_health))
@@ -220,7 +240,8 @@ func heal_full() -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	if bool(player.is_downed):
 		player.revive()
 	player.health = int(player.max_health)
@@ -233,7 +254,8 @@ func toggle_invincible() -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	player.dev_invincible = not bool(player.dev_invincible)
 	_last_safe_position = player.global_position
 	_log("Invencibilidade: %s" % ("LIGADA" if player.dev_invincible else "DESLIGADA"))
@@ -243,7 +265,8 @@ func reset_cooldowns() -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	player.weapon_cooldowns = [0.0, 0.0]
 	for weapon_id: StringName in (player.weapon_reload_timers as Dictionary).keys():
 		player.call("_finish_weapon_reload", weapon_id)
@@ -263,14 +286,16 @@ func reset_cooldowns() -> void:
 
 func change_run_money(amount: int) -> void:
 	var run_manager := _run_manager()
-	taint()
+	if not taint():
+		return
 	run_manager.dirty_money = maxi(int(run_manager.dirty_money) + amount, 0)
 	run_manager.state_changed.emit()
 	_log("Dinheiro da run %+d → $%d" % [amount, int(run_manager.dirty_money)])
 
 
 func change_credits(amount: int) -> void:
-	taint()
+	if not taint():
+		return
 	var meta := _meta()
 	meta.credits = maxi(meta.credits + amount, 0)
 	meta.save_profile()
@@ -279,7 +304,8 @@ func change_credits(amount: int) -> void:
 
 
 func change_scrap(amount: int) -> void:
-	taint()
+	if not taint():
+		return
 	var meta := _meta()
 	meta.scrap = maxi(meta.scrap + amount, 0)
 	meta.save_profile()
@@ -338,7 +364,8 @@ func equip_weapon(weapon_id: StringName, slot: int) -> bool:
 	var player := local_player()
 	if player == null or not WeaponCatalog.has_weapon(weapon_id):
 		return false
-	taint()
+	if not taint():
+		return false
 	var equipped := false
 	if (player.equipped_weapons as Array).has(weapon_id):
 		equipped = player.equip_owned_weapon(weapon_id, slot)
@@ -360,7 +387,8 @@ func spawn_weapon_pickup(weapon_id: StringName) -> WeaponPickup:
 	if player == null or point.is_empty():
 		_log("Sem ponto seguro para a arma.")
 		return null
-	taint()
+	if not taint():
+		return null
 	_counter += 1
 	var pickup := WeaponPickup.new()
 	pickup.pickup_id = StringName("dev_weapon_%d_%d" % [_counter, Time.get_ticks_msec()])
@@ -375,7 +403,8 @@ func spawn_weapon_pickup(weapon_id: StringName) -> WeaponPickup:
 
 
 func grant_blueprint(weapon_id: StringName) -> void:
-	taint()
+	if not taint():
+		return
 	var meta := _meta()
 	if not meta.recovered_models.has(weapon_id):
 		meta.recovered_models.append(weapon_id)
@@ -387,7 +416,8 @@ func grant_blueprint(weapon_id: StringName) -> void:
 
 
 func grant_all_blueprints() -> void:
-	taint()
+	if not taint():
+		return
 	var meta := _meta()
 	for weapon_id: StringName in WeaponCatalog.WEAPONS:
 		if not meta.recovered_models.has(weapon_id):
@@ -403,7 +433,8 @@ func install_cyberware(line: StringName, level: int) -> bool:
 	var player := local_player()
 	if player == null:
 		return false
-	taint()
+	if not taint():
+		return false
 	_counter += 1
 	var instance := CyberwareCatalog.make_instance(line, weapon_rarity, level, "cw_dev_%d_%d" % [_counter, Time.get_ticks_msec()])
 	var slot := CyberwareCatalog.slot_for(line)
@@ -422,7 +453,8 @@ func clear_cyberware() -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	player.cyberware_instances.clear()
 	player.call("_recompute_cyberware", false)
 	_log("Implantes da run removidos.")
@@ -432,7 +464,8 @@ func equip_accessory(accessory_id: StringName, slot: int) -> void:
 	var player := local_player()
 	if player == null or player.gadgets == null:
 		return
-	taint()
+	if not taint():
+		return
 	var slots: Array = (player.gadgets.slots as Array).duplicate()
 	var other := 1 - slot
 	if slots[other] == accessory_id:
@@ -494,7 +527,8 @@ func spawn_enemies(archetype: StringName, count: int) -> Array[Node]:
 	if points.is_empty():
 		_log("Nenhum ponto seguro perto do jogador.")
 		return result
-	taint()
+	if not taint():
+		return []
 	var parent := _content_parent()
 	for index in points.size():
 		var enemy := _build_enemy(archetype)
@@ -548,7 +582,8 @@ func defeat_room_enemies() -> int:
 	var room_manager := _room_manager()
 	if room_manager == null or room_manager.current_room == null:
 		return 0
-	taint()
+	if not taint():
+		return 0
 	var defeated := 0
 	for node in room_manager.current_room.find_children("*", "CharacterBody2D", true, false):
 		if node.is_in_group("enemy") and EnemyStatus.is_alive(node) and node.has_method("take_damage"):
@@ -591,10 +626,12 @@ func load_stage(stage: int) -> void:
 	var room_manager := _room_manager()
 	if room_manager == null:
 		return
-	taint()
+	if not taint():
+		return
 	_log("Carregando estágio %d…" % stage)
 	await room_manager.dev_load_stage(stage)
-	taint()
+	if not taint():
+		return
 
 
 func restart_stage() -> void:
@@ -602,7 +639,8 @@ func restart_stage() -> void:
 	if room_manager == null or not bool(room_manager.run_manager.run_active):
 		_log("Reiniciar sala: só dentro de uma run.")
 		return
-	taint()
+	if not taint():
+		return
 	await room_manager.dev_restart_stage()
 	_log("Sala reiniciada (mesmo layout, estado zerado).")
 
@@ -650,7 +688,8 @@ func teleport_to(position: Vector2) -> void:
 	var player := local_player()
 	if player == null:
 		return
-	taint()
+	if not taint():
+		return
 	player.global_position = position + Vector2(0, -24)
 	player.velocity = Vector2.ZERO
 	_last_safe_position = player.global_position
@@ -667,7 +706,8 @@ func spawn_chest(trap: bool, with_weapon: bool) -> Node:
 	if points.size() < (3 if trap else 1):
 		_log("Sem espaço seguro para o baú.")
 		return null
-	taint()
+	if not taint():
+		return null
 	_counter += 1
 	var content_id := StringName("dev_%d_loot_%02d" % [Time.get_ticks_msec() % 100000, _counter])
 	var chest: Node2D
@@ -723,7 +763,8 @@ func defeat_nearest_enemy() -> bool:
 	if nearest == null:
 		_log("Nenhum inimigo vivo na sala.")
 		return false
-	taint()
+	if not taint():
+		return false
 	nearest.take_damage(int(nearest.health) + 9999, 0.0, 0.0)
 	_log("%s derrotado: drops pelo caminho real." % nearest.name)
 	return true
@@ -747,7 +788,8 @@ func _session_entries() -> Array:
 
 
 func reset_sandbox() -> void:
-	taint()
+	if not taint():
+		return
 	_meta().reset_dev_sandbox_from_legit()
 	_log("Perfil de teste recomeçado como cópia do perfil real.")
 
