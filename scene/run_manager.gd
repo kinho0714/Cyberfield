@@ -391,6 +391,12 @@ func preview_exit_biome(destination_id: StringName, from_stage: int = -1) -> Str
 	var origin := stage_index if from_stage < 0 else from_stage
 	if origin + 1 >= STAGE_DEFAULT_KINDS.size() - 1:
 		return &"boss"
+	if is_inside_tree() and (from_stage < 0 or from_stage == stage_index):
+		var room_manager: Node = get_tree().get_first_node_in_group("room_manager")
+		if room_manager != null and room_manager.campaigns != null and not room_manager.campaigns.active.is_empty():
+			var mapped: StringName = room_manager.campaigns.geography.preview_route(destination_id)
+			if not mapped.is_empty():
+				return mapped
 	var current := get_stage_biome_kind(origin)
 	if destination_id == &"next_biome_b":
 		return &"lab" if current == &"lower_city" else current

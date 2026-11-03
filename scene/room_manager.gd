@@ -304,6 +304,8 @@ func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) 
 		is_transitioning = false
 		return
 	run_manager.activate_run()
+	if $MetaProgression.dev_sandbox_active:
+		run_manager.mark_dev_session()
 	if lan_session.is_client():
 		_configure_client_player_prediction()
 		_set_client_world_passive()

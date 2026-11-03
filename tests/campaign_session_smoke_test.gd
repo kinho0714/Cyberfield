@@ -24,6 +24,12 @@ func _run() -> void:
 	await process_frame
 	game.campaigns.store.root_path = test_namespace.path_join("campaigns")
 	check(await game.campaigns.start_new("A"), "new campaign enters actual hub")
+	check(game.campaigns.profile.initialize(test_namespace.path_join("profile")), "profile uses disposable test namespace")
+	game.campaigns.services.open()
+	game.campaigns.services.show_profile()
+	game.campaigns.services.show_private()
+	game.campaigns.services.close()
+	check(not paused, "service modal restores pause state")
 	var first_id: String = game.campaigns.active.campaign_id
 	var player: Node = game.get_players()[0]
 	player.health = 63
@@ -42,12 +48,23 @@ func _run() -> void:
 	dev.change_run_money(100)
 	dev.change_credits(100)
 	check(not game.campaigns.save_now(), "DEV cannot overwrite real slot")
+	var real_counter: int = int(game.campaigns.active.world.run_counter)
+	var real_revision: int = int(game.campaigns.store.load_campaign(first_id).revision)
+	await game._begin_run_from_hub()
+	check(game.run_manager.dev_session, "run started inside DEV stays tainted")
+	check(int(game.campaigns.active.world.run_counter) == real_counter, "DEV does not consume campaign run seeds")
+	check(int(game.campaigns.store.load_campaign(first_id).revision) == real_revision, "DEV does not publish geography to real campaign")
 	game.get_node("LocalSettings").set_dev_mode_enabled(false)
 	await process_frame
 	check(player.health == 63 and game.run_manager.dirty_money == 0, "DEV restores life and run money")
 	check(game.get_node("MetaProgression").credits == 42, "DEV restores campaign credits")
 	check(game.campaigns.save_now(), "real slot writable after DEV rollback")
 	await game._begin_run_from_hub(1947)
+	var opened_chest_id: StringName = &""
+	var chest: Node = get_first_node_in_group("biome_loot")
+	if chest != null:
+		opened_chest_id = chest.loot_id
+		chest.interact(game.get_players()[0])
 	game.run_manager.dirty_money = 37
 	game.run_manager.scrap = 4
 	player = game.get_players()[0]
@@ -68,18 +85,43 @@ func _run() -> void:
 	check(game.run_manager.seed_value == 1947 and game.run_manager.dirty_money == 37 and game.run_manager.scrap == 4, "run seed and temporary economy restored")
 	check(player.health == 59 and player.global_position.distance_to(position) < 2, "run position and life restored")
 	check(not game.run_manager.run_is_lost, "interruption is not death")
+	if not opened_chest_id.is_empty():
+		check(game.run_manager.collected_biome_loot.has(opened_chest_id), "opened chest remains collected")
+		for restored_chest in get_nodes_in_group("biome_loot"):
+			check(restored_chest.loot_id != opened_chest_id, "opened chest does not respawn")
 	check(player.owned_weapons.has(&"pulse_carbine") and player.weapon_ammo[&"pulse_carbine"].clip == 3, "equipment and ammunition restored")
 	var restored_enemy: Node = null
 	for actor in get_nodes_in_group("enemy"):
 		if actor.persistent_id == enemy_id:
 			restored_enemy = actor
 	check(restored_enemy != null and restored_enemy.health == 51, "enemy state restored by stable ID")
+	var expected_kind: StringName = game.run_manager.preview_exit_biome(&"next_biome_b")
+	await game.request_biome_advance(&"test_exit_b", &"next_biome_b")
+	check(game.run_manager.stage_index == 1 and game.run_manager.current_biome_kind == expected_kind, "route preview matches actual destination")
+	check(game.campaigns.active.world.location.neighborhood_id.ends_with("neighborhood_002"), "alternative route enters second neighborhood")
+	check(game.campaigns.save_now(), "save after regional transition")
+	await game.return_to_main_menu()
+	check(await game.campaigns.continue_campaign(first_id), "restore after regional transition")
+	check(game.run_manager.stage_index == 1 and game.run_manager.current_biome_kind == expected_kind, "transition state restored")
 	await game.return_to_main_menu()
 	var incompatible: Dictionary = game.campaigns.store.load_campaign(first_id)
 	incompatible.session.signature = "incompatible_test_signature"
 	check(game.campaigns.store.save_campaign(incompatible), "write disposable semantically incompatible revision")
 	check(await game.campaigns.continue_campaign(first_id), "recover previous compatible revision")
 	check(bool(game.campaigns.recovery_status.get("used_backup", false)), "semantic backup recovery recorded")
+	var distribution: Dictionary = game.campaigns.active.world.guard_distribution.duplicate(true)
+	var meta: MetaProgression = game.get_node("MetaProgression")
+	if not meta.blueprints.has(&"scrap_blade"):
+		meta.blueprints.append(&"scrap_blade")
+	meta.save_profile()
+	game.run_manager.lose_run()
+	await process_frame
+	await game.return_to_laboratory()
+	check(meta.blueprints.has(&"scrap_blade"), "blueprint survives defeat")
+	check(game.campaigns.active.world.guard_distribution == distribution, "defeat does not redistribute guards")
+	check(not game.get_players()[0].owned_weapons.has(&"pulse_carbine"), "temporary weapon follows existing run reset policy")
+	var credits_before: int = meta.credits
+	check(meta.record_run(game.run_manager.last_run_results) == 0 and meta.credits == credits_before, "result reward cannot be duplicated")
 	await game.return_to_main_menu()
 	check(not FileAccess.file_exists(test_namespace.path_join("legacy.json")), "campaigns never write legacy profile")
 	print("CAMPAIGN_SESSION_REPORT failures=", failures, " test_namespace=", test_namespace)

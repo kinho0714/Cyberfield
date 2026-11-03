@@ -57,3 +57,12 @@ mais completo, progressão entre estados/cidades futuros, migração de catálog
 incompatíveis e geometria de versões futuras. Bairros ainda reutilizam pools dos
 biomas; não há trinta cenários artísticos. Os slots de Guardas são reservados;
 restrições narrativas adicionais exigem dados oficiais, não personagens inventados.
+
+
+A regressão ampliada também passou pelo teste físico automatizado já existente de
+exploração: 30 gerações nos três biomas, escadas críticas e passagem de dash, sem
+substituir o gerador. Os avisos de recursos/RIDs na saída desse teste são preservados.
+Novos guards impedem que uma run iniciada no hub DEV consuma seed/contador, publique
+áreas ou selecione regiões reais. A prévia das saídas consulta o grafo de campanha,
+para o rótulo do destino concordar com a transição. Verificar os logs finais para
+resultados da integração ampliada e manter Android/Windows como pendência separada.

@@ -5,6 +5,10 @@ const SNAPSHOT := preload("res://scene/persistence/session_snapshot.gd")
 const WORLD := preload("res://scene/world/world_state.gd")
 const TRACKER := preload("res://scene/world/world_tracker.gd")
 var geography: Node
+var private_session: Node
+const PRIVATE_SESSION := preload("res://scene/network/private_session_client.gd")
+var profile: Node
+const PROFILE := preload("res://scene/social/local_profile.gd")
 var services: CanvasLayer
 const SERVICES := preload("res://scene/persistence/campaign_services.gd")
 const PANEL := preload("res://scene/persistence/campaign_panel.gd")
@@ -24,6 +28,12 @@ var game: Node
 func _ready() -> void:
 	game = get_parent()
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	private_session = PRIVATE_SESSION.new()
+	private_session.name = "PrivateSession"
+	add_child(private_session)
+	profile = PROFILE.new()
+	profile.name = "LocalProfile"
+	add_child(profile)
 	geography = TRACKER.new()
 	geography.controller = self
 	add_child(geography)
@@ -40,6 +50,12 @@ func _ready() -> void:
 	game.mode_select.main_page.add_child(button)
 	game.mode_select.main_page.move_child(button, 1)
 	button.pressed.connect(panel.open)
+	var social_button: Button = Button.new()
+	social_button.text = "PERFIL / COOP PRIVADO"
+	social_button.custom_minimum_size.y = 44
+	game.mode_select.main_page.add_child(social_button)
+	game.mode_select.main_page.move_child(social_button, 2)
+	social_button.pressed.connect(services.open)
 	var status_layer: CanvasLayer = CanvasLayer.new()
 	status_layer.layer = 35
 	add_child(status_layer)
@@ -156,6 +172,8 @@ func continue_campaign(id: String) -> bool:
 		# Keep the latest permanent ledger even when recovering an older run snapshot.
 		var session: Dictionary = candidate.session.duplicate(true)
 		session.permanent = newest.permanent.duplicate(true)
+		if session.get("geographic_location") is Dictionary:
+			active.world.location = session.geographic_location.duplicate(true)
 		game.is_transitioning = true
 		restored = bool(game.mode_selected) and SNAPSHOT.restore(game, session)
 		game.is_transitioning = false

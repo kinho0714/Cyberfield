@@ -62,7 +62,7 @@ func current_neighborhood() -> String:
 
 
 func choose_region(id: String) -> bool:
-	if controller.active.is_empty() or not controller.game.current_is_hub or controller.game.is_transitioning:
+	if controller.active.is_empty() or not controller.game.current_is_hub or controller.game.is_transitioning or controller.game.get_node("MetaProgression").dev_sandbox_active or controller.game.run_manager.dev_session:
 		return false
 	var next: Dictionary = controller.active.duplicate(true)
 	if not next.world.discoveries.has(id) or not next.world.locations.has(id):
@@ -83,6 +83,8 @@ func known_regions() -> Array[Dictionary]:
 
 
 func next_run_seed() -> int:
+	if controller.game.get_node("MetaProgression").dev_sandbox_active or controller.game.run_manager.dev_session:
+		return maxi(1, int(Crypto.new().generate_random_bytes(4).decode_u32(0)) & 0x7fffffff)
 	if controller.active.is_empty():
 		return 0
 	var next: Dictionary = controller.active.duplicate(true)
@@ -108,7 +110,7 @@ func selected_biome() -> StringName:
 
 func advance_route(exit_id: StringName) -> void:
 	var game: Node = controller.game
-	if controller.active.is_empty() or game.run_manager.dev_session or game.run_manager.stage_index >= 5:
+	if controller.active.is_empty() or game.run_manager.dev_session or game.get_node("MetaProgression").dev_sandbox_active or game.run_manager.stage_index >= 5:
 		return
 	var world: Dictionary = controller.active.world
 	if not ROUTES.ensure(world):
@@ -124,7 +126,7 @@ func advance_route(exit_id: StringName) -> void:
 
 func area_seed(fallback: int) -> int:
 	var game: Node = controller.game
-	if controller.active.is_empty() or game.run_manager.dev_session:
+	if controller.active.is_empty() or game.run_manager.dev_session or game.get_node("MetaProgression").dev_sandbox_active:
 		return fallback
 	var world: Dictionary = controller.active.world
 	return ROUTES.area_seed(world, int(game.run_manager.seed_value), String(world.location.get("neighborhood_id", "")), int(game.run_manager.stage_index))
@@ -132,7 +134,7 @@ func area_seed(fallback: int) -> int:
 
 func record_area(seed_value: int, graph: Dictionary) -> void:
 	var game: Node = controller.game
-	if controller.active.is_empty() or game.run_manager.dev_session or controller.restoring:
+	if controller.active.is_empty() or game.run_manager.dev_session or game.get_node("MetaProgression").dev_sandbox_active or controller.restoring:
 		return
 	var world: Dictionary = controller.active.world
 	if not ROUTES.ensure(world):
@@ -141,3 +143,17 @@ func record_area(seed_value: int, graph: Dictionary) -> void:
 	world.areas[key] = {"neighborhood_id": world.location.get("neighborhood_id", ""), "area_seed": seed_value,
 		"signature": graph.get("signature", ""), "graph": graph.duplicate(true)}
 	controller.dirty = true
+
+
+func preview_route(destination_id: StringName) -> StringName:
+	if controller.active.is_empty() or controller.game.run_manager.dev_session or controller.game.get_node("MetaProgression").dev_sandbox_active:
+		return &""
+	var world: Dictionary = controller.active.world
+	if not ROUTES.ensure(world):
+		return &""
+	var source: String = String(world.location.get("neighborhood_id", ""))
+	var target: String = ROUTES.destination(world, source, "B" if destination_id == &"next_biome_b" else "A")
+	if target.is_empty():
+		return &""
+	var parent: String = String(world.locations[target].parent_id)
+	return StringName(world.locations[parent].get("biome_kind", ""))
