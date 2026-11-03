@@ -2,8 +2,15 @@ extends CharacterBody2D
 
 const RANGED_PROJECTILE_SCENE := preload("res://entities/ranged_projectile.tscn")
 
+signal dash_sequence_changed(available: int)
+
 signal downed_state_changed(is_now_downed: bool)
 signal revive_progress_changed(progress: float)
+
+@export_range(1, 10, 1) var dash_capacity := 3
+@export_range(0.01, 2.0, 0.01) var dash_minimum_interval := 0.15
+@export_range(0.01, 5.0, 0.01) var dash_recovery_delay := 0.75
+var dash_sequence := preload("res://scene/combat/dash_sequence.gd").new()
 
 @export var participant_id: StringName = &"player_1"
 @export_enum("p1", "p2", "p3", "p4") var input_profile := "p1"
@@ -203,6 +210,20 @@ func _physics_process(delta: float) -> void:
 	# Replicas never simulate gravity/collisions against authoritative movement.
 	if network_remote_replica or (network_prediction_only and is_downed):
 		return
+	dash_sequence.capacity = dash_capacity
+	dash_sequence.minimum_interval = dash_minimum_interval
+	dash_sequence.recovery_delay = dash_recovery_delay
+	var previous_available: int = dash_sequence.available()
+	# Account for the fraction of a tick left after dash movement ends.
+	if dash_sequence.active and dash_timer <= delta:
+		var residual: float = maxf(delta - dash_timer, 0.0)
+		dash_timer = 0.0
+		_end_dash()
+		dash_sequence.advance(residual)
+	elif not dash_sequence.active:
+		dash_sequence.advance(delta)
+	if previous_available != dash_sequence.available():
+		dash_sequence_changed.emit(dash_sequence.available())
 	if network_prediction_only:
 		_apply_network_reconciliation(delta)
 	if is_downed:
@@ -577,7 +598,22 @@ func attack(slot: int = -1) -> void:
 		combo_timer = COMBO_WINDOW
 
 
+func get_dash_available() -> int:
+	return dash_sequence.available()
+
+
 func _start_dash() -> void:
+	if dash_timer > 0.0 or is_downed or not input_enabled or knockback_timer > 0.0 or is_ground_slamming or is_healing:
+		return
+	if (is_attacking or combo_end_recovery_timer > 0.0) and dash_cancel_timer <= 0.0:
+		return
+	dash_sequence.capacity = dash_capacity
+	dash_sequence.minimum_interval = dash_minimum_interval
+	dash_sequence.recovery_delay = dash_recovery_delay
+	# Guard the actual entry point: direct/network callers cannot bypass the budget.
+	if not dash_sequence.try_start():
+		return
+	dash_sequence_changed.emit(dash_sequence.available())
 	var is_combo_cancel := dash_cancel_timer > 0.0 and last_attack_hit and combo_step == MAX_COMBO_ATTACKS
 	if is_combo_cancel:
 		attack_generation += 1
@@ -603,6 +639,7 @@ func _start_dash() -> void:
 
 
 func _end_dash() -> void:
+	dash_sequence.finish()
 	for enemy in _dash_exceptions:
 		if is_instance_valid(enemy):
 			remove_collision_exception_with(enemy)
@@ -1012,6 +1049,9 @@ func apply_bandage(heal_ratio: float = 0.10) -> bool:
 
 
 func reset_for_new_run() -> void:
+	_end_dash()
+	dash_sequence.reset()
+	dash_sequence_changed.emit(dash_sequence.available())
 	dev_invincible = false
 	intellect = 0
 	health_attribute = 0
