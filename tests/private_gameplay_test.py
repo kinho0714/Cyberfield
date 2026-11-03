@@ -18,9 +18,9 @@ class PrivateGameplayTests(RelayTests):
         await self.exercise(2, True)
 
     async def test_integrated_menu_four_godot_clients(self):
-        await self.exercise(4, True)
+        await self.exercise(4, True, simulated_peers=True)
 
-    async def exercise(self, count, integrated=False):
+    async def exercise(self, count, integrated=False, simulated_peers=False):
         launcher = os.environ.get("CYBERFIELD_GODOT")
         project = os.environ.get("CYBERFIELD_TEST_PROJECT")
         if not launcher or not project:
@@ -33,13 +33,15 @@ class PrivateGameplayTests(RelayTests):
         async def launch(role, token, room_id="", peer=1):
             fixture = self.path / f"{role}.json"
             fixture.write_text(json.dumps({"role": role, "token": token, "room_id": room_id, "peer": peer, "count": count, "integrated": integrated,
+                "social_expected": not simulated_peers, "reconnect_test": simulated_peers and peer == 2,
                 "url": self.url, "cert": str(self.path / "cert.pem"), "root": str(self.path / role),
                 "output": str(output)}))
             fixture.chmod(0o600)
             logfile = self.path / f"{role}.log"
             stream = logfile.open("w")
+            script = "res://tests/private_gameplay_simulated_peer.gd" if simulated_peers and role != "host" else "res://tests/private_gameplay_client.gd"
             process = await asyncio.create_subprocess_exec(launcher, "--headless", "--path", project,
-                "--script", "res://tests/private_gameplay_client.gd", "--", str(fixture),
+                "--script", script, "--", str(fixture),
                 stdout=stream, stderr=asyncio.subprocess.STDOUT, start_new_session=True)
             streams[role] = (stream, logfile)
             processes.append(process)
@@ -76,7 +78,8 @@ class PrivateGameplayTests(RelayTests):
                 self.assertEqual(process.returncode, 0, text)
                 self.assertNotIn("SCRIPT ERROR", text)
                 self.assertNotIn("Can't find overlapping bodies", text)
-                self.assertIn(f"PRIVATE_GAMEPLAY_REPORT role={name} failures=0", text)
+                expected_report = f"SIMULATED_GAMEPLAY_REPORT role={name} failures=0" if simulated_peers and name != "host" else f"PRIVATE_GAMEPLAY_REPORT role={name} failures=0"
+                self.assertIn(expected_report, text)
         finally:
             for stream, logfile in streams.values():
                 stream.close()

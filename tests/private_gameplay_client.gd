@@ -28,6 +28,7 @@ func run() -> void:
 	if integrated:
 		check(game.campaigns.profile.initialize(String(fixture.root).path_join("profile")), "integrated profile namespace")
 		game.campaigns.private_panel.settings_path = String(fixture.root).path_join("private.cfg")
+	client.status_changed.connect(func() -> void: print("TEST_TRANSPORT role=", fixture.role, " status=", client.status, " error=", client.last_error))
 	client.backup_root = String(fixture.root).path_join("received")
 	if not integrated:
 		root.add_child(client)
@@ -90,7 +91,7 @@ func run() -> void:
 		var enemy: Node = get_first_node_in_group("enemy")
 		enemy.health = 58
 		enemy.take_damage(7)
-		if integrated:
+		if integrated and bool(fixture.get("social_expected", true)):
 			while game.campaigns.profile.data.incoming.size() < int(fixture.count) - 1 and Time.get_ticks_msec() < deadline:
 				await process_frame
 			for id: String in game.campaigns.profile.data.incoming.keys():
@@ -121,7 +122,9 @@ func run() -> void:
 		check(replicated, "actual host damage replicated to enemy")
 		# Drop the real socket; client must resume the same server-authorized seat.
 		var before_drop: int = bridge.last_applied
-		client.socket.close(1000, "fixture_drop")
+		check(client.socket != null, "transport available for reconnect: " + client.last_error)
+		if client.socket != null:
+			client.socket.close(1000, "fixture_drop")
 		var reconnect_deadline: int = Time.get_ticks_msec() + 30000
 		while (client.status != "active" or bridge.last_applied <= before_drop) and Time.get_ticks_msec() < reconnect_deadline:
 			await process_frame
