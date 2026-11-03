@@ -90,6 +90,14 @@ func connect_session(url: String, operation: String, token: String, session_id: 
 func _process(_delta: float) -> void:
 	if socket == null:
 		return
+	if status in ["offline", "suspended", "error"]:
+		# Finish TLS/WebSocket close handshake; then release the idle socket.
+		if socket.get_ready_state() == WebSocketPeer.STATE_OPEN:
+			socket.close(1000, "inactive")
+		socket.poll()
+		if socket.get_ready_state() == WebSocketPeer.STATE_CLOSED:
+			socket = null
+		return
 	flush_backup()
 	socket.poll()
 	var state: int = socket.get_ready_state()

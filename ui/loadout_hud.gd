@@ -9,6 +9,7 @@ const DIM := Color(0.15, 0.25, 0.3)
 const KEY_HINTS := ["F", "G"]
 
 var player: Node
+var _state: Array = []
 var _font: Font
 
 
@@ -25,13 +26,21 @@ func _ready() -> void:
 
 
 func update_state(local_player: Node, hud_visible: bool) -> void:
+	var changed_player := player != local_player
 	player = local_player
-	visible = hud_visible and player != null
-	queue_redraw()
-
-
-func _process(_delta: float) -> void:
-	if visible:
+	visible = hud_visible and is_instance_valid(player)
+	if not visible:
+		return
+	var gadgets: PlayerGadgets = player.get("gadgets")
+	var state: Array = [player.get_instance_id(), player.active_weapon_slot,
+		player.equipped_weapons.duplicate(), player.weapon_ammo.duplicate(true),
+		player.weapon_reload_timers.duplicate(true), player.cyberware_instances.duplicate(true),
+		player.weapon_rarity.duplicate()]
+	if gadgets != null:
+		for slot in AccessoryCatalog.SLOT_COUNT:
+			state.append([gadgets.slots[slot], gadgets.charges[slot], gadgets.recharge[slot]])
+	if changed_player or state != _state:
+		_state = state
 		queue_redraw()
 
 
@@ -110,7 +119,7 @@ func _draw() -> void:
 			var icon_rect := Rect2(origin + Vector2(9, 6), Vector2(32, 32))
 			if gadget_icon != null:
 				draw_texture_rect(gadget_icon, icon_rect, false, Color.WHITE if charges > 0 else Color(0.5, 0.5, 0.55))
-			var ratio := gadgets.recharge_ratio(slot)
+			var ratio := gadgets.recharge[slot]
 			if ratio < 1.0:                                       # recarga sobe sobre o ícone
 				var covered := icon_rect.size.y * (1.0 - ratio)
 				draw_rect(Rect2(icon_rect.position, Vector2(icon_rect.size.x, covered)), Color(0.0, 0.02, 0.05, 0.55))

@@ -42,17 +42,8 @@ var _flicker_left := 0.0
 ## generator: BiomeGenerator or the boss stage. skin_untagged: also skin bodies without
 ## a collision_role (authored scenes such as the boss stage).
 func build(generator: Node2D, id: StringName, skin_untagged := false) -> void:
-	style_id = id
-	_style = STYLES.STYLES.get(id, {})
-	name = "BiomeVisual"
-	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-	_add_material = CanvasItemMaterial.new()
-	_add_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
-	if _style.is_empty():
-		push_warning("Unknown biome visual style: %s" % id)
+	if not _initialize_style(generator, id):
 		return
-	if generator.has_method("get_start_position"):
-		_floor_ref_y = generator.get_start_position().y + 36.0
 	_skin_geometry(generator, skin_untagged)
 	var modules := generator.get_node_or_null("Modules")
 	if modules != null:
@@ -62,6 +53,37 @@ func build(generator: Node2D, id: StringName, skin_untagged := false) -> void:
 		_dress_flat(generator)
 	_build_backdrop()
 	_build_weather()
+
+
+func build_async(generator: Node2D, id: StringName, scene_tree: SceneTree) -> void:
+	if not _initialize_style(generator, id):
+		return
+	await _skin_geometry_async(generator, scene_tree)
+	var modules := generator.get_node_or_null("Modules")
+	if modules != null:
+		await _dress_modules_async(modules, scene_tree)
+	else:
+		_soften_backgrounds(generator)
+		_dress_flat(generator)
+	await scene_tree.process_frame
+	_build_backdrop()
+	await scene_tree.process_frame
+	_build_weather()
+
+
+func _initialize_style(generator: Node2D, id: StringName) -> bool:
+	style_id = id
+	_style = STYLES.STYLES.get(id, {})
+	name = "BiomeVisual"
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	_add_material = CanvasItemMaterial.new()
+	_add_material.blend_mode = CanvasItemMaterial.BLEND_MODE_ADD
+	if _style.is_empty():
+		push_warning("Unknown biome visual style: %s" % id)
+		return false
+	if generator.has_method("get_start_position"):
+		_floor_ref_y = generator.get_start_position().y + 36.0
+	return true
 
 
 func _process(delta: float) -> void:
@@ -94,46 +116,62 @@ func _skin_geometry(generator: Node2D, skin_untagged: bool) -> void:
 	var catwalk := _tex("catwalk_tile")
 	var wall := _tex("wall_tile")
 	for body in generator.find_children("*", "StaticBody2D", true, false):
-		var role: StringName = body.get_meta("collision_role", &"solid_structure" if skin_untagged else &"")
-		if role == &"procedural_guard_rail":
-			_skin_bulkhead(body, generator, wall)
-			continue
-		if role != &"solid_structure" and role != &"one_way_platform":
-			continue
-		var visual: Polygon2D = null
-		var size := Vector2.ZERO
-		for child in body.get_children():
-			if child is CollisionShape2D and child.shape is RectangleShape2D:
-				size = (child.shape as RectangleShape2D).size
-			elif visual == null and child is Polygon2D and child.visible and child.color.a > 0.0:
-				visual = child
-		if visual == null or not size.is_finite() or size.x <= 0.0 or size.y <= 0.0:
-			continue
-		var offset := _offset_in(body, generator)
-		var left := offset.x - size.x * 0.5
-		var top := offset.y - size.y * 0.5
-		var texture: Texture2D = floor
-		var v0 := 0.0
-		if role == &"one_way_platform":
-			texture = catwalk
-		elif size.y > size.x * 1.5:
-			texture = wall
-			v0 = top
-		if texture == null:
-			continue
-		visual.texture = texture
-		visual.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-		visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		# World-aligned U (no seams between modules); a slab taller than its tile shows the
-		# tile once, stretched, so the lit top edge never repeats further down.
-		var v1 := v0 + size.y
-		if texture != wall and size.y > texture.get_height():
-			v1 = v0 + texture.get_height()
-		visual.uv = PackedVector2Array([
-			Vector2(left, v0), Vector2(left + size.x, v0),
-			Vector2(left + size.x, v1), Vector2(left, v1),
-		])
-		visual.color = Color.WHITE
+		_skin_body(body, generator, skin_untagged, floor, catwalk, wall)
+
+
+func _skin_geometry_async(generator: Node2D, scene_tree: SceneTree) -> void:
+	var floor := _tex("floor_tile")
+	var catwalk := _tex("catwalk_tile")
+	var wall := _tex("wall_tile")
+	var started := Time.get_ticks_usec()
+	for body in generator.find_children("*", "StaticBody2D", true, false):
+		_skin_body(body, generator, false, floor, catwalk, wall)
+		if Time.get_ticks_usec() - started >= 4000:
+			await scene_tree.process_frame
+			started = Time.get_ticks_usec()
+
+
+func _skin_body(body: Node, generator: Node2D, skin_untagged: bool, floor: Texture2D, catwalk: Texture2D, wall: Texture2D) -> void:
+	var role: StringName = body.get_meta("collision_role", &"solid_structure" if skin_untagged else &"")
+	if role == &"procedural_guard_rail":
+		_skin_bulkhead(body, generator, wall)
+		return
+	if role != &"solid_structure" and role != &"one_way_platform":
+		return
+	var visual: Polygon2D = null
+	var size := Vector2.ZERO
+	for child in body.get_children():
+		if child is CollisionShape2D and child.shape is RectangleShape2D:
+			size = (child.shape as RectangleShape2D).size
+		elif visual == null and child is Polygon2D and child.visible and child.color.a > 0.0:
+			visual = child
+	if visual == null or not size.is_finite() or size.x <= 0.0 or size.y <= 0.0:
+		return
+	var offset := _offset_in(body, generator)
+	var left := offset.x - size.x * 0.5
+	var top := offset.y - size.y * 0.5
+	var texture: Texture2D = floor
+	var v0 := 0.0
+	if role == &"one_way_platform":
+		texture = catwalk
+	elif size.y > size.x * 1.5:
+		texture = wall
+		v0 = top
+	if texture == null:
+		return
+	visual.texture = texture
+	visual.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	visual.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	# World-aligned U (no seams between modules); a slab taller than its tile shows the
+	# tile once, stretched, so the lit top edge never repeats further down.
+	var v1 := v0 + size.y
+	if texture != wall and size.y > texture.get_height():
+		v1 = v0 + texture.get_height()
+	visual.uv = PackedVector2Array([
+		Vector2(left, v0), Vector2(left + size.x, v0),
+		Vector2(left + size.x, v1), Vector2(left, v1),
+	])
+	visual.color = Color.WHITE
 
 
 ## Sealed module edges (BiomeGenerator._add_guard_rail_bulkhead): flat teal slabs before.
@@ -165,27 +203,42 @@ func _dress_modules(modules: Node) -> void:
 	var back := _layer("Dressing", -9)
 	var front := _layer("DressingLight", 1)
 	for module in modules.get_children():
-		if not (module is Node2D):
-			continue
-		var index := int(module.get_meta("module_index", module.get_index()))
-		var markers: Array[float] = []
-		for child in module.get_children():
-			if child is Polygon2D and child.z_index == -10:
-				child.color = _style.haze if is_zero_approx(module.position.y) else _style.haze_deep
-			elif child is Marker2D:
-				markers.append(child.position.x)
-		var spans := _floor_spans(module)
-		var origin: Vector2 = module.position
-		match String(_style.dressing):
-			"city":
-				_dress_city(back, front, origin, index, markers, spans)
-			"industrial":
-				_dress_industrial(back, front, origin, index, markers, spans)
-			"lab":
-				_dress_lab(back, front, origin, index, markers, spans)
-			"core":
-				if index % 2 == 0:
-					_floor_prop(back, front, origin, 214.0, "pylon", "pylon_glow", Vector2(-14, -120), Vector2(-35, -135), markers, spans, &"pulse")
+		_dress_module(module, back, front)
+
+
+func _dress_modules_async(modules: Node, scene_tree: SceneTree) -> void:
+	var back := _layer("Dressing", -9)
+	var front := _layer("DressingLight", 1)
+	var started := Time.get_ticks_usec()
+	for module in modules.get_children():
+		_dress_module(module, back, front)
+		if Time.get_ticks_usec() - started >= 4000:
+			await scene_tree.process_frame
+			started = Time.get_ticks_usec()
+
+
+func _dress_module(module: Node, back: Node2D, front: Node2D) -> void:
+	if not (module is Node2D):
+		return
+	var index := int(module.get_meta("module_index", module.get_index()))
+	var markers: Array[float] = []
+	for child in module.get_children():
+		if child is Polygon2D and child.z_index == -10:
+			child.color = _style.haze if is_zero_approx(module.position.y) else _style.haze_deep
+		elif child is Marker2D:
+			markers.append(child.position.x)
+	var spans := _floor_spans(module)
+	var origin: Vector2 = module.position
+	match String(_style.dressing):
+		"city":
+			_dress_city(back, front, origin, index, markers, spans)
+		"industrial":
+			_dress_industrial(back, front, origin, index, markers, spans)
+		"lab":
+			_dress_lab(back, front, origin, index, markers, spans)
+		"core":
+			if index % 2 == 0:
+				_floor_prop(back, front, origin, 214.0, "pylon", "pylon_glow", Vector2(-14, -120), Vector2(-35, -135), markers, spans, &"pulse")
 
 
 func _dress_city(back: Node2D, front: Node2D, origin: Vector2, index: int, markers: Array[float], spans: Array[Vector2]) -> void:

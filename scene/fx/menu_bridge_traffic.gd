@@ -33,6 +33,8 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	if not is_visible_in_tree():
+		return
 	var span := DECK_RIGHT.x - DECK_LEFT.x
 	for car in _cars:
 		var lane: Array = car.lane

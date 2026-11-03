@@ -55,16 +55,14 @@ func save_campaign(data: Dictionary) -> bool:
 		return _fail("directory_failed")
 	if DirAccess.make_dir_recursive_absolute(folder) != OK:
 		return _fail("directory_failed")
-	var payload := Marshalls.raw_to_base64(var_to_bytes(next))
-	var envelope := {"schema_version": SCHEMA_VERSION, "payload": payload, "checksum": payload.sha256_text()}
 	var target := folder.path_join("%012d.json" % int(next.revision))
 	# A damaged revision is retained; never overwrite it during recovery.
 	while FileAccess.file_exists(target):
 		next.revision += 1
 		target = folder.path_join("%012d.json" % int(next.revision))
-	payload = Marshalls.raw_to_base64(var_to_bytes(next))
-	envelope.payload = payload
-	envelope.checksum = payload.sha256_text()
+	# Resolve occupied revision numbers before encoding: serialize/hash only once.
+	var payload := Marshalls.raw_to_base64(var_to_bytes(next))
+	var envelope := {"schema_version": SCHEMA_VERSION, "payload": payload, "checksum": payload.sha256_text()}
 	var temporary := target + ".tmp"
 	var file := FileAccess.open(temporary, FileAccess.WRITE)
 	if file == null:

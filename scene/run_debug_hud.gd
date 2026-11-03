@@ -195,6 +195,9 @@ func _apply_safe_area() -> void:
 
 
 func _process(_delta: float) -> void:
+	if not visible:
+		official_hud.update_state(null, 0, false)
+		return
 	_update_session_summary(_delta)
 	run_timer.text = run_manager.format_run_time()
 	var downed_player: Node = null
@@ -222,6 +225,8 @@ func _process(_delta: float) -> void:
 		_update_local_player_hud(local_player)
 	_update_partner_hud(partner_player)
 	_update_boss_hud()
+	if not local_settings.debug_hud_visible:
+		return
 	var lines: PackedStringArray = []
 	for player in players:
 		if not player.visible:

@@ -10,6 +10,7 @@ const MAGENTA := Color("ff4fb4")
 
 var fade_rect: CanvasItem
 var _clock := 0.0
+var _had_drawing := false
 
 
 func _ready() -> void:
@@ -20,7 +21,10 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_clock += delta
-	queue_redraw()
+	var drawing: bool = is_instance_valid(fade_rect) and fade_rect.modulate.a > 0.02 and fade_rect.modulate.a < 0.98
+	if drawing or _had_drawing:
+		queue_redraw()
+	_had_drawing = drawing
 
 
 func _draw() -> void:

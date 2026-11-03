@@ -120,6 +120,37 @@ func generate(run_seed: int, run_manager: Node) -> bool:
 	return _build_fallback(run_seed, run_manager, generation_failure_reason)
 
 
+func generate_async(run_seed: int, run_manager: Node, scene_tree: SceneTree) -> bool:
+	_clear_generated_children()
+	generation_fallback = false
+	generation_failure_reason = ""
+	rejected_layout_count = 0
+	if biome_definition == null:
+		return _build_fallback(run_seed, run_manager, "BiomeDefinition ausente")
+	var definitions := biome_definition.get_module_definitions()
+	if definitions.is_empty():
+		return _build_fallback(run_seed, run_manager, "module_pool vazio")
+	var maximum_attempts: int = int(biome_definition.generation_rules.get("maximum_attempts", 8))
+	maximum_attempts = clampi(maximum_attempts, 1, 32)
+	for attempt in maximum_attempts:
+		await scene_tree.process_frame
+		var rng := RandomNumberGenerator.new()
+		rng.seed = run_seed + attempt * 104729 + _stable_hash(String(biome_definition.biome_id))
+		var target_count := rng.randi_range(biome_definition.min_modules, biome_definition.max_modules)
+		_nodes = _build_exploration_layout(target_count, rng)
+		_assign_module_roles(rng)
+		_assign_module_definitions(definitions, rng)
+		var validation := _validate_layout()
+		if bool(validation.valid):
+			generation_failure_reason = ""
+			await _build_world_async(rng, run_manager, scene_tree)
+			generated_module_count = _nodes.size()
+			return true
+		generation_failure_reason = "tentativa %d: %s" % [attempt + 1, String(validation.reason)]
+		rejected_layout_count += 1
+	return _build_fallback(run_seed, run_manager, generation_failure_reason)
+
+
 func get_start_position() -> Vector2:
 	return _start_position
 
@@ -191,6 +222,10 @@ func get_generation_report() -> Dictionary:
 	}
 
 
+func get_map_signature() -> String:
+	return generation_signature
+
+
 func get_map_graph() -> Dictionary:
 	var modules: Array[Dictionary] = []
 	for index in _nodes.size():
@@ -218,6 +253,11 @@ func get_map_graph() -> Dictionary:
 		"cell_size": CELL_SIZE,
 		"signature": generation_signature,
 	}
+
+
+func get_room_identity_at(world_position: Vector2) -> String:
+	var index := get_module_index_at(world_position)
+	return String(_module_instance_id(index)) if index >= 0 else ""
 
 
 func get_module_index_at(world_position: Vector2) -> int:
@@ -726,6 +766,54 @@ func _build_world(rng: RandomNumberGenerator, run_manager: Node) -> void:
 	call_deferred("_sync_runtime_debug_visibility")
 
 
+func _build_world_async(rng: RandomNumberGenerator, run_manager: Node, scene_tree: SceneTree) -> void:
+	_sockets = {"enemy": [], "loot": [], "attribute": [], "exit": []}
+	spawned_loot_count = 0
+	spawned_attribute_count = 0
+	spawned_enemy_count = 0
+	spawned_ranged_count = 0
+	spawned_heavy_count = 0
+	spawned_trap_chest_count = 0
+	rejected_micro_ledge_count = 0
+	invalid_platform_clearance_count = 0
+	minimum_platform_clearance = INF
+	_trap_event_ids.clear()
+	_weapon_offers.clear()
+	_weapon_offer_cache.clear()
+	_heavy_enemy_ids.clear()
+	_reserved_event_marker_ids.clear()
+	_content_modules = {"loot": [], "attribute": [], "exit": [], "enemy": [], "weapon": []}
+	_content_entries.clear()
+	_teleporter_entries.clear()
+	service_step_count = 0
+	service_shaft_count = 0
+	dash_passage_count = 0
+	_dash_passage_entries.clear()
+	generation_signature = _build_generation_signature()
+	var modules_root := Node2D.new()
+	modules_root.name = "Modules"
+	add_child(modules_root)
+	var budget_started := Time.get_ticks_usec()
+	for index in _nodes.size():
+		_build_module(modules_root, index)
+		if Time.get_ticks_usec() - budget_started >= 4000:
+			await scene_tree.process_frame
+			budget_started = Time.get_ticks_usec()
+	_build_vertical_connections()
+	_build_shaft_service_steps()
+	_build_outer_safety()
+	_start_position = Vector2(140.0, FLOOR_TOP - 36.0)
+	_spawn_teleporters(run_manager)
+	await scene_tree.process_frame
+	_spawn_required_content(rng, run_manager)
+	await scene_tree.process_frame
+	generation_signature += _phase8_content_signature()
+	generated_bounds = _calculate_bounds().grow(160.0)
+	await _apply_visual_theme_async(scene_tree)
+	await scene_tree.process_frame
+	call_deferred("_sync_runtime_debug_visibility")
+
+
 func _apply_visual_theme() -> void:
 	# Presentation only, after layout, content and signature: no RNG, physics or ID changes.
 	if biome_definition == null or not VISUAL_STYLES.STYLES.has(biome_definition.visual_theme):
@@ -733,6 +821,14 @@ func _apply_visual_theme() -> void:
 	var theme: Node2D = VISUAL_THEME_SCRIPT.new()
 	add_child(theme)
 	theme.build(self, biome_definition.visual_theme)
+
+
+func _apply_visual_theme_async(scene_tree: SceneTree) -> void:
+	if biome_definition == null or not VISUAL_STYLES.STYLES.has(biome_definition.visual_theme):
+		return
+	var theme: Node2D = VISUAL_THEME_SCRIPT.new()
+	add_child(theme)
+	await theme.build_async(self, biome_definition.visual_theme, scene_tree)
 
 
 func _sync_runtime_debug_visibility() -> void:

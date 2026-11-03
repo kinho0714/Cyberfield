@@ -36,6 +36,29 @@ static func capture(game: Node) -> Dictionary:
 static func restore(game: Node, snapshot: Dictionary) -> bool:
 	if not valid(snapshot) or game.get_players().size() != snapshot.players.size():
 		return false
+	var area_seed := _prepare_restore(game, snapshot)
+	game.restoring_snapshot = true
+	var loaded: bool = game._load_laboratory_hub() if snapshot.hub else game._load_current_stage(area_seed)
+	game.restoring_snapshot = false
+	return loaded and _finish_restore(game, snapshot)
+
+
+static func restore_async(game: Node, snapshot: Dictionary) -> bool:
+	if not valid(snapshot) or game.get_players().size() != snapshot.players.size() or not game.loading.active:
+		return false
+	var token: int = game.loading.generation
+	var area_seed := _prepare_restore(game, snapshot)
+	game.restoring_snapshot = true
+	var loaded: bool = await game._load_laboratory_hub_async() if snapshot.hub else await game._load_current_stage_async(area_seed)
+	game.restoring_snapshot = false
+	if not loaded or token != game.loading.generation:
+		return false
+	game.loading.stage("Restaurando campanha…")
+	await game.get_tree().process_frame
+	return _finish_restore(game, snapshot)
+
+
+static func _prepare_restore(game: Node, snapshot: Dictionary) -> int:
 	var manager: Node = game.run_manager
 	apply_properties(manager, snapshot.run)
 	game.get_node("MetaProgression")._reset_defaults()
@@ -48,11 +71,11 @@ static func restore(game: Node, snapshot: Dictionary) -> bool:
 	var area_seed: int = int(snapshot.run.get("area_seed_value", 0))
 	if area_seed <= 0:
 		area_seed = manager.get_stage_seed()
-	game.restoring_snapshot = true
-	var loaded: bool = game._load_laboratory_hub() if snapshot.hub else game._load_current_stage(area_seed)
-	game.restoring_snapshot = false
-	if not loaded:
-		return false
+	return area_seed
+
+
+static func _finish_restore(game: Node, snapshot: Dictionary) -> bool:
+	var manager: Node = game.run_manager
 	var report: Dictionary = game.current_room.get_generation_report() if game.current_room.has_method("get_generation_report") else {}
 	if String(report.get("signature", "")) != String(snapshot.signature):
 		return false
@@ -71,6 +94,8 @@ static func restore(game: Node, snapshot: Dictionary) -> bool:
 			return false
 		apply_properties(player, snapshot.players[i].properties)
 		player.global_position = snapshot.players[i].position
+		if game.loading.active:
+			player.set_input_enabled(false)
 		player.dev_invincible = false
 		player.call("_update_health_label")
 	manager.state_changed.emit()

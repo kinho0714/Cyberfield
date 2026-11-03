@@ -99,6 +99,7 @@ func _test_activation() -> void:
 	_check(not bool(player.input_enabled), "jogador parado com o painel aberto")
 	_check(bool(game.get_node("TouchControls").menu_blocked), "controles de toque bloqueados")
 	await _capture("dev_panel_player")
+	await _stable_button(panel.close_button)
 	await _tap(panel.close_button.get_global_rect().get_center())
 	_check(not panel.is_open() and not paused and bool(player.input_enabled), "FECHAR devolve o jogo")
 	_key(KEY_F9)
@@ -287,3 +288,15 @@ func _capture(name: String) -> void:
 	var image := root.get_texture().get_image()
 	if image != null:
 		image.save_png(out_dir.path_join(name + ".png"))
+
+
+func _stable_button(button: Control) -> void:
+	# Containers/theme/layout notifications settle after process_frame callbacks.
+	var previous := Rect2()
+	for index in 12:
+		await process_frame
+		var current := button.get_global_rect()
+		if current == previous and current.has_area():
+			return
+		previous = current
+	_check(false, "geometria do botão estabiliza antes do toque")

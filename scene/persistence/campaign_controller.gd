@@ -25,13 +25,18 @@ var social: Node
 var social_panel: CanvasLayer
 var private_panel: CanvasLayer
 var store := STORE.new()
-var active: Dictionary = {}
+var active: Dictionary = {}:
+	set(value):
+		active = value
+		if is_instance_valid(geography):
+			geography.set_campaign_active(not active.is_empty())
 var autosave_seconds := 30.0
 var elapsed := 0.0
 var dirty := false
 var restoring := false
 var last_error := ""
 var recovery_status: Dictionary = {}
+var _displayed_save_error := "__initial__"
 var save_status: Label
 var panel: CanvasLayer
 var game: Node
@@ -94,8 +99,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if save_status != null:
 		save_status.visible = not active.is_empty() and not last_error.is_empty()
-		save_status.text = error_message(last_error)
-	if active.is_empty() or restoring:
+		if _displayed_save_error != last_error:
+			_displayed_save_error = last_error
+			save_status.text = error_message(last_error)
+	if active.is_empty() or restoring or game.loading.error_visible:
 		return
 	elapsed += delta
 	if not game.is_transitioning and ((dirty and elapsed >= 2.0) or elapsed >= maxf(autosave_seconds, 5.0)):
@@ -113,7 +120,7 @@ func meta_changed() -> bool:
 	if restoring:
 		return true
 	if game.is_transitioning:
-		return _save_permanent()
+		return true if game.loading.active or game.loading.error_visible else _save_permanent()
 	if save_now():
 		return true
 	return _save_permanent()
@@ -186,7 +193,7 @@ func _private_focus(tab: StringName) -> StringName:
 
 
 func save_now(clean_exit := false) -> bool:
-	if active.is_empty() or restoring or not game.mode_selected or game.is_transitioning:
+	if active.is_empty() or restoring or not game.mode_selected or game.is_transitioning or game.loading.error_visible:
 		return false
 	var meta: Node = game.get_node("MetaProgression")
 	if meta.dev_sandbox_active or game.run_manager.dev_session:
@@ -233,6 +240,8 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 	restoring = true
 	await game.start_configured_run(&"solo", &"normal", -1)
 	restoring = false
+	await game.loading.finish(game.mode_selected)
+	game._set_all_player_input(game.mode_selected)
 	if not game.mode_selected:
 		_leave_without_save()
 		return false
@@ -272,7 +281,7 @@ func continue_campaign(id: String) -> bool:
 		if session.get("geographic_location") is Dictionary:
 			active.world.location = session.geographic_location.duplicate(true)
 		game.is_transitioning = true
-		restored = bool(game.mode_selected) and SNAPSHOT.restore(game, session)
+		restored = bool(game.mode_selected) and await SNAPSHOT.restore_async(game, session)
 		game.is_transitioning = false
 		if restored:
 			if session.get("geographic_location") is Dictionary:
@@ -287,6 +296,7 @@ func continue_campaign(id: String) -> bool:
 		await game._clear_run_and_show_menu()
 		_apply_legacy()
 		return false
+	await game.loading.finish(true)
 	game._set_all_player_input(true)
 	save_now()
 	return true

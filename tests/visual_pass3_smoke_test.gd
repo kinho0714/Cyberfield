@@ -76,7 +76,11 @@ func _run() -> void:
 	pause._settings_back()
 	game.get_node("ModeSelect")._select_mode(&"solo")
 	game.get_node("ModeSelect")._select_difficulty(&"normal")
-	await create_timer(1.2).timeout
+	var loading_deadline := Time.get_ticks_msec() + 60000
+	while game.is_transitioning and Time.get_ticks_msec() < loading_deadline:
+		await process_frame
+	assert(game.mode_selected and not game.is_transitioning)
+	await process_frame
 	var inventory := game.get_node("InventoryUI")
 	inventory.open_inventory()
 	assert(inventory.overlay.visible)

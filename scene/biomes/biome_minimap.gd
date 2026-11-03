@@ -9,6 +9,7 @@ var _graph: Dictionary = {}
 var _discovered: Dictionary = {}
 var _elapsed := 0.0
 var _source_signature := ""
+var _source_room_id := 0
 
 
 func _ready() -> void:
@@ -50,11 +51,11 @@ func _process(delta: float) -> void:
 	if biome_root == null or not biome_root.has_method("get_map_graph"):
 		visible = false
 		return
-	var next_graph: Dictionary = biome_root.get_map_graph()
-	var next_signature := String(next_graph.get("signature", ""))
-	if next_signature != _source_signature:
+	var next_signature: String = biome_root.get_map_signature() if biome_root.has_method("get_map_signature") else ""
+	if biome_root.get_instance_id() != _source_room_id or next_signature != _source_signature:
+		_source_room_id = biome_root.get_instance_id()
 		_source_signature = next_signature
-		_graph = next_graph
+		_graph = biome_root.get_map_graph()
 		_discovered.clear()
 	visible = true
 	_discover_player_modules(room_manager.get_players(), biome_root)

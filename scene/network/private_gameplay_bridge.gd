@@ -23,9 +23,13 @@ var _legacy_path := ""
 var _has_legacy_state := false
 var _legacy_state: Dictionary = {}
 var _owned_snapshot: Dictionary = {}
+var _applying_snapshot := false
+var _pending_revision := 0
+var _pending_state: Dictionary = {}
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_physics_process(false)
 
 
 func bind_gameplay(target: Node, client: PrivateSessionClient) -> Error:
@@ -61,13 +65,16 @@ func begin() -> Error:
 	meta.save_path = "user://coop_authority_v1/" + transport.room_id + "/profile.json"
 	DirAccess.make_dir_recursive_absolute(meta.save_path.get_base_dir())
 	meta._reset_defaults()
+	game.loading.holds += 1
 	await game.start_configured_run(&"solo", &"normal", -1)
+	game.loading.holds -= 1
 	if not game.mode_selected:
 		meta.save_path = _legacy_path
 		meta._reset_defaults()
 		meta._apply_save(_legacy_state)
 		_has_legacy_state = false
 		_starting = false
+		await game.loading.finish(false)
 		return ERR_CANT_CREATE
 	game.run_manager.configure_run(&"lan", &"normal", -1, count)
 	game._create_network_players(count)
@@ -75,9 +82,14 @@ func begin() -> Error:
 		game.run_manager.register_participant(actor.participant_id, true)
 	game._position_players_in_hub(game.current_room.get_node("Gameplay/P1Spawn").global_position, game.current_room.get_node("Gameplay/P2Spawn").global_position)
 	running = true
+	set_physics_process(true)
 	_starting = false
 	if transport.peer_id != 1:
 		_passive_client()
+		game.loading.stage("Sincronizando sessão…")
+	else:
+		await game.loading.finish(true)
+		game._set_all_player_input(true)
 	gameplay_ready.emit()
 	return OK
 
@@ -94,6 +106,7 @@ func _physics_process(delta: float) -> void:
 			_game_process_mode = game.process_mode
 			game.process_mode = Node.PROCESS_MODE_DISABLED
 			_transport_paused = true
+			game.loading.show_connection_wait()
 		game.run_manager.run_active = false
 		_awaiting_ack = false
 		game._set_all_player_input(false)
@@ -105,6 +118,7 @@ func _physics_process(delta: float) -> void:
 		game.process_mode = _game_process_mode
 		_transport_paused = false
 		if transport.peer_id == 1:
+			game.loading.clear_connection_wait()
 			game._set_all_player_input(not game.is_transitioning)
 	if transport.peer_id == 1:
 		for peer: int in _input_age:
@@ -112,7 +126,7 @@ func _physics_process(delta: float) -> void:
 			if float(_input_age[peer]) >= 0.25:
 				_release_peer(peer)
 	_elapsed += delta
-	if _elapsed < 0.05 or game.is_transitioning:
+	if _elapsed < 0.05 or game.is_transitioning or (game.loading.active and transport.peer_id != 1):
 		return
 	_elapsed = 0.0
 	if transport.peer_id == 1:
@@ -127,7 +141,7 @@ func _physics_process(delta: float) -> void:
 		transport.send_input(actions)
 
 func _host_input(peer: int, sequence: int, actions: Dictionary) -> void:
-	if not running or transport.peer_id != 1 or transport.status != "active" or peer < 2 or peer > game.get_players().size() or sequence <= int(_input_sequences.get(peer, 0)):
+	if not running or game.is_transitioning or game.loading.active or transport.peer_id != 1 or transport.status != "active" or peer < 2 or peer > game.get_players().size() or sequence <= int(_input_sequences.get(peer, 0)):
 		return
 	for key: Variant in actions:
 		if not ACTIONS.has(key) or actions[key] is not bool:
@@ -153,6 +167,25 @@ func _capture() -> Dictionary:
 func _receive_snapshot(revision: int, state: Dictionary) -> void:
 	if not running:
 		return
+	if _applying_snapshot:
+		if revision > _pending_revision:
+			_pending_revision = revision
+			_pending_state = state
+		return
+	_applying_snapshot = true
+	await _apply_snapshot(revision, state)
+	while running and not _pending_state.is_empty():
+		var next_revision := _pending_revision
+		var next_state := _pending_state
+		_pending_state = {}
+		_pending_revision = 0
+		await _apply_snapshot(next_revision, next_state)
+	_applying_snapshot = false
+
+
+func _apply_snapshot(revision: int, state: Dictionary) -> void:
+	if not running:
+		return
 	if transport.peer_id == 1:
 		_awaiting_ack = false
 		return
@@ -162,18 +195,25 @@ func _receive_snapshot(revision: int, state: Dictionary) -> void:
 	if int(world.get("protocol", 0)) != 1 or world.get("hub") is not bool or world.get("enemies") is not Dictionary or state.player_states.size() > 4 or int(world.get("stage", -1)) < 0 or int(world.get("stage", -1)) > 5:
 		return
 	var key: String = "%s:%d:%d:%s" % [str(world.hub), int(world.seed), int(world.stage), String(world.kind)]
-	if key != _world_key:
+	var changing_region := key != _world_key
+	if changing_region:
+		game.is_transitioning = true
+		await game._fade_to(1.0)
 		game.run_manager.seed_value = int(world.seed)
 		game.run_manager.stage_index = int(world.stage)
 		game.run_manager.current_stage_id = StringName(world.get("stage_id", "lower_city"))
 		game.run_manager.stage_biome_kinds[int(world.stage)] = StringName(world.kind)
 		game.restoring_snapshot = true
-		var loaded: bool = game._load_laboratory_hub() if bool(world.hub) else game._load_current_stage(int(world.area_seed))
+		var loaded: bool = await game._load_laboratory_hub_async() if bool(world.hub) else await game._load_current_stage_async(int(world.area_seed))
 		game.restoring_snapshot = false
-		if not loaded:
+		if not loaded or not running:
+			await game.loading.finish(false)
+			game.is_transitioning = false
 			return
 		var signature: String = String(game.current_room.get_generation_report().get("signature", "")) if game.current_room.has_method("get_generation_report") else ""
 		if signature != String(world.get("signature", "")):
+			await game.loading.finish(false)
+			game.is_transitioning = false
 			transport._fail("layout_mismatch")
 			return
 		_world_key = key
@@ -193,6 +233,11 @@ func _receive_snapshot(revision: int, state: Dictionary) -> void:
 	game.run_manager.scrap = int(world.get("scrap", 0))
 	last_applied = revision
 	_owned_snapshot = state.duplicate(true)
+	if changing_region:
+		await game._fade_to(0.0)
+		game.is_transitioning = false
+	if transport.status == "active":
+		game.loading.clear_connection_wait()
 	snapshot_applied.emit(revision)
 
 func _passive_client() -> void:
@@ -221,6 +266,13 @@ func stop() -> void:
 	if game == null:
 		return
 	running = false
+	set_physics_process(false)
+	_pending_state = {}
+	game.loading.clear_connection_wait()
+	if _applying_snapshot:
+		game.loading.cancel()
+		while _applying_snapshot:
+			await get_tree().process_frame
 	if _transport_paused:
 		game.process_mode = _game_process_mode
 		_transport_paused = false

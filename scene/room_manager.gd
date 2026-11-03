@@ -7,11 +7,11 @@ const TEMP_PARALLAX = preload("res://scene/temporary_environment/parallax_driver
 const ROOM_BOUNDS := Rect2(0.0, 0.0, 1280.0, 720.0)
 const BOUNDARY_THICKNESS := 48.0
 const PLAYER_SCENE := preload("res://entities/player.tscn")
-const LABORATORY_HUB_SCENE := preload("res://scene/casa_jhon_hub.tscn")
-const LOWER_CITY_BIOME_SCENE := preload("res://scene/biomes/lower_city/lower_city_biome.tscn")
-const INDUSTRIAL_BIOME_SCENE := preload("res://scene/biomes/industrial/industrial_biome.tscn")
-const LAB_BIOME_SCENE := preload("res://scene/biomes/lab/lab_biome.tscn")
-const BOSS_STAGE_SCENE := preload("res://scene/biomes/boss_stage.tscn")
+const LABORATORY_HUB_SCENE := "res://scene/casa_jhon_hub.tscn"
+const LOWER_CITY_BIOME_SCENE := "res://scene/biomes/lower_city/lower_city_biome.tscn"
+const INDUSTRIAL_BIOME_SCENE := "res://scene/biomes/industrial/industrial_biome.tscn"
+const LAB_BIOME_SCENE := "res://scene/biomes/lab/lab_biome.tscn"
+const BOSS_STAGE_SCENE := "res://scene/biomes/boss_stage.tscn"
 const COOP_SPAWN_OFFSET := 22.0
 const EXIT_GROUP_DISTANCE := 96.0
 const TELEPORT_GROUP_DISTANCE := 128.0
@@ -22,6 +22,7 @@ const CAMERA_ZOOM_MAX := 1.22
 
 @export_file("*.tscn") var initial_room_path := "res://scene/levels/cyberfield_area_01.tscn"
 @export var initial_entry_id := &"start"
+@export var performance_capture_enabled := false
 @export_range(0.05, 2.0, 0.05) var fade_duration := 0.25
 
 @onready var room_container: Node2D = $RoomContainer
@@ -33,6 +34,7 @@ const CAMERA_ZOOM_MAX := 1.22
 @onready var lan_lobby: CanvasLayer = $LanLobby
 @onready var local_settings: LocalSettings = $LocalSettings
 
+var loading: Node
 var restoring_snapshot := false
 var campaigns: Node
 
@@ -49,6 +51,9 @@ var pending_lan_run_config: Dictionary = {}
 
 
 func _ready() -> void:
+	loading = preload("res://scene/loading_transition.gd").new()
+	loading.name = "LoadingTransition"
+	add_child(loading)
 	add_to_group("room_manager")
 	run_manager.add_to_group("run_manager")
 	fade_rect.modulate.a = 0.0
@@ -64,6 +69,8 @@ func _ready() -> void:
 	campaigns.name = "Campaigns"
 	add_child(campaigns)
 	_set_music_context(&"main_menu")
+	if performance_capture_enabled or "--cyberfield-profile" in OS.get_cmdline_user_args():
+		begin_performance_capture()
 
 
 func _process(delta: float) -> void:
@@ -159,7 +166,7 @@ func start_configured_run(mode: StringName, difficulty: StringName, joypad_devic
 	_create_players(mode == &"coop", joypad_device_id)
 	for candidate in get_players():
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_laboratory_hub():
+	if not await _load_laboratory_hub_async():
 		await _clear_run_and_show_menu()
 		return
 	mode_selected = true
@@ -184,7 +191,7 @@ func enter_lan_hub(config: Dictionary, host_authority: bool) -> void:
 	_create_network_players(network_player_count)
 	for candidate in get_players():
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_laboratory_hub():
+	if not await _load_laboratory_hub_async():
 		await _clear_run_and_show_menu()
 		return
 	mode_selected = true
@@ -292,10 +299,10 @@ func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) 
 	apply_meta_loadout()
 	if campaigns != null and not campaigns.active.is_empty():
 		run_manager.stage_biome_kinds[0] = campaigns.geography.selected_biome()
-	var loaded_first: bool = _load_current_stage(run_seed) if campaigns != null and not campaigns.active.is_empty() else _load_lower_city_biome(run_seed)
+	var loaded_first: bool = await _load_current_stage_async(run_seed)
 	if not loaded_first:
 		run_manager.prepare_hub()
-		_load_laboratory_hub()
+		await _load_laboratory_hub_async()
 		await _fade_to(0.0)
 		if lan_session.is_client():
 			_configure_client_player_prediction()
@@ -321,6 +328,8 @@ func request_biome_advance(exit_id: StringName, destination_id: StringName) -> v
 		return
 	if campaigns != null:
 		campaigns.geography.remember_current_area()
+	var previous_run: Dictionary = preload("res://scene/persistence/session_snapshot.gd").properties(run_manager)
+	var previous_campaign: Dictionary = campaigns.active.duplicate(true) if campaigns != null else {}
 	is_transitioning = true
 	_set_all_player_input(false)
 	await _fade_to(1.0)
@@ -335,8 +344,11 @@ func request_biome_advance(exit_id: StringName, destination_id: StringName) -> v
 	if lan_session.is_host():
 		var transition_epoch := lan_session.advance_world_epoch_authoritative()
 		lan_session.broadcast_stage_transition(exit_id, destination_id, stage_seed, transition_epoch)
-	if not _load_current_stage(stage_seed):
-		push_error("Could not load placeholder stage for %s" % destination_id)
+	if not await _load_current_stage_async(stage_seed):
+		preload("res://scene/persistence/session_snapshot.gd").apply_properties(run_manager, previous_run)
+		if campaigns != null:
+			campaigns.active = previous_campaign
+		loading.last_error = "Não foi possível preparar a região. Progresso anterior preservado."
 		await _fade_to(0.0)
 		_set_all_player_input(true)
 		is_transitioning = false
@@ -354,7 +366,7 @@ func apply_lan_stage_transition(exit_id: StringName, destination_id: StringName,
 		return
 	is_transitioning = true
 	await _fade_to(1.0)
-	if not run_manager.advance_stage(exit_id, destination_id) or not _load_current_stage(stage_seed):
+	if not run_manager.advance_stage(exit_id, destination_id) or not await _load_current_stage_async(stage_seed):
 		push_error("Client could not apply LAN stage transition")
 		await _fade_to(0.0)
 		is_transitioning = false
@@ -405,7 +417,7 @@ func _return_to_laboratory_local() -> void:
 	for candidate in get_players():
 		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
-	if not _load_laboratory_hub():
+	if not await _load_laboratory_hub_async():
 		await _clear_run_and_show_menu()
 		return
 	coop_waiting_changed.emit(false)
@@ -483,7 +495,8 @@ func request_room_change(room_path: String, entry_id: StringName) -> void:
 	is_transitioning = true
 	_set_all_player_input(false)
 	await _fade_to(1.0)
-	if not _load_room(room_path, entry_id):
+	var packed: PackedScene = await loading.load_scene(room_path)
+	if packed == null or not _load_room(room_path, entry_id, packed):
 		await _fade_to(0.0)
 		_set_all_player_input(true)
 		is_transitioning = false
@@ -541,14 +554,12 @@ func dev_restart_stage() -> bool:
 	return loaded
 
 
-func _load_room(room_path: String, entry_id: StringName) -> bool:
-	var packed_room := load(room_path) as PackedScene
+func _load_room(room_path: String, entry_id: StringName, prepared: PackedScene = null) -> bool:
+	var packed_room: PackedScene = prepared if prepared != null else load(room_path) as PackedScene
 	if packed_room == null:
 		push_error("Could not load room: %s" % room_path)
 		return false
 	var new_room := packed_room.instantiate()
-	var room_id: StringName = run_manager.enter_room_by_path(room_path)
-	run_manager.prepare_room(room_id, new_room)
 	_add_room_safety(new_room)
 	room_container.add_child(new_room)
 	var entry_point := _find_entry_point(new_room, entry_id)
@@ -556,6 +567,10 @@ func _load_room(room_path: String, entry_id: StringName) -> bool:
 		push_error("Entry '%s' was not found in room: %s" % [entry_id, room_path])
 		new_room.queue_free()
 		return false
+	if loading.active:
+		loading.seal()
+	var room_id: StringName = run_manager.enter_room_by_path(room_path)
+	run_manager.prepare_room(room_id, new_room)
 	if is_instance_valid(current_room):
 		current_room.queue_free()
 	current_room = new_room
@@ -567,7 +582,7 @@ func _load_room(room_path: String, entry_id: StringName) -> bool:
 
 
 func _load_lower_city_biome(generation_seed: int = 0) -> bool:
-	return _load_generated_biome(LOWER_CITY_BIOME_SCENE, generation_seed, "Lower City")
+	return _load_generated_biome(load(LOWER_CITY_BIOME_SCENE) as PackedScene, generation_seed, "Lower City")
 
 
 func _load_generated_biome(scene: PackedScene, generation_seed: int, label: String) -> bool:
@@ -599,21 +614,71 @@ func _load_generated_biome(scene: PackedScene, generation_seed: int, label: Stri
 	return true
 
 
+func _load_generated_biome_async(scene: PackedScene, generation_seed: int, label: String) -> bool:
+	var token: int = loading.generation
+	var generated_biome := scene.instantiate()
+	var seed_to_use: int = run_manager.seed_value if generation_seed == 0 else generation_seed
+	if not restoring_snapshot and campaigns != null and not campaigns.active.is_empty():
+		seed_to_use = campaigns.geography.area_seed(seed_to_use)
+	run_manager.area_seed_value = seed_to_use
+	if not await generated_biome.generate_async(seed_to_use, run_manager, get_tree()):
+		push_error("%s generation and fallback both failed" % label)
+		generated_biome.queue_free()
+		return false
+	if token != loading.generation:
+		generated_biome.free()
+		return false
+	loading.seal()
+	var report: Dictionary = generated_biome.get_generation_report()
+	run_manager.enter_generated_biome(report)
+	room_container.add_child(generated_biome)
+	run_manager.prepare_generated_biome(generated_biome)
+	if is_instance_valid(current_room):
+		current_room.queue_free()
+	current_room = generated_biome
+	current_is_hub = false
+	current_is_generated_biome = true
+	if not restoring_snapshot and campaigns != null and not campaigns.active.is_empty():
+		campaigns.geography.record_area(seed_to_use, generated_biome.get_map_graph())
+	generated_biome_bounds = generated_biome.get_generated_bounds()
+	_configure_camera_for_biome(generated_biome_bounds, generated_biome.get_start_position())
+	_position_players_in_biome(generated_biome.get_start_position())
+	refresh_teleporter_states()
+	_set_music_context(&"operation", 0.35)
+	return true
+
+
+func _load_current_stage_async(generation_seed: int) -> bool:
+	var kind: StringName = run_manager.get_stage_biome_kind()
+	var path: String = {&"industrial": INDUSTRIAL_BIOME_SCENE, &"lab": LAB_BIOME_SCENE, &"boss": BOSS_STAGE_SCENE}.get(kind, LOWER_CITY_BIOME_SCENE)
+	var packed: PackedScene = await loading.load_scene(path)
+	if packed == null:
+		return false
+	if kind == &"boss":
+		loading.seal()
+		return _load_boss_stage(packed)
+	loading.stage("Reconstruindo rota…")
+	return await _load_generated_biome_async(packed, generation_seed, String(kind))
+
+
 func _load_current_stage(generation_seed: int) -> bool:
 	# P1-C: o bioma vem da saída escolhida (A = sequência padrão, B = rota alternativa).
 	match run_manager.get_stage_biome_kind():
 		&"industrial":
-			return _load_generated_biome(INDUSTRIAL_BIOME_SCENE, generation_seed, "Industrial")
+			return _load_generated_biome(load(INDUSTRIAL_BIOME_SCENE) as PackedScene, generation_seed, "Industrial")
 		&"lab":
-			return _load_generated_biome(LAB_BIOME_SCENE, generation_seed, "Lab")
+			return _load_generated_biome(load(LAB_BIOME_SCENE) as PackedScene, generation_seed, "Lab")
 		&"boss":
 			return _load_boss_stage()
 		_:
 			return _load_lower_city_biome(generation_seed)
 
 
-func _load_boss_stage() -> bool:
-	var boss_stage := BOSS_STAGE_SCENE.instantiate()
+func _load_boss_stage(prepared: PackedScene = null) -> bool:
+	var packed: PackedScene = prepared if prepared != null else load(BOSS_STAGE_SCENE) as PackedScene
+	if packed == null:
+		return false
+	var boss_stage := packed.instantiate()
 	room_container.add_child(boss_stage)
 	run_manager.enter_boss_stage()
 	boss_stage.setup(run_manager)
@@ -630,8 +695,19 @@ func _load_boss_stage() -> bool:
 	return true
 
 
-func _load_laboratory_hub() -> bool:
-	var new_hub := LABORATORY_HUB_SCENE.instantiate()
+func _load_laboratory_hub_async() -> bool:
+	var packed: PackedScene = await loading.load_scene(LABORATORY_HUB_SCENE)
+	if packed == null:
+		return false
+	loading.seal()
+	return _load_laboratory_hub(packed)
+
+
+func _load_laboratory_hub(prepared: PackedScene = null) -> bool:
+	var packed: PackedScene = prepared if prepared != null else load(LABORATORY_HUB_SCENE) as PackedScene
+	if packed == null:
+		return false
+	var new_hub := packed.instantiate()
 	room_container.add_child(new_hub)
 	var p1_spawn := new_hub.get_node_or_null("Gameplay/P1Spawn") as Marker2D
 	var p2_spawn := new_hub.get_node_or_null("Gameplay/P2Spawn") as Marker2D
@@ -911,6 +987,8 @@ func _create_player_count(player_count: int, joypad_device_id: int) -> void:
 		else:
 			player.joypad_device_id = -1
 		add_child(player)
+		if loading.active:
+			player.set_input_enabled(false)
 		player.anim.modulate = colors[index]
 		for existing: CharacterBody2D in created_players:
 			player.add_collision_exception_with(existing)
@@ -1006,6 +1084,8 @@ func _reset_camera_for_room() -> void:
 
 
 func _set_all_player_input(enabled: bool) -> void:
+	if loading != null and (loading.active or loading.waiting_for_connection or loading.error_visible):
+		enabled = false
 	if enabled and campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running and campaigns.private_session.peer_id != 1:
 		enabled = false
 	if not enabled:
@@ -1100,10 +1180,16 @@ func _set_music_context(context: StringName, fade_seconds: float = 0.0) -> void:
 
 
 func _fade_to(alpha: float) -> void:
+	if alpha > 0.0:
+		loading.begin("Restaurando campanha…" if campaigns != null and campaigns.restoring else "Preparando ambiente…")
+		_set_all_player_input(false)
+		await get_tree().process_frame
 	var tween := create_tween()
 	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
 	tween.tween_property(fade_rect, "modulate:a", alpha, fade_duration)
 	await tween.finished
+	if alpha <= 0.0 and loading.holds == 0 and not (campaigns != null and campaigns.restoring):
+		await loading.finish(loading.last_error.is_empty())
 
 
 func is_private_guest() -> bool:
@@ -1114,3 +1200,13 @@ func get_local_gameplay_participant_id() -> StringName:
 	if campaigns != null and campaigns.private_gameplay != null and campaigns.private_gameplay.running:
 		return StringName("player_%d" % int(campaigns.private_session.peer_id))
 	return lan_session.get_local_participant_id() if lan_session.is_network_game() else &"player_1"
+
+
+func begin_performance_capture(seconds: float = 60.0) -> Error:
+	if get_node_or_null("PerformanceCapture") != null:
+		return ERR_ALREADY_IN_USE
+	var recorder := preload("res://scene/performance_capture.gd").new()
+	recorder.name = "PerformanceCapture"
+	recorder.duration_seconds = clampf(seconds, 1.0, 300.0)
+	add_child(recorder)
+	return OK

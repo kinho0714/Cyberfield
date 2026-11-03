@@ -37,6 +37,7 @@ var _discovery_listener: PacketPeerUDP
 var _discovery_elapsed := 0.0
 var _snapshot_elapsed := 0.0
 var _remote_input_state: Dictionary = {}
+var _initialized_remote_profiles: Dictionary = {}
 var _room_last_seen: Dictionary = {}
 var _last_sent_input: Dictionary = {}
 var _input_keepalive_elapsed := 0.0
@@ -64,7 +65,7 @@ func _ready() -> void:
 	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 	call_deferred("_connect_attribute_ui")
-	set_process(true)
+	set_process(false)
 
 
 func _connect_attribute_ui() -> void:
@@ -96,6 +97,7 @@ func host_room(requested_name: String = "Cyberfield LAN") -> Error:
 		return result
 	multiplayer.multiplayer_peer = _peer
 	role = Role.HOST
+	set_process(true)
 	_configure_discovery_senders()
 	_set_message("Sala aberta em %s:%d" % [get_preferred_lan_address(), GAME_PORT])
 	lobby_changed.emit()
@@ -109,6 +111,7 @@ func search_rooms() -> Error:
 	if result != OK:
 		_set_message("Discovery LAN indisponível (erro %d). Use ENTRAR POR IP." % result)
 		return result
+	set_process(true)
 	_discovery_listener.set_broadcast_enabled(true)
 	_set_message("Procurando salas na rede local…")
 	discovered_rooms_changed.emit()
@@ -128,6 +131,7 @@ func join_room(address: String, port: int = GAME_PORT) -> Error:
 		return result
 	multiplayer.multiplayer_peer = _peer
 	role = Role.CLIENT
+	set_process(true)
 	_set_message("Conectando a %s:%d…" % [normalized_address, port])
 	lobby_changed.emit()
 	return OK
@@ -229,6 +233,7 @@ func replicate_projectile_despawn(projectile_id: int) -> void:
 func shutdown() -> void:
 	role = Role.OFFLINE
 	_release_remote_inputs()
+	_initialized_remote_profiles.clear()
 	stop_discovery()
 	if _peer != null:
 		_peer.close()
@@ -257,6 +262,7 @@ func shutdown() -> void:
 	world_epoch = 0
 	last_received_snapshot_epoch = -1
 	connection_message = ""
+	set_process(false)
 	lobby_changed.emit()
 
 
@@ -271,6 +277,8 @@ func stop_discovery() -> void:
 			sender.close()
 	_discovery_senders.clear()
 	_discovery_elapsed = 0.0
+	if role == Role.OFFLINE:
+		set_process(false)
 
 
 func is_network_game() -> bool:
@@ -608,7 +616,9 @@ func _release_remote_player_inputs(participant_id: StringName) -> void:
 
 func _remote_action(participant_id: StringName, base_action: StringName) -> StringName:
 	var profile := String(participant_id).replace("player_", "p")
-	LocalCoopInput.ensure_network_player_actions(StringName(profile))
+	if not _initialized_remote_profiles.has(profile):
+		LocalCoopInput.ensure_network_player_actions(StringName(profile))
+		_initialized_remote_profiles[profile] = true
 	return StringName("%s_%s" % [profile, base_action])
 
 

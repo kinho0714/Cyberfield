@@ -8,10 +8,13 @@ const CATALOG := preload("res://scene/world/world_catalog.gd")
 var controller: Node
 var catalog: WorldCatalog = CATALOG.new()
 var elapsed := 0.0
+# Validate each newly loaded/replaced world once; structural edits use validated APIs.
+var _sample_world: Dictionary = {}
 
 
 func _ready() -> void:
 	controller.game.run_manager.gameplay_event.connect(record_gameplay_event)
+	set_campaign_active(not controller.active.is_empty())
 
 
 func _process(delta: float) -> void:
@@ -28,8 +31,10 @@ func sample() -> void:
 	var game: Node = controller.game
 	if not game.mode_selected or game.is_transitioning or game.get_node("MetaProgression").dev_sandbox_active or game.run_manager.dev_session:
 		return
-	if not WORLD.ensure(controller.active):
-		return
+	if not is_same(_sample_world, controller.active.get("world", {})):
+		if not WORLD.ensure(controller.active):
+			return
+		_sample_world = controller.active.world
 	var players: Array = game.get_players()
 	if players.is_empty():
 		return
@@ -41,12 +46,10 @@ func sample() -> void:
 	if neighborhood.is_empty():
 		return
 	var room_id: String = String(game.run_manager.current_stage_id)
-	if game.current_room.has_method("get_module_index_at"):
-		var graph: Dictionary = game.current_room.get_map_graph()
-		var index: int = game.current_room.get_module_index_at(players[0].global_position)
-		var modules: Array = graph.get("modules", [])
-		if index >= 0 and index < modules.size():
-			room_id = "%d_%s" % [int(game.run_manager.seed_value), String(modules[index].instance_id)]
+	if game.current_room.has_method("get_room_identity_at"):
+		var identity: String = game.current_room.get_room_identity_at(players[0].global_position)
+		if not identity.is_empty():
+			room_id = "%d_%s" % [int(game.run_manager.seed_value), identity]
 	if WORLD.visit(world, neighborhood, room_id, players[0].global_position):
 		controller.dirty = true
 		record_gameplay_event("location_discovered", "discover:" + neighborhood + "/" + room_id, {"target": neighborhood})
@@ -220,6 +223,36 @@ func revisit_area(id: String) -> bool:
 	return restored
 
 
+func revisit_area_async(id: String) -> bool:
+	if not _gameplay_writable() or controller.game.current_is_hub or controller.game.run_manager.stage_index >= 5:
+		return false
+	var game: Node = controller.game
+	var snapshot_script: Script = preload("res://scene/persistence/session_snapshot.gd")
+	var live: Dictionary = snapshot_script.capture(game)
+	if live.is_empty() or preload("res://scene/world/area_journal.gd").key(live) == id:
+		return false
+	var target: Dictionary = preload("res://scene/world/area_journal.gd").prepare(controller.active.world, id, live)
+	if target.is_empty():
+		return false
+	remember_current_area()
+	var location: Dictionary = controller.active.world.visited_areas[id].location.duplicate(true)
+	game.is_transitioning = true
+	game._set_all_player_input(false)
+	await game._fade_to(1.0)
+	var restored: bool = await snapshot_script.restore_async(game, target)
+	if not restored:
+		await snapshot_script.restore_async(game, live)
+	else:
+		controller.active.world.location = location
+	await game._fade_to(0.0)
+	game.is_transitioning = false
+	game._set_all_player_input(true)
+	controller.dirty = true
+	if restored:
+		controller.save_now()
+	return restored
+
+
 func _gameplay_writable() -> bool:
 	return not controller.active.is_empty() and not controller.restoring and not controller.game.is_transitioning and not controller.game.get_node("MetaProgression").dev_sandbox_active and not controller.game.run_manager.dev_session and not controller.game.lan_session.is_network_game()
 
@@ -273,3 +306,10 @@ func mission_states() -> Dictionary:
 	if controller.active.is_empty():
 		return {}
 	return controller.active.world.get("missions", {}).duplicate(true)
+
+
+func set_campaign_active(enabled: bool) -> void:
+	set_process(enabled)
+	if not enabled:
+		_sample_world = {}
+		elapsed = 0.0
