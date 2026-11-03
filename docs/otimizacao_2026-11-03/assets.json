@@ -1,0 +1,4690 @@
+{
+  "scope": "tracked assets only; private untracked assets excluded",
+  "tracked_asset_count": 533,
+  "total_bytes": 54759415,
+  "duplicate_content_groups": [
+    [
+      "assets/temporary_environment/licenses/cyberpunk_street_CC0.pdf",
+      "assets/temporary_environment/licenses/warped_city_CC0.pdf"
+    ],
+    [
+      "assets/ui/gameplay_hud/official_manifest.json",
+      "assets/ui/menu_panels/official_manifest.json"
+    ],
+    [
+      "assets/ui/menu/animated/v2/rain_back_drop_v2.png",
+      "assets/ui/menu/animated/v3/rain/rain_back_drop_v3.png"
+    ],
+    [
+      "assets/ui/menu/animated/v2/rain_front_drop_v2.png",
+      "assets/ui/menu/animated/v3/rain/rain_front_drop_v3.png"
+    ]
+  ],
+  "deletions": [],
+  "assets": [
+    {
+      "path": "assets/Cyberfield_MainMenu_Background_1280x720.png",
+      "bytes": 1169134,
+      "sha256": "96afb1dffcf8e3eda4ecf77bb4aca7faf0ec26e5810c5e77b4c22845a9ba3c55",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/fire_grenade_icon.png",
+      "bytes": 426,
+      "sha256": "1a6bf6eaa5c9fa2c37d841c811353510a1b0f45e4696746f00c16ebdb2d301a9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/fire_grenade_world.png",
+      "bytes": 255,
+      "sha256": "fa0e65a927dfb90c3f36c8f1f236fc7bf99e53dd101bdcabad5e8c9468f70e4c",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/thrown_grenade.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/ice_grenade_icon.png",
+      "bytes": 457,
+      "sha256": "e8647d761749d5d30da4d33c95a3e176c427435cf65a87df1d698fdec1f3ab8a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/ice_grenade_world.png",
+      "bytes": 278,
+      "sha256": "0d90a5e6591799bfdc822a8290b624d5dcd344d52d6ac7442e4e64c1867604c7",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/thrown_grenade.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/portable_turret_icon.png",
+      "bytes": 418,
+      "sha256": "3c7e5b14229afaaa7d6d3d306a32916312bcb8f5f2d5387b0d33c53068637456",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/accessories/portable_turret_world.png",
+      "bytes": 563,
+      "sha256": "743d59919215e8a6df0f15d99dee3838db33b0c73ec86cfede0048aa0afe6541",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/portable_turret.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/SOURCES.md",
+      "bytes": 921,
+      "sha256": "f2cb62b915f37d2fe73922855cd34e0a18c9c66cdbc9ccfdcea8110d88921f23",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/arc_arrow.png",
+      "bytes": 203,
+      "sha256": "74dd26249ca4549d53a81b0eec32e88cecea3d60dfd5e0de7aa02b623fdace01",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/corp_round.png",
+      "bytes": 154,
+      "sha256": "0ce9a8c712136a5c36aa4f5762ee52624cf6639d93f46c49b9a6f8d95037ac1d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/kinetic_impact.png",
+      "bytes": 541,
+      "sha256": "34212fe3405ffff1ae5f09f8198a64068300f03fdd1cdc2a6bdd2d5d77fd9b37",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/neon_arrow.png",
+      "bytes": 209,
+      "sha256": "5e35346fcb8a5d0dbef21e6e99cfe67b3154c13bf041e245d50a0da1dedf7884",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/pellet.png",
+      "bytes": 141,
+      "sha256": "e5a6183d909ca4c188cfd1e3816bafb969c269d85a1687c5b7edf856549cf26f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/plasma_impact.png",
+      "bytes": 557,
+      "sha256": "e7d2a5c0d0779ec972c3a1bb3bbf9b4eaaba30de8f8d9e73e5164cd2acbc6df7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/pulse_bolt.png",
+      "bytes": 167,
+      "sha256": "1b57af2f10ca8de9e27f476143cfe191ca761dc486902a7870db0bb42bd09133",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/pulse_impact.png",
+      "bytes": 578,
+      "sha256": "ae6ea267599f9be6f062eed86bd8f7a08f2a2ad585332ec6a3581844b94d6686",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/rifle_beam.png",
+      "bytes": 216,
+      "sha256": "501785f90f3df3e6212575db15611b96ea85f0ba1bf0f311c7d0b5532506853f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/scrap_round.png",
+      "bytes": 147,
+      "sha256": "7c45ab0b857c6b56672e6f59b0aeae0989c506cd5cdcad4ddc49554424dd1ea7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/projectiles/turret_round.png",
+      "bytes": 152,
+      "sha256": "0abfb41762a2a56269c0c9473a16d02380918d2b09cc1b1fd072fdf2ce3f014b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites/arc_emitter.png",
+      "bytes": 1033,
+      "sha256": "5c45ac5277ddb12f182ad61d04e6c830df5a38d22c187838d9d6c13b6a6a4dfb",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/weapons/weapon_catalog.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites/arc_saber.png",
+      "bytes": 552,
+      "sha256": "eb940d992c29182590f8b092012cd63b07428f05a1ac92079e6785b68dbf2086",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/weapons/weapon_catalog.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites/breaker_maul.png",
+      "bytes": 633,
+      "sha256": "6bcf6960801a8b35f68632ec104287b04150c2f2d5da02a78e51d62a94439b58",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/weapons/weapon_catalog.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites/pulse_carbine.png",
+      "bytes": 933,
+      "sha256": "bd23fcccb21784b58bd574e866760513b5f93a1b0db9c82ee657ba0312fd31b8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/weapons/weapon_catalog.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites/scrap_blade.png",
+      "bytes": 398,
+      "sha256": "4d43c7bfdff0116518f0bd6ba3261925b1b6b67d5b0047d3014dea286bb77e72",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/weapons/weapon_catalog.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/baseball_bat.png",
+      "bytes": 241,
+      "sha256": "c0f28409527997aa411f2c1716bfc6bddcbc7d5bcfff855f827b381109f9691c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/corp_pistol.png",
+      "bytes": 249,
+      "sha256": "7069bd7dbf6eb94aca2979add44dbe83845eed00b74b194a27386c5d3fc34306",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/gang_smg.png",
+      "bytes": 256,
+      "sha256": "2baebb5942b1428cd7801ecc97b61d6e591c32c4c025a54a109b5b2bebf6c5dc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/gauss_rifle.png",
+      "bytes": 364,
+      "sha256": "be4dddcca810c31ca8ae60f2413aa253ffa3c8f5c3fe5189c60cb858be398c65",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/heavy_revolver.png",
+      "bytes": 272,
+      "sha256": "7d720845f0a49afc94f5eea29368dea0a7fcf0646ebfd1dba88a3880fabf2aa0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/hydraulic_hammer.png",
+      "bytes": 220,
+      "sha256": "905d7d4e972b81e9e41a57583b899f2dd0493af9221e7143685e7962414a3320",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/iron_pipe.png",
+      "bytes": 223,
+      "sha256": "c83bdf01e8c12f9428b4b9189c28fd5f78d43387ca104105429fa1a5ed342eba",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/neon_longbow.png",
+      "bytes": 365,
+      "sha256": "983aa5bdddfb9c9d11f344a79a510f3723a39950f811655ac0334bd817745cad",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/plasma_katana.png",
+      "bytes": 212,
+      "sha256": "b6a5970de7c5b4eaca63b2fdf44d98f51520e7bb681b0439da01c6b15e63ea90",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/police_baton.png",
+      "bytes": 218,
+      "sha256": "a7afa4b5323606e7874e17d9ba0750e9af668bba6ee00dca6706dd8f104f55c3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/pulse_rifle.png",
+      "bytes": 319,
+      "sha256": "7497722e3a87f075b405101232c3578b5796f3f12b2c63d75961b4849423cba7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/riot_shotgun.png",
+      "bytes": 235,
+      "sha256": "bc24577673c5c4704880d2f302564b5c98a60b39b108355eda1fe65daa6a02ab",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/rivet_gun.png",
+      "bytes": 253,
+      "sha256": "355ea7111ee78fda8f12faa32285b1d4281ebcc9e1ab85118d00e9707d50f7f1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/scrap_pistol.png",
+      "bytes": 277,
+      "sha256": "89ab8ce6da6b469da0c0a808e515e33678b32148977564cd993aa10c7c0e6d96",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/arsenal/sprites_v2/scrap_shotgun.png",
+      "bytes": 343,
+      "sha256": "7b1f5ba2aab6f3fb8938678943b75b668376b20249b17be7cf446aa8d9df8e02",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/menu/SOURCES.md",
+      "bytes": 931,
+      "sha256": "d67fbd0feb165586f481b299ca55cd0f807af8d4a593cddec355ce239392ca2d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/SOURCES.md",
+      "bytes": 2280,
+      "sha256": "46edd0a49766bca2af00beef28ec3d7f558788494176fc6864c602324edabd85",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/enemy_attack.ogg",
+      "bytes": 9370,
+      "sha256": "d00c2b3c9fff07e376145c8c8c45c90e5084ec192f6ce0387db233f7b86f1486",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/enemy_death.ogg",
+      "bytes": 47916,
+      "sha256": "fdd04d6f0032d4d57c134ad37f3587d2d00e58c9572715275bd8cf4f43593576",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/enemy_hurt.ogg",
+      "bytes": 8800,
+      "sha256": "486988aa2d6440ffc4c62a0e8ccf3c23673ba84424bd4723378d451b7255eb5c",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/enemy_telegraph.ogg",
+      "bytes": 7362,
+      "sha256": "8732f14d6398407a8f1df77b986c2099cfd88f6583e1272cb60497cb2fe8da1d",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/loot_open.ogg",
+      "bytes": 10208,
+      "sha256": "ba9ba60b172b3ebc131a940f25793cd2e207aca7af73dc80d637277f060f1708",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_attack.ogg",
+      "bytes": 15099,
+      "sha256": "6c2064d0ef988d1ec3d56868e823ea8823a5cac00f2742560052633529407def",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_dash.ogg",
+      "bytes": 6332,
+      "sha256": "a64a69368af9d85dfce8dd38432fd6c9935a7766621782193102c9cb276571fc",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_downed.ogg",
+      "bytes": 6570,
+      "sha256": "49e7ca88743fca974bb8676ea138b751cfd8f9033b5e7af8736c2a215d6edbc1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_heal.ogg",
+      "bytes": 6288,
+      "sha256": "df6992456056af760815460b66d2ca1c3a07c200cca26325db5820b90104d177",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_hurt.ogg",
+      "bytes": 8701,
+      "sha256": "e71d23abcc3f10d9d6bc9615b2a431fff70b12333a5fcdd9964457564ace4349",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_jump.ogg",
+      "bytes": 6342,
+      "sha256": "5d85717cfca231f7da7887cef5f44b2131bbe3308eb0c1fee0b4f9e61d59b571",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/player_revive.ogg",
+      "bytes": 5577,
+      "sha256": "83786b43d828a399e14ac20604b63a60ca05385977f5477d00304c2adc696204",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/scrap_collect.ogg",
+      "bytes": 6411,
+      "sha256": "4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/teleport.ogg",
+      "bytes": 6770,
+      "sha256": "322d62ab7da973880d86c5ad217a2da85916ed95aa6c8d29991de392fd0f7522",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/ui_cancel.ogg",
+      "bytes": 6997,
+      "sha256": "07db973f79f6ae0f2edc34561e7592e24d0577455919fb602cb8ecc0da991dcf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/ui_close.ogg",
+      "bytes": 9915,
+      "sha256": "44af8249b933e0fd35ec957a638bb1a0b01f85b53fbe9674bf77bd3ca3168ef4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/ui_confirm.ogg",
+      "bytes": 14169,
+      "sha256": "33b17a9a9a2397c62b285c52c33a907fdffb476909c99e42dde603f6a7a8b12c",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/ui_focus.ogg",
+      "bytes": 6901,
+      "sha256": "9a612fd2f513d52a296906b41071c990f75defe56be3bee60d2d4e2423b51b8b",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/ui_open.ogg",
+      "bytes": 14975,
+      "sha256": "24ff224fe2c09c6aed1b41249825382dc74cf324b887ff279d8494912ce2beee",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_equip.ogg",
+      "bytes": 11134,
+      "sha256": "276403e72c3b71c47bc24db3083970c23f8e5551ffa78f436f83483c56f3f0bb",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_fire_large.ogg",
+      "bytes": 25566,
+      "sha256": "a56d95794cd732d6c2d66ce488c14cf557fe526c282897c9a77675c2bd9b77e6",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_fire_small.ogg",
+      "bytes": 7286,
+      "sha256": "72b589eadd41781257ac859e4f4d030222e623390e4a1a83f6d05329a6e026f1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_impact.ogg",
+      "bytes": 7651,
+      "sha256": "33b5e6e37c6e9d54e07bf5a89b12c76e879f40c1ea83cdd82714df1d6f9fec6d",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_reload.ogg",
+      "bytes": 13615,
+      "sha256": "9851a69d0c613e13bceef08060ecc4148f098ef487927cbebe270d642398a3b3",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/weapon_switch.ogg",
+      "bytes": 7097,
+      "sha256": "6fc395be2ad1f99ce318a5d28f98fb76dbeb676d83a0b28239d8c1fb90736180",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/audio/sfx/world_door.ogg",
+      "bytes": 19616,
+      "sha256": "5b7e07eccd4413ad9ef3720c2d14f9cc699f4c50111e9b2f48bd60e6f1a164c3",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/audio_service.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/jhon_a_attack_72_v1.png",
+      "bytes": 48183,
+      "sha256": "f7f56c33d22c1fc6bcb7b58549165425c42b6b0deb02119af9c0ee0e29eea081",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/player.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/jhon_a_dash_72_v1.png",
+      "bytes": 49172,
+      "sha256": "0452f9e60dc5ccbafff3cd35d354822fa04d44e47fb0d17b651bb9b7052b2258",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/player.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/jhon_a_idle_72_v1.png",
+      "bytes": 19308,
+      "sha256": "d5e791b884ec8809f433400ed5801009afac157000c1f7f3e4550843536d1b00",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/player.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/jhon_a_jump_72_v1.png",
+      "bytes": 25784,
+      "sha256": "6e3355856d0662c94085b1c67166b4207ef0a9012acc6fe3aa69e8fd08bb25b2",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/player.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/jhon_a_walk_72_v1.png",
+      "bytes": 40844,
+      "sha256": "abb73039ef3dcd09f9386bbd72693d79d1a2130942d6862a160c15c08ee7f404",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/player.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_a_fall_72_v1.png",
+      "bytes": 28698,
+      "sha256": "c1b5342e8815de3974887de7f4eb18ad55cd006cd3e623d1c40edb8fa12ad1a4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_a_wall_climb_72_v1.png",
+      "bytes": 15881,
+      "sha256": "e0239ce4114c74ec6375ab9512f7cdb6ad0c0eb9c7ab86b9070ba57635fbcc81",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_a_wall_slide_72_v1.png",
+      "bytes": 20889,
+      "sha256": "48a2f44d2965b2bc1f269f8df3a0ed5fdd77f1c955ad0e6b478bd800e2daca85",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_attack_72_v1.png",
+      "bytes": 33544,
+      "sha256": "89edd16ba9c864c5f8767c96eed79a27f74f88ab04bd5c48e47a553b88804baf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_dash_72_v1.png",
+      "bytes": 34673,
+      "sha256": "914bdd603cb19adee8e683de794802d86a4ea4fb0f97627896731f836dc59390",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_fall_72_v1.png",
+      "bytes": 23514,
+      "sha256": "8d963ea40e3bd9165c8230f3bfe16d25e822a7cc188e5d688229d3920b546e5e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_idle_72_v1.png",
+      "bytes": 14074,
+      "sha256": "f9de94d8859a57451f680c8426d8d5242fb79dc9ac349d40a1ba36ee7ae6e7e8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_jump_72_v1.png",
+      "bytes": 26336,
+      "sha256": "e636c74eeb9205cf99a2e63a202ab649759730a10d13721ba6c5b7b14df566bf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_walk_72_v1.png",
+      "bytes": 24935,
+      "sha256": "1f2245534e086f80942ddca45d3932817fa78f9f83699124818c534a58442d24",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_wall_climb_72_v1.png",
+      "bytes": 15978,
+      "sha256": "23c3ec60de78d03e54fc1d8ce35545eebb20dabae6ea7f243bc3274cdd147baf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_orange_wall_slide_72_v1.png",
+      "bytes": 20452,
+      "sha256": "390568704be9ad7c02da6e80da10639fa55dca6311babb11252b19082a85d725",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_attack_72_v1.png",
+      "bytes": 34044,
+      "sha256": "341c5e3c898f5bb0d6df2e8b7f5d676f1e817a63d547130bb655a45f2e5d9723",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_dash_72_v1.png",
+      "bytes": 35563,
+      "sha256": "fadebe79f0ba6779dfcb84f39575a136fc8ccd2f78c0ecf1971798a2385c89e7",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_fall_72_v1.png",
+      "bytes": 29053,
+      "sha256": "f1e05bf120e0985c645c4370b77cd8aa0909fb4f71e5ecefb99a4acc57ce5511",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_idle_72_v1.png",
+      "bytes": 14286,
+      "sha256": "31fee67dc79103c973d3db4dccc0ecf7fa22001052912cb9648da921b6d04383",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_jump_72_v1.png",
+      "bytes": 26987,
+      "sha256": "4c71cc17459ef949f0c54c5d4320a6c663d3c6bafdae3373e1a77db2b5e85caf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_walk_72_v1.png",
+      "bytes": 28845,
+      "sha256": "64bb3452417cbaa5bff038c6650d2d436443b3c91a56f19f3bc693681da1ce0c",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_wall_climb_72_v1.png",
+      "bytes": 15777,
+      "sha256": "f272d0a9e8b76667c5c24fe96f7bd92ce7a43fc1659671685158928a8107f303",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_red_wall_slide_72_v1.png",
+      "bytes": 31244,
+      "sha256": "85e3c44589f00e6401c2eb26b588bcbf73b71eb41e516d814c191805f3ff55f1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_attack_72_v1.png",
+      "bytes": 32821,
+      "sha256": "b28ee8477840ca41ca459c2809481f1f30beaa26429bc1751fd7e065224e0308",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_dash_72_v1.png",
+      "bytes": 33523,
+      "sha256": "c3492c5f13b228e7299123ee2f77154f236887e2526048ca85c857d6ca855ebd",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_fall_72_v1.png",
+      "bytes": 32875,
+      "sha256": "19c84ea47bfda55c4b3b421c9aaf39012c1c4abf8d15f02077800b8f6f2c02cd",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_idle_72_v1.png",
+      "bytes": 13745,
+      "sha256": "5fab6b51e12608a0ea9bd023be8c0f5672d56ff3550106a2f3cd9c6ea6634d4b",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_jump_72_v1.png",
+      "bytes": 24773,
+      "sha256": "a02069e1693f2de41e2b4e337ec6c9605db5c7c26e6d6073dfa462ef27984dae",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_walk_72_v1.png",
+      "bytes": 23296,
+      "sha256": "4d333456dd9bcfb2f73663723b1744de729a84eadd9cd9e5ce108e08813563d5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_wall_climb_72_v1.png",
+      "bytes": 17649,
+      "sha256": "425eb7d5d6c8b14033cfbddf351ac2b9a3913cea50efe99fe34ce65f4957d9c0",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/characters/jhon/variants/jhon_white_wall_slide_72_v1.png",
+      "bytes": 30471,
+      "sha256": "3ab3c0135aa5b08a0748e9dbd480542136a122a8daec3076adda5b68a36c09c6",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "entities/jhon_idle_visual.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/frames/common.png",
+      "bytes": 206,
+      "sha256": "e19f40989c8ab65d256188c1265e2a2b36544724ba7487f2334ac8e5c172f032",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/frames/epic.png",
+      "bytes": 213,
+      "sha256": "6c392ce7887b1e0070245e676426cb70b814a5f933a5054f543e5e6e8343a889",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/frames/legendary.png",
+      "bytes": 213,
+      "sha256": "66b071a2c6d410b4021b7a6730f7991f53f4d12632755b0d3865a44683a47a3f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/frames/rare.png",
+      "bytes": 214,
+      "sha256": "f1e937f11bf68236519d38b8f3dbb61f7c47714bc53dd8f08cb6d199e2e486cf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/frames/uncommon.png",
+      "bytes": 218,
+      "sha256": "59003d7ad77174593b7bcfc7eecfa7bde3fe7965090a0e6516d976a8d234feb9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/dash.png",
+      "bytes": 312,
+      "sha256": "ceb68feddd98ee549ee740a6e380301bdc25671b60534216718c5e1aee15a1af",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/health.png",
+      "bytes": 421,
+      "sha256": "1e629460e1a86524bdb7ff27f6fd415e7146e0575e459db85fdbe2d1231d2edf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/intellect.png",
+      "bytes": 327,
+      "sha256": "ab9fcea07d7ff2de86c8e0bae3423e4fb2ffe8ede344ce89fa2b1262c5b4cde1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/physical.png",
+      "bytes": 293,
+      "sha256": "77176a80743c3e7b69f83feedc25a3eee3c5bb14ef4f3c835ab1d2a13a5e45bb",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/speed.png",
+      "bytes": 273,
+      "sha256": "e774004d6a93d5ae9986fa797183fd41edbab2ca9e911db6b47b211ed95c9829",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/cyberware/icons/strength.png",
+      "bytes": 251,
+      "sha256": "93aed4493750c3dc3e71de00d6f8fd067245056e2d4a7c8148ef75c97ec9e786",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_attack_melee_v1.png",
+      "bytes": 16710,
+      "sha256": "046e5da89dd38e053f1abc8ebec24ec9b9c1203a20e62640b00bb22c976d882b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_death_v1.png",
+      "bytes": 38512,
+      "sha256": "4c75bef7d96813476fcac1d236622f4f9dae10cc1c1ecaf60f8d3060ea75fbf3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_hurt_v1.png",
+      "bytes": 10401,
+      "sha256": "2be6406788e993aab95bc77a889f421254bec70c0a1667d45c08f2fa90af36a6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_idle_v1.png",
+      "bytes": 56070,
+      "sha256": "08675cfa8f0ed59549e64435f53aba2c2c51ef2e6aedbd87c91826181a19b952",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_jump_air_fall_v1.png",
+      "bytes": 12869,
+      "sha256": "6db424655332abde2c26ea48d015d700c930dd8280c5de5f36999c543713f6e9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/common_walk_run_v1.png",
+      "bytes": 19554,
+      "sha256": "6891c76935c7efc5eb8849c5dadbcd39a2c844d39272e0b900d86f738d0066f3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_attack_v2.png",
+      "bytes": 71094,
+      "sha256": "7e4383965bdb0e0fc48bbcc2b7a70a2d3dd39538cb2e7050e19938ad637ff376",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_death_v2.png",
+      "bytes": 50075,
+      "sha256": "c11c9dad130a029ce406797dcd2f6c529317d17efaaf1fb4484787131920e167",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_hurt_v2.png",
+      "bytes": 28638,
+      "sha256": "8bba5569fa532faf9729b9463d991fad24ea6204d6a328598fc7a7862e76118a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_idle_v2.png",
+      "bytes": 50754,
+      "sha256": "5375acc7c96428e3f589b47023f047b45caf424a9dde116e37a4f50eacf922a4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/experimental/lower_city_concept.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_jump_air_fall_v2.png",
+      "bytes": 38981,
+      "sha256": "ea8dc96b402dd9b971ea1c5fa654047ea4de701d6115299e669631d3a60765be",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/common_walk_run_v2.png",
+      "bytes": 79034,
+      "sha256": "2aac02e262abe807de975c180388772c3a1b33343e80b4f1c2b84b82cde7c16d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/common/v2/manifest.json",
+      "bytes": 15410,
+      "sha256": "d9cc01e396c519250be60266e13cb0348bbb350d56e52053e76067402945a00a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_attack_shoot_v1.png",
+      "bytes": 44685,
+      "sha256": "c7ebf504b9d49596823b276bab8b6fca50229a38efa57a28c9b729cc801db98b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_death_v1.png",
+      "bytes": 52962,
+      "sha256": "5d3fd2ab439bf3e0e261e584ea1dd9b48617bc6a19487a98acfbba1e49c78f88",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_hurt_v1.png",
+      "bytes": 20125,
+      "sha256": "3abc0816ab51ecdeb000ff1cb2a2bef48947d6c500cc4df24f6650546c308a2f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_idle_v1.png",
+      "bytes": 25432,
+      "sha256": "55a9e7ca1ab410486cb19a08d04277cbecc7bf0c93d397dde3cb6f75dcbea51e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_jump_air_fall_v1.png",
+      "bytes": 24201,
+      "sha256": "b7216ffeb47e1e155502ec7dd0fc873555412f4185113393c7ffc7bd93808fd2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/heavy_walk_run_v1.png",
+      "bytes": 58012,
+      "sha256": "1365dc8be72d86d09063574e3cda106d2d8848855c337357947f61f6b1f8550a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/projectile/heavy_projectile_impact_v1.png",
+      "bytes": 2216,
+      "sha256": "c6d4af0ace1f797cee45737df6f3df560361ff08dfa854f2a76fb6fdd9ef8643",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/heavy/projectile/heavy_projectile_movement_v1.png",
+      "bytes": 1406,
+      "sha256": "c8c3c206dcc30f5d833a1dcdea2fc38134e6869901a232acd22e2fcc1e80b6a4",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/projectile/ranged_projectile_impact_v1.png",
+      "bytes": 100498,
+      "sha256": "714ffedad21b3757935da35c56744f817bb1ce2f9e47298c5d44c44fc03060c1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/projectile/ranged_projectile_movement_v1.png",
+      "bytes": 51478,
+      "sha256": "0cb7e2db1a87a6dc8269fda96f2ed6b304a49d3f0b95a89de550a3950e522944",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_attack_shoot_v1.png",
+      "bytes": 33387,
+      "sha256": "5624282aefae747bbd96428a2e158c3a11b271409475f437946bd37cd911d991",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_death_v1.png",
+      "bytes": 54235,
+      "sha256": "c47ac8e9cdc999aa11f084a69362d540770ce076f45b4ccb3ff77e4d9b311c6e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_hurt_v1.png",
+      "bytes": 26236,
+      "sha256": "fa3767e00a2078f5b52de36190040041d04501653af0a728761115553763613d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_idle_v1.png",
+      "bytes": 2738,
+      "sha256": "9240b57899464d40727710c6eb83836026d66c10ec4f337c76a80d500f06432d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_jump_air_fall_v1.png",
+      "bytes": 7200,
+      "sha256": "57f53046ce6cd8ae831b6bb7dcb680b1d294bc715f29a027a4cc31a8d0af7d00",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/ranged_walk_run_v1.png",
+      "bytes": 4625,
+      "sha256": "fa766e6a0d70204dcb10e1f8794e5077b139065d42ea8818637de81a3325a8bc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/manifest.json",
+      "bytes": 19215,
+      "sha256": "67e8c6e52aa6f5b1002d9ffb9e118bbeb22ded965d3b7245ddc038f104b1c363",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_attack_shoot_v2.png",
+      "bytes": 65025,
+      "sha256": "75365ddb115eee799947a67b86d299ea06539d48a997807846f8b81025447f94",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_death_v2.png",
+      "bytes": 33529,
+      "sha256": "cca38f508f771332184ebbae7bcde882f893801e7f9c774fe069a1c202ffdc0d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_hurt_v2.png",
+      "bytes": 22561,
+      "sha256": "13c4a9c14714a5b7a230bc2428e3ebc44d4b97f35e4e3db79cfeba3bf1a6bb2a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_idle_v2.png",
+      "bytes": 41516,
+      "sha256": "d0dd47a2c890d17b7771efa374c98a504ae51b98a8a3025740f3bccbf5d8fa84",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_jump_air_fall_v2.png",
+      "bytes": 43104,
+      "sha256": "f5fea729870238b48fec9783d6ffba65540f206f3fb03a68566f0aa9305c3fc8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/enemies/ranged/v2/ranged_walk_run_v2.png",
+      "bytes": 64909,
+      "sha256": "284d6849ec1f4e97921b97248b4653d7a824544129c911ebacabe9ad136d6fc0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/catwalk_tile.png",
+      "bytes": 129,
+      "sha256": "f7d5e873be68cccb0a5aa83f7cd4ec8cfd0262b7cc17e66f4b45a797570c7c12",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/far.png",
+      "bytes": 4199,
+      "sha256": "bde354487c121df017d91da9751906a274b8b69c4d5ee1b1bc3cf2ee01b34fa2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/far_beacons.png",
+      "bytes": 3434,
+      "sha256": "196ca6edc5491c36ec71e179d98e7ee2e3d1e64bbba18c2075f50f094ad363e3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/floor_tile.png",
+      "bytes": 226,
+      "sha256": "aeb5d9abbfe0b853f64c3f3eacc4af74a90e95b19ee538ace2bb13bdb9b854a0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/mid.png",
+      "bytes": 4123,
+      "sha256": "4ab59ab8e2a80d062698ff9935652ab79489ce75b345a806c1624f24431530f8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/mid_glow.png",
+      "bytes": 12050,
+      "sha256": "e3c5cd66994e66a3ececcd15fb7254065d9391d3453d20ddd8f8ef95139df677",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/mid_signs.png",
+      "bytes": 2696,
+      "sha256": "427e4c3d05ead564316f2df3c5b1a58b350c64299ef58cf52b230cac6bdec864",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/mist_far.png",
+      "bytes": 4679,
+      "sha256": "342f0b2496b82021e54b4e94bc55249ed76072e6858cca855f0860692d4d5b88",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/mist_near.png",
+      "bytes": 5298,
+      "sha256": "fcf4af3971194926765c253aa4ca6c76e7dafc36469ab0b98da8cab7d49c0af2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/pylon.png",
+      "bytes": 236,
+      "sha256": "032de1ac52c3b97559e7188294d91f08857826f836401408f69b3d6ed0493385",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/pylon_glow.png",
+      "bytes": 1403,
+      "sha256": "6cc0a4477c986b86f94667be8d021903ae4450771d3abc10383d75821c902fcc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/sky.png",
+      "bytes": 1348,
+      "sha256": "a9338f64ba5dfcbdd12d9fd7562a2b1091f9af22f9f0b8d34a7061fbe99342e0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/under.png",
+      "bytes": 1641,
+      "sha256": "518b5b3c9fc1c51f3d03571309d56c9650e306a6144be1a3381630ee14106ba5",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/core/wall_tile.png",
+      "bytes": 119,
+      "sha256": "185c82d040615309c8fbceb49ff9f5f9705a776f39bb97932ddbdf1fda8eb544",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/barrels.png",
+      "bytes": 316,
+      "sha256": "1f9ceb5f5600ada6989a06356e39cf37d5029c157a85bbf081a66ff76449fab0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/catwalk_tile.png",
+      "bytes": 154,
+      "sha256": "c1f5e512ba4f9fa198b6e0099605abf157671bf38ed8a6150f20257053fb1c50",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/far.png",
+      "bytes": 7049,
+      "sha256": "8de19428d310ec5cc28b2135e44ce596d973fce3ae270d52d5d01e49962db847",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/far_beacons.png",
+      "bytes": 1003,
+      "sha256": "b3509fd370c9c63b13d89b989b2ca417453eb0d876db53a3382b00f04b732d7b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/floor_tile.png",
+      "bytes": 372,
+      "sha256": "6cba4306c1801b389498c1c109c5527eee18203a73a7b1af709b499e1adebf91",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/gear.png",
+      "bytes": 345,
+      "sha256": "5e759617661c67ad476ffe171975bb60a8018e3d98095c94522a68de9ecfa21c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/lamp.png",
+      "bytes": 314,
+      "sha256": "ace79990f3d0c7d45f05adf809f47e7c77af1a6771925c693ce58651ed06c23f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/lamp_cone.png",
+      "bytes": 2038,
+      "sha256": "db79a384574a3de0100d040e7771943fadd7ec69176385d36af0ac96829ebfa6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/lamp_glow.png",
+      "bytes": 414,
+      "sha256": "4eaa58a228f17b6d81896f556b0206c2de5b957a93f373cbcf89b09155436634",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/mid.png",
+      "bytes": 21529,
+      "sha256": "78e6b218b24b02534fc201555ba20fb2a9f5c00ebeb0bf18e974862a2f430f08",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/mid_glow.png",
+      "bytes": 9169,
+      "sha256": "8a1475e58417c929006b41d2972fc31697da4c07f509b34bb2b24a6418836c38",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/mid_signs.png",
+      "bytes": 2439,
+      "sha256": "fe58493d48562e6a274cacd2df76887987337bc81b1f78243dadeae69d945545",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/mist_far.png",
+      "bytes": 5051,
+      "sha256": "d41b2896993fb434c91d9067338945f9f9e36b48d8b824b9b0d1be06d1429b20",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/mist_near.png",
+      "bytes": 5481,
+      "sha256": "827b5d5462e0c8d2dd6c522efbb8b75755d5a6f66f33391f15aa4f0f7d9ac218",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/pipes.png",
+      "bytes": 605,
+      "sha256": "59ce498cf57ac0f0d1dd5fc742103fbaf8bd401c7fcbfc38f0c115c06aab7f17",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/post.png",
+      "bytes": 159,
+      "sha256": "52cac16893b74dc7637a542c8fcf796957a7461fc3686dc399303248d789c66f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/post_glow.png",
+      "bytes": 315,
+      "sha256": "a523c23442a3bf163cb49934bcd10da6e28d05bb0131c73f5edf5495f187496b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/rail.png",
+      "bytes": 2304,
+      "sha256": "8b2d4b0e0b48d168fb21af704d9a63c097bda50906a69c72ea246d36664fb599",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/sky.png",
+      "bytes": 2225,
+      "sha256": "4acd8bcf405a7f27db4f11cbeea61ede570a6c8e59780e1e284c6844b241515d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/under.png",
+      "bytes": 2715,
+      "sha256": "5db947629c30b231b599aff6e84c9357b7adc394ba6a630f137bea77c89afb71",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/vent.png",
+      "bytes": 209,
+      "sha256": "5dce6d9ec38eaa8072d52976c5edb3e9bebe66f6c45bc1b921b963e7993a265b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/vent_glow.png",
+      "bytes": 776,
+      "sha256": "0800d873da6476c3a71960a9b58ced4a82fd2e33e948fb6ddb7b27af1edf0329",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/industrial/wall_tile.png",
+      "bytes": 193,
+      "sha256": "427e3f2c48751f8ae68fbbe2b91d4136ca92638ea6a9783cceaef99bc21ce908",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/catwalk_tile.png",
+      "bytes": 141,
+      "sha256": "d00785d34c1ddf5e2754adbf3f1277bb6ce3037561966fd2d9a9105d614238cd",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/far.png",
+      "bytes": 1997,
+      "sha256": "e1736444d8dc279fa0dcca97677cf18cfa78d8825888f1224d2e313c4fbbeb61",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/far_beacons.png",
+      "bytes": 2474,
+      "sha256": "c882f43bc2ead3be102bc85c0e021cbed3cb72a20eb021bcc65aa9244897d3b4",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/floor_tile.png",
+      "bytes": 213,
+      "sha256": "5ffa3f793f72582bed18f76f42652e303ece626cee1cde19d1ec2c1f7468ea5b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/hang_cone.png",
+      "bytes": 1839,
+      "sha256": "8771d1ec348970faba0b101c2741814c06edb3795ab7c2b48259f733426088e0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/hang_lamp.png",
+      "bytes": 291,
+      "sha256": "de6d605d52043d40dea8517a98e3bc39aa3cf3e16b49d7ec43b48f2b52696eaf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/mid.png",
+      "bytes": 12336,
+      "sha256": "55b4b7a7fafca1bb144d0b7c1a0c3821313ae5450533a3e23c6cc124ef62d9f6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/mid_glow.png",
+      "bytes": 85613,
+      "sha256": "b45bea4510f9ac055ede5bf66b04eec9cfdf2f4c092b5a9c4e377198f491bcbd",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/mid_signs.png",
+      "bytes": 5583,
+      "sha256": "ef4e6c6837b16c1622a6a2356692e920a98e8d1ff5c0c6ad6bc504d2192ae80f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/mist_far.png",
+      "bytes": 5069,
+      "sha256": "296c62b7117b4be0bdb656ac5be929a61fca275cc08b5cc5db36a1058ed6847d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/mist_near.png",
+      "bytes": 4929,
+      "sha256": "985eac56c45e75453f22b47e1a89d278d7652435d42d149b58ecf18a512039ea",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/rack.png",
+      "bytes": 282,
+      "sha256": "ba28c5362143b51a3672ec66bfbc434c8e636f9922bb36c348df48d60190ca34",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/rail.png",
+      "bytes": 1342,
+      "sha256": "bc008f360a092bc6d0726e962bea64e72f46d404ddd47750723a71097aec7ba5",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/sky.png",
+      "bytes": 2094,
+      "sha256": "f578d901ebbd67fb6ed2ea3de8b2291df5e88280d8d3d037b410367303697d69",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/tank.png",
+      "bytes": 752,
+      "sha256": "672b3893f93e66f6a48d05b63a1f21ac20fe5c5e29632ae3f5e95932c5a3a25a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/tank_glow.png",
+      "bytes": 1019,
+      "sha256": "352cea54f8945088a7817ca850917c33cb4826dbab432a34aa40aed0f8163b5f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/terminal.png",
+      "bytes": 271,
+      "sha256": "ec42ac8b6966e0a2d230a131c0dbc4ffc675f509362e4bf43a02f8a5e7a48659",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/terminal_glow.png",
+      "bytes": 646,
+      "sha256": "7542196aa458a55c82a8fc22cdebd40e086d991f6bcbb0a4622b22081247c8e6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/under.png",
+      "bytes": 1652,
+      "sha256": "7c3313c64b43a744c3653185b9efb9203bc2a1d3d62d44430ebbf4354d73751c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lab/wall_tile.png",
+      "bytes": 154,
+      "sha256": "a74dff8777870094b1759fa84aed46edb08e5d14f8b0f104108809437f04bd22",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/ac.png",
+      "bytes": 214,
+      "sha256": "a49ceca3be38e3cdda693094e474d93ca26952d84e59f04a22477603487bc0ea",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/board.png",
+      "bytes": 824,
+      "sha256": "afe7e29b67541eae3e23ddac8af670f8bcfd8cd6a2c4bd0aa06bd1bd61c4110f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/board_glow.png",
+      "bytes": 1282,
+      "sha256": "1949ea89913ab42b44fa81ce07c4da69d8883ec5a8f378feee938433cd95d79f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/catwalk_tile.png",
+      "bytes": 156,
+      "sha256": "dec3b6d47046db7fcd3b2f0b2ecb7259e27a919722d23ca9755981d67f9f982b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/crates.png",
+      "bytes": 403,
+      "sha256": "553ae2ebf51c2dee9150c61f0bf49d681f97b2c285a5d809017886b0151ca28e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/far.png",
+      "bytes": 6632,
+      "sha256": "82ae06ff1e4a2392bebf9fd72c0e8c84fc94eab01f12edf2a591742644fa3122",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/far_beacons.png",
+      "bytes": 1032,
+      "sha256": "61bd054b8a5137e5589bf068c36a8b1be0bf933ffe2e19a02cdb5364d1f62f9a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/fence.png",
+      "bytes": 199,
+      "sha256": "8c7d8b5af2aec6f83a7d22628d149098a6ee7fa56524531bd1165577ec107879",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/floor_tile.png",
+      "bytes": 379,
+      "sha256": "bbc4e1dfb9287a0eab9ebfa6c18fe24cd5105fb691cb84186bd05cc523e7d0e9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/lamp.png",
+      "bytes": 384,
+      "sha256": "25844adcee0272a860e0c2f8b3aae248ce894e640c4e03872d712cb5678cd3fc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/lamp_cone.png",
+      "bytes": 1811,
+      "sha256": "10fc50489d8e403fdd379ae5a2c7d4b8685a350cdce2d0e8006584122467eb0f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/lamp_glow.png",
+      "bytes": 691,
+      "sha256": "d79deb73df72d829c8f0f210d5656e3bc28ce142810d59e1082b49793c841520",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/mid.png",
+      "bytes": 21402,
+      "sha256": "ca639e9d7f844ff96a1cbd43da69d6a67850243d1cfea43360e559c19facb0fa",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/mid_glow.png",
+      "bytes": 37595,
+      "sha256": "5f6bece5d5965fa380db3915d75817be7ddf2033fb2519ca94228d56ea67e0b7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/mid_signs.png",
+      "bytes": 5517,
+      "sha256": "2c7ff72a2637544508034e9994f145797ef6cd71201c5d7cc497e84d818afeda",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/mist_far.png",
+      "bytes": 5175,
+      "sha256": "2aeb02a525d4d3c076f26b04d6faf0a7e86899a52d8aee9f938090714f8c558e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/mist_near.png",
+      "bytes": 5441,
+      "sha256": "38b5322d3e3c7d4e9477f491b42b1a53fa88ce66360efca8b2779d95f34f64de",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/rail.png",
+      "bytes": 1684,
+      "sha256": "bd4a0c121828530cbf98effc27eefce984ffddd5b97f7722fe3619e550af7501",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/rain_drop.png",
+      "bytes": 124,
+      "sha256": "939393e42c17a1b536694f36484c0c2db78ffc8095ba07f6d0cf6d71788f5186",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/reflection.png",
+      "bytes": 1204,
+      "sha256": "828cf8659054b193dec9348da20bb2917e5048e6f4939ed7b47477a587191b37",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/sky.png",
+      "bytes": 2051,
+      "sha256": "a6326b453d31fb36937e13c2e706a89dcc33278b9d0b73ce11ee2d22c64024c9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/train.png",
+      "bytes": 207,
+      "sha256": "1f850e072e15364087797e049bfc7ea1bb4bfa7971fc10a211691cb81b8a340c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/under.png",
+      "bytes": 3886,
+      "sha256": "91eb46cf5831282f1b5f9ded5f87967afca72eafa996ce158f77b2213d7d45b0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/biomes/lower_city/wall_tile.png",
+      "bytes": 142,
+      "sha256": "97c62cda9c264dbc82e7c71e6dea1fc76b4fcd15fa83b2ded0eae7d174e5028a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/GODOT_INTEGRATION_README.txt",
+      "bytes": 2150,
+      "sha256": "e090ba545fad37938488204587cd0eb69f55fa91635a16d1d27d4ef7e4cc3c66",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/assets/gameplay/casa_jhon_gameplay_interactives_stage0_v1.png",
+      "bytes": 103404,
+      "sha256": "d60373b959e9b4795cdd94e95a12fae0a69d564e40ec14df0a3a24509edf4933",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/assets/props/casa_jhon_props_domestic_stage0_v1.png",
+      "bytes": 94978,
+      "sha256": "54b5bc040e96c946657206d505df1861f669e97c19988c601cc019dcd8a24b03",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/assets/props/casa_jhon_props_workshop_stage0_v1.png",
+      "bytes": 84738,
+      "sha256": "90b96dabdcb281be0d8381318c24e708212d46bf9a8e5cd20214f619e01a6c85",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/assets/structural/casa_jhon_structural_base_stage0_v1.png",
+      "bytes": 112458,
+      "sha256": "6375817831dee163ab15023147bb37e9cc1c13db07b982cc1d18bd7fabd74eb3",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/deltas/delta_stage1.json",
+      "bytes": 41174,
+      "sha256": "9231d2028207553022f8abaee7a3d8ef1668f0ef1df208d91232b9c28a1c835a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/deltas/delta_stage2.json",
+      "bytes": 48099,
+      "sha256": "f3877051aa6301b10b3acbfd282227033f07007bee8476de29866c80f7969ffd",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/deltas/delta_stage3.json",
+      "bytes": 6303,
+      "sha256": "23112aea72d93fdd00b341e3f2043efabd06684efbc2860cc6341988dff9423d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/layouts/stage0_layout.json",
+      "bytes": 32023,
+      "sha256": "3435a63dce3ae51f6cd4a26cea1dc9ea6cb6b6a5979bbe05e4d8623f2a851e6e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/layouts/stage1_layout.json",
+      "bytes": 38194,
+      "sha256": "d13591657ece33bae85ec221100ea00487c3a653f43970634c1907031f8913b8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/layouts/stage2_layout.json",
+      "bytes": 44332,
+      "sha256": "085cf395f44436d20b6ad926744df310dec21d23092e1b6fd19062051a4a8893",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/layouts/stage3_layout.json",
+      "bytes": 50471,
+      "sha256": "c222ea926e79b081b3466bdae7e1b76b5f1f3c16b622513be372ba85eba81c8a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/manifests/casa_jhon_master_manifest_v1.json",
+      "bytes": 37919,
+      "sha256": "3478d701fb1f55a83aebefd488accf7a4f1f860c6c920aaf5b731a5bca87e596",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/reports/global_validation_report.json",
+      "bytes": 4556,
+      "sha256": "7682da1722d5e8bcbf2d529380398832603fa50edb4bf971a92583ff16bb1541",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/casa_jhon/reports/global_validation_report.txt",
+      "bytes": 431,
+      "sha256": "7df8e5343a7b930616db336bdbc12d213e6ecc198e7c07dff036354c72a2f373",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_far_v1.png",
+      "bytes": 52206,
+      "sha256": "8ff38d6f6d285eeb2cada74bc5b0da3852fd9903e7afb6a5eabfc0eaea0dbd9e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_mid_v1.png",
+      "bytes": 49955,
+      "sha256": "3088dc5408cbc903c068b5626412ae614a9de59123b1b2d7a8304e9605465346",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/backgrounds/cidade_baixa_background_near_v1.png",
+      "bytes": 72649,
+      "sha256": "b7887803bf242ee67fb0023d71c8781f5f1619d741fcc48584cb98987edeb727",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/backgrounds/manifest.json",
+      "bytes": 3633,
+      "sha256": "dc4a8a7d7500c26510aea8733fb9f1e5ef312468d0222fd8d334e1cd3b2ed0ac",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/gameplay/cidade_baixa_gameplay_interactives_v1.png",
+      "bytes": 197144,
+      "sha256": "c8a32c0db38c297b28997259e72dc18f2800ac7eb10bad68ae52ee3fcef58ba5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/biomes/lower_city/lower_city_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/gameplay/manifest.json",
+      "bytes": 11672,
+      "sha256": "9b569e90b51a710531d1825d78daca268a94c60e8230aebe2a143c8e32ea6ccf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/props/cidade_baixa_props_v1.png",
+      "bytes": 293072,
+      "sha256": "4896cf8b3922dc290267d22a3c875c1a97d3e839d12cb5bc5b8f241bf563776b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/props/manifest.json",
+      "bytes": 77445,
+      "sha256": "f276959d7dce7cfa47e435393ea74f034d87c3a55eef2cbb7451981c24be8ff2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/structural/manifest.json",
+      "bytes": 43071,
+      "sha256": "b0a8bcb0c0a5db9fdbd7496549f0f413d49fc719eb1d2d55980d346f5fd5596e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/cidade_baixa/structural/structural/cidade_baixa_structural_tileset_v1.png",
+      "bytes": 364933,
+      "sha256": "80f1268501b759d3afc5c155da4557bca61562c5c34d41217af2991c43cf9a5c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage0_back.png",
+      "bytes": 14941,
+      "sha256": "7cf39af4c30ece0c3c3c93088ce56f339cad938f6ab5b478d2a02b9fa86f8bb4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage0_lights.png",
+      "bytes": 17935,
+      "sha256": "2ac4ac815e35a933a4ebf39ff96e2fcc98f6fe96ece86df9168853c1a6f2ff4e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage1_back.png",
+      "bytes": 16000,
+      "sha256": "115b829bf4e997d32b9d386a81d36d154b802c7f23e06115c4c4f2a5f7a61bf4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage1_lights.png",
+      "bytes": 21950,
+      "sha256": "471eeb77504eafd1e821dfe55e8aca0aa9d6a8ae72bf556c0756d142f6e3c2dc",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage2_back.png",
+      "bytes": 16388,
+      "sha256": "bce867d904e35ee5c5cb0fec3807a46619a3ec4601243182e77971a297f70fd8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage2_lights.png",
+      "bytes": 25111,
+      "sha256": "f7b80ef84297160b73178288b63a0aeddcaf9850a1bc07de21424b7218fc7615",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage3_back.png",
+      "bytes": 16828,
+      "sha256": "76deac3dee0db6fd9b1c7e6f4a9c14a5d7877ec52646bbb403a9844fb7b04605",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/hub_stage3_lights.png",
+      "bytes": 29588,
+      "sha256": "cb633504fe8d041636c22f3d51058a22f8053a375846173e598dd787f0eaf89c",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/casa_jhon_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/window_far.png",
+      "bytes": 850,
+      "sha256": "59c88dd2eae0b0758c02ac8e89155e63d6a31d4853cbdab8161a85e59b8d78dc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/window_mid.png",
+      "bytes": 1703,
+      "sha256": "fc293581bd42202cf5ea02f791a4052efdba1f328717042265abc85287fefee0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/window_near.png",
+      "bytes": 880,
+      "sha256": "04f6280ac78c2cde103d0e44da5936cae6dbff32b907ffc314a5f4e8af1e587f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/hub/window_sky.png",
+      "bytes": 1150,
+      "sha256": "74eaa42c4e3b33277437132b3ee057e062cc311c052741b66b26b7532830dcf0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_crates_industrial_v1.png",
+      "bytes": 228723,
+      "sha256": "78ebc7e1701241b7a4bc7a7f53af6223e7044853c6bcd8732bd40adb50cf9d8e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_pipes_cables_lights_v1.png",
+      "bytes": 319531,
+      "sha256": "1811108b1052455c40beb4c5304306261fe456f8f5f5b015b8405e112ac95b51",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_servers_lockers_v1.png",
+      "bytes": 365969,
+      "sha256": "8cd0dfe18a383ea5385e0b0122fedbecf83882a2a257b10a7d820b3cb2be0100",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_small_clutter_v1.png",
+      "bytes": 305366,
+      "sha256": "9ec3851523e8606fe2b9a7b50d2c6dda220ec4e212e025e0f87d21f73c005091",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_tanks_machines_v1.png",
+      "bytes": 463541,
+      "sha256": "dfc470d8da44866ea3f088ee667000307312eaebc0665a6088a3a27890bebf73",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_utility_furniture_v1.png",
+      "bytes": 502624,
+      "sha256": "1e50a6c10f8d01da72b87c484e7225d9cdcf4fbb6dac4b83c30734b7ab52c167",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/lab_props_workshop_benches_v1.png",
+      "bytes": 292156,
+      "sha256": "b0dcd199eb6466240eb32db537432ce596dcb97365f4e54ce3a34f563d2e14dc",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/props/manifest.json",
+      "bytes": 1498,
+      "sha256": "1f00f545ab1e0cb787feb1bdcdad096748d1bf924db97687ecbd0e297898c93b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/Cyberfield_Lab_Structural_Atlas_v1.png",
+      "bytes": 2790314,
+      "sha256": "d480b1ce6156a6d45073b10e5e9a0b417609d0381def8e2ef1608941543e81f4",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_cables.png",
+      "bytes": 205253,
+      "sha256": "9b399cde3f9b240fd20bb009aba18113dea4088659d6596fa278ad1d310091d4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_catwalk_long_a.png",
+      "bytes": 23664,
+      "sha256": "6a9c384221599416a1bbf7283e3c52cfcf6a9b4368897bfb6fee4ec83d13b9fb",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_catwalk_long_b.png",
+      "bytes": 19824,
+      "sha256": "4b3767033ab0cc9f45f48ea83322060270d24ae62efa4d1964adb7e9ac72a84d",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_catwalk_long_c.png",
+      "bytes": 20841,
+      "sha256": "a68496b9795f3828c6f905c70d52236126d88fd97efc46591306d026d0d0e06a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_door_a.png",
+      "bytes": 65272,
+      "sha256": "a5c5df79359567f65a68220148d99800cef328878c8869bad3e0eca6c8145d90",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_floor_large_a.png",
+      "bytes": 50759,
+      "sha256": "ccc06682e878ee07642d832962820260274ac9ec4c7f1726e1da09f9e11e8e45",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_floor_large_b.png",
+      "bytes": 31634,
+      "sha256": "046fe02dea8612fb253847cc4ff14b83bbc6a448587f346df7befb401110747a",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_ladder.png",
+      "bytes": 12830,
+      "sha256": "62e82114a879cb07488c41de0852e6156fab2cf47cceee40511ee145953fa91b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_neon_lights.png",
+      "bytes": 120770,
+      "sha256": "ff8f40f261f89f24622ad6421e34b886e3ec273f92f892737e13bb72c6a1cc8d",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_pipes_red.png",
+      "bytes": 181648,
+      "sha256": "7972b9d8c2e1935c25fc66dc1802c2386b13b1cb62509b53e6b14bb5f3930cf5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_platform_a.png",
+      "bytes": 20515,
+      "sha256": "5541cd8a50e5c39ad4a9a517f046a67d51a05c59f90072fd6105cc8bbb4c9434",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_platform_b.png",
+      "bytes": 15270,
+      "sha256": "3ee91e406a80f02b467aab5df4e84a63e38fa3587ea48c7dca344117f4931990",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_railings.png",
+      "bytes": 69046,
+      "sha256": "c5636b543ed7d8dc06805d7c098effc63740e51aabc1c1cf75cf1fa4f79defca",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_stairs.png",
+      "bytes": 73622,
+      "sha256": "7ca28e7170727565c78f0d90ef4f7fe0c71d7c2fbf7897beb203ef47586afbf6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_supports.png",
+      "bytes": 80800,
+      "sha256": "5b0630ab399590ea7bb49456f11de70d140677a425300d2bb6858f08af858571",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_vents_panels.png",
+      "bytes": 222874,
+      "sha256": "54c080c6d2b675659cafe78afcc269f65781c4aa6d75793532877c6ce3486158",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_vertical_beams.png",
+      "bytes": 213488,
+      "sha256": "4697fbf47b158dc316f7a5957972fadd7592bc17e7dced65453a8034e42b9c60",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_wall_fans.png",
+      "bytes": 44336,
+      "sha256": "d2722fa601b58ea80175725bd0291931fb5cef40b639f941831b67771469b6da",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_wall_panel_a.png",
+      "bytes": 53703,
+      "sha256": "7c244551e229d6db4ce1955f0bec226c14263fbc7364fb60a5a22288acf34c03",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_wall_panel_b.png",
+      "bytes": 25353,
+      "sha256": "0cada76e31dda4dfe2ecaeeb39229866da40e346de6bf680333355a036d9018e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/lab_windows.png",
+      "bytes": 96028,
+      "sha256": "a2fb81ee71e79b242cd1652b471e5c677cb4429cd072507193d00c093d26047a",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/laboratory_hub.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/environment/laboratory/structure/manifest.json",
+      "bytes": 4485,
+      "sha256": "31e53f2f31fdcc65b67701bc27f247b9b208bfd8707eb6038784448b1804dc9f",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/catwalk_tile.png",
+      "bytes": 149,
+      "sha256": "0e3dce7db25970c89408451645e8842687b2c4790bc37c0d2436b16cc43adb78",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/far.png",
+      "bytes": 11528,
+      "sha256": "8c6a2b8ee9d80c98314616f520539ddbfb0a4314c6909636c8467879a0864f07",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/fog.png",
+      "bytes": 5544,
+      "sha256": "bb4d3936a70d249a240adcb8aa0d0d6bf598abf66a48b4c2c16adda661bf84c8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/lamp_cone.png",
+      "bytes": 2049,
+      "sha256": "415d0517917924194033d5c8cf59799d2a95a821e85ad6ec50481811abdb3fa0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/mid.png",
+      "bytes": 11196,
+      "sha256": "732b2db1572942e6aee371bd448f1a09dc4cdb9a48df6070f1a140e0488ae357",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/mid_glow.png",
+      "bytes": 12741,
+      "sha256": "0e65e2ef40eb57300edcd4dcd4ad8cfafb48bb5561938d13baef7f3ae462768e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/mid_signs.png",
+      "bytes": 4763,
+      "sha256": "a5b8e3473c0b20a62ddaa1ab81d2b36ae614eeead0188ea3548a39671d219f26",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/puddles.png",
+      "bytes": 3537,
+      "sha256": "8275c839ae51ad5bf33dd3dbb5ace60cc21c1d728964dbe86b285f5730b7e4fd",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/rail.png",
+      "bytes": 6272,
+      "sha256": "213eaf038fda8e7a8d80a9207b06606f095e73e591787747d5d10c7204e2d769",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/rain_drop.png",
+      "bytes": 124,
+      "sha256": "1ad05345a5ba1e1f1254e0b4f9ff5a47849ef9cf921af28bbaa62b00a03ec4e8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/sky.png",
+      "bytes": 5668,
+      "sha256": "2f4239edfc4f5935f6c3bcbd0090371bf2a6f4c313df9d282c27cfd323fafb8e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/steam.png",
+      "bytes": 130,
+      "sha256": "908057346fb15d3f9e82c533f946dbca62aa2ffde070bd4cc1ab6e5c74c72fbe",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/street_tile.png",
+      "bytes": 314,
+      "sha256": "3f6a337fb15ac1e948032b133a1eecab012b39c2898007bfcac98b84df768956",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/wall_tile.png",
+      "bytes": 165,
+      "sha256": "0d2ea787c3a4faff5c4e0dfaca7b9300aef8d5ac9ceb9e6b776e2c21cb426d79",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/world.png",
+      "bytes": 11271,
+      "sha256": "efceb1f80f20cb89d74ef9a460b7d8bb6c025e2b93cb8f976c709605782c6f97",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/experimental/lower_city_concept/world_lights.png",
+      "bytes": 7963,
+      "sha256": "22dd97325419b232d4dda4d082b0f6b2c204c1d0982534bf5f8317dc0d7e8cff",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fonts/LICENSES.md",
+      "bytes": 502,
+      "sha256": "40a566bc7cbf01c394fb610287545a42afe5c3d0d48027b277a27b15513efee6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fonts/pixelify_sans/OFL.txt",
+      "bytes": 4393,
+      "sha256": "8ed5cd9e189e30dfdb0df2d5c2771556b50e9d502d899221328c3245caf8423c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fonts/pixelify_sans/PixelifySans-Bold.woff2",
+      "bytes": 7904,
+      "sha256": "c836cfa5c0e9d62ea9b890e0418d52a6004149090a521cd198a8c09f5d5ab893",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/run_end_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fonts/pixelify_sans/PixelifySans-Regular.woff2",
+      "bytes": 7692,
+      "sha256": "d830612ac9131788ebae754b9268f83f7c1d3ffa9bc0f9a5514207a8283fe71e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/ui/theme/cyberfield_theme.tres"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/fire_burst.png",
+      "bytes": 3472,
+      "sha256": "e14498b7e1f3b6e89bbf494bd7d61007fad63ca2eee04ad49f68142ce9141fe5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/thrown_grenade.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/fire_zone.png",
+      "bytes": 900,
+      "sha256": "5bb93052913a5541e3e7ac363d94e4720958b772a2abf252f9d737e74ee84bfe",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/thrown_grenade.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/ice_burst.png",
+      "bytes": 4193,
+      "sha256": "3d26a14cdef0b6037de15825d6423296c550425cd97d7056bf157fb05a388d6b",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/thrown_grenade.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/muzzle_arc.png",
+      "bytes": 306,
+      "sha256": "6065ff1117c52cab9a2590b1dab5a07e9efee0c8890ed2717e0a97773616a6c8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/muzzle_beam.png",
+      "bytes": 208,
+      "sha256": "57ff7e95a4ef2efc8cf082e8053ddfe3c8a87d1887700d3c743c235d36b21aa3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/muzzle_pulse.png",
+      "bytes": 410,
+      "sha256": "a5a8bd4b0301561329d6fb71c9b47b85e8c11f057c4683a93335e1f725ca1d60",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/muzzle_small.png",
+      "bytes": 225,
+      "sha256": "2f162f32995d8e023a3ad13689c6ff42519c533bc22972e50133bcde8e891d3a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/muzzle_wide.png",
+      "bytes": 511,
+      "sha256": "417e5399bc759b7d7f63db844c3b69e8783e20378519451df8c136323f65e932",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/status_burning.png",
+      "bytes": 484,
+      "sha256": "098ebb3001f793ca6f3651455f528ce0519daa4417f8835ceaa3adba825f6752",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/enemy_status.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/status_frozen.png",
+      "bytes": 785,
+      "sha256": "5a98430bc5c6be7ae0cc3d4b550a2256da3ec0056b79e0012b257004da3051a4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/combat/enemy_status.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/swing_slash.png",
+      "bytes": 2115,
+      "sha256": "ae00fe9fd451b125493d2470645a21ce9a14c9adefcdcab6ad5d5a7c6576cef1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/arsenal/swing_smash.png",
+      "bytes": 2906,
+      "sha256": "ab21b2ec5e7cd144c42b69f34da0c7cd166d57df6895d62eb443353ce3fdfcf7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/death_burst.png",
+      "bytes": 1937,
+      "sha256": "56e749e1e4d2de074d92336eda4ce3a18fab59505c1eee360c983504e2be60e5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/fx/combat_fx.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/heal_ring.png",
+      "bytes": 961,
+      "sha256": "98d6f135732fe69234c2aec50ece3dba27bdac33ae825f20c4b809e0a0c5b202",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/fx/boss_aura.gd",
+        "scene/fx/combat_fx.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/fx/hit_spark.png",
+      "bytes": 464,
+      "sha256": "dc6f163200cce8c7f5b607220c1f998ae76d2bc2f9cf6087136041b9b5279fd4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/fx/combat_fx.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/localization/ui.en.tres",
+      "bytes": 5031,
+      "sha256": "44857354220d5fc8e9884b947ba6aeff348a9e3bebc0b7916bca1db5526b4942",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/localization.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/localization/ui.pt_BR.tres",
+      "bytes": 5210,
+      "sha256": "c41101900488d55f77ab3b57bfbea2d9e266b9bb09c39165891abb6e357135da",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/localization.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/localization/ui_catalog.json",
+      "bytes": 5600,
+      "sha256": "d96996a6176f51adeb5243c7e1347d451a4af04a79b802a0cd99d03ff5f28b6a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_attack_combo_v1.png",
+      "bytes": 49556,
+      "sha256": "a8ba607a9d7a3c3cd0ad8c61f5f81cff052f7c9d34adb6a661e0d2cf751ea71d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_dash_v1.png",
+      "bytes": 34572,
+      "sha256": "899565910a9045ddad3402abb6ab00407bc536a0aada943619303a992093d4ab",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_downed_death_v1.png",
+      "bytes": 17498,
+      "sha256": "c1b03c66d3d887ae324a22d1f0a64c02114ba059a55009ab758ba3c0f2fe73a3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_ground_slam_v1.png",
+      "bytes": 43931,
+      "sha256": "6c5ff2b7ee94bf27d79aea9498cbd71b0518937730c2af8e69a3727a42e7f079",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_hurt_v1.png",
+      "bytes": 16859,
+      "sha256": "a3099235b6a298d13f5fa0e18bb9823b701b1467d8d4245aad7cbd805e1b8916",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_idle_v1.png",
+      "bytes": 22884,
+      "sha256": "6176b44fc04d2ff0f8c4ba296e3793975d7bf282062f3f7c34a7d646ff0ce3aa",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/cyber_ui.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_jump_air_fall_v1.png",
+      "bytes": 20796,
+      "sha256": "516d9ba1a60ba10fd8a657f7e64a3d27bb916cf8569fd608f8480f51b0bf8eaa",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_revive_ally_v1.png",
+      "bytes": 41468,
+      "sha256": "8fb335948c567789a3f36b26ec7f52e0f256ddeb50d9d5e18a5a14bff5111cf9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_walk_run_v1.png",
+      "bytes": 34761,
+      "sha256": "b410be56f5b15eb1e08ba68e1655f80819c0f59d25edaf21a0c5f5b529a257c5",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_wall_climb_v1.png",
+      "bytes": 18317,
+      "sha256": "db5e3cf21cf72342c127296607ca3ac0005f00c8fc25db9f05a87de110868d7c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jackson/jackson_wall_slide_v1.png",
+      "bytes": 15424,
+      "sha256": "4de5e22a788a8a87f1cede0b101b147e7140ab52ae673baccc2340e86a9dbcaf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_aim_bow.png",
+      "bytes": 60205,
+      "sha256": "aff822af04de50911305f53aba690051b9b8ef95e8f8c7474d6482fef8441e91",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_aim_pistol.png",
+      "bytes": 60757,
+      "sha256": "b97d5b81c2ec34493e1ae2bfcf30ae69c347a6caff4b60b5059c6ff0c6db1c6c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_aim_rifle.png",
+      "bytes": 60434,
+      "sha256": "e075bff007e884cd56e9922e9495148b1754c3bcbc64d840383b24f81baa445a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_dash.png",
+      "bytes": 51412,
+      "sha256": "a94fa623a57b18c967519c6728231fc4317458bacab0c1c1c1b61d59ba588383",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_downed.png",
+      "bytes": 43833,
+      "sha256": "a45ddd7ed2a91915ec06723f43edaf1f73f81ffcced1cd085a9169cabc6242be",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_fall.png",
+      "bytes": 51349,
+      "sha256": "692e208e465add3caedafee527060e43fc4329ba6c12a8cc7cc9cbbdade9e2dd",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_get_up.png",
+      "bytes": 45444,
+      "sha256": "083f734da3ffaca467919ddb9d189a8d5a83c2037ac13ebe5b05e1a76aa637e2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_hurt.png",
+      "bytes": 57822,
+      "sha256": "26a8a9e2d3c2bc6723e4f227f53f3ac8a10c201350280ea912cedcd055781f9a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_idle.png",
+      "bytes": 55936,
+      "sha256": "9470fdba3772959ea1dbdf2099b0962c57c105e5eea7290b08fbd45965df4e99",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/cyber_ui.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_jump.png",
+      "bytes": 57761,
+      "sha256": "d0b1db5b83446702399fb9aafa484e9fc48bb2beb50a4b0d5ba537b298de0b94",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_land.png",
+      "bytes": 45832,
+      "sha256": "c4f9ca4fb2245752f507e60e01a96f78f9b05fe8149be6745bcf5a6fe3928a39",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_melee_punch_01.png",
+      "bytes": 61442,
+      "sha256": "c800397e6ad9cb624ba36bee5b54b4e357740da7d5ecef4640605c24571c6c4e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_melee_ready_impact.png",
+      "bytes": 58641,
+      "sha256": "5ff7d2c72d6d08e09a173907c22185939db7ce1033c1eea9a007820bb2ba4437",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_reload_pistol.png",
+      "bytes": 55045,
+      "sha256": "065f331ece6c2abd3574215e3edca512555b266f478fbe9426c678a91776085b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_run.png",
+      "bytes": 55072,
+      "sha256": "801408433b0e558d0578b41024ae4f3986e406497439bbe8c7ec72806e0577c0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_shoot_bow.png",
+      "bytes": 65575,
+      "sha256": "7786a3a6682524774831917dc7e8d4653a5b30602c32bd56178eeda3cbe999c0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_shoot_pistol.png",
+      "bytes": 62363,
+      "sha256": "7803dbdadbf4b1d5fa272e41df922e493e46c35b57b410804fda1df40acaf98d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_shoot_rifle.png",
+      "bytes": 62173,
+      "sha256": "d33e6d01cb37136a57e331fdee5897d9b569ec6bd57bb0df505fcc63384b8322",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/design_b/jhon_walk.png",
+      "bytes": 48858,
+      "sha256": "6c0c3625e9819b77fb1f7cc47657ff1fc48ce0d2a47f4d27ba84f656923c3cd5",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_attack_combo_v2.png",
+      "bytes": 41934,
+      "sha256": "b998b0ac70007b18de758dddc6bad1229bba8761d676a91b4dcf808ff71d681a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_dash_v2.png",
+      "bytes": 37568,
+      "sha256": "ef432d8d51d047f588eeffe2a3f3aadfb22f648ff5e78c70b1a2bdce76a4adb3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_downed_death_v2.png",
+      "bytes": 17307,
+      "sha256": "b7264ff2a3415e14360a44d6f87b1c43361f9bf75d66a9e4c0c9f411b02e605b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_ground_slam_v2.png",
+      "bytes": 41375,
+      "sha256": "276a1e1a8d97b8725c4780504f47cc6aa28f05771310ee7fe801ca97d79cf9a1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_hurt_v2.png",
+      "bytes": 12830,
+      "sha256": "f7ecc11a726baaed55f6b406d7608ccd881b46fe01707f0ade1f778a6152d672",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_idle_v2.png",
+      "bytes": 22368,
+      "sha256": "fd228224622a3fc82af2938befcd00da89be90a08fe385301a55eee80b4f2433",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/experimental/lower_city_concept.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_jump_air_fall_v2.png",
+      "bytes": 22640,
+      "sha256": "d88610c3fb01bd49838a32039fdb05367488dc090ae242c30e330973664ce404",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_revive_ally_v1.png",
+      "bytes": 40881,
+      "sha256": "d7df1cd32e7dd222b89a246fca21f0b6c50aeb8b51761860a3f5593fd56c59f0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_walk_run_v2.png",
+      "bytes": 33326,
+      "sha256": "1b992f1b40a1747a76189979873bf94ca0b5fe3abc46045b0279a1decfee7fd1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_wall_climb_v2.png",
+      "bytes": 17807,
+      "sha256": "5df705afafd5298e1adcb714411afdb4bbb91ab5de314383590b87472f0380f4",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/jhon/jhon_v2_wall_slide_v2.png",
+      "bytes": 9378,
+      "sha256": "c9666b2fbae498aa649dadadc310fa9e041f577bd65c7baa96186cae8d40f77c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_attack_combo_v1.png",
+      "bytes": 48058,
+      "sha256": "69872070bd39e54b4b6dc6d9a17f0dcefc1baf6044c40b4c16978a9266ccf123",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_dash_v1.png",
+      "bytes": 36124,
+      "sha256": "ab1147741fdbb2f2ecbf6686bcaaf29489ea4fab0dea996ea6b0713be02860d8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_downed_death_v1.png",
+      "bytes": 17611,
+      "sha256": "bac7e3fe149fe57bbf387535ccfcd991ef497bcb77e57834618cd2c6f0f0e8ff",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_ground_slam_v1.png",
+      "bytes": 43527,
+      "sha256": "2a6596dbd2901f036c03a457bcde7b5af046971c7b924192d9caff81d2403e7e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_hurt_v1.png",
+      "bytes": 15188,
+      "sha256": "92d35e2a23e9f9fce75874c609b6a51a8e8a4d2c40c608466a441b5bace6b5d7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_idle_v1.png",
+      "bytes": 21629,
+      "sha256": "0747ebf449d44c5d9e5c7ed3f4181f5464a4546987ac288470242285d0a4c09e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/cyber_ui.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_jump_air_fall_v1.png",
+      "bytes": 28557,
+      "sha256": "0cdcd1f603059c7eaf3302ff69a506c3594f3397acfdaece11b48c60f8284ead",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_revive_ally_v1.png",
+      "bytes": 46918,
+      "sha256": "7d02f9bdbd77f4f9888dc7829edaa85c962265787c071774d61b6940a18e85de",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_walk_run_v1.png",
+      "bytes": 33037,
+      "sha256": "0d11610b2f3db32f1f68b28498412552f2782bd51535ae91bcf5f8dfaa054c56",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_wall_climb_v1.png",
+      "bytes": 16779,
+      "sha256": "7329f1f78c9670b45fc85b4e5b4847c9ca3ae39af0f85e74e614e33f56d05092",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/kai/kai_wall_slide_v1.png",
+      "bytes": 14195,
+      "sha256": "149cb12fb8fe450e8481518a209bec5f813e060b0470a0756e0544d1bc4dd9a9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_attack_combo_v1.png",
+      "bytes": 46874,
+      "sha256": "66a8b2049496ec90c40555d105d2fd052b1823d5529a29059416ada9fea36d24",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_dash_v1.png",
+      "bytes": 37602,
+      "sha256": "580aa6d57b6aa71dbc57fea22dc23e165fc50ad47bf502e732d5c8b4e3cd604a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_downed_death_v1.png",
+      "bytes": 19684,
+      "sha256": "bedc0e187b485c47b91e86863f34597f940246ac52bb0b84e0e64cf2ead11ca3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_ground_slam_v1.png",
+      "bytes": 42326,
+      "sha256": "c8c41c5e468ff9ac8d42b72f4ac595d949412611b99a6893d0568ed5eab561a8",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_hurt_v1.png",
+      "bytes": 15742,
+      "sha256": "45d3744a3fb61fe1643dd51bb4a61beb67b2fb2bfc762dbf6dc9e26c8c2f9978",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_idle_v1.png",
+      "bytes": 24522,
+      "sha256": "e6208c1ea622cccb2b1898231b3e9fa072f723c0ba2aee1d23f5e08fd82447f7",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/cyber_ui.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_jump_air_fall_v1.png",
+      "bytes": 27578,
+      "sha256": "c0af1238735107cb93d869b1fa26de3ba716f54c702696a47e899d1894347627",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_revive_ally_v1.png",
+      "bytes": 39582,
+      "sha256": "596d4c1ec47f4668506b35e1c9f202c55681b234a57d80ebbaf47eef33b862d9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_walk_run_v1.png",
+      "bytes": 35833,
+      "sha256": "fc0b2d2b717216e728d22cb7bca9030e2daaf13e97034cf389d98378c827c2ff",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_wall_climb_v1.png",
+      "bytes": 19471,
+      "sha256": "adda871f9c85cec3088558204024ad49a061152792c01353a18b34a32b76c828",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/players/spark/spark_wall_slide_v1.png",
+      "bytes": 16786,
+      "sha256": "7729b3ac080e532d0a47eb0ca30d4330e45a49b02db4534bdd83d48d3a327b0d",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/props/chests/attribute_chest.png",
+      "bytes": 588,
+      "sha256": "9735506e7655f20f1d827f0db8eff679540eb80caf7cdf30e2d80a7cc7afe915",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/interactables/attribute_chest.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/props/chests/loot_chest.png",
+      "bytes": 494,
+      "sha256": "fc6ff136c4aa3ec77699d8d20e7a8c2eea5b072cf97a84442d47bc1b0b75a0e4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/biomes/biome_loot_placeholder.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/props/chests/trap_chest.png",
+      "bytes": 492,
+      "sha256": "080120a7f62363d70d203c1435a90cae24dfd53282ea280cac2a0da680c6491b",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/interactables/trap_chest.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/props/gates/exit_gate.png",
+      "bytes": 716,
+      "sha256": "e1b8008d7a8bf1f14e4c30f8bea5d046b3336f7ee7e39a657a91169525913e18",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/biomes/biome_exit.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/props/gates/teleporter_pad.png",
+      "bytes": 476,
+      "sha256": "28b8e8527a691dc41ae734a3daeb43a66eb634b9625a6300fbd05d274a32c245",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/biomes/biome_teleporter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/ASSET_MANIFEST.json",
+      "bytes": 8790,
+      "sha256": "21016101a75230b17ff6398074f2aea78d708d73a70b1359cff31711e4e0d47e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/backgrounds/street_far.png",
+      "bytes": 6763,
+      "sha256": "ebbcd6ce46e23503170449568d5cb725a3a434c5518232cf410bc8121f46bd54",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/advert.png",
+      "bytes": 1047,
+      "sha256": "89717b380a24519b25624becf80a64d3e60939eb93df702c5c6ed06ab62089e6",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/antenna.png",
+      "bytes": 721,
+      "sha256": "d6fc0acd73b1158a1c8b2b1e8cf692946e57fc0b6f6acf6cb0347262444d34d8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/control.png",
+      "bytes": 659,
+      "sha256": "033df177c1ea6048b91b7c448aae48dea8cfc159b06277ed60ada99134983948",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/control_large.png",
+      "bytes": 662,
+      "sha256": "d4121f674aa53443c34954d91cb31909d5771dfd1545499b4dc2961b81a4be30",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/facade.png",
+      "bytes": 7127,
+      "sha256": "b84bbcac67eb7497c5be1644acced216e4cb170b1573b89bef1d2ba78be02536",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/far.png",
+      "bytes": 4612,
+      "sha256": "2bcf93444924a333a340920ad773421137bc2d59d629017d5eb886239e70e7df",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/hotel.png",
+      "bytes": 613,
+      "sha256": "e69f8299135a8ad677572fb1c9c93081b357ea10a83e626819ddb92268f89cac",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/mid.png",
+      "bytes": 21635,
+      "sha256": "70eca49ce42f7c57135ade657d669ee9c7850f1bd02ba3eeece5f3f33c731205",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/open.png",
+      "bytes": 313,
+      "sha256": "b50eda5c5cc4757dc9b7deb771f1a347683c931f6b0c941c3f4068e1234d15e9",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/city/sign.png",
+      "bytes": 570,
+      "sha256": "33f2da8c9d98097b2c9efe5cee0eb5ec0bde5f2b8cfe595c72539d3f7db74ab1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/industrial/factory.png",
+      "bytes": 5317,
+      "sha256": "ca533a9f9c8a1949adee89862b7c082bd9bddd96c27b136aa3d5cd1b62b2fbe1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_2.png",
+      "bytes": 380,
+      "sha256": "9dc170927baf6737f3717829614df24d9f13cc76bae34ceb88cef169bf485131",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_3.png",
+      "bytes": 456,
+      "sha256": "a16b9c7b3367a343afa02dcf2fac5d8d83878e94afe1e7e0ec269057acc63b8f",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_4.png",
+      "bytes": 441,
+      "sha256": "759c5e01d860253ed608aa4c4d0dc053a3da079264550a6a8f79865032fb4a63",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_5.png",
+      "bytes": 526,
+      "sha256": "6758713140e64d17078f504cb484d77e73e49dfcb962ce724eb734be661c2084",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_6.png",
+      "bytes": 354,
+      "sha256": "36a0cd34da475640a6feb4f8f465f6d6c98f3561f9627cd19e727798eb1ff1c6",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_7.png",
+      "bytes": 391,
+      "sha256": "06d764017c356a13fa32506f52e6a5b8aa925c698983d0ada00790bcef1d5d41",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/lab/lab_8.png",
+      "bytes": 415,
+      "sha256": "86b1f10d6c31658a689742d90199ec91c938311a694544ae1246b3839f3f1147",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "assets/temporary_environment/ASSET_MANIFEST.json",
+        "scene/temporary_environment/painter.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/CREDITS.txt",
+      "bytes": 510,
+      "sha256": "ecc5fa34ddd162d37449e1292b0ca6b58bfba8360bb886afb015ea081b13e4d9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/PRIVATE_PROTOTYPE_NOTICE.txt",
+      "bytes": 693,
+      "sha256": "8e6fa1c587ebe76ff950fffe7564cc04e5ec72ab796b39f05178146bb028471b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/cyberpunk_street_CC0.pdf",
+      "bytes": 834989,
+      "sha256": "3795df823a2d9ee8f237e682a127d875fcb35c5ab3aac8819e2c98be0235732e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/foozle_CC0.txt",
+      "bytes": 710,
+      "sha256": "3326ae3928cdfe04004aaf2d0aebcf95fb66517bc4d90dc3d6a1ab7f7b415870",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/outpost_private_use.txt",
+      "bytes": 584,
+      "sha256": "9473a07a79a78063e19f364e37f18fe499821af6ea84a48d07b5db954127cf6b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/robot_factory_CC_BY_4.txt",
+      "bytes": 798,
+      "sha256": "5e0b80cd2e056f783c99d3e782afbf0bad26cc3521cb1269eb40bfda57ada5df",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/robot_factory_readme.txt",
+      "bytes": 10562,
+      "sha256": "63369d58c3cc663521a90a105e5db2657e4024fd836958b1e6c011de7c632f5e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_environment/licenses/warped_city_CC0.pdf",
+      "bytes": 834989,
+      "sha256": "3795df823a2d9ee8f237e682a127d875fcb35c5ab3aac8819e2c98be0235732e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_items/LICENSES.md",
+      "bytes": 940,
+      "sha256": "4f05fbb11d9c6280b07f5fdbdd22d0aa6890c37574080ac97f65d887a234d869",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_items/foozle/medkit.png",
+      "bytes": 355,
+      "sha256": "cc5e37e9e400975023d66318cce0b9c941b45019202a16782e467d0f0c53dccf",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/interactables/bandage_pickup.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_items/foozle/scrap_components.png",
+      "bytes": 345,
+      "sha256": "a54308435959dfbdc86b87a9abdb5670d33bda66935deb46bf05f8692b6b1264",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/interactables/scrap_pickup.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/temporary_items/reactorcore/arc_emitter_temp.png",
+      "bytes": 733,
+      "sha256": "a2e3926e6df15af24d37458020ff5136f10f4730336b1b503de0db35cb26e957",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "content/visual_profiles/arc_emitter_temp.tres"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/GODOT_INTEGRATION_README.txt",
+      "bytes": 2051,
+      "sha256": "111fc2bd9c2bd97ffaec52173662495758ab2bfb32a5329b0fca60b7d0febfa7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_cyan.png",
+      "bytes": 544,
+      "sha256": "7bddd47b7dcc31b82bc7dfc62380d7c6fa967127c5740e3417c1fdaa2b2942a8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_magenta.png",
+      "bytes": 541,
+      "sha256": "379694015e5bb6b87df8da85f306f0938b96cceb34aa83fa17c2804e0581565a",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.gd",
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/action_frame_red.png",
+      "bytes": 543,
+      "sha256": "3193b84016e64cefe7d8efdc5d15934dba446d1f8d98b175568f03577a124b4d",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/attack1_icon.png",
+      "bytes": 344,
+      "sha256": "8cdc8b6566a593aae3440dcf001a09241270388f30e850923cdf4c0272fd7b77",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/attack2_icon.png",
+      "bytes": 298,
+      "sha256": "131c14177c882a0ec8bbd54b66617ebd452792490cff3b6fbfb70e609b2beb94",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/dash_icon.png",
+      "bytes": 309,
+      "sha256": "e046d2b3c4d58327ba19b9cbf9e4d4883b0bc76968d778d368c565d4adae8d0f",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/jump_icon.png",
+      "bytes": 343,
+      "sha256": "85244dd24bcd76ae09294d47d5ea9433581360f1e4c2645f696ca1e0d8ed8a31",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/actions/use_icon.png",
+      "bytes": 387,
+      "sha256": "c22d0f59aff07d66abbbc7d51299b51754547dcd2b59fbe1116cc0d59303904a",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/joystick/joystick_base.png",
+      "bytes": 2421,
+      "sha256": "e8b88b6105238a62cb83ec812dede54adc479930172af96e962ee3bbb3c290e8",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/virtual_joystick.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/mobile/joystick/joystick_knob.png",
+      "bytes": 749,
+      "sha256": "28d680ee3851460cb00821fc064a7e01792cfdb4eef21eac7e3e6a17953950f1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/virtual_joystick.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/hud/hp_fill.png",
+      "bytes": 670,
+      "sha256": "f3afbb8a9b7952bd33e88859b615d15df6351f578f9276b9ef30ba20ca7bb526",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/hud/hp_track.png",
+      "bytes": 208,
+      "sha256": "89f3b7509b069445f4494bdfa8bbb4dc4398dc75f3fb39404d1f2deb7a3c35aa",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/hud/pause_button_frame.png",
+      "bytes": 337,
+      "sha256": "c9dd8ab301d7bef632768eecf5f6584c91ac1579d568b0b83b59a3ec1f97c5fe",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/touch_controls.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/hud/player_frame.png",
+      "bytes": 1056,
+      "sha256": "4dfd08214b6ad6c17d86199bcdb831c3aac36a6371dc35ef1649fd18730d1563",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/hud/portrait_frame.png",
+      "bytes": 232,
+      "sha256": "7d7be56e2b1f1769f86252563a980732e8587eaa48f11663776aac10eb120a4e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/icons/heal_icon.png",
+      "bytes": 253,
+      "sha256": "0019835014555b3308df274c80a1a827fe57f76236e76752a1d93eb428b186a9",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd",
+        "ui/touch_controls.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_health.png",
+      "bytes": 266,
+      "sha256": "3cfd17acd812d940cb0da76b783687f99af25d09b15a7575e095ecd81583d563",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_intelligence.png",
+      "bytes": 290,
+      "sha256": "445c4890d6fa03265a2058185845ea82d70d638f436263c64022ce4ef95bdace",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/icons/icon_attr_strength.png",
+      "bytes": 263,
+      "sha256": "c473ea289f27d5659d9e954657d6c1ddbdc7172b556f4240dc4efcd914cbd5d9",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/icons/money_icon.png",
+      "bytes": 321,
+      "sha256": "f9b768c9a40ebac39606a1374087bce87715620b918a8401f65846ec18adf453",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/low_hp/low_hp_vignette.png",
+      "bytes": 7781,
+      "sha256": "a281a039f072082debc174f4f6588c134c28046ad4b4a1924af95c713cbe2efa",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/low_hp/player_frame_critical_accent.png",
+      "bytes": 493,
+      "sha256": "2096a513a6d0e2056d913b12ec0ea9eb14c6f9e7b4d8516bba33b7caec0763b5",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "ui/gameplay_hud_presentation.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/assets/shared/minimap/minimap_frame.png",
+      "bytes": 564,
+      "sha256": "0f0bb9fd806e3628c95358ce8a7daa9a2b4856c771500f45e8b6d9051de69a43",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/biomes/biome_minimap.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/official_manifest.json",
+      "bytes": 39910,
+      "sha256": "568af9a67f79218253f59638be86d5439bbe2361c8fee4fef4625b340b863bcf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/gameplay_hud/used_assets.json",
+      "bytes": 3822,
+      "sha256": "4169ce7a4f857e11b7746f6b26d5fb35f42df85f052fe8c0c470739a80b21f7b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/README.txt",
+      "bytes": 1622,
+      "sha256": "1fa730f5ff85cc48e80d9cf9ddeb60ef38f4ab9d71d97d1db299e8de6fc514c7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/SHA256SUMS.txt",
+      "bytes": 857,
+      "sha256": "1bf6d0c2bd5c83c424379e1964a85487135d00458abfa9f2f7e92f72dfdefc3c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/atmosphere_haze.png",
+      "bytes": 7396,
+      "sha256": "02d6d9fc611d31f1fead2baedc8166a9d9e3d2ab653ddf70a2d9b0e209fdb478",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/city_glow_soft.png",
+      "bytes": 2058948,
+      "sha256": "845383646a46abf953a0b69b9912c6ca616aa2239bf210bd2a2821008e87e45c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/concept_master_official.png",
+      "bytes": 1742542,
+      "sha256": "91e9b463fa76160da1c6cda2ecc82538f25a2555c1a3b934b12112ebc7fe4cfb",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/lightning_flash_overlay.png",
+      "bytes": 51575,
+      "sha256": "5943402d687baf81759dabef706ebc78f499cc4edf14517f30f5f72f17c7df33",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/lights_cyan.png",
+      "bytes": 2135396,
+      "sha256": "57ad0b613d506ca7a3ceedee1f1d70e7262e4132eb6b2327e7e361134bda4932",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/lights_magenta.png",
+      "bytes": 2047734,
+      "sha256": "e19d0a8f6fd38c1b1d91cced77e3d2b62975b44f7fc89f9e93b5dfe84b46046e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/rain_back_drop.png",
+      "bytes": 166,
+      "sha256": "81d6443878d885da170f79556dd9d12f0f01874df4aadadc43f8e3d8e51442c4",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/rain_front_drop.png",
+      "bytes": 216,
+      "sha256": "16baabb3599c542a614e42f286540a4140ea4e653e39872d4180cb84228a89a7",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/README.txt",
+      "bytes": 1465,
+      "sha256": "64ee62a12a455505fc2009a42cbf2fcc80b6d20aad959159ceda47a3b56bf2da",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/SHA256SUMS.txt",
+      "bytes": 1239,
+      "sha256": "039d96a0624f978a8b69032c728fbeea94255955a106374dbf5de0c08ca364ee",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/TECHNICAL_METADATA.json",
+      "bytes": 399,
+      "sha256": "8c8cedadda668813c30f6e5da17781eebbdcf7fe4404a4b8edb2c40112a778ce",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/atmosphere_haze_v2.png",
+      "bytes": 22260,
+      "sha256": "af9fedc8579beb9a407ee83fa18e664ad980b400425db62e7fe8308e31262c99",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/city_glow_soft_v2.png",
+      "bytes": 2211507,
+      "sha256": "0aa28cc1792756cc77bd55db147b53ba3fa7d7ae8661e0ec64b4543ff7846b09",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/concept_master_v2_1280x720.png",
+      "bytes": 1373941,
+      "sha256": "01ac0ead466142c0b5b09b0f96644e9b0f111d7c5613ba6d3546978f22355423",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/concept_master_v2_16x9.png",
+      "bytes": 1854502,
+      "sha256": "ecd26d05a97c287a37fdcfc9e54f378ad3c50894d0aa9c9ee43d7e954c941c58",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/lightning_bolt_a_v2.png",
+      "bytes": 17945,
+      "sha256": "7e1085e1ce2a8a08f7e86cb84285249b621f8dd30fbdece6ffbc78416f256ef2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/lightning_bolt_b_v2.png",
+      "bytes": 25307,
+      "sha256": "2e8d2dd51af63cfff15f685b1eb738784c4fddec6e321955b7cff1176f0f46e6",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/lightning_flash_v2.png",
+      "bytes": 52003,
+      "sha256": "054bf9eca0ca8d4a734e45c664af39ef9f625496fecc261ee45cb3a31586d4db",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/lights_cyan_v2.png",
+      "bytes": 2306398,
+      "sha256": "4d672a1cf899013a050bd6c68c930a91b41b52e98debb50348c7858826dace0c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/lights_magenta_v2.png",
+      "bytes": 2203329,
+      "sha256": "3b20391b4b289e449394c36f688efe86be67cf4336390bfbfa1d6b879824e369",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/rain_back_drop_v2.png",
+      "bytes": 167,
+      "sha256": "a4704f1a677c027732a630378d9d44f2265da6a808787a4c98f27b680ff91bf1",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/rain_front_drop_v2.png",
+      "bytes": 220,
+      "sha256": "1e080f7555a0135a4b5b7ffcae520049e9b4fe637287e35d853993a322ccd56e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v2/windows_warm_v2.png",
+      "bytes": 2149781,
+      "sha256": "b1e481820f2d62bb36ab13c519e07bd68e204b9e400c1eebf25f71987b57fd16",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/README.txt",
+      "bytes": 1497,
+      "sha256": "3ccc17ef4893f25721a408f0238bfb05752453c7c6bc9b7b77fe1231efcacfc0",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/SHA256SUMS.txt",
+      "bytes": 2316,
+      "sha256": "fdac6b2661baf5b3d22ca8e9919b4cd4c2d38c836e291a08b6623a94b7aa3ae3",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/TECHNICAL_METADATA.json",
+      "bytes": 815,
+      "sha256": "493299a8cf36e741a0459f70161d20b501b3b6791d74c7640b12cf12300664ac",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/atmosphere/atmosphere_haze_v3.png",
+      "bytes": 23875,
+      "sha256": "aceb52a3e0d4c0863705daf68c60df182be7dc4fa857b907b032dabe4c5d1a87",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_back_a_v3.png",
+      "bytes": 202222,
+      "sha256": "d92bd60b1d55210c5316ed4b69e8b272431ee548e3204291419e70fdecf4b7cd",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_back_b_v3.png",
+      "bytes": 174824,
+      "sha256": "24526b61534fe08b04064efafaa6d89f9b92bb1ed6cfa5c89db85f9de100fcf4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_back_lightmask_v3.png",
+      "bytes": 131781,
+      "sha256": "eb97525df98f57b3709ca128c228ac3b83f6f33a7183c4ba7a8c7012cea471ba",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_front_a_v3.png",
+      "bytes": 147909,
+      "sha256": "bb2d1377325d1ee334690912a1da108a40299c38ddf5bc2adc298e60ee4d9583",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_front_b_v3.png",
+      "bytes": 153173,
+      "sha256": "9a3e6bdaee8bf83b41f8897548a691a1ba619cc424df2ca9a044f9778e449db6",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/clouds/cloud_front_lightmask_v3.png",
+      "bytes": 127957,
+      "sha256": "5f397c6e17c0bfdd288d50dbf71be4724029113632aa17dd8710e55a0b3278b9",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_flash_v3.png",
+      "bytes": 58266,
+      "sha256": "cab450e44268d83c04a1ff1bbf76b8dd002b3927c40c5a6817e0b68e652791c7",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_large_01_v3.png",
+      "bytes": 40894,
+      "sha256": "33abb7aba29ec54593274d3f13127c5738ab920d70cd6141b66b787fce19d7ba",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_large_02_v3.png",
+      "bytes": 49339,
+      "sha256": "403c257371e419c2ad209a6ad6a78b17047e883c55da400782cb283ddff46895",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_large_03_v3.png",
+      "bytes": 49587,
+      "sha256": "4aabd6897d4136a23e2053b74674007e828dd15e8e9d4d4eaf2f6d62294f559e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_short_01_v3.png",
+      "bytes": 19907,
+      "sha256": "b7c18ead813e804c4bc9e50d871263ed3c1c6a70445893112e13afbab787dadd",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_short_02_v3.png",
+      "bytes": 27183,
+      "sha256": "4a865af8674cb9bb1d79c75d343fc352d5ef2eb02e22c6bf0ba5324213f53adc",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lightning/lightning_short_03_v3.png",
+      "bytes": 29152,
+      "sha256": "5503b453300d96c9e347535a514b845d6615b00ec18e36d078ecf84bf615f20a",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lights/city_glow_v3.png",
+      "bytes": 2518264,
+      "sha256": "810850494025c220c70486d70cbd2bf9038464829006a3943870997b827c4655",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lights/lights_cyan_v3.png",
+      "bytes": 2588443,
+      "sha256": "a0eaa1fcb3757387082b399af84d0c287f78e1ca75187c3e3d0eaee7a1d0fc58",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lights/lights_magenta_v3.png",
+      "bytes": 2588269,
+      "sha256": "1dc4d9ff82a80f17be60bfcea34abc1aad1a7e718b68ed8a8d277d33248994d4",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/lights/windows_warm_v3.png",
+      "bytes": 2488334,
+      "sha256": "ea594fb3499b4f894bb9298d2358e81ad1c5260ecc92a9cd06f5d847304a0ede",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/master/concept_master_v3_1280x720.png",
+      "bytes": 1346032,
+      "sha256": "359c494fc7005729dd510179bce1d9c0820237a5aa23c12ef464d4c43a647920",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/master/concept_master_v3_16x9.png",
+      "bytes": 2118497,
+      "sha256": "9a2f5900cc736370f1aa57ef5f0872f778eb9dfe49797a14f20fd50132df9246",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.tscn"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/rain/rain_back_drop_v3.png",
+      "bytes": 167,
+      "sha256": "a4704f1a677c027732a630378d9d44f2265da6a808787a4c98f27b680ff91bf1",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/v3/rain/rain_front_drop_v3.png",
+      "bytes": 220,
+      "sha256": "1e080f7555a0135a4b5b7ffcae520049e9b4fe637287e35d853993a322ccd56e",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "scene/animated_menu_background.gd"
+      ],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/animated/windows_warm.png",
+      "bytes": 2008443,
+      "sha256": "9dbc6dedce3c1cd6edac1536b81c6dfe32f274dd87d982989abdb37c129fce4e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu/cyberfield_menu_concept_master.jpg",
+      "bytes": 322496,
+      "sha256": "b8c001c6d855cfe7c60c8c540be59f1c755ee1d65307a44fefc5f217f5799a89",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/GODOT_INTEGRATION_README.txt",
+      "bytes": 1249,
+      "sha256": "935cb6e7bf9c4aee46eb4d3fbad7731e683fe53e387586d590446336b1946612",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/detail_panel.png",
+      "bytes": 977,
+      "sha256": "38d871c09f8004d7d7b1a469cfe441057786e95817d918e9f0b8badf8f84792e",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/inventory_panel.png",
+      "bytes": 2553,
+      "sha256": "b6d301c21562c834e375e316bca038fad6b7c3e10a5ffa9b8f963fb076f8d1fc",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/slot_empty.png",
+      "bytes": 323,
+      "sha256": "655c97b5aeb756dfc8a97497c018ded9e5e9bea00969cf92a6ce245061289e37",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/slot_normal.png",
+      "bytes": 418,
+      "sha256": "de427c19b89968f5713a3ff1afa4a809deb5a2b5a2110c10071b31ded5ab0101",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/slot_selected.png",
+      "bytes": 434,
+      "sha256": "313e77f6d5770557caa72388983eec52b785cb7ceac76b8b1833483f311da669",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/tab_normal.png",
+      "bytes": 227,
+      "sha256": "5fcbae43d7d1c75b078f0f3312bf32a9045b11c4fa87fe4abe9f774a207b2a91",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/inventory/tab_selected.png",
+      "bytes": 292,
+      "sha256": "2603c3b4acb7dbadf9b3713750103bccf2cc61ac653aded2d1c27bc3f3702015",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/pause/pause_row_normal.png",
+      "bytes": 283,
+      "sha256": "9b421cd25f799d94c16cb6e4bf4fe763c9d8c02a812520414f9968c1db2475af",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/pause/pause_row_selected.png",
+      "bytes": 382,
+      "sha256": "9b984f7202696ef8c485122fd15389d87a1db721d481e1389c9d68c91eed84b2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/pause/pause_side_panel.png",
+      "bytes": 1293,
+      "sha256": "4b25edff3101b2ba46dc8a79f8aa3491ece625fd0809b9bdeab486e1016de900",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/option_row_focused.png",
+      "bytes": 392,
+      "sha256": "e59cc65ef98defeac3f5b8cd1f2ad9337f3a4f0e904ca3537e952ea0b03bb8ac",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/option_row_normal.png",
+      "bytes": 279,
+      "sha256": "7b739fc0b61be622d23be3c887bf95a8ca248c74de697588645c61995d47501b",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/settings_panel.png",
+      "bytes": 2860,
+      "sha256": "127f58771fb2716ae0c368c6a93c56273bac6f023df3314595da3a970870719a",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/settings_tab_normal.png",
+      "bytes": 221,
+      "sha256": "33af02ab346681f4dc2c8545f1925de46f8503f74c7f372b82d80aabe000592c",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/settings_tab_selected.png",
+      "bytes": 288,
+      "sha256": "6ba51faef9884210110f5308e07b7f7ff57e548d48db3e255e86848e1b677777",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/slider_fill.png",
+      "bytes": 503,
+      "sha256": "30860d2a34737e2c92cb214811201d99111217f8d3d956b294953a04cd8e0eb2",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/slider_handle.png",
+      "bytes": 234,
+      "sha256": "fd88d28bf0910a749ca83fc31ea85cbdc920347bb68da59ca2bdb9ccc436a405",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/assets/shared/settings/slider_track.png",
+      "bytes": 139,
+      "sha256": "dce0e279567171e294360b86344f87b095c3e40ac63620152d16fd0c97ccf2f9",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/official_manifest.json",
+      "bytes": 39910,
+      "sha256": "568af9a67f79218253f59638be86d5439bbe2361c8fee4fef4625b340b863bcf",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/menu_panels/used_assets.json",
+      "bytes": 16224,
+      "sha256": "b0769617135131e69dabe62afdaa898446595f97d7fbacbd33de1c6e2c0d4d63",
+      "classification": "uso_incerto_dinamico_ou_artistico",
+      "runtime_literal_references": [],
+      "removed": false
+    },
+    {
+      "path": "assets/ui/theme/cyberfield_theme.tres",
+      "bytes": 209,
+      "sha256": "4ff41c53ac67b5c2c2036cc269aceecc02f604fa867e963985fb2d7dd4722053",
+      "classification": "em_uso_referencia_literal",
+      "runtime_literal_references": [
+        "project.godot"
+      ],
+      "removed": false
+    }
+  ]
+}

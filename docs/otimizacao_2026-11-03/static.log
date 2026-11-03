@@ -1,0 +1,227 @@
+[
+  {
+    "check": "private_asset:assets/audio/menu/Efeito_sonoro_Trovoadas.wav",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/ambiente_chuva.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/ambiente_urbano.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/audio/menu/menu soundtrack.ogg",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/temporary_environment/architecture/industrial_details.png",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "private_asset:assets/temporary_environment/architecture/outpost_services.png",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/atomic_document.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_controller.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_panel.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_services.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/campaign_store.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/persistence/session_snapshot.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/world/area_journal.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/world/region_routes.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/world/world_catalog.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/world/world_state.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/world/world_tracker.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/social/local_profile.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/social/social_bridge.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/social/social_panel.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/social/text_safety.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/network/private_session_client.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/network/private_gameplay_bridge.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/network/gameplay_wire.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/missions/mission_ledger.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/combat/dash_sequence.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/dash_sequence_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/gameplay_progression_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/enemy_interruption_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/gameplay_wire_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/world_persistence_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/region_routes_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/local_profile_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/private_transport_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/room_manager.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/meta_progression.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:scene/dev/dev_mode.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/campaign_store_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "grammar:tests/campaign_session_smoke_test.gd",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "mega_pass_priority1_static_test.py",
+    "status": "PASS",
+    "detail": "MEGA_PASS_PRIORITY1_STATIC_TEST_OK"
+  },
+  {
+    "check": "pass6_hotfix2_static_test.py",
+    "status": "PASS",
+    "detail": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.015s\n\nOK"
+  },
+  {
+    "check": "menu_pass6_static_test.py",
+    "status": "PASS",
+    "detail": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.030s\n\nOK"
+  },
+  {
+    "check": "git diff --check",
+    "status": "PASS",
+    "detail": ""
+  },
+  {
+    "check": "Godot runtime",
+    "status": "NOT_RUN_BY_THIS_SCRIPT",
+    "detail": "See expansion engine logs; grammar is not compilation"
+  },
+  {
+    "check": "Android physical tests",
+    "status": "PENDING",
+    "detail": "suspension, kill/reopen, touch, storage failure"
+  }
+]

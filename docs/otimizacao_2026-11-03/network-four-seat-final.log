@@ -1,0 +1,77 @@
+test_integrated_menu_four_godot_clients (private_gameplay_test.PrivateGameplayTests.test_integrated_menu_four_godot_clients) ... Executing <Task pending name='Task-1' coro=<RelayTests.asyncSetUp() running at /data/data/com.termux/files/home/cyberfield-claude/tests/private_relay_test.py:35> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/tasks.py:765> cb=[_run_until_complete_cb() at /data/data/com.termux/files/usr/lib/python3.13/asyncio/base_events.py:181] created at /data/data/com.termux/files/usr/lib/python3.13/asyncio/runners.py:100> took 0.158 seconds
+GODOT_HOST_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+TEST_TRANSPORT role=host status=connecting error=
+TEST_TRANSPORT role=host status=lobby error=
+TEST_TRANSPORT role=host status=lobby error=
+TEST_TRANSPORT role=host status=lobby error=
+TEST_TRANSPORT role=host status=lobby error=
+TEST_TRANSPORT role=host status=lobby error=
+TEST_TRANSPORT role=host status=active error=
+TEST_TRANSPORT role=host status=reconnecting error=
+TEST_TRANSPORT role=host status=connecting error=
+TEST_TRANSPORT role=host status=paused error=
+TEST_TRANSPORT role=host status=paused error=
+TEST_TRANSPORT role=host status=active error=
+TEST_TRANSPORT role=host status=paused error=
+TEST_TRANSPORT role=host status=paused error=
+TEST_TRANSPORT role=host status=paused error=
+TEST_TRANSPORT role=host status=offline error=
+PRIVATE_GAMEPLAY_REPORT role=host failures=0
+WARNING: 22 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+
+GODOT_GUEST2_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SIM_PEER_TRANSPORT role=guest2 status=connecting error=
+SIM_PEER_TRANSPORT role=guest2 status=lobby error=
+SIM_PEER_TRANSPORT role=guest2 status=lobby error=
+SIM_PEER_TRANSPORT role=guest2 status=lobby error=
+SIM_PEER_TRANSPORT role=guest2 status=lobby error=
+SIM_PEER_TRANSPORT role=guest2 status=active error=
+SIM_PEER_TRANSPORT role=guest2 status=reconnecting error=
+SIM_PEER_TRANSPORT role=guest2 status=connecting error=
+SIM_PEER_TRANSPORT role=guest2 status=active error=
+SIM_PEER_TRANSPORT role=guest2 status=active error=
+SIM_PEER_TRANSPORT role=guest2 status=offline error=
+SIMULATED_GAMEPLAY_REPORT role=guest2 failures=0
+
+GODOT_GUEST3_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SIM_PEER_TRANSPORT role=guest3 status=connecting error=
+SIM_PEER_TRANSPORT role=guest3 status=lobby error=
+SIM_PEER_TRANSPORT role=guest3 status=lobby error=
+SIM_PEER_TRANSPORT role=guest3 status=lobby error=
+SIM_PEER_TRANSPORT role=guest3 status=active error=
+SIM_PEER_TRANSPORT role=guest3 status=paused error=
+SIM_PEER_TRANSPORT role=guest3 status=paused error=
+SIM_PEER_TRANSPORT role=guest3 status=paused error=
+SIM_PEER_TRANSPORT role=guest3 status=active error=
+SIM_PEER_TRANSPORT role=guest3 status=offline error=
+SIMULATED_GAMEPLAY_REPORT role=guest3 failures=0
+
+GODOT_GUEST4_OUTPUT
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+SIM_PEER_TRANSPORT role=guest4 status=connecting error=
+SIM_PEER_TRANSPORT role=guest4 status=lobby error=
+SIM_PEER_TRANSPORT role=guest4 status=lobby error=
+SIM_PEER_TRANSPORT role=guest4 status=active error=
+SIM_PEER_TRANSPORT role=guest4 status=paused error=
+SIM_PEER_TRANSPORT role=guest4 status=paused error=
+SIM_PEER_TRANSPORT role=guest4 status=paused error=
+SIM_PEER_TRANSPORT role=guest4 status=active error=
+SIM_PEER_TRANSPORT role=guest4 status=offline error=
+SIMULATED_GAMEPLAY_REPORT role=guest4 failures=0
+
+ok
+
+----------------------------------------------------------------------
+Ran 1 test in 16.568s
+
+OK

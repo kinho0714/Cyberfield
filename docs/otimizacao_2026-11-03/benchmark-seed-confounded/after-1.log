@@ -1,0 +1,7 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+OPTIMIZATION_BENCHMARK {"enemies":14,"headless_physics_p95_seconds":0.005744,"headless_process_p50_seconds":0.537921,"headless_process_p95_seconds":0.537921,"hud_500_us":30800,"nodes":1721,"physics_seconds":0.014961,"remote_input_100_median_us":5163,"resources":506.0,"save_transaction_median_us":832144,"script_frame_seconds":0.017472,"snapshot_capture_median_us":314071,"startup_us":20418608,"static_memory_bytes":270815332,"transition_us":1468042,"world_sample_100_median_us":3849}
+WARNING: 23 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 4 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)

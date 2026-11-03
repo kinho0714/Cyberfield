@@ -1,0 +1,13 @@
+Godot Engine v4.7.2.stable.official.ed1daf0bf - https://godotengine.org
+
+DEV_MODE Perfil de teste ativo: 1956cde03d51c167f78b18bb18e875b6_dev_sandbox.json (o perfil real não será gravado)
+DEV_MODE Vida +20 → 1000/1000
+DEV_MODE Dinheiro da run +100 → $100
+DEV_MODE Créditos (perfil de teste) +100 → ◈142
+DEV_MODE Sessão anterior ao DEV restaurada; perfil de teste separado.
+CAMPAIGN_SESSION_REPORT failures=0 test_namespace=user://test_session_a3915677c151f3c233c1b3d4
+WARNING: 46 ObjectDB instances were leaked at exit (run with `--verbose` for details).
+   at: cleanup (core/object/object.cpp:2536)
+ERROR: 18 resources still in use at exit (run with --verbose for details).
+   at: clear (core/io/resource.cpp:822)
+ERROR: 10 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.

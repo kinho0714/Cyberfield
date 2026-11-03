@@ -1,0 +1,16 @@
+[
+  {
+    "test": "campaign_session_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "campaign_session_smoke_test.gd.log"
+  },
+  {
+    "test": "loading_transition_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "loading_transition_smoke_test.gd.log"
+  }
+]

@@ -1,0 +1,173 @@
+{
+  "headless_only": true,
+  "harness_sha256": "470766098f6a071e424e178aa73148a6bb55224f10643266ac55aa52964989fc",
+  "repetitions": 3,
+  "medians": {
+    "before": {
+      "area_seed": 1947,
+      "enemies": 14,
+      "hud_500_us": 36127,
+      "nodes": 1707,
+      "physics_seconds": 0.001185,
+      "remote_input_100_median_us": 65648,
+      "resources": 511.0,
+      "save_transaction_median_us": 764977,
+      "script_frame_seconds": 0.693137,
+      "snapshot_capture_median_us": 314128,
+      "startup_us": 18587370,
+      "static_memory_bytes": 269184216,
+      "transition_us": 921887,
+      "world_sample_100_median_us": 228537
+    },
+    "after": {
+      "area_seed": 1947,
+      "enemies": 14,
+      "hud_500_us": 38478,
+      "nodes": 1715,
+      "physics_seconds": 0.000404,
+      "remote_input_100_median_us": 5607,
+      "resources": 505.0,
+      "save_transaction_median_us": 437930,
+      "script_frame_seconds": 0.038927,
+      "snapshot_capture_median_us": 66747,
+      "startup_us": 15754980,
+      "static_memory_bytes": 268827244,
+      "transition_us": 1872122,
+      "world_sample_100_median_us": 4809
+    }
+  },
+  "runs": [
+    {
+      "case": "before",
+      "iteration": 1,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 36127,
+        "nodes": 1707,
+        "physics_seconds": 0.001185,
+        "remote_input_100_median_us": 65648,
+        "resources": 511.0,
+        "save_transaction_median_us": 764977,
+        "script_frame_seconds": 1.080609,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 314128,
+        "startup_us": 19820588,
+        "static_memory_bytes": 269184216,
+        "transition_us": 1307031,
+        "world_sample_100_median_us": 243900
+      }
+    },
+    {
+      "case": "after",
+      "iteration": 1,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 39889,
+        "nodes": 1715,
+        "physics_seconds": 0.000404,
+        "remote_input_100_median_us": 5952,
+        "resources": 505.0,
+        "save_transaction_median_us": 445724,
+        "script_frame_seconds": 0.085844,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 66747,
+        "startup_us": 18361983,
+        "static_memory_bytes": 268828620,
+        "transition_us": 2038375,
+        "world_sample_100_median_us": 5572
+      }
+    },
+    {
+      "case": "after",
+      "iteration": 2,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 36813,
+        "nodes": 1715,
+        "physics_seconds": 0.000409,
+        "remote_input_100_median_us": 5170,
+        "resources": 505.0,
+        "save_transaction_median_us": 407924,
+        "script_frame_seconds": 0.038927,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 63928,
+        "startup_us": 12693708,
+        "static_memory_bytes": 268827244,
+        "transition_us": 1407126,
+        "world_sample_100_median_us": 4576
+      }
+    },
+    {
+      "case": "before",
+      "iteration": 2,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 31108,
+        "nodes": 1707,
+        "physics_seconds": 0.00393,
+        "remote_input_100_median_us": 56609,
+        "resources": 511.0,
+        "save_transaction_median_us": 567087,
+        "script_frame_seconds": 0.519029,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 498811,
+        "startup_us": 11683099,
+        "static_memory_bytes": 269184216,
+        "transition_us": 773176,
+        "world_sample_100_median_us": 126567
+      }
+    },
+    {
+      "case": "before",
+      "iteration": 3,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 39040,
+        "nodes": 1707,
+        "physics_seconds": 0.000123,
+        "remote_input_100_median_us": 70394,
+        "resources": 511.0,
+        "save_transaction_median_us": 766761,
+        "script_frame_seconds": 0.693137,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 297061,
+        "startup_us": 18587370,
+        "static_memory_bytes": 269184216,
+        "transition_us": 921887,
+        "world_sample_100_median_us": 228537
+      }
+    },
+    {
+      "case": "after",
+      "iteration": 3,
+      "metrics": {
+        "area_seed": 1947,
+        "enemies": 14,
+        "generation_signature": "0:(0, 0):fork_down:[1]|1:(0, 1):rise:[0, 2]|2:(1, 1):corridor:[1, 3]|3:(2, 1):upper_lower_passage:[2, 4]|4:(3, 1):descent:[3, 5]|5:(3, 2):fork_up:[4, 6]|6:(2, 2):descent:[5, 7, 15]|7:(2, 3):vertical_shaft:[6, 8, 21]|8:(3, 3):upper_lower_passage:[7, 9]|9:(4, 3):vertical_shaft:[8, 10, 14]|10:(4, 2):fork_down:[9, 11]|11:(5, 2):rise:[10, 12]|12:(5, 1):descent:[11, 13]|13:(4, 1):exit_platform:[12]|14:(4, 4):vertical_shaft:[9, 17, 18]|15:(1, 2):descent:[6, 16]|16:(1, 3):fork_up:[15, 19]|17:(5, 4):exit_platform:[14]|18:(4, 5):rise:[14]|19:(0, 3):rise:[16, 20]|20:(0, 2):fork_down:[19]|21:(2, 4):fork_up:[7]|heavy:|traps:lower_city_loot_01",
+        "hud_500_us": 38478,
+        "nodes": 1715,
+        "physics_seconds": 0.000271,
+        "remote_input_100_median_us": 5607,
+        "resources": 505.0,
+        "save_transaction_median_us": 437930,
+        "script_frame_seconds": 0.009848,
+        "simulation_frozen": true,
+        "snapshot_capture_median_us": 70909,
+        "startup_us": 15754980,
+        "static_memory_bytes": 268827244,
+        "transition_us": 1872122,
+        "world_sample_100_median_us": 4809
+      }
+    }
+  ]
+}

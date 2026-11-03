@@ -1,0 +1,9 @@
+[
+  {
+    "test": "phase8_lan_lobby_touch_smoke_test.gd",
+    "passed": true,
+    "exit_code": 0,
+    "engine_warnings": true,
+    "log": "phase8_lan_lobby_touch_smoke_test.gd.log"
+  }
+]
