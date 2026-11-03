@@ -90,6 +90,11 @@ func _run() -> void:
 	menu_input._input(event)
 	assert(mode.players_page.visible and mode.solo_button.has_focus())
 	menu_input._input(event)
+	# 03/11: JOGAR → CAMPANHA SOLO abre a página de campanhas; a partida avulsa
+	# (perfil clássico, com escolha de dificuldade) continua acessível só por gamepad.
+	assert(mode.solo_page.visible, "Campaign solo page not opened")
+	mode.quick_button.grab_focus()
+	menu_input._input(event)
 	assert(mode.difficulty_page.visible and mode.normal_button.has_focus(), "Solo choice not confirmed")
 	var requested := [false]
 	mode.run_requested.connect(func(_mode: StringName, _difficulty: StringName, _joypad: int) -> void: requested[0] = true)

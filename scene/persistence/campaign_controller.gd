@@ -12,6 +12,7 @@ const PROFILE := preload("res://scene/social/local_profile.gd")
 var services: CanvasLayer
 const SERVICES := preload("res://scene/persistence/campaign_services.gd")
 const PANEL := preload("res://scene/persistence/campaign_panel.gd")
+const UI_KIT := preload("res://ui/cyber_ui.gd")
 var store := STORE.new()
 var active: Dictionary = {}
 var autosave_seconds := 30.0
@@ -41,21 +42,22 @@ func _ready() -> void:
 	services.controller = self
 	add_child(services)
 	panel = PANEL.new()
+	panel.name = "CampaignPanel"
 	panel.controller = self
 	add_child(panel)
-	var button := Button.new()
-	button.name = "Campaigns"
-	button.text = "CAMPANHAS SOLO"
-	button.custom_minimum_size.y = 44
-	game.mode_select.main_page.add_child(button)
-	game.mode_select.main_page.move_child(button, 1)
-	button.pressed.connect(panel.open)
-	var social_button: Button = Button.new()
-	social_button.text = "PERFIL / COOP PRIVADO"
-	social_button.custom_minimum_size.y = 44
-	game.mode_select.main_page.add_child(social_button)
-	game.mode_select.main_page.move_child(social_button, 2)
-	social_button.pressed.connect(services.open)
+	# 03/11: o menu inicial é dono da navegação (JOGAR → CAMPANHA SOLO / COOPERATIVO,
+	# SOCIAL); este controlador só atende às intenções. Nenhum botão é injetado.
+	var menu: Node = game.mode_select
+	menu.solo_state_provider = solo_menu_state
+	menu.social_state_provider = social_menu_state
+	menu.campaign_requested.connect(_on_campaign_requested)
+	# Etapa B: SOCIAL e sessão privada ainda abrem o painel existente do Codex.
+	menu.social_requested.connect(func(_tab: StringName) -> void:
+		services.open()
+		services.show_profile())
+	menu.private_session_requested.connect(func(_tab: StringName) -> void:
+		services.open()
+		services.show_private())
 	var status_layer: CanvasLayer = CanvasLayer.new()
 	status_layer.layer = 35
 	add_child(status_layer)
@@ -92,6 +94,61 @@ func meta_changed() -> bool:
 	if save_now():
 		return true
 	return _save_permanent()
+
+
+## Estado da página CAMPANHA SOLO: campanha mais recente e se CONTINUAR é possível.
+func solo_menu_state() -> Dictionary:
+	var latest := latest_campaign()
+	if latest.is_empty():
+		var count: int = store.list_campaigns().size()
+		return {"continue": false, "status": "NENHUMA CAMPANHA SALVA" if count == 0 else "NENHUM SAVE ÍNTEGRO PARA CONTINUAR"}
+	return {"continue": true, "status": "ÚLTIMA: %s • %s" % [String(latest.display_name).left(22), UI_KIT.local_time(String(latest.get("last_played_at", "")))]}
+
+
+func social_menu_state() -> Dictionary:
+	if not profile.initialize():
+		return {"status": "PERFIL INDISPONÍVEL • ARQUIVOS PRESERVADOS"}
+	var waiting: int = profile.data.get("incoming", {}).size()
+	var friends: int = profile.data.friends.size()
+	var status := "%s • %s" % [String(profile.data.display_name).left(18), "1 AMIGO" if friends == 1 else "%d AMIGOS" % friends]
+	if waiting > 0:
+		status += " • 1 PEDIDO NOVO" if waiting == 1 else " • %d PEDIDOS NOVOS" % waiting
+	return {"status": status}
+
+
+## Campanha íntegra jogada por último (por `last_played_at`, carimbo UTC ISO).
+func latest_campaign() -> Dictionary:
+	var best: Dictionary = {}
+	for summary: Dictionary in store.list_campaigns():
+		if summary.has("error"):
+			continue
+		if best.is_empty() or String(summary.get("last_played_at", "")) > String(best.get("last_played_at", "")):
+			best = summary
+	return best
+
+
+func continue_latest() -> bool:
+	var latest := latest_campaign()
+	if latest.is_empty() or game.mode_selected or restoring:
+		return false
+	game.mode_select.requesting_run = true
+	game.mode_select.solo_status.text = "CARREGANDO %s…" % String(latest.display_name).left(22)
+	var restored: bool = await continue_campaign(String(latest.campaign_id))
+	if not restored and not game.mode_selected:
+		game.mode_select.return_to(&"solo", &"Continue")
+		game.mode_select.solo_status.text = error_message(last_error).to_upper()
+	game.mode_select.requesting_run = false
+	return restored
+
+
+func _on_campaign_requested(action: StringName) -> void:
+	match action:
+		&"continue":
+			continue_latest()
+		&"create":
+			panel.open("create")
+		&"manage":
+			panel.open("slots")
 
 
 func save_now(clean_exit := false) -> bool:

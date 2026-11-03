@@ -151,6 +151,11 @@ custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "JOGAR"
 
+[node name="Social" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "SOCIAL"
+
 [node name="Options" type="Button" parent="ModeSelect/Overlay/Center/MainPage"]
 custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
@@ -170,19 +175,19 @@ script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/PlayersPage"]
 layout_mode = 2
-text = "MODO DE JOGO"
+text = "JOGAR"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 30
 
 [node name="Solo" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
 custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "SOLO"
+text = "CAMPANHA SOLO"
 
 [node name="Coop" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
 custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "COOP"
+text = "COOPERATIVO"
 
 [node name="Back" type="Button" parent="ModeSelect/Overlay/Center/PlayersPage"]
 custom_minimum_size = Vector2(340, 56)
@@ -238,7 +243,7 @@ script = ExtResource("menu_alive")
 
 [node name="Title" type="Label" parent="ModeSelect/Overlay/Center/CoopPage"]
 layout_mode = 2
-text = "TIPO DE COOP"
+text = "COOPERATIVO"
 horizontal_alignment = 1
 theme_override_font_sizes/font_size = 30
 
@@ -256,9 +261,110 @@ text = "MESMO DISPOSITIVO"
 [node name="Lan" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
 custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
-text = "COOP POR REDE/LAN"
+text = "REDE LOCAL (LAN)"
+
+[node name="PrivateCreate" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "CRIAR SESSÃO PRIVADA"
+
+[node name="PrivateJoin" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "ENTRAR EM SESSÃO"
+
+[node name="Invites" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "CONVITES"
 
 [node name="Back" type="Button" parent="ModeSelect/Overlay/Center/CoopPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="SoloPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(400, 0)
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/SoloPage"]
+layout_mode = 2
+text = "CAMPANHA SOLO"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+
+[node name="Status" type="Label" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 30)
+layout_mode = 2
+text = "NENHUMA CAMPANHA SALVA"
+
+[node name="Continue" type="Button" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "CONTINUAR CAMPANHA"
+
+[node name="Create" type="Button" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "CRIAR CAMPANHA"
+
+[node name="Manage" type="Button" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "GERENCIAR CAMPANHAS"
+
+[node name="Quick" type="Button" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "PARTIDA AVULSA"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/SoloPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="SocialPage" type="VBoxContainer" parent="ModeSelect/Overlay/Center"]
+custom_minimum_size = Vector2(400, 0)
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 14
+script = ExtResource("menu_alive")
+
+[node name="Title" type="Label" parent="ModeSelect/Overlay/Center/SocialPage"]
+layout_mode = 2
+text = "SOCIAL"
+horizontal_alignment = 1
+theme_override_font_sizes/font_size = 30
+
+[node name="Status" type="Label" parent="ModeSelect/Overlay/Center/SocialPage"]
+custom_minimum_size = Vector2(340, 30)
+layout_mode = 2
+text = "PERFIL LOCAL • OFFLINE"
+
+[node name="Profile" type="Button" parent="ModeSelect/Overlay/Center/SocialPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "MEU PERFIL"
+
+[node name="Friends" type="Button" parent="ModeSelect/Overlay/Center/SocialPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "AMIGOS"
+
+[node name="Requests" type="Button" parent="ModeSelect/Overlay/Center/SocialPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "SOLICITAÇÕES"
+
+[node name="Blocked" type="Button" parent="ModeSelect/Overlay/Center/SocialPage"]
+custom_minimum_size = Vector2(340, 56)
+layout_mode = 2
+text = "JOGADORES BLOQUEADOS"
+
+[node name="Back" type="Button" parent="ModeSelect/Overlay/Center/SocialPage"]
 custom_minimum_size = Vector2(340, 56)
 layout_mode = 2
 text = "VOLTAR"

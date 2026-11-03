@@ -135,8 +135,33 @@ func list_campaigns() -> Array[Dictionary]:
 			else:
 				result.append({"campaign_id": id, "display_name": data.display_name,
 					"mode": data.mode, "revision": data.revision, "interrupted": data.interrupted,
-					"last_played_at": data.last_played_at, "recovery": recovery_info.duplicate(true)})
+					"last_played_at": data.last_played_at, "created_at": String(data.get("created_at", "")),
+					"progress": progress_summary(data), "recovery": recovery_info.duplicate(true)})
+	# Ordem estável por criação: o número do slot exibido não muda entre aberturas.
+	result.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return String(a.get("created_at", "")) + String(a.campaign_id) < String(b.get("created_at", "")) + String(b.campaign_id))
 	return result
+
+
+## Somente leitura, para a interface: nenhum campo novo é gravado no save.
+static func progress_summary(data: Dictionary) -> Dictionary:
+	var session: Dictionary = data.get("session", {}) if data.get("session") is Dictionary else {}
+	var run: Dictionary = session.get("run", {}) if session.get("run") is Dictionary else {}
+	var permanent: Dictionary = data.get("permanent", {}) if data.get("permanent") is Dictionary else {}
+	var world: Dictionary = data.get("world", {}) if data.get("world") is Dictionary else {}
+	var exploration: Variant = world.get("exploration", {})
+	return {
+		"has_session": not session.is_empty(),
+		"in_hub": bool(session.get("hub", true)),
+		"run_active": bool(run.get("run_active", false)),
+		"stage": int(run.get("stage_index", 0)) + 1,
+		"biome": String(run.get("current_biome_name", "")),
+		"credits": int(permanent.get("credits", 0)),
+		"scrap": int(permanent.get("scrap", 0)),
+		"house_stage": int(permanent.get("house_stage", 0)),
+		"runs": int(world.get("run_counter", 0)),
+		"rooms": exploration.size() if exploration is Dictionary else 0,
+	}
 
 
 func rename_campaign(id: String, display_name: String) -> bool:
