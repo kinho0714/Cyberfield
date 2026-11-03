@@ -45,7 +45,12 @@ static func restore(game: Node, snapshot: Dictionary) -> bool:
 		game.current_room.get_parent().remove_child(game.current_room)
 		game.current_room.free()
 		game.current_room = null
-	var loaded: bool = game._load_laboratory_hub() if snapshot.hub else game._load_current_stage(manager.get_stage_seed())
+	var area_seed: int = int(snapshot.run.get("area_seed_value", 0))
+	if area_seed <= 0:
+		area_seed = manager.get_stage_seed()
+	game.restoring_snapshot = true
+	var loaded: bool = game._load_laboratory_hub() if snapshot.hub else game._load_current_stage(area_seed)
+	game.restoring_snapshot = false
 	if not loaded:
 		return false
 	var report: Dictionary = game.current_room.get_generation_report() if game.current_room.has_method("get_generation_report") else {}

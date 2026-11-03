@@ -2,6 +2,11 @@ class_name CampaignController
 extends Node
 const STORE := preload("res://scene/persistence/campaign_store.gd")
 const SNAPSHOT := preload("res://scene/persistence/session_snapshot.gd")
+const WORLD := preload("res://scene/world/world_state.gd")
+const TRACKER := preload("res://scene/world/world_tracker.gd")
+var geography: Node
+var services: CanvasLayer
+const SERVICES := preload("res://scene/persistence/campaign_services.gd")
 const PANEL := preload("res://scene/persistence/campaign_panel.gd")
 var store := STORE.new()
 var active: Dictionary = {}
@@ -19,6 +24,12 @@ var game: Node
 func _ready() -> void:
 	game = get_parent()
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	geography = TRACKER.new()
+	geography.controller = self
+	add_child(geography)
+	services = SERVICES.new()
+	services.controller = self
+	add_child(services)
 	panel = PANEL.new()
 	panel.controller = self
 	add_child(panel)
@@ -77,7 +88,9 @@ func save_now(clean_exit := false) -> bool:
 	if session.is_empty():
 		last_error = "waiting_for_consistent_frame"
 		return false
+	geography.sample()
 	var next: Dictionary = active.duplicate(true)
+	session.geographic_location = next.world.location.duplicate(true)
 	next.session = session
 	next.permanent = meta.to_dictionary()
 	next.interrupted = not clean_exit
@@ -101,6 +114,9 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 	if created.is_empty():
 		last_error = store.last_error
 		return false
+	if not WORLD.ensure(created):
+		last_error = "invalid_world_catalog"
+		return false
 	active = created
 	game.run_manager.dev_session = false
 	_apply_permanent(permanent)
@@ -121,6 +137,9 @@ func continue_campaign(id: String) -> bool:
 		last_error = store.last_error
 		return false
 	var newest: Dictionary = revisions[0]
+	if not WORLD.ensure(newest):
+		last_error = "invalid_world_catalog"
+		return false
 	if newest.get("mode", "") != "solo":
 		last_error = "unsupported_mode"
 		return false
@@ -141,6 +160,8 @@ func continue_campaign(id: String) -> bool:
 		restored = bool(game.mode_selected) and SNAPSHOT.restore(game, session)
 		game.is_transitioning = false
 		if restored:
+			if session.get("geographic_location") is Dictionary:
+				active.world.location = session.geographic_location.duplicate(true)
 			recovery_status.restored_revision = candidate.revision
 			recovery_status.used_backup = int(candidate.revision) != int(newest.revision) or int(recovery_status.get("damaged_revisions", 0)) > 0
 			break

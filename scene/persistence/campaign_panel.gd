@@ -1,4 +1,5 @@
 extends CanvasLayer
+const WORLD := preload("res://scene/world/world_state.gd")
 const TOUCH := preload("res://ui/touch_scroll_router.gd")
 var controller: Node
 var overlay: ColorRect
@@ -84,6 +85,7 @@ func _refresh() -> void:
 		label.text += " • revisão %d" % int(summary.get("revision", 0))
 		rows.add_child(label)
 		if not summary.has("error"):
+			_button(rows, "MUNDO CONHECIDO", _show_world.bind(id))
 			_button(rows, "CONTINUAR", _continue.bind(id))
 			_button(rows, "RENOMEAR COM O NOME DIGITADO", _rename.bind(id))
 		else:
@@ -139,3 +141,23 @@ func _import() -> void:
 		visible = true
 		title.text = controller.error_message(controller.last_error)
 		_refresh()
+
+
+func _show_world(id: String) -> void:
+	var campaign: Dictionary = controller.store.load_campaign(id)
+	if campaign.is_empty() or not campaign.has("world"):
+		title.text = "Continue a campanha para registrar seu mundo."
+		return
+	for child in rows.get_children():
+		rows.remove_child(child)
+		child.queue_free()
+	title.text = "MUNDO CONHECIDO • " + String(campaign.display_name)
+	var view: Dictionary = WORLD.public_view(campaign.world)
+	for location: Dictionary in view.locations:
+		var label: Label = Label.new()
+		label.text = "%s • %s [%s]" % [location.kind, location.display_name, location.narrative_status]
+		rows.add_child(label)
+	var count_label: Label = Label.new()
+	count_label.text = "Salas registradas: %d" % campaign.world.exploration.size()
+	rows.add_child(count_label)
+	_button(rows, "VOLTAR ÀS CAMPANHAS", _refresh)

@@ -58,6 +58,7 @@ var run_active := false
 var run_state: RunState = RunState.MENU
 var run_is_completed := false
 var seed_value := 0
+var area_seed_value := 0
 var current_room_index := 0
 var room_states: Dictionary = {}
 var participants: Dictionary = {}
@@ -169,6 +170,7 @@ func prepare_new_run(new_seed: int = 0, preserve_configured_weapon_pool := false
 	if not preserve_configured_weapon_pool:
 		_configure_run_weapon_pool_from_meta()
 	seed_value = new_seed if new_seed != 0 else randi()
+	area_seed_value = 0
 	run_state = RunState.PREPARING
 	run_active = false
 	run_is_completed = false

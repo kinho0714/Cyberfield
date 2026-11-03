@@ -33,6 +33,7 @@ const CAMERA_ZOOM_MAX := 1.22
 @onready var lan_lobby: CanvasLayer = $LanLobby
 @onready var local_settings: LocalSettings = $LocalSettings
 
+var restoring_snapshot := false
 var campaigns: Node
 
 var current_room: Node = null
@@ -276,6 +277,10 @@ func apply_lan_run_start(config: Dictionary) -> void:
 
 
 func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) -> void:
+	if run_seed == 0 and campaigns != null and not campaigns.active.is_empty():
+		run_seed = campaigns.geography.next_run_seed()
+		if run_seed == 0:
+			return
 	is_transitioning = true
 	coop_waiting_changed.emit(false)
 	_set_all_player_input(false)
@@ -285,7 +290,10 @@ func _begin_run_from_hub(run_seed: int = 0, preserve_weapon_pool: bool = false) 
 		candidate.reset_for_new_run()
 		run_manager.register_participant(candidate.participant_id, true)
 	apply_meta_loadout()
-	if not _load_lower_city_biome(run_seed):
+	if campaigns != null and not campaigns.active.is_empty():
+		run_manager.stage_biome_kinds[0] = campaigns.geography.selected_biome()
+	var loaded_first: bool = _load_current_stage(run_seed) if campaigns != null and not campaigns.active.is_empty() else _load_lower_city_biome(run_seed)
+	if not loaded_first:
 		run_manager.prepare_hub()
 		_load_laboratory_hub()
 		await _fade_to(0.0)
@@ -317,6 +325,8 @@ func request_biome_advance(exit_id: StringName, destination_id: StringName) -> v
 		_set_all_player_input(true)
 		is_transitioning = false
 		return
+	if campaigns != null and not campaigns.active.is_empty():
+		campaigns.geography.advance_route(destination_id)
 	var stage_seed: int = run_manager.get_stage_seed()
 	if lan_session.is_host():
 		var transition_epoch := lan_session.advance_world_epoch_authoritative()
@@ -553,6 +563,9 @@ func _load_lower_city_biome(generation_seed: int = 0) -> bool:
 func _load_generated_biome(scene: PackedScene, generation_seed: int, label: String) -> bool:
 	var generated_biome := scene.instantiate()
 	var seed_to_use: int = run_manager.seed_value if generation_seed == 0 else generation_seed
+	if not restoring_snapshot and campaigns != null and not campaigns.active.is_empty():
+		seed_to_use = campaigns.geography.area_seed(seed_to_use)
+	run_manager.area_seed_value = seed_to_use
 	if not generated_biome.generate(seed_to_use, run_manager):
 		push_error("%s generation and fallback both failed" % label)
 		generated_biome.queue_free()
@@ -566,6 +579,8 @@ func _load_generated_biome(scene: PackedScene, generation_seed: int, label: Stri
 	current_room = generated_biome
 	current_is_hub = false
 	current_is_generated_biome = true
+	if not restoring_snapshot and campaigns != null and not campaigns.active.is_empty():
+		campaigns.geography.record_area(seed_to_use, generated_biome.get_map_graph())
 	generated_biome_bounds = generated_biome.get_generated_bounds()
 	_configure_camera_for_biome(generated_biome_bounds, generated_biome.get_start_position())
 	_position_players_in_biome(generated_biome.get_start_position())

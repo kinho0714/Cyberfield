@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "catalog_version": 1,
+  "investigative_states": 3,
+  "states": [
+    {
+      "id": "state_001",
+      "display_name": "Estado 001 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "partial",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_002",
+      "display_name": "Estado 002 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_003",
+      "display_name": "Estado 003 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_004",
+      "display_name": "Estado 004 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_005",
+      "display_name": "Estado 005 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_006",
+      "display_name": "Estado 006 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_007",
+      "display_name": "Estado 007 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": true,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_008",
+      "display_name": "Estado 008 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": false,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_009",
+      "display_name": "Estado 009 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": false,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    },
+    {
+      "id": "state_010",
+      "display_name": "Estado 010 (provisório)",
+      "narrative_status": "reserved",
+      "implementation": "future",
+      "eligible_guard": false,
+      "description": "",
+      "cities": [
+        "city_001"
+      ],
+      "factions": [],
+      "difficulty": {},
+      "requirements": [],
+      "routes": [],
+      "clues": [],
+      "events": [],
+      "rewards": []
+    }
+  ],
+  "city_templates": [
+    {
+      "id": "city_001",
+      "display_name": "Cidade 001 (provisória)",
+      "narrative_status": "reserved"
+    }
+  ],
+  "municipalities": [
+    {
+      "id": "cidade_baixa",
+      "display_name": "Cidade Baixa",
+      "biome_kind": "lower_city",
+      "narrative_status": "confirmed",
+      "implementation": "implemented",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Ruas Comerciais",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Território das Gangues",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Setor Policial",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "industrial",
+      "display_name": "Distrito Industrial",
+      "biome_kind": "industrial",
+      "narrative_status": "confirmed",
+      "implementation": "implemented",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Fábricas",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Fundições",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Complexo de Máquinas",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "laboratorio",
+      "display_name": "Complexo Laboratorial",
+      "biome_kind": "lab",
+      "narrative_status": "confirmed",
+      "implementation": "implemented",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Setor de Pesquisa",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Setor de Experimentação",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Contenção Científica",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "subterraneo_urbano",
+      "display_name": "Subterrâneo Urbano",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Estação Abandonada",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Galerias de Manutenção",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Túneis Clandestinos",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "mercado_negro",
+      "display_name": "Mercado Negro",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Feira Clandestina",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Oficinas Ilegais",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Mercado de Cyberwares",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "porto_cargas",
+      "display_name": "Porto de Cargas",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Terminal de Contêineres",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Docas",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Alfândega Militarizada",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "cidade_alta",
+      "display_name": "Cidade Alta",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Distrito Comercial",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Residencial de Luxo",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Setor Corporativo",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "zona_descarte",
+      "display_name": "Zona de Descarte",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Ferro-Velho",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Cemitério de Robôs",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Aterro Tecnológico",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "centro_contencao",
+      "display_name": "Centro de Contenção",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Bloco de Detenção",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Segurança Máxima",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Centro de Controle",
+          "narrative_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "nucleo_central",
+      "display_name": "Núcleo Central",
+      "biome_kind": "",
+      "narrative_status": "proposed",
+      "implementation": "future",
+      "neighborhoods": [
+        {
+          "id": "neighborhood_001",
+          "display_name": "Complexo Energético",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_002",
+          "display_name": "Centro de Dados",
+          "narrative_status": "proposed"
+        },
+        {
+          "id": "neighborhood_003",
+          "display_name": "Núcleo de Comando",
+          "narrative_status": "proposed"
+        }
+      ]
+    }
+  ],
+  "guard_slots": [
+    {
+      "id": "guard_slot_001",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_002",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_003",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_004",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_005",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_006",
+      "character_id": "",
+      "narrative_status": "reserved"
+    },
+    {
+      "id": "guard_slot_007",
+      "character_id": "",
+      "narrative_status": "reserved"
+    }
+  ]
+}

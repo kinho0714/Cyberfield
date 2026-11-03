@@ -145,3 +145,12 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   `docs/mundo_saves/expansao/MARCO_1_RODADA.md`; avisos de recursos na saída registrados.
 - Proprietário confirmou também recuperação de interrompida e independência de A/B.
 - Próximo: catálogo/hierarquia/distribuição reservada e exploração persistentes.
+
+### Expansão — mundo/procedural
+- Catálogo versionado e hierarquia mundo/estado/cidade/município/bairro/sala,
+  distribuição de sete slots reservados persistida, visão pública filtrada.
+- Seeds separadas, grafo de rotas por bairros e integração incremental no gerador;
+  seed de área preservada na recuperação; UI de mundo/seleção no hub.
+- world_persistence, region_routes e campaign_session integrados: failures=0 no
+  motor headless isolado. Relatório `expansao/MARCOS_2_3.md`. Android/Windows e
+  progressão geográfica completa permanecem pendentes.

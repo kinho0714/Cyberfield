@@ -1,0 +1,143 @@
+class_name WorldTracker
+extends Node
+const WORLD := preload("res://scene/world/world_state.gd")
+const ROUTES := preload("res://scene/world/region_routes.gd")
+const CATALOG := preload("res://scene/world/world_catalog.gd")
+var controller: Node
+var catalog: WorldCatalog = CATALOG.new()
+var elapsed := 0.0
+
+
+func _process(delta: float) -> void:
+	elapsed += delta
+	if elapsed < 0.25:
+		return
+	elapsed = 0.0
+	sample()
+
+
+func sample() -> void:
+	if controller.active.is_empty() or controller.restoring:
+		return
+	var game: Node = controller.game
+	if not game.mode_selected or game.is_transitioning or game.get_node("MetaProgression").dev_sandbox_active or game.run_manager.dev_session:
+		return
+	if not WORLD.ensure(controller.active):
+		return
+	var players: Array = game.get_players()
+	if players.is_empty():
+		return
+	var world: Dictionary = controller.active.world
+	world.in_hub = bool(game.current_is_hub)
+	if game.current_is_hub:
+		return
+	var neighborhood: String = current_neighborhood()
+	if neighborhood.is_empty():
+		return
+	var room_id: String = String(game.run_manager.current_stage_id)
+	if game.current_room.has_method("get_module_index_at"):
+		var graph: Dictionary = game.current_room.get_map_graph()
+		var index: int = game.current_room.get_module_index_at(players[0].global_position)
+		var modules: Array = graph.get("modules", [])
+		if index >= 0 and index < modules.size():
+			room_id = "%d_%s" % [int(game.run_manager.seed_value), String(modules[index].instance_id)]
+	if WORLD.visit(world, neighborhood, room_id, players[0].global_position):
+		controller.dirty = true
+
+
+func current_neighborhood() -> String:
+	if controller.active.is_empty() or not controller.active.has("world"):
+		return ""
+	var world: Dictionary = controller.active.world
+	var kind: String = String(controller.game.run_manager.current_biome_kind)
+	var municipality: String = catalog.municipality_for_biome(kind)
+	var selected: String = String(world.location.get("neighborhood_id", ""))
+	if not selected.is_empty() and world.locations.has(selected):
+		var parent: String = String(world.locations[selected].parent_id)
+		if municipality.is_empty() or parent.ends_with("/" + municipality):
+			return selected
+	if municipality.is_empty():
+		return ""
+	return String(world.world_id) + "/state_001/city_001/" + municipality + "/neighborhood_001"
+
+
+func choose_region(id: String) -> bool:
+	if controller.active.is_empty() or not controller.game.current_is_hub or controller.game.is_transitioning:
+		return false
+	var next: Dictionary = controller.active.duplicate(true)
+	if not next.world.discoveries.has(id) or not next.world.locations.has(id):
+		return false
+	if next.world.locations[id].kind != "neighborhood" or next.world.locations[id].implementation != "implemented":
+		return false
+	next.world.location = {"neighborhood_id": id, "room_id": "", "position": Vector2.ZERO}
+	if not controller.store.save_campaign(next):
+		return false
+	controller.active = next
+	return true
+
+
+func known_regions() -> Array[Dictionary]:
+	if controller.active.is_empty() or not controller.active.has("world"):
+		return []
+	return WORLD.public_view(controller.active.world).locations
+
+
+func next_run_seed() -> int:
+	if controller.active.is_empty():
+		return 0
+	var next: Dictionary = controller.active.duplicate(true)
+	if not WORLD.ensure(next) or not ROUTES.ensure(next.world):
+		return 0
+	next.world.run_counter = int(next.world.get("run_counter", 0)) + 1
+	var seed_value: int = WORLD.derive_seed(int(next.campaign_seed), "run_v1", str(next.world.run_counter))
+	if not controller.store.save_campaign(next):
+		controller.last_error = controller.store.last_error
+		return 0
+	controller.active = next
+	return seed_value
+
+
+func selected_biome() -> StringName:
+	var world: Dictionary = controller.active.world
+	var id: String = String(world.location.get("neighborhood_id", ""))
+	if not world.locations.has(id):
+		return &"lower_city"
+	var municipality: String = String(world.locations[id].parent_id)
+	return StringName(world.locations[municipality].get("biome_kind", "lower_city"))
+
+
+func advance_route(exit_id: StringName) -> void:
+	var game: Node = controller.game
+	if controller.active.is_empty() or game.run_manager.dev_session or game.run_manager.stage_index >= 5:
+		return
+	var world: Dictionary = controller.active.world
+	if not ROUTES.ensure(world):
+		return
+	var source: String = current_neighborhood()
+	var target: String = ROUTES.destination(world, source, "B" if exit_id == &"next_biome_b" else "A")
+	if target.is_empty():
+		return
+	world.location = {"neighborhood_id": target, "room_id": "", "position": Vector2.ZERO}
+	game.run_manager.stage_biome_kinds[game.run_manager.stage_index] = selected_biome()
+	controller.dirty = true
+
+
+func area_seed(fallback: int) -> int:
+	var game: Node = controller.game
+	if controller.active.is_empty() or game.run_manager.dev_session:
+		return fallback
+	var world: Dictionary = controller.active.world
+	return ROUTES.area_seed(world, int(game.run_manager.seed_value), String(world.location.get("neighborhood_id", "")), int(game.run_manager.stage_index))
+
+
+func record_area(seed_value: int, graph: Dictionary) -> void:
+	var game: Node = controller.game
+	if controller.active.is_empty() or game.run_manager.dev_session or controller.restoring:
+		return
+	var world: Dictionary = controller.active.world
+	if not ROUTES.ensure(world):
+		return
+	var key: String = "%d:%d" % [int(game.run_manager.seed_value), int(game.run_manager.stage_index)]
+	world.areas[key] = {"neighborhood_id": world.location.get("neighborhood_id", ""), "area_seed": seed_value,
+		"signature": graph.get("signature", ""), "graph": graph.duplicate(true)}
+	controller.dirty = true
