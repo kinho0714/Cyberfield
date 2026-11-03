@@ -16,10 +16,18 @@ func run() -> void:
 	if not await game.campaigns.start_new("Disposable benchmark"):
 		quit(1)
 		return
+	# Keep campaign UUID/seed out of the procedural seed and prevent pre-measurement AI.
+	paused = true
+	game.restoring_snapshot = true
 	started = Time.get_ticks_usec()
 	await game._begin_run_from_hub(1947)
+	game.restoring_snapshot = false
 	var transition_us := Time.get_ticks_usec() - started
-	await process_frame
+	var original_process_mode: int = game.process_mode
+	game.process_mode = Node.PROCESS_MODE_DISABLED
+	game.campaigns.set_process(false)
+	game.campaigns.geography.set_process(false)
+	paused = false
 	var samples: Array[int] = []
 	for batch in 7:
 		started = Time.get_ticks_usec()
@@ -32,14 +40,6 @@ func run() -> void:
 	for index in 500:
 		hud._process(0.0)
 	var hud_us := Time.get_ticks_usec() - started
-	var frame_times: Array[float] = []
-	var physics_times: Array[float] = []
-	for index in 120:
-		await physics_frame
-		frame_times.append(Performance.get_monitor(Performance.TIME_PROCESS))
-		physics_times.append(Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS))
-	frame_times.sort()
-	physics_times.sort()
 	# Measure save transactions at an explicit idle boundary, not active coroutines.
 	for enemy in get_nodes_in_group("enemy"):
 		if enemy.has_method("cancel_attack"):
@@ -67,7 +67,8 @@ func run() -> void:
 		save_times.append(Time.get_ticks_usec() - started)
 	capture_times.sort()
 	save_times.sort()
-	print("OPTIMIZATION_BENCHMARK ", JSON.stringify({"remote_input_100_median_us": remote_input_times[1], "snapshot_capture_median_us": capture_times[1], "save_transaction_median_us": save_times[1], "startup_us": startup_us, "transition_us": transition_us, "world_sample_100_median_us": samples[3], "hud_500_us": hud_us, "headless_process_p50_seconds": frame_times[60], "headless_process_p95_seconds": frame_times[114], "headless_physics_p95_seconds": physics_times[114], "nodes": get_node_count(), "enemies": get_nodes_in_group("enemy").size(), "static_memory_bytes": OS.get_static_memory_usage(), "resources": Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT), "physics_seconds": Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS), "script_frame_seconds": Performance.get_monitor(Performance.TIME_PROCESS)}))
+	print("OPTIMIZATION_BENCHMARK ", JSON.stringify({"simulation_frozen": true, "generation_signature": game.current_room.get_generation_report().signature, "area_seed": game.run_manager.area_seed_value, "remote_input_100_median_us": remote_input_times[1], "snapshot_capture_median_us": capture_times[1], "save_transaction_median_us": save_times[1], "startup_us": startup_us, "transition_us": transition_us, "world_sample_100_median_us": samples[3], "hud_500_us": hud_us, "nodes": get_node_count(), "enemies": get_nodes_in_group("enemy").size(), "static_memory_bytes": OS.get_static_memory_usage(), "resources": Performance.get_monitor(Performance.OBJECT_RESOURCE_COUNT), "physics_seconds": Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS), "script_frame_seconds": Performance.get_monitor(Performance.TIME_PROCESS)}))
+	game.process_mode = original_process_mode
 	await game.return_to_main_menu()
 	game.free()
 	await process_frame

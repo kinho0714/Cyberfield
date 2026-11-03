@@ -150,20 +150,20 @@ static func _valid_world(world: Variant) -> bool:
 	return true
 
 
-static func properties(node: Node) -> Dictionary:
+static func properties(node: Node, metadata: Array[Dictionary] = []) -> Dictionary:
 	var values := {}
-	for property: Dictionary in node.get_property_list():
+	var rng_values := {}
+	var entries: Array[Dictionary] = node.get_property_list() if metadata.is_empty() else metadata
+	for property: Dictionary in entries:
 		if int(property.usage) & PROPERTY_USAGE_SCRIPT_VARIABLE == 0:
 			continue
 		var value: Variant = node.get(property.name)
-		if _data_only(value):
+		if value is RandomNumberGenerator:
+			rng_values["rng::" + String(property.name)] = {"seed": value.seed, "state": value.state}
+		elif _data_only(value):
 			values[String(property.name)] = value.duplicate(true) if value is Array or value is Dictionary else value
-	# Preserve explicitly the state of script-owned RNGs without serializing objects.
-	for property: Dictionary in node.get_property_list():
-		if int(property.usage) & PROPERTY_USAGE_SCRIPT_VARIABLE:
-			var value: Variant = node.get(property.name)
-			if value is RandomNumberGenerator:
-				values["rng::" + String(property.name)] = {"seed": value.seed, "state": value.state}
+	# Keep the original scalar/container-then-RNG application order and wire format.
+	values.merge(rng_values, true)
 	return values
 
 
@@ -202,10 +202,11 @@ static func _capture_tree(root: Node, node: Node, result: Array[Dictionary]) -> 
 	if node.is_queued_for_deletion():
 		return
 	if node.get_script() != null:
+		var metadata: Array[Dictionary] = node.get_property_list()
 		var data := {"path": String(root.get_path_to(node)), "parent": String(root.get_path_to(node.get_parent())) if node != root else "",
 			"name": String(node.name), "scene": node.scene_file_path,
-			"script": node.get_script().resource_path, "properties": properties(node),
-			"identity": _identity(node), "native_children": _native_children(node)}
+			"script": node.get_script().resource_path, "properties": properties(node, metadata),
+			"identity": _identity(node, metadata), "native_children": _native_children(node)}
 		if node is CharacterBody2D:
 			data.velocity = node.velocity
 		if node is Node2D:
@@ -216,11 +217,14 @@ static func _capture_tree(root: Node, node: Node, result: Array[Dictionary]) -> 
 		_capture_tree(root, child, result)
 
 
-static func _identity(node: Node) -> String:
+static func _identity(node: Node, metadata: Array[Dictionary] = []) -> String:
+	var entries: Array[Dictionary] = node.get_property_list() if metadata.is_empty() else metadata
+	var names := {}
+	for property: Dictionary in entries:
+		names[String(property.name)] = true
 	for key in ["persistent_id", "pickup_id", "drop_id", "loot_id", "trap_id", "passage_id"]:
-		for property: Dictionary in node.get_property_list():
-			if String(property.name) == key and not String(node.get(key)).is_empty():
-				return String(node.get_script().resource_path) + "::" + String(node.get(key))
+		if names.has(key) and not String(node.get(key)).is_empty():
+			return String(node.get_script().resource_path) + "::" + String(node.get(key))
 	return ""
 
 

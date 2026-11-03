@@ -50,10 +50,13 @@ def main():
             result = {"case": label, "iteration": iteration + 1, "metrics": json.loads(lines[0][len(MARKER):])}
             results.append(result)
             print(label, iteration + 1, result["metrics"], flush=True)
+    signatures = {record["metrics"].get("generation_signature") for record in results}
+    if len(signatures) != 1 or None in signatures:
+        raise SystemExit("Procedural signatures differ; refusing a misleading comparison")
     medians = {}
     for label in ("before", "after"):
         records = [record["metrics"] for record in results if record["case"] == label]
-        medians[label] = {key: statistics.median(record[key] for record in records) for key in records[0]}
+        medians[label] = {key: statistics.median(record[key] for record in records) for key in records[0] if type(records[0][key]) in (int, float)}
     (args.output / "results.json").write_text(json.dumps({"headless_only": True, "harness_sha256": hashlib.sha256(harnesses[0].read_bytes()).hexdigest(),
                                                        "repetitions": args.repetitions, "medians": medians, "runs": results}, indent=2) + "\n")
 
