@@ -114,3 +114,11 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   a integração; depois validar Android/Windows. Não avançar ao Marco 2 ainda.
 - Saves não escritos nesta execução; seis assets privados não rastreados preservados
   com hashes verificados. Sem reset, limpeza, checkout forçado ou push.
+
+### Marco 1 — hotfix de compilação após primeiro teste Android
+- Relato do proprietário: Godot Android 4.7.2 não inferiu `restored` em
+  `campaign_controller.gd:118` (acesso dinâmico a `game.mode_selected`).
+- Corrigido com `bool` explícito e conversão do operando; revisão dos `:=` dos
+  scripts novos, dicionários do controlador tipados e resultado DEV tipado.
+- Evidência local: `docs/mundo_saves/validation_inference_hotfix.json`.
+- Compilação/funcionalidade Android ainda aguardam validação. Não iniciar Marco 2.

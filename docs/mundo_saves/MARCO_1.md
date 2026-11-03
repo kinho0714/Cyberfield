@@ -143,3 +143,31 @@ validar cobertura dos snapshots e obter evidência de sessão real salva/restaur
 Referência da API binária consultada: documentação oficial
 https://docs.godotengine.org/en/4.4/tutorials/io/binary_serialization_api.html
 (`bytes_to_var`/`var_to_bytes`, sem habilitar objetos).
+
+## Hotfix de inferência — validação Android iniciada pelo proprietário
+
+O proprietário relatou erro de compilação no Godot Android 4.7.2 em
+`campaign_controller.gd:118`. A declaração anterior usava
+`var restored := game.mode_selected and SNAPSHOT.restore(game, candidate.session)`.
+`game` tem tipo estático Node e `mode_selected` é propriedade do script concreto,
+logo o operando esquerdo é dinâmico. O analisador não consegue estabelecer um tipo
+para a expressão completa com `:=`, embora `restore` declare retorno bool.
+
+Correção: `var restored: bool = bool(game.mode_selected) and
+SNAPSHOT.restore(game, candidate.session)`. Preserva o curto-circuito: a restauração
+só é chamada quando o modo foi selecionado. Os dicionários de snapshot/campanha no
+controlador e o resultado de restauração no DEV também receberam tipos explícitos.
+Nenhuma mudança no formato ou no conteúdo dos saves, nas transições ou no schema.
+
+Revisados todos os `:=` nos quatro scripts novos de persistência e nos dois smoke
+tests do Marco 1, além do ponto de integração DEV. Não foi identificada outra
+expressão equivalente de inferência sobre propriedade dinâmica; os demais casos
+usam literais, construtores, casts ou funções com retorno declarado. Esta revisão
+não substitui a análise semântica do motor.
+
+Verificações disponíveis: nove scripts passaram na gramática; verificações
+estáticas de prioridade 1, rolagem e menu passaram; seis hashes privados conferidos;
+`git diff --check` sem erros. Evidência: `validation_inference_hotfix.json`.
+A validação sintática anterior não detectava o erro de inferência agora reportado.
+Não há executável Godot local; compilação e teste funcional no Android continuam
+pendentes. Aguardando nova validação do proprietário; sem avanço ao Marco 2.

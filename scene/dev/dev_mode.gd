@@ -154,7 +154,7 @@ func end_session() -> void:
 		var game := _room_manager()
 		if game != null and not _legit_session.is_empty():
 			game.is_transitioning = true
-			var restored := SESSION_SNAPSHOT.restore(game, _legit_session)
+			var restored: bool = SESSION_SNAPSHOT.restore(game, _legit_session)
 			game.is_transitioning = false
 			if restored:
 				_log("Sessão anterior ao DEV restaurada; perfil de teste separado.")

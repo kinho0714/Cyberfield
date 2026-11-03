@@ -59,11 +59,11 @@ func save_now(clean_exit := false) -> bool:
 	var meta: Node = game.get_node("MetaProgression")
 	if meta.dev_sandbox_active or game.run_manager.dev_session:
 		return false
-	var session := SNAPSHOT.capture(game)
+	var session: Dictionary = SNAPSHOT.capture(game)
 	if session.is_empty():
 		last_error = "waiting_for_consistent_frame"
 		return false
-	var next := active.duplicate(true)
+	var next: Dictionary = active.duplicate(true)
 	next.session = session
 	next.permanent = meta.to_dictionary()
 	next.interrupted = not clean_exit
@@ -81,9 +81,9 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 	if game.mode_selected or restoring:
 		return false
 	var defaults := MetaProgression.new()
-	var permanent := defaults.to_dictionary() if imported.is_empty() else imported.duplicate(true)
+	var permanent: Dictionary = defaults.to_dictionary() if imported.is_empty() else imported.duplicate(true)
 	defaults.free()
-	var created := store.create_campaign(display_name, int(Time.get_unix_time_from_system()) ^ randi(), permanent)
+	var created: Dictionary = store.create_campaign(display_name, int(Time.get_unix_time_from_system()) ^ randi(), permanent)
 	if created.is_empty():
 		last_error = store.last_error
 		return false
@@ -102,7 +102,7 @@ func start_new(display_name: String, imported: Dictionary = {}) -> bool:
 func continue_campaign(id: String) -> bool:
 	if game.mode_selected or restoring:
 		return false
-	var candidate := store.load_campaign(id)
+	var candidate: Dictionary = store.load_campaign(id)
 	if candidate.is_empty() or candidate.get("mode", "") != "solo":
 		last_error = store.last_error if candidate.is_empty() else "unsupported_mode"
 		return false
@@ -115,7 +115,7 @@ func continue_campaign(id: String) -> bool:
 	_apply_permanent(candidate.permanent)
 	await game.start_configured_run(&"solo", StringName(candidate.session.run.get("difficulty", "normal")), -1)
 	game.is_transitioning = true
-	var restored := game.mode_selected and SNAPSHOT.restore(game, candidate.session)
+	var restored: bool = bool(game.mode_selected) and SNAPSHOT.restore(game, candidate.session)
 	game.is_transitioning = false
 	restoring = false
 	if not restored:
@@ -168,7 +168,7 @@ func import_legacy(display_name: String) -> bool:
 	var copy := MetaProgression.new()
 	copy._reset_defaults()
 	copy._apply_save(parsed)
-	var permanent := copy.to_dictionary()
+	var permanent: Dictionary = copy.to_dictionary()
 	copy.free()
 	return await start_new(display_name, permanent)
 
@@ -176,7 +176,7 @@ func import_legacy(display_name: String) -> bool:
 func _save_permanent() -> bool:
 	if active.is_empty() or game.get_node("MetaProgression").dev_sandbox_active or game.run_manager.dev_session:
 		return false
-	var next := active.duplicate(true)
+	var next: Dictionary = active.duplicate(true)
 	next.permanent = game.get_node("MetaProgression").to_dictionary()
 	if not next.session.is_empty():
 		next.session.permanent = next.permanent.duplicate(true)
