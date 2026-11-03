@@ -3,11 +3,14 @@
 Data: 03/11/2026. Base de auditoria: `803fa10`.
 Branch: `codex/mundo-saves-marcos-0-1-2026-11-03`.
 
-**Estado: IMPLEMENTADO PARCIALMENTE. Marco NÃO homologado nem concluído.**
-O critério de entrega exige salvar/restaurar uma sessão no Godot real. Não existe
-executável Godot disponível neste Termux; não foi executado nenhum teste de runtime.
-Nenhum teste em dispositivo nem aprovação do proprietário foi recebido nesta etapa.
-Não avançar ao Marco 2 antes de validar/corrigir a integração do Marco 1.
+**Estado: IMPLEMENTADO PARCIALMENTE; ciclo básico solo TESTADO EM DISPOSITIVO
+E APROVADO PELO PROPRIETÁRIO. Marco completo ainda não homologado nem concluído.**
+O proprietário confirmou no Godot Android 4.7.2: criar/carregar uma campanha,
+movimentar o personagem, encerrar completamente a execução, reabrir o jogo e usar
+CONTINUAR restaurou corretamente o progresso e a posição. Evidência manual relatada
+pelo proprietário; não é resultado de execução dos smoke tests automatizados.
+Não existe executável Godot disponível neste Termux. Permanecem os critérios
+específicos discriminados abaixo. Não avançar ao Marco 2 por instrução do proprietário.
 
 ## Arquivos e arquitetura
 
@@ -72,10 +75,14 @@ configuração de exportação ou protocolo LAN.
 - O parser e as dependências de teste foram instalados fora do repositório. Caches
   criados pela primeira execução foram movidos para o temporário; o validador passa
   a usar cache temporário e desliga geração de bytecode nos testes Python.
-- **PENDENTE:** análise de tipos/compilação pelo Godot 4.7.2, importação, execução de
-  cena e todos os testes funcionais novos. Parser de gramática NÃO prova tipos,
-  integridade funcional, ausência de erro de autoload ou funcionamento em Android.
-- **NÃO TESTADO EM DISPOSITIVO. NÃO APROVADO PELO PROPRIETÁRIO.**
+- **TESTADO EM DISPOSITIVO E APROVADO PELO PROPRIETÁRIO:** ciclo básico solo no
+  Godot Android 4.7.2, conforme relato registrado nesta revisão: criar/carregar,
+  movimentar, encerrar completamente a execução, reabrir e CONTINUAR com progresso
+  e posição restaurados. Isso comprova execução da cena e persistência entre
+  execuções nesse cenário; não equivale a auditoria de todos os scripts/autoloads.
+- **PENDENTE:** execução dos smoke tests funcionais novos, testes de falha e demais
+  cenários abaixo. O parser de gramática não valida tipos ou funcionamento; a
+  evidência Android vem do relato do proprietário, separada dos testes locais.
 
 Testes funcionais escritos, ainda não executados:
 
@@ -111,10 +118,13 @@ funcional aprovado. Suas saídas são JSON; nenhum executável/dependência é v
    usa transação separada, mas captura de combate a qualquer instante ainda exige
    adaptadores explícitos para estados assíncronos. Não declarar recuperação completa
    de todos os instantes/sistemas com esta implementação genérica.
-2. Não há prova de reabertura em processo novo, kill Android, pausa do sistema,
-   falta de espaço, falha de rename, performance/latência ou consumo de memória.
-   Arrays/objetos não serializáveis são omitidos; auditar cobertura em runtime,
-   especialmente projéteis, efeitos temporários, colisões e estados de interação.
+2. Reabertura após encerramento completo da execução e restauração de progresso/
+   posição foram confirmadas pelo proprietário. O método de encerramento não foi
+   detalhado: não estender a evidência a force-stop nas configurações Android,
+   crash, perda de energia ou encerramento pelo sistema por falta de memória.
+   Pausa/troca de apps, falta de espaço, falha de rename, performance/latência e
+   consumo de memória continuam pendentes. Arrays/objetos não serializáveis são
+   omitidos; auditar projéteis, efeitos, colisões e estados de interação em runtime.
 3. Snapshot depende da geração instalada. Se o gerador mudar e a assinatura divergir,
    a carga é recusada e as revisões permanecem intactas. Migrações de geometria ou
    schemas futuros precisam de implementação explícita; não são simuladas.
@@ -137,8 +147,9 @@ Teste Android: criar A; mudar vida/munição/loot; salvar; trocar app; forçar e
 reabrir e CONTINUAR; criar B e alternar; corromper SOMENTE namespace de teste;
 verificar fallback; testar DEV ligado/desligado e exclusão confirmada de slot de teste.
 Repetir em Windows, incluindo reconciliação de assinatura e roundtrip de tipos.
-Antes de considerar Marco 1 concluído: executar testes no motor, corrigir falhas,
-validar cobertura dos snapshots e obter evidência de sessão real salva/restaurada.
+A evidência de sessão real salva/restaurada no ciclo básico foi recebida.
+Antes de considerar Marco 1 concluído: executar os demais testes no motor, corrigir
+falhas e validar a cobertura dos snapshots e a recuperação em condições de falha.
 
 Referência da API binária consultada: documentação oficial
 https://docs.godotengine.org/en/4.4/tutorials/io/binary_serialization_api.html
@@ -169,5 +180,61 @@ Verificações disponíveis: nove scripts passaram na gramática; verificações
 estáticas de prioridade 1, rolagem e menu passaram; seis hashes privados conferidos;
 `git diff --check` sem erros. Evidência: `validation_inference_hotfix.json`.
 A validação sintática anterior não detectava o erro de inferência agora reportado.
-Não há executável Godot local; compilação e teste funcional no Android continuam
-pendentes. Aguardando nova validação do proprietário; sem avanço ao Marco 2.
+Na entrega do hotfix, não havia executável Godot local e a nova validação Android
+estava pendente. O relato posterior abaixo confirma o ciclo básico funcionando;
+os demais critérios permanecem pendentes. Sem avanço ao Marco 2.
+
+
+## Evidência funcional Android recebida — ciclo básico aprovado
+
+Fonte: relato direto do proprietário nesta conversa, após o hotfix de inferência.
+Ambiente informado: Godot Android 4.7.2. Não foram fornecidos logs, captura ou hash
+da build executada; não foi realizado teste adicional pelo agente nesta revisão.
+
+Sequência confirmada: criou e carregou uma campanha; movimentou o personagem;
+fechou completamente a execução; reabriu o jogo; acionou CONTINUAR. Resultado
+informado: campanha restaurou corretamente progresso e posição do personagem.
+O proprietário aprovou este teste funcional. Não foi especificado se ocorreu no
+hub ou em bioma, nem quais itens/atributos compunham o progresso observado.
+
+| Critério | Estado e alcance da evidência |
+| --- | --- |
+| Criar/carregar uma campanha solo | TESTADO EM DISPOSITIVO; APROVADO PELO PROPRIETÁRIO, no ciclo relatado |
+| Reabrir execução e CONTINUAR | TESTADO EM DISPOSITIVO; APROVADO PELO PROPRIETÁRIO |
+| Restaurar posição e progresso observado | TESTADO EM DISPOSITIVO; APROVADO PELO PROPRIETÁRIO; campos não discriminados |
+| Verificações estáticas locais anteriores | TESTADO AUTOMATICAMENTE, conforme JSONs históricos; não reclassificados como testes funcionais |
+| Smoke tests store/session/DEV | ESCRITOS; execução no motor ainda não confirmada |
+| Dois slots, renomeação, exclusão confirmada e importação legada | PENDENTES de validação funcional |
+| Integridade, recuperação por backup, escrita interrompida, versões e conflitos | PENDENTES de validação funcional |
+| Isolamento DEV, morte e progresso permanente sem duplicação | PENDENTES de validação funcional |
+| Campos detalhados da run, objetos e transições procedurais | PENDENTES de validação funcional |
+| Autosave periódico/eventos/suspensão, separadamente | PENDENTES; o ciclo aprovado não identifica qual gatilho gravou o snapshot |
+| Windows, falhas de armazenamento e desempenho mobile | PENDENTES |
+
+Próximos testes, por prioridade, usando campanhas/arquivos descartáveis separados
+das campanhas reais e sem alterar os saves existentes:
+
+1. **Isolamento DEV:** no hub e na run de teste, anotar vida, créditos, dinheiro e
+   equipamentos; usar ferramentas DEV; desativar; verificar retorno aos valores
+   legítimos; encerrar/reabrir e conferir ausência de ganhos artificiais no slot real.
+2. **Integridade e recuperação:** executar `campaign_store_smoke_test.gd` em seu
+   namespace exclusivo; validar arquivo incompleto, checksum alterado, `.tmp`, backup
+   anterior íntegro, preservação dos dados danificados, versão futura e conflito de
+   revisão. Nunca provocar corrupção em saves reais. Incluir falhas de escrita/
+   armazenamento, ainda não cobertas integralmente pelo smoke test atual.
+3. **Independência dos slots e legado:** criar A/B com estados distintos; alternar e
+   reabrir; renomear; cancelar exclusão e confirmar somente a de um slot descartável;
+   conferir o outro intacto. Copiar perfil legado para campanha nova e verificar
+   migração/compatibilidade e que o arquivo de origem permanece idêntico.
+4. **Cobertura de estado e morte:** registrar valores de vida, munição, armas,
+   cyberwares/acessórios, recursos, blueprints e descobertas; coletar loot/abrir baús,
+   derrotar inimigos e abrir passagens; atravessar estágios; reabrir e comparar.
+   Testar derrota versus interrupção, permanentes preservados e ausência de loot/
+   recompensas duplicadas. Executar os smoke tests session e DEV existentes.
+5. **Gatilhos e plataformas:** distinguir autosave periódico de eventos, menu e
+   suspensão; trocar de app e voltar; testar encerramento forçado/crash em campanha
+   descartável; repetir o ciclo no Windows. Medir latência/tamanho/frequência de
+   gravação e verificar UI touch/teclado além dos controles já usados no relato.
+
+Marco 1 permanece em validação parcial. Nenhum código, save, asset ou sistema foi
+alterado para registrar esta evidência. Marco 2 continua não autorizado nesta etapa.

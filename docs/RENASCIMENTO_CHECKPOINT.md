@@ -122,3 +122,17 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
   scripts novos, dicionários do controlador tipados e resultado DEV tipado.
 - Evidência local: `docs/mundo_saves/validation_inference_hotfix.json`.
 - Compilação/funcionalidade Android ainda aguardam validação. Não iniciar Marco 2.
+
+
+### Marco 1 — ciclo básico aprovado pelo proprietário no Godot Android 4.7.2
+- Evidência manual relatada: criou/carregou campanha, movimentou o personagem,
+  encerrou completamente a execução, reabriu e usou CONTINUAR. Progresso observado
+  e posição restaurados corretamente. TESTADO EM DISPOSITIVO e APROVADO PELO
+  PROPRIETÁRIO somente para esse cenário; não atribuir execução de smoke tests.
+- Método de encerramento, hub/bioma e campos específicos do progresso não foram
+  detalhados. Não inferir teste de crash, force-stop, combate ou todos os atributos.
+- Relatório `docs/mundo_saves/MARCO_1.md` atualizado com matriz de evidências e testes
+  pendentes: DEV, backups/corrupção/versões, A/B/exclusão/legado, cobertura da run/
+  morte/antiduplicação, gatilhos de autosave, suspensão, Windows e desempenho.
+- Marco completo ainda em validação parcial. Não avançar ao Marco 2. Nesta revisão,
+  somente documentação alterada; saves, código e assets permanecem preservados.
