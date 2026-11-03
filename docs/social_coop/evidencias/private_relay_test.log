@@ -1,0 +1,16 @@
+test_four_authorized_tls_connections_and_authority (__main__.RelayTests.test_four_authorized_tls_connections_and_authority) ... Executing <Task pending name='Task-1' coro=<RelayTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.173 seconds
+ok
+test_godot_wss_client (__main__.RelayTests.test_godot_wss_client) ... Executing <Task pending name='Task-64' coro=<RelayTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.345 seconds
+ok
+test_host_loss_timeout_and_backup (__main__.RelayTests.test_host_loss_timeout_and_backup) ... Executing <Task pending name='Task-114' coro=<RelayTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.278 seconds
+ok
+test_invites_single_use_and_exact_four (__main__.RelayTests.test_invites_single_use_and_exact_four) ... Executing <Task pending name='Task-175' coro=<RelayTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.206 seconds
+ok
+test_rate_limit (__main__.RelayTests.test_rate_limit) ... ok
+test_unauthorized_and_invalid_messages (__main__.RelayTests.test_unauthorized_and_invalid_messages) ... Executing <Task pending name='Task-213' coro=<RelayTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_test.py:34> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.571 seconds
+ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 2.418s
+
+OK

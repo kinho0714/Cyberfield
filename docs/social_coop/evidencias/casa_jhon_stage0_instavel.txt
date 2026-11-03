@@ -1,0 +1,6 @@
+base_codex run1: Assertion failed: Portal must accommodate all four participants
+base_codex run2: Assertion failed: Portal must accommodate all four participants
+base_codex run3: Assertion failed: Portal must accommodate all four participants
+final run1: CASA_JHON_STAGE0_SMOKE_TEST_OK
+final run2: CASA_JHON_STAGE0_SMOKE_TEST_OK
+final run3: CASA_JHON_STAGE0_SMOKE_TEST_OK

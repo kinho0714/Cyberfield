@@ -168,3 +168,23 @@ Leia isto antes de qualquer coisa (regras em `CLAUDE.md`). Atualize ao fim de ca
 - Relatório geral `docs/mundo_saves/expansao/RELATORIO_RODADA.md`, segurança e roteiro
   Android no mesmo diretório. Próximo: validação física, avisos de cleanup, ponte
   de gameplay WSS, backend e implantação autorizada. Não declarar marcos completos.
+
+## Missão refinamento UI / amizades / coop — 03/11/2026 (Claude)
+- Branch local `claude/refinamento-ui-amizades` a partir de `origin/codex/expansao-privada-2026-11-03`
+  (`9b8d843`). **Sem push** (aguarda autorização). Branches oficiais e do Codex intactas.
+- Relatório: `docs/social_coop/RELATORIO_REFINAMENTO_UI_AMIZADES_2026-11-03.md`; arquitetura/E2EE:
+  `docs/social_coop/ARQUITETURA_SOCIAL_COOP.md`; G14: `docs/social_coop/HOSPEDAGEM_PRIVADA_G14.md`;
+  evidências em `docs/social_coop/evidencias/`.
+- Menu: JOGAR/SOCIAL/OPÇÕES/SAIR; JOGAR → CAMPANHA SOLO (continuar/criar/gerenciar/partida
+  avulsa) / COOPERATIVO (mesmo dispositivo, LAN, sessão privada — seção única). Botões injetados
+  pelo Codex removidos. Kit `ui/cyber_ui.gd` + `ui/cyber_modal.gd` sobre texturas oficiais.
+- Social: recebidas/aceitar/recusar/cancelar/bloquear, retrato dos 4 jogáveis, privacidade;
+  pedidos reais só entre participantes da sessão privada. Sem servidor de contas (nada simulado).
+- Coop privado: código de convite `CF1-`, sala com 4 assentos, revogar convites, servidor
+  indisponível detectado. 4 clientes Godot reais em TLS loopback OK; gameplay sincronizado NÃO existe.
+- Testes: social_menu/social_profile failures=0; relay social 7/7; relay Codex 6/6; suíte 55/62
+  (base 54/59, mesmas falhas; `casa_jhon_stage0` instável nas duas). Estático e asserções suaves
+  idênticos à base (35 = 35). Android físico PENDENTE.
+- Godot: binário oficial 4.7.2 (SHA-512 conferido) reaproveitado do scratchpad anterior.
+- Próximo: playtest Android (roteiro no relatório), ponte de gameplay WSS reutilizando a LAN,
+  backend de contas, escolher túnel e publicar SÓ com autorização.

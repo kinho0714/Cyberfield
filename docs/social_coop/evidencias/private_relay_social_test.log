@@ -1,0 +1,18 @@
+test_four_real_godot_clients (__main__.RelaySocialTests.test_four_real_godot_clients) ... Executing <Task pending name='Task-1' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.237 seconds
+ok
+test_friend_request_accept_and_private_refusal (__main__.RelaySocialTests.test_friend_request_accept_and_private_refusal) ... Executing <Task pending name='Task-53' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.261 seconds
+ok
+test_host_revokes_unused_invites (__main__.RelaySocialTests.test_host_revokes_unused_invites) ... Executing <Task pending name='Task-93' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.168 seconds
+ok
+test_offline_target_and_social_rate_limit (__main__.RelaySocialTests.test_offline_target_and_social_rate_limit) ... Executing <Task pending name='Task-118' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.254 seconds
+ok
+test_roster_is_sanitized_and_has_no_ids (__main__.RelaySocialTests.test_roster_is_sanitized_and_has_no_ids) ... ok
+test_social_target_and_card_validation (__main__.RelaySocialTests.test_social_target_and_card_validation) ... Executing <Task pending name='Task-161' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.131 seconds
+ok
+test_unsolicited_or_repeated_response_is_rejected (__main__.RelaySocialTests.test_unsolicited_or_repeated_response_is_rejected) ... Executing <Task pending name='Task-207' coro=<RelaySocialTests.asyncSetUp() running at /home/user/Cyberfield/tests/private_relay_social_test.py:42> wait_for=<_GatheringFuture pending cb=[Task.task_wakeup()] created at /usr/lib/python3.13/asyncio/tasks.py:774> cb=[_run_until_complete_cb() at /usr/lib/python3.13/asyncio/base_events.py:181] created at /usr/lib/python3.13/asyncio/runners.py:101> took 0.404 seconds
+ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.613s
+
+OK

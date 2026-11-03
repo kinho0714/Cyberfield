@@ -136,3 +136,25 @@ desligada como no aparelho). Nenhum item testado no Android físico.
 | Jhon Design B, arsenal, cyberwares, acessórios | SEM REGRESSÃO | testes antigos (`jhon_design_b_animation`, `arsenal_expansion`, `mega_pass_arsenal_sfx_ui`) aprovados |
 | Suíte Godot completa | SEM REGRESSÃO | 48/53 aprovados; as 5 falhas são as mesmas da base `413b508` (43/48) |
 | Instalador Termux | COMPROVADO (clones) | 25/25: instala na base simulada (mesma árvore, hash diferente, sem identidade git), detecta já instalado, `--rollback`, recusa alteração local/base errada/arquivo solto/patch corrompido, `--verificar` não altera, avisa recursos privados; aparelho PENDENTE |
+
+## Refinamento UI, amizades e coop privado (03/11/2026)
+Evidência: Godot 4.7.2 oficial, `main.tscn` real, headless + Xvfb (1600×720 e 1280×720), toques
+como eventos de tela reais; relay em TLS de loopback. Nada testado no Android físico.
+| Sistema | Estado | Evidência / observação |
+|---|---|---|
+| Menu JOGAR/SOCIAL/OPÇÕES/SAIR e subpáginas | COMPROVADO | `social_menu_smoke_test` (ordem, toque, VOLTAR, foco de origem); capturas 01–03, 05, 08, 13 |
+| Partida avulsa com dificuldade (modo antigo) | SEM REGRESSÃO | `focused_stabilization_input_audio_test`, `visual_pass3_smoke_test` |
+| Coop mesmo dispositivo / LAN pela seção COOPERATIVO | COMPROVADO | LAN: dificuldade → lobby → volta à página; `phase8_lan_lobby_touch_smoke_test` ok |
+| Campanhas: cartões, progresso, continuar, renomear, excluir c/ confirmação | COMPROVADO | criação/continuação/renomear/cancelar/excluir pela UI; slot restante íntegro; capturas 04–07 |
+| Formato do save de campanha | INALTERADO | progresso só lido (`progress_summary`); testes de store/sessão do Codex ok |
+| Perfil: nome, retrato oficial, ID público, privacidade | COMPROVADO | `social_profile_smoke_test`, `social_menu_smoke_test`; captura 09 |
+| Solicitações recebidas/enviadas, aceitar/recusar/cancelar, bloquear/desbloquear | COMPROVADO (local + sessão) | 4 clientes Godot: aceitação mútua e recusa sem cartão; capturas 10–12 |
+| Amizades online (servidor de contas) | PENDENTE | botão desabilitado com motivo; `authenticate_online` = ERR_UNAVAILABLE |
+| Sessão privada: criar/entrar por código/convites/revogar/sala | COMPROVADO (loopback) | `private_relay_social_test` 7/7 (anfitrião + 3 Godot reais); capturas 14–16 |
+| Servidor indisponível informado | COMPROVADO | conexão real a porta fechada → `server_unavailable` e mensagem |
+| Gameplay cooperativo sincronizado pela sessão privada | PENDENTE | plano em `ARQUITETURA_SOCIAL_COOP.md` |
+| Hub MUNDO / SESSÃO no kit novo (pausa) | COMPROVADO | pausa restaurada; painel social por cima volta ao hub; captura 17 |
+| Hospedagem G14 / túnel público | PENDENTE (projeto) | `HOSPEDAGEM_PRIVADA_G14.md`; nada publicado |
+| E2EE | NÃO IMPLEMENTADO | interface diz que TLS não é ponta a ponta; chat desativado |
+| Android físico (toque, teclado virtual, 20:9) | PENDENTE | roteiro no relatório |
+| Instalador Termux (patch base `9b8d843`) | COMPROVADO (clones) | 25/25 casos; aparelho PENDENTE |
